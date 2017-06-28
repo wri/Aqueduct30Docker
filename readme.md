@@ -3,6 +3,9 @@ hello world
 build docker:
 `docker build -t friendlyhello testDocker`
 
+`RutgerMacbook:Aqueduct30Docker rutgerhofste$ docker run -d -v /Users/rutgerhofste/GitHub/Aqueduct30Docker/notebooks/:/mnt/notebooks/ -p 8888:8888 eboraas/jupyter`
+
+
 run docker:
 
 `docker run -p 4000:80 friendlyhello`
@@ -21,7 +24,7 @@ e.g.: `docker tag friendlyhello rutgerhofste/get-started:part1`
 cleanup
 
 check containers
-`docker pd -a`
+`docker ps -a`
 
 
 `docker stop <containerID>`
