@@ -1,4 +1,23 @@
-hello world
+# Aqueduct 3.0 Data Processing workflow
+
+
+
+1) Run locally
+
+2) Run in the cloud
+
+
+Instructions to run the calculations locally
+
+install Docker
+
+
+
+
+
+
+
+
 
 build docker:
 `docker build -t friendlyhello testDocker`
