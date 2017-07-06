@@ -26,14 +26,17 @@ install Docker
 
 
 build docker:
-`docker build -t friendlyhello testDocker`
+`docker build -t <imageName> testDocker`
 
-`RutgerMacbook:Aqueduct30Docker rutgerhofste$ docker run -d -v /Users/rutgerhofste/GitHub/Aqueduct30Docker/notebooks/:/mnt/notebooks/ -p 8888:8888 eboraas/jupyter`
+Run the container
+docker run -d -p 8888:8888 <imageName>
+or 
+docker run -d -p 8888:8888 rutgerhofste/xxxx:xxx
+
+service is running on 
+http://localhost:8888
 
 
-run docker:
-
-`docker run -p 4000:80 friendlyhello`
 
 
 share repo on hub.docker
