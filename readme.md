@@ -63,3 +63,9 @@ check images
 `docker images`
 
 `docker rmi <imageID>`
+
+
+run with environment variables
+docker run -e AWS_ACCESS_KEY_ID=xyz -e AWS_SECRET_ACCESS_KEY=aaa myimage
+
+
