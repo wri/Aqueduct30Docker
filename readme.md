@@ -64,8 +64,28 @@ check images
 
 `docker rmi <imageID>`
 
-
-run with environment variables
+ 
+run with environment variables (unsafe)
 docker run -e AWS_ACCESS_KEY_ID=xyz -e AWS_SECRET_ACCESS_KEY=aaa myimage
+
+
+Safe way:
+run bash on docker container and use AWS configure
+aws configure
+
+us-east-1
+
+
+aws configure 
+
+Copy files to volume 
+
+aws s3 cp s3://wri-projects/Aqueduct30/temp  /volumes/data/ /volumes/data/ --recursive
+
+
+
+
+
+
 
 
