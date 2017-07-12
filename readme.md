@@ -1,5 +1,14 @@
 # Aqueduct 3.0 Data Processing workflow
 
+A link to the flowchart±
+https://docs.google.com/drawings/d/1IjTVlQUHNYj2w0zrS8SKQV1Bpworvt0XDp7UE2tPms0/edit?usp=sharing
+
+![GitHub Logo](/flowchart.png)
+Format: ![Alt Text](url)
+
+
+
+
 this document explains each and every step for the data processing of Aqueduct 3.0. Everything is here, from raw data to code to explanation. We also epxlain how you could replicate the calculations on your local machine or in a cloud environment. 
 
 The overall structure is as follows:
