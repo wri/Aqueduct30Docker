@@ -4,10 +4,10 @@ this document explains each and every step for the data processing of Aqueduct 3
 
 The overall structure is as follows:
 
-Data is stored on WRI's Amazon S3 Storage
-Code and versionion is stored on Github 
-The environment description is stored in a Docker file 
-A jupyter notebook can be used to run the code in a virtual machine. 
+*Data is stored on WRI's Amazon S3 Storage
+*Code and versionion is stored on Github 
+*The environment description is stored in a Docker file 
+*A jupyter notebook can be used to run the code in a virtual machine. 
 
 For steps that do not include code, such as adding columns to a shapefile in QGIS, a description is included to replicate the proces on your local machine.  
 
@@ -89,6 +89,14 @@ aws configure
 Copy files to volume 
 
 aws s3 cp s3://wri-projects/Aqueduct30/temp  /volumes/data/ /volumes/data/ --recursive
+
+
+Using Putty and want to edit a file in nano/vim: 
+`export TERM=xterm` 
+
+due to some weird bug
+
+
 
 
 
