@@ -1,14 +1,5 @@
 # Aqueduct 3.0 Data Processing workflow
 
-A link to the flowchart:
-https://docs.google.com/drawings/d/1IjTVlQUHNYj2w0zrS8SKQV1Bpworvt0XDp7UE2tPms0/edit?usp=sharing
-
-![GitHub Logo](/flowchart.png)
-
-
-
-
-
 this document explains each and every step for the data processing of Aqueduct 3.0. Everything is here, from raw data to code to explanation. We also epxlain how you could replicate the calculations on your local machine or in a cloud environment. 
 
 The overall structure is as follows:
@@ -18,20 +9,25 @@ Code and versionion is stored on Github
 The environment description is stored in a Docker file 
 A jupyter notebook can be used to run the code in a virtual machine. 
 
-For steps that do not include code, such as adding columns to a shapefile in QGIS, a description is included.  
-
-1) Run locally
-
-2) Run in the cloud
+For steps that do not include code, such as adding columns to a shapefile in QGIS, a description is included to replicate the proces on your local machine.  
 
 
-Instructions to run the calculations locally
+A link to the flowchart:
+https://docs.google.com/drawings/d/1IjTVlQUHNYj2w0zrS8SKQV1Bpworvt0XDp7UE2tPms0/edit?usp=sharing
 
-install Docker
+![Flowchart](/flowchart.png)
+
+Each data source (pristine data), indicated with the open cylinder on the right side, is stord on our S3 drive on the rawData folder: wri-projects/Aqueduct30/rawData
+
+The pristine data is also copied to step 0 in the data processing folder: wri-projects/Aqueduct30/processData
+
+#Technical Setup
+
+![Setup](/setup.png)
 
 
 
-
+Instructions on how to replicate the process:
 
 
 build docker:
