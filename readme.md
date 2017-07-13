@@ -1,5 +1,7 @@
 # Aqueduct 3.0 Data Processing workflow
 
+View this readme on Github: https://github.com/rutgerhofste/Aqueduct30Docker
+
 this document explains each and every step for the data processing of Aqueduct 3.0. Everything is here, from raw data to code to explanation. We also epxlain how you could replicate the calculations on your local machine or in a cloud environment. 
 
 The overall structure is as follows:
@@ -29,22 +31,50 @@ https://docs.google.com/drawings/d/1UR62IEQwQChj2SsksMsYGBb5YnVu_VaZlG10ZGowpA4/
 ![Setup](/setup.png)
 
 
+# Getting started
 
-Instructions on how to replicate the process:
+There are two options to setup your working environment:
+
+* Locally
+* In the cloud
+
+Both options are based on Docker and Jupyter. 
+
+## Locally 
+
+1. install docker 
+2. run the following command: 
+
+`docker run -d -p 8888:8888 rutgerhofste/aqueduct30:latest`
+
+3. Open your browser and go to http://localhost:8888
+4. Type in the password
+
+## In the cloud
+
+1. Using Amazon or Google Cloud, spin up a virtual instance
+2. Set up the appropriate security rules to open your instance for various connection methods, SSH, HTTPS, SCP etc.
+3. SSH into your machine
+4. install Docker on your instance
+3. run the following command: 
+
+`docker run -d -p 8888:8888 rutgerhofste/aqueduct30:latest`
+
+4. Go to your instance's external IP address appended by port 8888 xx.xxx.xx.xx:8888 
+5. Login with password
 
 
-build docker:
-`docker build -t <imageName> testDocker`
 
-Run the container
-docker run -d -p 8888:8888 <imageName>
-or 
-docker run -d -p 8888:8888 rutgerhofste/xxxx:xxx
+# Commit to development
 
-service is running on 
-http://localhost:8888
+The docker image comes with git intalled and is linked to the following github remote branch:
+https://github.com/rutgerhofste/Aqueduct30Docker
 
+in order to commit, please run a terminal from the Jupyter main page (top right corner). 
 
+#Cheatsheet
+you can bash into the instance using 
+`docker exec -it <container ID> bash`
 
 
 share repo on hub.docker
@@ -72,9 +102,7 @@ check images
 
 `docker rmi <imageID>`
 
- 
-run with environment variables (unsafe)
-docker run -e AWS_ACCESS_KEY_ID=xyz -e AWS_SECRET_ACCESS_KEY=aaa myimage
+
 
 
 Safe way:
