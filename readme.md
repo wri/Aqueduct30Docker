@@ -23,6 +23,9 @@ The pristine data is also copied to step 0 in the data processing folder: wri-pr
 
 #Technical Setup
 
+A link to edit the technical setup drawing:
+https://docs.google.com/drawings/d/1UR62IEQwQChj2SsksMsYGBb5YnVu_VaZlG10ZGowpA4/edit?usp=sharing
+
 ![Setup](/setup.png)
 
 
