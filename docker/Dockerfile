@@ -14,5 +14,9 @@ RUN pip install pandas
 
 VOLUME /volumes/data
 
-RUN 
+# Password protect jupyter
+RUN mkdir /root/.jupyter
+
+RUN cp /mnt/notebooks/Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
+
 
