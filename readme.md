@@ -65,8 +65,23 @@ http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html
 
 * for now I opened the instance to all traffic coming from WRI's US IP address 
 
+2. you will need to authenticate for a couple of services including using AWS and Google Earth Engin. 
+
+* ssh into your machine and run bash in your Docker container using the following command
+`docker ps -a` 
+check the container name and run
+`docker exec -it <container name> bash`
+
+now authenticate for AWS 
+`AWS configure`
+
+and for earth engine (if needed, you can also do this from within Jupyter)
+earthengine authenticate
+
+
+
 2. Go to your instance's external IP address appended by port 8888 xx.xxx.xx.xx:8888 
-3. Login with password
+3. Login with password (ask me)
 
 
 
@@ -140,6 +155,7 @@ note to self: If you make changes in the online code editor and want to push to 
 git clone https://earthengine.googlesource.com/aqueduct30
 
 git pull origin
+
 
 
 
