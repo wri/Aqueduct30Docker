@@ -67,16 +67,16 @@ http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html
 
 2. you will need to authenticate for a couple of services including using AWS and Google Earth Engin. 
 
-* ssh into your machine and run bash in your Docker container using the following command
-`docker ps -a` 
-check the container name and run
-`docker exec -it <container name> bash`
+* ssh into your machine and run bash in your Docker container using the following command  
+`docker ps -a`  
+check the container name and run  
+`docker exec -it <container name> bash`  
 
-now authenticate for AWS 
+now authenticate for AWS  
 `AWS configure`
 
-and for earth engine (if needed, you can also do this from within Jupyter)
-earthengine authenticate
+and for earth engine (if needed, you can also do this from within Jupyter)  
+`earthengine authenticate`
 
 
 
