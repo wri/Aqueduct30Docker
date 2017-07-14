@@ -129,11 +129,17 @@ Using Putty and want to edit a file in nano/vim:
 
 due to some weird bug
 
+# Earth Engine Javascript API files 
 
+The javascript files for earth engine can be added to your earth engine code editor (code.earthengine.com) by using the following URL
 
+https://code.earthengine.google.com/?accept_repo=aqueduct30
 
+note to self: If you make changes in the online code editor and want to push to this github, use 
 
+git clone https://earthengine.googlesource.com/aqueduct30
 
+git pull origin
 
 
 
