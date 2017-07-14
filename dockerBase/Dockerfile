@@ -6,6 +6,8 @@ RUN apt-get install -y git
 
 RUN git clone https://github.com/rutgerhofste/Aqueduct30Docker.git
 
+RUN pip install --upgrade pip
+
 RUN pip install boto3
 
 RUN pip install awscli

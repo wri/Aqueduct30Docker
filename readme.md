@@ -52,16 +52,21 @@ Both options are based on Docker and Jupyter.
 
 ## In the cloud
 
-1. Using Amazon or Google Cloud, spin up a virtual instance
-2. Set up the appropriate security rules to open your instance for various connection methods, SSH, HTTPS, SCP etc.
-3. SSH into your machine
-4. install Docker on your instance
-3. run the following command: 
+1. Using Amazon or Google Cloud, spin up a virtual instance (Ubuntu)
 
-`docker run -d -p 8888:8888 rutgerhofste/aqueduct30:latest`
+for this I reccomend using the tutorials that are available on Amazon's and Google's websites. 
 
-4. Go to your instance's external IP address appended by port 8888 xx.xxx.xx.xx:8888 
-5. Login with password
+For Windows machines you can use Putty and WinSCP to connect to your instance
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html 
+
+* add startup.sh to user data during setup in EC2
+
+* Set up the appropriate security rules to open your instance for various connection methods, SSH, HTTPS, SCP etc.
+
+* for now I opened the instance to all traffic coming from WRI's US IP address 
+
+2. Go to your instance's external IP address appended by port 8888 xx.xxx.xx.xx:8888 
+3. Login with password
 
 
 
