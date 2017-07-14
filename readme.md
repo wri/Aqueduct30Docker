@@ -6,10 +6,10 @@ this document explains each and every step for the data processing of Aqueduct 3
 
 The overall structure is as follows:
 
-*Data is stored on WRI's Amazon S3 Storage
-*Code and versionion is stored on Github 
-*The environment description is stored in a Docker file 
-*A jupyter notebook can be used to run the code in a virtual machine. 
+* Data is stored on WRI's Amazon S3 Storage
+* Code and versionion is stored on Github 
+* The environment description is stored in a Docker file 
+* A jupyter notebook can be used to run the code in a virtual machine. 
 
 For steps that do not include code, such as adding columns to a shapefile in QGIS, a description is included to replicate the proces on your local machine.  
 
@@ -23,7 +23,7 @@ Each data source (pristine data), indicated with the open cylinder on the right 
 
 The pristine data is also copied to step 0 in the data processing folder: wri-projects/Aqueduct30/processData
 
-#Technical Setup
+# Technical Setup
 
 A link to edit the technical setup drawing:
 https://docs.google.com/drawings/d/1UR62IEQwQChj2SsksMsYGBb5YnVu_VaZlG10ZGowpA4/edit?usp=sharing
