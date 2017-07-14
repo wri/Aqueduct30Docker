@@ -73,10 +73,13 @@ check the container name and run
 `docker exec -it <container name> bash`  
 
 now authenticate for AWS  
-`AWS configure`
+`aws configure`
 
 and for earth engine (if needed, you can also do this from within Jupyter)  
-`earthengine authenticate`
+`earthengine authenticate`  
+
+
+sync WRI's bucket with your instance (into Docker Volume). You can choose to sync all or just the data you require. The bucket rawData is currently around 100GB so will probably download per task. 
 
 
 
@@ -136,7 +139,7 @@ aws configure
 
 Copy files to volume 
 
-aws s3 cp s3://wri-projects/Aqueduct30/temp  /volumes/data/ /volumes/data/ --recursive
+aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/waterdemand  /volumes/data/ --recursive
 
 
 Using Putty and want to edit a file in nano/vim: 
