@@ -17,7 +17,7 @@ For steps that do not include code, such as adding columns to a shapefile in QGI
 A link to the flowchart:
 https://docs.google.com/drawings/d/1IjTVlQUHNYj2w0zrS8SKQV1Bpworvt0XDp7UE2tPms0/edit?usp=sharing
 
-![Flowchart](/flowchart.png)
+![Flowchart](/other/flowchart.png)
 
 Each data source (pristine data), indicated with the open cylinder on the right side, is stord on our S3 drive on the rawData folder: wri-projects/Aqueduct30/rawData
 
@@ -28,7 +28,7 @@ The pristine data is also copied to step 0 in the data processing folder: wri-pr
 A link to edit the technical setup drawing:
 https://docs.google.com/drawings/d/1UR62IEQwQChj2SsksMsYGBb5YnVu_VaZlG10ZGowpA4/edit?usp=sharing
 
-![Setup](/setup.png)
+![Setup](/other/setup.png)
 
 
 # Getting started
