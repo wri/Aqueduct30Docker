@@ -1,4 +1,4 @@
-FROM rutgerhofste/aqueduct30
+FROM rutgerhofste/aqueduct30:v12
 
 MAINTAINER Rutger Hofste <rutgerhofste@gmail.com>
 
