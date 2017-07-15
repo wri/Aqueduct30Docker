@@ -95,7 +95,7 @@ https://github.com/rutgerhofste/Aqueduct30Docker
 
 in order to commit, please run a terminal from the Jupyter main page (top right corner). 
 
-#Cheatsheet
+# Cheatsheet
 you can bash into the instance using 
 `docker exec -it <container ID> bash`
 
@@ -106,6 +106,9 @@ share repo on hub.docker
 e.g.: `docker tag friendlyhello rutgerhofste/get-started:part1`
 `docker push username/repository:tag`
 
+Identify yourself on the server git
+git config --global user.email "rutgerhofste@gmail.com"
+git config --global user.name "Rutger Hofste"
 
 
 
