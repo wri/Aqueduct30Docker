@@ -8,6 +8,7 @@ RUN git clone https://github.com/rutgerhofste/Aqueduct30Docker.git
 
 RUN pip install --upgrade pip
 
+ADD requirements.txt .
 RUN pip install -r requirements.txt
 
 VOLUME /volumes/data
