@@ -61,6 +61,8 @@ http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html
 
 * add startup.sh to user data during setup in EC2
 
+* you will nedd sigificant storage. I used 200GB of SSD storage ($)
+
 * Set up the appropriate security rules to open your instance for various connection methods, SSH, HTTPS, SCP etc.
 
 * for now I opened the instance to all traffic coming from WRI's US IP address 
