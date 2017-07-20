@@ -67,9 +67,49 @@ http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html
 
 * for now I opened the instance to all traffic coming from WRI's US IP address 
 
-* If you want to setup HTTPS: 
+* we will setup HTTPS access after we spin up our notebook
 
 
+2. Connect to your instance using SSH
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html
+
+check if docker is installed
+`docker version`
+
+download the latest docker image for aqueduct. Check https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=rutgerhofste&starCount=0
+
+pull the latest image 
+
+`docker pull rutgerhofste/xxx:vxx`
+
+run your container 
+
+`docker run -it -p 8888:8888 rutgerhofste/dockerjupyter:v05 bash`
+
+3. (recommended) Set up HTTPS access
+
+in your container create a certificate by running
+
+`cd /`
+`mkdir .keys`
+`chmod 400 .keys`
+`cd .keys`
+`openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mykey.key -out mycert.pem`
+
+and answer some questions needed for the certificate
+
+now start your notebook with the certificates
+
+jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/
+
+Now go to 
+
+https://<your public IP address>:8888
+
+your browser will give you a warning because you are using a self created certificate. Do you trust yourself :) ? 
+
+If you trust yourself, click advanced (Chrome) and proceed to the site. 
+Copy the token from you terminal to access your notebooks. 
 
 
 2. you will need to authenticate for a couple of services including using AWS and Google Earth Engin. 
