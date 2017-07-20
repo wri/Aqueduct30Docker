@@ -9,9 +9,8 @@ VOLUME /volumes/data
 # Password protect jupyter
 RUN mkdir /root/.jupyter
 
-RUN cd /home
 RUN git clone https://github.com/rutgerhofste/Aqueduct30Docker.git
 
 # config with hashed password certificate and key enabled 
-# RUN cp /home/Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
+# RUN cp /Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
 

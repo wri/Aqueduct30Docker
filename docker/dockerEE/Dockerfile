@@ -1,24 +1,15 @@
-FROM rutgerhofste/aqueduct30:v12
+FROM rutgerhofste/aqueduct30:v14
 
 MAINTAINER Rutger Hofste <rutgerhofste@gmail.com>
 
-RUN apt-get install libffi-dev libssl-dev python-dev python-pip -y
+RUN apt-get install libffi-dev libssl-dev -y
 
 ADD requirements.txt .
 
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 RUN apt-get install python-gdal -y
 
 RUN jupyter nbextension enable --py --sys-prefix widgetsnbextension
-
-RUN apt-get install software-properties-common
-
-RUN add-apt-repository ppa:certbot/certbot -y
-
-RUN apt-get update
-
-RUN apt-get install certbot -y
-
 
 
