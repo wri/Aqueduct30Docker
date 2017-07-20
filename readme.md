@@ -67,6 +67,11 @@ http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html
 
 * for now I opened the instance to all traffic coming from WRI's US IP address 
 
+* If you want to setup HTTPS: 
+
+
+
+
 2. you will need to authenticate for a couple of services including using AWS and Google Earth Engin. 
 
 * ssh into your machine and run bash in your Docker container using the following command  
@@ -165,14 +170,21 @@ git clone https://earthengine.googlesource.com/aqueduct30
 git pull origin
 
 
-# Security
+# Recommanded, add HTTPS Security
 
-Run on your instance 
+Run on your instance (not in docker container)
 
 openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mykey.key -out mycert.pem
-openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mykey.key -out mycert.pem
 
+Put the private and public key in folder that matches the patch in your jupyter config file
 
-Use winscp to copy to your local machine
+if needed change the path in your jupyter config file
 
+run your container
+
+copy files to container
+
+docker run -it -p 8888:8888 testjupyter:v01 bash
+
+cd /usr/local/bin/
 

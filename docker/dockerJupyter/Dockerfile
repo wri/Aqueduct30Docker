@@ -1,20 +1,37 @@
-FROM eboraas/debian:stretch
-MAINTAINER Ed Boraas <ed@boraas.ca>
+FROM ubuntu:16.10
+MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
 
-RUN apt-get update && \
-    apt-get -y install pkg-config python python-pip libffi6 libfreetype6 libpng16-16 libjpeg62-turbo libopenblas-base libffi-dev libfreetype6-dev libpng-dev libjpeg62-turbo-dev libopenblas-dev && \
-    pip install --no-cache-dir --upgrade --ignore-installed pip && \
-    for module in $(/usr/local/bin/pip list --no-cache-dir --outdated |cut -f1 -d' '); do /usr/local/bin/pip install --no-cache-dir --upgrade ${module}; done && \
-    /usr/local/bin/pip install --no-cache-dir --upgrade numpy scipy sklearn ipykernel matplotlib Pillow jupyter && \
-    dpkg --purge pkg-config python-pip libffi-dev libfreetype6-dev libpng-dev libjpeg62-turbo-dev libopenblas-dev && \
-    apt-get -y autoremove && \
-    apt-get clean && \
-    rm -r /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y git
 
-# Pre-populate font list to avoid warning on first import of matplotlib.pyplot 
-RUN python -c "import matplotlib.pyplot"
 
-WORKDIR /mnt/notebooks
+# Python 3.5.2+
+RUN apt-get install python3=3.5.2+ -y
+
+# 8.1.2
+RUN apt-get install -y python3-pip=8.1.2
+
+RUN pip3 install --upgrade pip
+
+# 4.3.0 (Jupyter core)
+RUN pip3 install jupyter
+
+# 5.0.0 (jupyter notebook --version)
+RUN pip3 install --upgrade notebook
+
+
+# Python 2.7.12
+# RUN apt-get install python=2.7.12 -y
+
+# pip 8.1.1
+# RUN apt-get install python-pip -y
+
+# RUN pip install --upgrade pip
+
+# RUN apt-get install python-dev
+
+# RUN apt-get install jupyter
+
 EXPOSE 8888
 
-# CMD ["/bin/sh", "-c", "/usr/local/bin/jupyter-notebook --no-browser --ip=0.0.0.0 --notebook-dir=/mnt/notebooks"]
+# jupyter notebook --no-browser --ip=0.0.0.0 --notebook-dir=/notebooks --allow-root
