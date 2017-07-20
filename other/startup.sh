@@ -17,4 +17,4 @@ usermod -a -G docker ubuntu
 service docker start
 
 # Run docker container in detached mode (-d) on port internal 8888 and forward to port 8888 (-p 8888:8888) 
-docker run -d -p 8888:8888 rutgerhofste/aqueduct30:v11
+#docker run -d -p 8888:8888 rutgerhofste/aqueduct30:v11

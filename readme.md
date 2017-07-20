@@ -165,6 +165,14 @@ git clone https://earthengine.googlesource.com/aqueduct30
 git pull origin
 
 
+# Security
 
+Run on your instance 
+
+openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mykey.key -out mycert.pem
+openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mykey.key -out mycert.pem
+
+
+Use winscp to copy to your local machine
 
 
