@@ -7,6 +7,8 @@ apt-get install docker
 
 apt install docker.io -y
 
+apt install docker-compose -y
+
 dockerd
 
 # needs restart to take effect, use sudo docker .... if you don't want to restart your instance

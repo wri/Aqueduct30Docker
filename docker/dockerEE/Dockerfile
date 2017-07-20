@@ -11,3 +11,14 @@ RUN pip install -r requirements.txt
 RUN apt-get install python-gdal -y
 
 RUN jupyter nbextension enable --py --sys-prefix widgetsnbextension
+
+RUN apt-get install software-properties-common
+
+RUN add-apt-repository ppa:certbot/certbot -y
+
+RUN apt-get update
+
+RUN apt-get install certbot -y
+
+
+
