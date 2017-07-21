@@ -52,17 +52,28 @@ There are also downsides
 
 ## Locally 
 
-1. install docker 
+1. install docker cummunity edition 
 [instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)
+For windows it requires some additional steps. 
+
+2. Start docker  
+you can check if docker is installed by typing `docker -v` in your terminal or command prompt  
 
 2. run the following command: 
 
-`docker run -d -p 8888:8888 rutgerhofste/aqueduct30:latest`
+`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/aqueduct30:v01 bash`  
+
+This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. 
 
 3. Open your browser and go to http://localhost:8888
-4. Type in the password
 
-## In the cloud
+4. Type in the token that you see in your terminal
+
+5. You can now start working on notebooks 
+
+6. To save you progress, please see the section below.  
+
+## Cloud based solution (recommended)
 
 1. Using Amazon or Google Cloud, spin up a virtual instance (Ubuntu)
 
