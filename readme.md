@@ -52,8 +52,10 @@ There are also downsides
 
 ## Locally 
 
-1. install docker cummunity edition 
-[instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)
+1. install docker cummunity edition  
+
+[instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)  
+
 For windows it requires some additional steps. 
 
 2. Start docker  
