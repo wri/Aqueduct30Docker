@@ -36,13 +36,25 @@ https://docs.google.com/drawings/d/1UR62IEQwQChj2SsksMsYGBb5YnVu_VaZlG10ZGowpA4/
 There are two options to setup your working environment:
 
 * Locally
-* In the cloud
+* In the cloud (recommended)
 
-Both options are based on Docker and Jupyter. 
+Both options are based on Docker and Jupyter. Although you might be able to do the lion's share of the data processing on your local machine, there are good reasons to work with a cloud based solution
+
+* mount a large harddrive to store the data. you will need appr. 200GB
+* easy to pick an appropratia intance size (number of CPU's and RAM)
+
+There are also downsides
+
+* Additional security steps required
+* Account needed
+* Costs
+
 
 ## Locally 
 
 1. install docker 
+[instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)
+
 2. run the following command: 
 
 `docker run -d -p 8888:8888 rutgerhofste/aqueduct30:latest`
