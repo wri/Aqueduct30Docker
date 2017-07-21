@@ -9,8 +9,8 @@ RUN conda create -n python3 python=3.6 pandas -y
 RUN conda create -n python3arc python=3.6 pandas -y
 
 # install packages
-RUN conda install --name python3arc -c esri arcgis -y
-RUN jupyter nbextension enable arcgis --py --sys-prefix
+# RUN conda install --name python3arc -c esri arcgis -y
+# RUN jupyter nbextension enable arcgis --py --sys-prefix
 
 # Register kernels in Ipython 
 RUN source activate python2 
