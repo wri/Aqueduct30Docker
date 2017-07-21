@@ -11,7 +11,7 @@ The overall structure is as follows:
 * The environment description is stored in a Docker file 
 * A jupyter notebook can be used to run the code in a virtual machine. 
 
-For steps that do not include code, such as adding columns to a shapefile in QGIS, a description is included to replicate the proces on your local machine.  
+For steps that do not include code, such as adding columns to a shapefile in QGIS, a description is included to replicate the proces on your local machine. Note that this setup is currently not compatible with ArcPY.
 
 
 A link to the flowchart:
@@ -79,12 +79,22 @@ You can now start working on notebooks
 
 ## Cloud based solution (recommended)
 
-1. Using Amazon or Google Cloud, spin up a virtual instance (Ubuntu)
+1. Get familair with how to use Amazon (EC2) or Google Cloud (CE) virtual instances:  
+for this I reccomend using the tutorials that are available on Amazon's and Google's websites.  
+[Amazon tutorial](https://aws.amazon.com/ec2/getting-started/)
 
-for this I reccomend using the tutorials that are available on Amazon's and Google's websites. 
+2. Use the specifics below when setting up you EC2 instance. If you miss one step, your instance will likely not work. 
+  1. In step 1) select Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
+  2. In step 2), if your budget allows, choose T2.Medium  
+  [calculate costs](https://calculator.s3.amazonaws.com/index.html)
+  3. In step 3)
+    * If you are within a VPC, allow IP addresses to be set  
+      Auto-assign Public IP = enable  
+    * Under advanced, set user data, as file  
+      Upload the startup.sh script from folder other/ 
+  
 
-For Windows machines you can use Putty and WinSCP to connect to your instance
-http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html 
+
 
 * add startup.sh to user data during setup in EC2
 
@@ -98,7 +108,8 @@ http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html
 
 
 2. Connect to your instance using SSH
-http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html  
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html 
 
 check if docker is installed
 `docker version`
