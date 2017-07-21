@@ -90,17 +90,20 @@ run your container
 
 in your container create a certificate by running
 
-`cd /`
-`mkdir .keys`
-`chmod 400 .keys`
-`cd .keys`
+`cd /.keys`
 `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mykey.key -out mycert.pem`
 
 and answer some questions needed for the certificate
 
 now start your notebook with the certificates
 
-jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/
+Copy config file that includes password and SSL for HTTPS
+
+cp /Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
+
+jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/ 
+
+
 
 Now go to 
 
