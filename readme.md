@@ -61,8 +61,7 @@ For windows it requires some additional steps.
 2. Start docker  
 you can check if docker is installed by typing `docker -v` in your terminal or command prompt  
 
-2. run the following command: 
-
+2. run the following command:  
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/aqueduct30:v01 bash`  
 
 This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. 
