@@ -59,17 +59,23 @@ For windows it requires some additional steps.
 2. Start docker  
 you can check if docker is installed by typing `docker -v` in your terminal or command prompt  
 
-2. run the following command in your terminal:  
+3. run the following command in your terminal:  
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/aqueduct30:v01 bash`  
 This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. 
 
-3. Open your browser and go to http://localhost:8888
+4. Update the git repository
+`cd /Aqueduct30docker/`  
+`git pull origin`
 
-4. Type in the token that you see in your terminal
+5. launch a Jupyter Notebook server  
+`jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /Aqueduct30Docker/`
 
-5. You can now start working on notebooks 
+6. Open your browser and go to http://localhost:8888
 
-6. To save you progress, please see the section below.  
+7. Type in the token that you see in your terminal  
+You can now start working on notebooks 
+
+8. To save you progress, please see the section below.  
 
 ## Cloud based solution (recommended)
 
