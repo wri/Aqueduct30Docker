@@ -84,10 +84,10 @@ for this I reccomend using the tutorials that are available on Amazon's and Goog
 [Amazon tutorial](https://aws.amazon.com/ec2/getting-started/)
 
 2. Use the specifics below when setting up you EC2 instance. If you miss one step, your instance will likely not work. 
-  1. In step 1) select Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
-  2. In step 2), if your budget allows, choose T2.Medium  
+  2.1. In step 1) select Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
+  2.2. In step 2), if your budget allows, choose T2.Medium  
   [calculate costs](https://calculator.s3.amazonaws.com/index.html)
-  3. In step 3)
+  2.3. In step 3)
     * If you are within a VPC, allow IP addresses to be set  
       Auto-assign Public IP = enable  
     * Under advanced, set user data, as file  
