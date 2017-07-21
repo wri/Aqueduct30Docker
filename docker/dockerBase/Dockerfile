@@ -1,14 +1,24 @@
-FROM rutgerhofste/jupyter:v01
+FROM rutgerhofste/jupyter:v03
 MAINTAINER Rutger Hofste <rutgerhofste@gmail.com>
 
 RUN apt-get install libffi-dev libssl-dev -y
 
 ADD requirementsPython2.txt .
 ADD requirementsPython3.txt .
-RUN pip install -r requirementsPython2.txt
-RUN pip3 install -r requirementsPython3.txt
+ADD requirementsPython3arc.txt .
 
-RUN apt-get install python-gdal -y
+RUN source activate python2
+RUN conda install --name python2 -r requirementsPython2.txt
+
+RUN source activate python3
+RUN conda install --name python3 -r requirementsPython3.txt
+
+RUN source activate python3arc
+RUN conda install --name python3arc -r requirementsPython3arc.txt
+
+
+
+# RUN apt-get install python-gdal -y
 
 VOLUME /volumes/data
 

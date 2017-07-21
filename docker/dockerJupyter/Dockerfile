@@ -1,28 +1,23 @@
-FROM ubuntu:16.10
+FROM rutgerhofste/conda:v02
 MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
 
-RUN apt-get update
-RUN apt-get install -y git
+# Create python virtualenv in Conda
+RUN conda create -n python2 python=2.7 anaconda -y
+RUN conda create -n python3 python=3.6 anaconda -y
+RUN conda create -n python3arc python=3.6 anaconda -y
 
-# Python 2 and Jupyter (legacy that can run python2)
-RUN apt-get install python python-pip -y
-RUN pip install --upgrade pip
-RUN pip install IPython==5.0
-RUN pip install jupyter
+# install packages
+RUN source activate python3arc
+RUN conda install --name python3arc -c esri arcgis -y
+RUN jupyter nbextension enable arcgis --py --sys-prefix
 
-# Python 3.5.2+
-RUN apt-get install python3 -y
-
-# 8.1.2
-RUN apt-get install -y python3-pip
-RUN pip3 install --upgrade pip
-# Fix Pip paths for Python 2
-RUN python -m pip install -U --force-reinstall pip
-
-
-# Add Kernel
-RUN python3 -m pip install ipykernel
-
+# Register kernels in Ipython 
+RUN source activate python2 
+RUN python -m ipykernel install --user --name Python2 --display-name "Python2 (conda)"
+RUN source activate python3  
+RUN python -m ipykernel install --user --name Python3 --display-name "Python3 (conda)"
+RUN source activate python3arc
+RUN python -m ipykernel install --user --name Python3arc --display-name "Python3arc (conda)"
 
 # check kernels and installs
 # jupyter kernelspec list
