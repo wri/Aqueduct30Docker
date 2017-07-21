@@ -84,7 +84,7 @@ pull the latest image
 
 run your container 
 
-`docker run -it -p 8888:8888 rutgerhofste/dockerjupyter:v05 bash`
+`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/aqueduct:v01 bash`
 
 3. (recommended) Set up HTTPS access
 
@@ -95,15 +95,13 @@ in your container create a certificate by running
 
 and answer some questions needed for the certificate
 
-now start your notebook with the certificates
-
 Copy config file that includes password and SSL for HTTPS
 
 cp /Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
 
+now start your notebook with the certificates
+
 jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/ 
-
-
 
 Now go to 
 
@@ -113,6 +111,8 @@ your browser will give you a warning because you are using a self created certif
 
 If you trust yourself, click advanced (Chrome) and proceed to the site. 
 Copy the token from you terminal to access your notebooks. 
+
+The notebook will ask you for a password. For now, this password is managed by Rutger Hofste. You can disable or change the password in the configuration file. This will change in the future. 
 
 
 2. you will need to authenticate for a couple of services including using AWS and Google Earth Engin. 
