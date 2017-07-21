@@ -11,6 +11,6 @@ RUN pip3 install -r requirements.txt
 
 RUN apt-get install python-gdal -y
 
-RUN jupyter nbextension enable --py --sys-prefix widgetsnbextension
+
 
 
