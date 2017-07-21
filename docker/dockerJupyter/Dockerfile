@@ -2,9 +2,9 @@ FROM rutgerhofste/conda:v02
 MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
 
 # Create python virtualenv in Conda
-RUN conda create -n python2 python=2.7 anaconda -y
-RUN conda create -n python3 python=3.6 anaconda -y
-RUN conda create -n python3arc python=3.6 anaconda -y
+RUN conda create -n python2 python=2.7 pandas -y
+RUN conda create -n python3 python=3.6 pandas -y
+RUN conda create -n python3arc python=3.6 pandas -y
 
 # install packages
 RUN source activate python3arc

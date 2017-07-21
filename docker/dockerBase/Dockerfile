@@ -7,16 +7,9 @@ ADD requirementsPython2.txt .
 ADD requirementsPython3.txt .
 ADD requirementsPython3arc.txt .
 
-RUN source activate python2
 RUN conda install --name python2 -r requirementsPython2.txt
-
-RUN source activate python3
 RUN conda install --name python3 -r requirementsPython3.txt
-
-RUN source activate python3arc
 RUN conda install --name python3arc -r requirementsPython3arc.txt
-
-
 
 # RUN apt-get install python-gdal -y
 
