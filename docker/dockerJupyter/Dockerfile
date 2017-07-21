@@ -1,24 +1,15 @@
-FROM rutgerhofste/conda:v02
+FROM rutgerhofste/conda:v03
 MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
 
-ENV PATH /opt/conda/bin:$PATH
+ENV PATH /root/anaconda3/bin:$PATH
 
 # Create python virtualenv in Conda
-RUN conda create -n python2 python=2.7 pandas -y
-RUN conda create -n python3 python=3.6 pandas -y
-RUN conda create -n python3arc python=3.6 pandas -y
+RUN conda create -n python2 python=2.7 anaconda -y
+RUN conda create -n python3 python=3.6 anaconda -y
+RUN conda create -n python3arc python=3.6 anaconda -y
 
-# install packages
-# RUN conda install --name python3arc -c esri arcgis -y
-# RUN jupyter nbextension enable arcgis --py --sys-prefix
-
-# Register kernels in Ipython 
-RUN source activate python2 
-RUN python -m ipykernel install --user --name Python2 --display-name "Python2 (conda)"
-RUN source activate python3  
-RUN python -m ipykernel install --user --name Python3 --display-name "Python3 (conda)"
-RUN source activate python3arc
-RUN python -m ipykernel install --user --name Python3arc --display-name "Python3arc (conda)"
+# https://docs.continuum.io/anaconda/user-guide/tasks/use-jupyter-notebook-extensions
+RUN conda install nb_conda -y
 
 # check kernels and installs
 # jupyter kernelspec list

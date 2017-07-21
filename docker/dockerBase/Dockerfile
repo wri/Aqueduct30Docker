@@ -11,6 +11,10 @@ RUN conda install --name python2 -r requirementsPython2.txt
 RUN conda install --name python3 -r requirementsPython3.txt
 RUN conda install --name python3arc -r requirementsPython3arc.txt
 
+# install packages
+# RUN conda install --name python3arc -c esri arcgis -y
+# RUN jupyter nbextension enable arcgis --py --sys-prefix
+
 # RUN apt-get install python-gdal -y
 
 VOLUME /volumes/data

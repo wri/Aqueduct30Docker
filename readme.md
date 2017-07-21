@@ -1,4 +1,5 @@
 # Aqueduct 3.0 Data Processing workflow
+## A modern geospatial analysis setup based on Jupyter
 
 View this readme on Github: https://github.com/rutgerhofste/Aqueduct30Docker
 
@@ -91,22 +92,15 @@ for this I reccomend using the tutorials that are available on Amazon's and Goog
         1. If you are within a VPC, allow IP addresses to be set  
         Auto-assign Public IP = enable
         2. Under advanced details, set user data to as file and upload the startup.sh script from the /other folder on Github.
-        
- 3. 
-
-
-* add startup.sh to user data during setup in EC2
-
-* you will nedd sigificant storage. I used 200GB of SSD storage ($)
-
-* Set up the appropriate security rules to open your instance for various connection methods, SSH, HTTPS, SCP etc.
-
-* for now I opened the instance to all traffic coming from WRI's US IP address 
-
-* we will setup HTTPS access after we spin up our notebook
-
-
-2. Connect to your instance using SSH
+    4. in step 4) add storage
+    	depending on the steps in the data process, we recommend setting the size to 200GB.  
+    	[calculate costs](https://calculator.s3.amazonaws.com/index.html)
+    5. in step 5) add tags  
+    	optionally you can set a name for your instance
+    6. in step 6) Set the appropriate security rules.  
+    	This is a crucial step. Eventually we will communicate over SSH (port 22) and HTTPS (port 443). You can whitelist your IP address or allow traffic from everywhere. As a minimum you need to allow SSH and HTTPS from your IP address. If you want to do testing with HTTP you can temporarily allow HTTP (port 80) traffic.
+    7. Launch your instance
+3. Connect to your instance using SSH
 http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html  
 http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html 
 

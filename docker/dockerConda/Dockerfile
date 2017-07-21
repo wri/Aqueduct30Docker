@@ -6,9 +6,7 @@ RUN apt-get install -y git
 RUN apt-get install wget
 RUn apt-get install bzip2
 
-RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/archive/Anaconda3-4.4.0-Linux-x86_64.sh -O ~/anaconda.sh && \
-    /bin/bash ~/anaconda.sh -b -p /opt/conda && \
-    rm ~/anaconda.sh
+RUN wget https://repo.continuum.io/archive/Anaconda3-4.4.0-Linux-x86_64.sh
+RUN bash Anaconda3-4.4.0-Linux-x86_64.sh -b
 
-ENV PATH /opt/conda/bin:$PATH
+ENV PATH /root/anaconda3/bin:$PATH
