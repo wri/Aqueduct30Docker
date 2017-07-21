@@ -88,9 +88,9 @@ for this I reccomend using the tutorials that are available on Amazon's and Goog
     2. In step 2), if your budget allows, choose T2.Medium  
     [calculate costs](https://calculator.s3.amazonaws.com/index.html)
     3. In step 3)
-        * If you are within a VPC, allow IP addresses to be set  
+        1.If you are within a VPC, allow IP addresses to be set  
           Auto-assign Public IP = enable  
-        * Under advanced, set user data, as file  
+        2. Under advanced, set user data, as file  
           Upload the startup.sh script from folder other/ 
   
 
