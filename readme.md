@@ -87,13 +87,12 @@ for this I reccomend using the tutorials that are available on Amazon's and Goog
     1. In step 1) select Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
     2. In step 2), if your budget allows, choose T2.Medium  
     [calculate costs](https://calculator.s3.amazonaws.com/index.html)
-    3. In step 3)
-        1.If you are within a VPC, allow IP addresses to be set  
-          Auto-assign Public IP = enable  
-        2. Under advanced, set user data, as file  
-          Upload the startup.sh script from folder other/ 
-  
-
+    3. In step 3) make sure
+        1. If you are within a VPC, allow IP addresses to be set  
+        Auto-assign Public IP = enable
+        2. Under advanced details, set user data to as file and upload the startup.sh script from the /other folder on Github.
+        
+ 3. 
 
 
 * add startup.sh to user data during setup in EC2
