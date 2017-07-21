@@ -1,6 +1,8 @@
 FROM rutgerhofste/conda:v02
 MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
 
+ENV PATH /opt/conda/bin:$PATH
+
 # Create python virtualenv in Conda
 RUN conda create -n python2 python=2.7 pandas -y
 RUN conda create -n python3 python=3.6 pandas -y
