@@ -12,7 +12,7 @@ ENV PATH /root/anaconda3/bin:$PATH
 # RUN conda install --name python3arc -c esri arcgis -y
 # RUN jupyter nbextension enable arcgis --py --sys-prefix
 
-RUN conda install --name python2 jupyter -y 
+# RUN conda install --name python2 jupyter -y 
 # RUN conda install --name python3 jupyter -y
 # RUN conda install --name python3arc jupyter -y 
 
