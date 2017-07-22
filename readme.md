@@ -101,9 +101,10 @@ for this I reccomend using the tutorials that are available on Amazon's and Goog
     	This is a crucial step. Eventually we will communicate over SSH (port 22) and HTTPS (port 443). You can whitelist your IP address or allow traffic from everywhere. As a minimum you need to allow SSH and HTTPS from your IP address. If you want to do testing with HTTP you can temporarily allow HTTP (port 80) traffic.
     7. Launch your instance
 3. Connect to your instance using SSH
-http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html  
-http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html 
+[Connect to your instance](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)  
+For windows [PUTTY](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html) is recommended, for Mac and Linux you can use your terminal. 
 
+4. Once logged in into your system  
 check if docker is installed
 `docker version`
 
@@ -261,4 +262,6 @@ copy files to container
 docker run -it -p 8888:8888 testjupyter:v01 bash
 
 cd /usr/local/bin/
+
+docker images -q --filter "dangling=true" | xargs -r docker rmi
 
