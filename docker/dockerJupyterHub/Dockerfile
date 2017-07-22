@@ -1,9 +1,7 @@
-FROM rutgerhofste/condajupyter:v16ubuntu
+FROM rutgerhofste/jupyter:v01
 MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
 
-ENV PATH /root/anaconda3/bin:$PATH
-
-EXPOSE 8000
+ENV PATH /opt/anaconda3/bin:$PATH
 
 RUN conda install -c conda-forge jupyterhub -y
 RUN conda install notebook -y

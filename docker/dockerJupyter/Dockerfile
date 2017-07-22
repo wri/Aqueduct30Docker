@@ -1,7 +1,7 @@
-FROM rutgerhofste/conda:v03
+FROM rutgerhofste/conda:v06
 MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
 
-ENV PATH /root/anaconda3/bin:$PATH
+ENV PATH /opt/anaconda3/bin:$PATH
 
 # https://docs.continuum.io/anaconda/user-guide/tasks/use-jupyter-notebook-extensions
 RUN conda install nb_conda -y
@@ -29,6 +29,3 @@ RUN jupyter nbextension enable --py --sys-prefix widgetsnbextension
 # 	/root/anaconda3/bin/jupyter
 # check kernels and installs
 # 	jupyter kernelspec list
-
-
-EXPOSE 8888
