@@ -8,8 +8,8 @@ RUN conda install nb_conda -y
 
 # Create python virtualenv in Conda
 RUN conda create -n python2 python=2.7 anaconda -y
-#RUN conda create -n python3 python=3.6 anaconda -y
-#RUN conda create -n python3arc python=3.6 anaconda -y
+RUN conda create -n python3 python=3.6 anaconda -y
+RUN conda create -n python3arc python=3.6 anaconda -y
 
 # install packages
 # RUN conda install --name python3arc -c esri arcgis -y
