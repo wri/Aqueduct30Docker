@@ -210,7 +210,8 @@ check images
 
 `docker rmi <imageID>`
 
-
+Windows remove none images
+FOR /f "tokens=*" %i IN ('docker images -q -f "dangling=true"') DO docker rmi %i
 
 
 Safe way:
@@ -275,9 +276,13 @@ Create certificates
 `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/jupyterhub.key -out /.keys/jupyterhub.crt`
 
 
+Set environment variables
 
-Copy latest config file 
+# Create these values: https://github.com/settings/applications/new
+export GITHUB_CLIENT_ID=from_github
+export GITHUB_CLIENT_SECRET=also_from_github
+export OAUTH_CALLBACK_URL=https://[YOURDOMAIN]/hub/oauth_callback
 
-cp /Aqueduct30Docker/jupyterhub_config.py /root/.jupyterhub/.
+Run jupyterhub in folder with jupyterhub_config.py
 
-
+`jupyterhub`
