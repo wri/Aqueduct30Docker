@@ -123,7 +123,7 @@ run your container
 in your container create a certificate by running
 
 `cd /.keys`
-`openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mykey.key -out mycert.pem`
+`openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/mykey.key -out /.keys/mycert.pem`
 
 and answer some questions needed for the certificate
 
@@ -264,4 +264,20 @@ docker run -it -p 8888:8888 testjupyter:v01 bash
 cd /usr/local/bin/
 
 docker images -q --filter "dangling=true" | xargs -r docker rmi
+
+# Jupyter Hub 
+
+`docker run -it -p 8000:8000 rutgerhofste/jupyterhub:v02 bash`
+
+clone latest git repo
+
+Create certificates
+`openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/jupyterhub.key -out /.keys/jupyterhub.crt`
+
+
+
+Copy latest config file 
+
+cp /Aqueduct30Docker/jupyterhub_config.py /root/.jupyterhub/.
+
 
