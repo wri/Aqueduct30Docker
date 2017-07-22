@@ -19,7 +19,7 @@ RUN conda create -n python2 python=2.7 anaconda -y
 #RUN conda install --name python3 jupyter -y
 #RUN conda install --name python3arc jupyter -y 
 
-# Register kernels in Ipython (not necessary if using extension)
+# Register kernels in Ipython (not necessary if using extension nb_conda)
 # RUN /root/anaconda3/envs/python2/bin/python -m ipykernel install --user --name Python2 --display-name "Python2 (conda)" 
 # RUN /root/anaconda3/envs/python3/bin/python -m ipykernel install --user --name Python3 --display-name "Python3 (conda)"
 # RUN /root/anaconda3/envs/python3arc/bin/python -m ipykernel install --user --name Python3arc --display-name "Python3arc (conda)"
