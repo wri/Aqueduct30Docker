@@ -13,3 +13,8 @@ RUN conda install notebook -y
 
 RUN python3 -m pip install oauthenticator
 
+# set system variables (see .env folder on local machine)
+# export GITHUB_CLIENT_ID=
+# export GITHUB_CLIENT_SECRET=
+# export OAUTH_CALLBACK_URL= https://PublicIP:8000/hub/oauth_callback
+
