@@ -133,7 +133,7 @@ cp /Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
 
 now start your notebook with the certificates
 
-jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/ 
+useremail=42 username=rutgerhofstee message="created new notebook" jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/ 
 
 Now go to 
 
