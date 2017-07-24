@@ -7,12 +7,12 @@ import os
 os.environ['message']
 
 
-# In[3]:
+# In[5]:
 
-os.environ['message'] = 'created new message'
+os.environ['message'] = str('created new message')
 
 
-# In[4]:
+# In[6]:
 
 get_ipython().system('echo $message')
 
