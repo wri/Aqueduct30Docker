@@ -1,14 +1,14 @@
 
 # coding: utf-8
 
-# In[8]:
+# In[17]:
+
+import os
 
 
+# In[18]:
 
-
-# In[15]:
-
-
+a = os.environ['message']
 
 
 # In[16]:
