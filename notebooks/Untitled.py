@@ -18,5 +18,5 @@ get_ipython().system('echo $message')
 
 # In[ ]:
 
-
+get_ipython().system('unset message')
 
