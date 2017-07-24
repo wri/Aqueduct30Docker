@@ -1,7 +1,3 @@
-boto3
-awscli
 pandas
-cryptography 
-google-api-python-client
-earthengine-api
+cryptography
 netcdf4
