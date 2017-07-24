@@ -530,8 +530,8 @@ def post_save(model, os_path, contents_manager):
     # check_call(['git','config','--global','user.name',username])
     try:
         check_call(['git', 'add','.'])
-	    check_call(['git', 'commit','-m',$message])
-	    check_call(['git','push','origin','master'])
+        check_call(['git', 'commit','-m',str(message)])
+        check_call(['git','push','origin','master'])
     except:
         print("Error, file not pushed to github")
 # -------------- End Added by Rutger Hofste --------------------
