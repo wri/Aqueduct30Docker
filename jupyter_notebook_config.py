@@ -521,7 +521,8 @@ def post_save(model, os_path, contents_manager):
         return # only do this for notebooks
     d, fname = os.path.split(os_path)
     check_call(['ipython', 'nbconvert', '--to', 'script', fname], cwd=d)
-    check_call("export a=3")
+    check_call(['git', 'add','.'])
+    check_call(['git', 'commit','-m','"Commit form notebook"'])
 
 # -------------- End Added by Rutger Hofste --------------------
 c.FileContentsManager.post_save_hook = post_save
