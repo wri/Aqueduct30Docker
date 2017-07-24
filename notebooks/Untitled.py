@@ -16,7 +16,17 @@ get_ipython().system("export message='custom'")
 get_ipython().system('echo $message')
 
 
+# In[6]:
+
+get_ipython().system('unset $message')
+
+
+# In[7]:
+
+get_ipython().system('echo $message')
+
+
 # In[ ]:
 
-get_ipython().system('unset message')
+
 
