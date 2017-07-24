@@ -286,3 +286,20 @@ export OAUTH_CALLBACK_URL=https://[YOURDOMAIN]/hub/oauth_callback
 Run jupyterhub in folder with jupyterhub_config.py
 
 `jupyterhub`
+
+
+
+# Setup Github using SSH
+https://jdblischak.github.io/2014-09-18-chicago/novice/git/05-sshkeys.html
+
+cd ~/.ssh
+ssh-keygen -t rsa -C "rutgerhofste@gmail.com"
+
+no passphrase
+default folder
+
+cat ~/.ssh/id_rsa.pub
+
+Add on github
+
+git clone ssh://git@github.com:rutgerhofste/Aqueduct30Docker.git

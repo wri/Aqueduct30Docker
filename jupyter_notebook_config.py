@@ -527,8 +527,9 @@ def post_save(model, os_path, contents_manager):
     username = os.environ['username']
     message = os.environ['message']
 
-    check_call(['git','config','--global','user.email',useremail])
-    check_call(['git','config','--global','user.name',username])
+    # unnecessary if using SSH
+    # check_call(['git','config','--global','user.email',useremail])
+    # check_call(['git','config','--global','user.name',username])
 
     check_call(['git', 'add','.'])
     check_call(['git', 'commit','-m','"Commit from notebook, no message"'])
