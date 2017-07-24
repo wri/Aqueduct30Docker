@@ -532,7 +532,7 @@ def post_save(model, os_path, contents_manager):
 
     check_call(['git', 'add','.'])
     check_call(['git', 'commit','-m','"Commit from notebook, no message"'])
-
+    check_call(['git','push','origin','master'])
 # -------------- End Added by Rutger Hofste --------------------
 c.FileContentsManager.post_save_hook = post_save
 
