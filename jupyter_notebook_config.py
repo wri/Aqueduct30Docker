@@ -529,10 +529,11 @@ def post_save(model, os_path, contents_manager):
     # check_call(['git','config','--global','user.name',username])
     try:
         check_call(['git', 'add','.'])
-        check_call(['git', 'commit','-m',os.environ['message']])
+        check_call(['git', 'commit','-m','Saved in browser'])
+        # if you want to manually specify name of 
         check_call(['git','push','origin','master'])
     except:
-        print("Error, file not pushed to github")
+        print("Error, file not pushed to github, did you specify a message?")
 # -------------- End Added by Rutger Hofste --------------------
 c.FileContentsManager.post_save_hook = post_save
 
