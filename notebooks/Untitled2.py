@@ -11,9 +11,14 @@ import os
 print(os.environ["message"])
 
 
-# In[3]:
+# In[4]:
 
-os.environ["message"] = "test2"
+os.environ["message"] = "test3"
+
+
+# In[5]:
+
+print(os.environ["message"])
 
 
 # In[ ]:
