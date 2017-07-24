@@ -3,17 +3,17 @@
 
 # In[8]:
 
-get_ipython().system('echo $message')
 
 
-# In[9]:
 
-get_ipython().system("export message='new message'")
+# In[15]:
 
 
-# In[11]:
 
-get_ipython().system('cat message')
+
+# In[16]:
+
+
 
 
 # In[6]:
