@@ -9,6 +9,10 @@ apt install docker.io -y
 
 apt install docker-compose -y
 
+apt-get install screen
+
+apt-get install nano
+
 dockerd
 
 # needs restart to take effect, use sudo docker .... if you don't want to restart your instance
@@ -18,3 +22,4 @@ service docker start
 
 # Run docker container in detached mode (-d) on port internal 8888 and forward to port 8888 (-p 8888:8888) 
 #docker run -d -p 8888:8888 rutgerhofste/aqueduct30:v11
+
