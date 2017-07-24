@@ -21,6 +21,11 @@ os.environ["message"] = "test3"
 print(os.environ["message"])
 
 
+# In[6]:
+
+get_ipython().system(' echo $message')
+
+
 # In[ ]:
 
 
