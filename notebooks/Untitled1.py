@@ -8,6 +8,11 @@ print(42)
 
 # some text
 
+# In[3]:
+
+get_ipython().system('echo $message')
+
+
 # In[ ]:
 
 
