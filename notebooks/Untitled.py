@@ -11,19 +11,14 @@ import os
 a = os.environ['message']
 
 
-# In[16]:
+# In[19]:
+
+os.environ['message'] = 'New Message'
 
 
+# In[20]:
 
-
-# In[6]:
-
-
-
-
-# In[7]:
-
-
+get_ipython().system('echo $message')
 
 
 # In[ ]:
