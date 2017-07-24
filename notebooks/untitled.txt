@@ -1,6 +1,0 @@
-The numbers correspond to the schematic on github: 
-
-https://github.com/rutgerhofste/Aqueduct30Docker
-
-https://docs.google.com/drawings/d/1IjTVlQUHNYj2w0zrS8SK
-
