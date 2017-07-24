@@ -1,29 +1,29 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[8]:
 
 get_ipython().system('echo $message')
 
 
-# In[2]:
+# In[9]:
 
-get_ipython().system("export message='custom'")
+get_ipython().system("export message='new message'")
 
 
-# In[3]:
+# In[11]:
 
-get_ipython().system('echo $message')
+get_ipython().system('cat message')
 
 
 # In[6]:
 
-get_ipython().system('unset $message')
+
 
 
 # In[7]:
 
-get_ipython().system('echo $message')
+
 
 
 # In[ ]:
