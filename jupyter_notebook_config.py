@@ -530,7 +530,7 @@ def post_save(model, os_path, contents_manager):
     try:
         check_call(['git', 'add','.'])
         check_call(['git', 'commit','-m','Saved in Jupyter (browser)'])
-        # if you want to manually specify name of 
+        # I went for a standard message in Jupyter Browser. More advanced users can use the terminal window and commit from there (incl. custom message)
         check_call(['git','push','origin','master'])
     except:
         print("Error, file not pushed to github, did you specify a message?")
