@@ -1,4 +1,4 @@
-FROM rutgerhofste/jupyter:v03
+FROM rutgerhofste/jupyter:v02
 MAINTAINER Rutger Hofste <rutgerhofste@gmail.com>
 
 RUN apt-get install libffi-dev libssl-dev -y

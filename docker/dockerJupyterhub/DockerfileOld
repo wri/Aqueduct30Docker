@@ -1,0 +1,6 @@
+FROM rutgerhofste/condajupyter:v16ubuntu
+MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
+
+ENV PATH /root/anaconda3/bin:$PATH
+
+EXPOSE 8000
