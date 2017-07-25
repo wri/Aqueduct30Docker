@@ -533,7 +533,7 @@ def post_save(model, os_path, contents_manager):
         # I went for a standard message in Jupyter Browser. More advanced users can use the terminal window and commit from there (incl. custom message)
         check_call(['git','push','origin','master'])
     except:
-        print("Error, file not pushed to github, did you specify a message?")
+        print("Error, file not pushed to github, try pushing from terminal")
 # -------------- End Added by Rutger Hofste --------------------
 c.FileContentsManager.post_save_hook = post_save
 
