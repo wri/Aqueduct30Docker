@@ -19,7 +19,7 @@ RUN conda install --name python2 -c conda-forge google-api-python-client
 RUN conda install --name python2 -c tylerickson earthengine-api
 
 RUN conda install --name python3arc -c esri arcgis -y
-RUN jupyter nbextension enable arcgis --py --sys-prefix
+# RUN jupyter nbextension enable arcgis --py --sys-prefix
 
 RUN conda install jupyter -y
 RUN conda install nb_conda -y
