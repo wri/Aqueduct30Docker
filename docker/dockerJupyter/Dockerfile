@@ -1,4 +1,4 @@
-FROM rutgerhofste/conda:v06
+FROM rutgerhofste/conda:latest
 MAINTAINER Rutger Hofste <rutger.hofste@wri.org>
 
 ENV PATH /opt/anaconda3/bin:$PATH
@@ -7,12 +7,13 @@ ENV PATH /opt/anaconda3/bin:$PATH
 RUN conda install nb_conda -y
 
 # Create python virtualenv in Conda
-RUN conda create -n python2 python=2.7 anaconda -y
-RUN conda create -n python3 python=3.6 anaconda -y
-RUN conda create -n python3arc python=3.6 anaconda -y
+RUN conda create -n python27 python=2.7 -y
+RUN conda create -n python35 python=3.5 -y
+RUN conda create -n python36 python=3.6 -y
+RUN conda create -n python36arc python=3.6 -y
 
 # install packages
-RUN conda install --name python3arc -c esri arcgis -y
+RUN conda install --name python36arc -c esri arcgis -y
 # RUN jupyter nbextension enable arcgis --py --sys-prefix
 
 VOLUME /volumes/data
