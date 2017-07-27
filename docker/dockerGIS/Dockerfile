@@ -1,4 +1,4 @@
-FROM rutgerhofste/jupyter:v02
+FROM rutgerhofste/jupyter:latest
 MAINTAINER Rutger Hofste <rutgerhofste@gmail.com>
 
 RUN apt-get install dialog apt-utils -y
@@ -23,7 +23,7 @@ ADD requirementsPython36arc.txt .
 RUN conda install --name python27 --file requirementsPython27.txt
 RUN conda install --name python35 --file requirementsPython35.txt
 RUN conda install --name python36 --file requirementsPython36.txt
-RUN conda install --name python36arc --file requirementsPython3arc.txt
+RUN conda install --name python36arc --file requirementsPython36arc.txt
 
 # Conda Forge Channel
 RUN conda install --name python27 -c conda-forge google-api-python-client
