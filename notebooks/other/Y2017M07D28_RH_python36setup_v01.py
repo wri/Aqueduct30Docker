@@ -1,39 +1,37 @@
 
 # coding: utf-8
 
-# # Test Python 27 setup
+# # Test Python 36 setup
 # 
-# * Purpose of script: test python 27 environement against several libraries  
+# * Purpose of script: test python 36 environement against several libraries  
 # * Author: Rutger Hofste
-# * Kernel used: python27
+# * Kernel used: python35
 # * Date created: 20170728
-# 
-# 
 
-# In[3]:
+# In[1]:
 
 packages = {"earth engine":-1,"gdal":-1,"geopandas":-1,"arcgis":-1}
 
 
-# In[6]:
+# In[2]:
 
 try:
     import ee
     packages["earth engine"]=1
 except:
-    packages["earth engine"]=0    
+    packages["earth engine"]=0  
 
 
-# In[4]:
+# In[3]:
 
 try:
     from osgeo import gdal
     packages["gdal"]=1
 except:
-    packages["gdal"]=0    
+    packages["gdal"]=0   
 
 
-# In[10]:
+# In[4]:
 
 try:
     import geopandas
@@ -42,7 +40,7 @@ except:
     packages["geopandas"]=0 
 
 
-# In[11]:
+# In[5]:
 
 try:
     import arcgis.gis
@@ -51,12 +49,7 @@ except:
     packages["arcgis"]=0 
 
 
-# In[12]:
+# In[6]:
 
 print(packages)
-
-
-# In[ ]:
-
-
 
