@@ -40,7 +40,8 @@ RUN conda install --name python36 -c conda-forge geopandas -y
 
 
 RUN conda install --name python36arc -c esri arcgis -y
-# RUN jupyter nbextension enable arcgis --py --sys-prefix
+RUN conda install -c esri arcgis -y
+RUN jupyter nbextension enable arcgis --py --sys-prefix
 
 RUN conda install jupyter -y
 RUN conda install nb_conda -y
