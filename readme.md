@@ -130,7 +130,9 @@ and answer some questions needed for the certificate
 Setup SSH access keys:
 https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
 
-`cat id_rsa.pub`
+`ssh-keygen -t rsa -b 4096 -C "rutgerhofste@gmail.com"`
+
+`cat /root/.ssh/id_rsa.pub`
 
 
 Clone (using SSH) to get the appropriate config file. 
@@ -141,6 +143,7 @@ Clone (using SSH) to get the appropriate config file.
 
 Copy config file that includes password and SSL for HTTPS
 
+# no longer required
 cp /Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
 
 now start your notebook with the certificates
