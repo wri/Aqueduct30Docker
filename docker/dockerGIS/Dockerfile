@@ -31,11 +31,9 @@ RUN conda install --name python35 --file requirementsPython35.txt
 RUN conda install --name python36 --file requirementsPython36.txt
 RUN conda install --name python36arc --file requirementsPython36arc.txt
 
-RUN conda install --name python27 gdal -y
-
-# Conda Forge Channel
-RUN conda install --name python27 -c conda-forge google-api-python-client
-RUN conda install --name python27 -c tylerickson earthengine-api
+# Conda Forge Channel (doesn't work)
+# RUN conda install --name python27 -c conda-forge google-api-python-client -y
+# RUN conda install --name python27 -c tylerickson earthengine-api -y
 
 RUN conda install --name python35 -c conda-forge geopandas -y
 RUN conda install --name python36 -c conda-forge geopandas -y
@@ -62,5 +60,6 @@ RUN apt-get install python-gdal -y
 RUN conda install --name python27 gdal -y
 RUN conda install --name python35 gdal -y
 
+RUN conda install -y --name python27 --channel bcbio oauth2client
 
-
+RUN conda clean -yt
