@@ -10,9 +10,9 @@
 # 
 # 
 
-# In[ ]:
+# In[4]:
 
-packages = {""}
+packages = ["earth engine","gdal","geopandas",""]
 
 
 # In[2]:
@@ -30,9 +30,9 @@ except:
     
 
 
-# In[3]:
+# In[5]:
 
-print(gdal)
+print(packages)
 
 
 # In[ ]:
