@@ -34,7 +34,7 @@ RUN conda install --name python36arc --file requirementsPython36arc.txt
 RUN [ "/bin/bash", "-c", "source activate python27 && pip install google-api-python-client" ] 
 RUN [ "/bin/bash", "-c", "source activate python27 && pip install earthengine-api" ]
 
-#make command line tool accessible to root
+# make command line tool accessible to root
 RUN pip install google-api-python-client
 RUN pip install earthengine-api
 
