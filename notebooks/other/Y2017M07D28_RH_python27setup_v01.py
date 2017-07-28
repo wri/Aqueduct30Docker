@@ -12,7 +12,7 @@
 
 # In[4]:
 
-packages = ["earth engine","gdal","geopandas",""]
+packages = ["earth engine","gdal","geopandas","Arcgis"]
 
 
 # In[2]:
