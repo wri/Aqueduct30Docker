@@ -61,7 +61,7 @@ For windows it requires some additional steps.
 you can check if docker is installed by typing `docker -v` in your terminal or command prompt  
 
 3. Run a Docker Container:  
-`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/aqueduct30:v01 bash`  
+`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gis:latest bash`  
 This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. 
 
 4. Update the git repository  
@@ -127,13 +127,25 @@ in your container create a certificate by running
 
 and answer some questions needed for the certificate
 
+Setup SSH access keys:
+https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
+
+`cat id_rsa.pub`
+
+
+Clone (using SSH) to get the appropriate config file. 
+
+`cd /`
+
+`git clone git@github.com:rutgerhofste/Aqueduct30Docker.git`
+
 Copy config file that includes password and SSL for HTTPS
 
 cp /Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
 
 now start your notebook with the certificates
 
-jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/ 
+jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/ --config=/Aqueduct30Docker/jupyter_notebook_config.py
 
 Now go to 
 
