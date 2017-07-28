@@ -31,9 +31,12 @@ RUN conda install --name python35 --file requirementsPython35.txt
 RUN conda install --name python36 --file requirementsPython36.txt
 RUN conda install --name python36arc --file requirementsPython36arc.txt
 
-# Conda Forge Channel (doesn't work)
-# RUN conda install --name python27 -c conda-forge google-api-python-client -y
-# RUN conda install --name python27 -c tylerickson earthengine-api -y
+RUN [ "/bin/bash", "-c", "source activate python27 && pip install google-api-python-client" ] 
+RUN [ "/bin/bash", "-c", "source activate python27 && pip install earthengine-api" ]
+
+#make command line tool accessible to root
+RUN pip install google-api-python-client
+RUN pip install earthengine-api
 
 RUN conda install --name python35 -c conda-forge geopandas -y
 RUN conda install --name python36 -c conda-forge geopandas -y
@@ -59,7 +62,5 @@ RUN apt-get install python-gdal -y
 
 RUN conda install --name python27 gdal -y
 RUN conda install --name python35 gdal -y
-
-RUN conda install -y --name python27 --channel bcbio oauth2client
 
 RUN conda clean -yt
