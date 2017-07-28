@@ -31,13 +31,14 @@ RUN conda install --name python35 --file requirementsPython35.txt
 RUN conda install --name python36 --file requirementsPython36.txt
 RUN conda install --name python36arc --file requirementsPython36arc.txt
 
+RUN conda install --name python27 gdal -y
+
 # Conda Forge Channel
 RUN conda install --name python27 -c conda-forge google-api-python-client
 RUN conda install --name python27 -c tylerickson earthengine-api
 
 RUN conda install --name python35 -c conda-forge geopandas -y
 RUN conda install --name python36 -c conda-forge geopandas -y
-
 
 RUN conda install --name python36arc -c esri arcgis -y
 RUN conda install -c esri arcgis -y
@@ -54,3 +55,12 @@ RUN sed -i 's/# en_US.UTF-8 en_US.UTF-8/en_US.UTF-8-8 UTF-8/' /etc/locale.gen
 RUN locale-gen en_US.UTF-8 
 
 RUN apt-get install tmux -y
+
+# freaking GDAL, always GDAL
+RUN apt-get install python-gdal -y
+
+RUN conda install --name python27 gdal -y
+RUN conda install --name python35 gdal -y
+
+
+
