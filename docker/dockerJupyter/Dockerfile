@@ -14,9 +14,3 @@ RUN mkdir /.keys
 RUN chmod 400 /.keys
 
 RUN jupyter nbextension enable --py --sys-prefix widgetsnbextension
-
-# Cheatsheet 
-# Standard jupyter 
-# 	/root/anaconda3/bin/jupyter
-# check kernels and installs
-# 	jupyter kernelspec list
