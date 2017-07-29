@@ -1,3 +1,0 @@
-pandas
-cryptography
-netcdf4
