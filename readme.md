@@ -3,7 +3,9 @@
 # Aqueduct 3.0 Data Processing workflow
 ## A modern geospatial analysis setup based on Jupyter
 
-View this readme on Github: https://github.com/rutgerhofste/Aqueduct30Docker
+View this readme on Github: https://github.com/rutgerhofste/Aqueduct30Docker  
+
+Docker Hub: https://hub.docker.com/u/rutgerhofste/  
 
 this document explains each and every step for the data processing of Aqueduct 3.0. Everything is here, from raw data to code to explanation. We also epxlain how you could replicate the calculations on your local machine or in a cloud environment. 
 
@@ -63,7 +65,7 @@ For windows it requires some additional steps.
 you can check if docker is installed by typing `docker -v` in your terminal or command prompt  
 
 3. Run a Docker Container:  
-`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gis:latest bash`  
+`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`  
 This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. 
 
 4. Update the git repository  
@@ -118,7 +120,7 @@ pull the latest image
 
 run your container 
 
-`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/aqueduct:v01 bash`
+`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`
 
 3. (recommended) Set up HTTPS access
 
