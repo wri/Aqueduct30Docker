@@ -12,30 +12,38 @@
 # 
 # Download the standard geotiff to our instance:
 
+# # Preparation
+
 # Run the following command just in case an old folder exists. _If no older folder exist you will get the error: rm: cannot remove '/volumes/data/PCRGlobWB20V01/additional/*': No such file or directory_
 
-# In[2]:
-
+# In[1]:
 
 get_ipython().system('rm -r /volumes/data/PCRGlobWB20V01/additional/*')
 
 
-# In[3]:
-
+# In[2]:
 
 get_ipython().system('aws s3 sync s3://wri-projects/Aqueduct30/rawData/WRI/samplegeotiff/ /volumes/data/PCRGlobWB20V01/additional/')
 
 
 # Check if the file is actually copied
 
+# In[3]:
+
+get_ipython().system('rm -r /volumes/data/temp*')
+
+
 # In[4]:
 
-
-get_ipython().system('ls /volumes/data/PCRGlobWB20V01/additional/')
+get_ipython().system('mkdir /volumes/data/temp')
 
 
 # In[5]:
 
+get_ipython().system('ls /volumes/data/PCRGlobWB20V01/additional/')
+
+
+# In[6]:
 
 try:
     from osgeo import ogr, osr, gdal
@@ -45,12 +53,12 @@ except:
 from netCDF4 import Dataset
 import os
 import datetime
+import subprocess
 
 
-# Specify a couple of definitions (functions)
+# # Functions
 
-# In[6]:
-
+# In[7]:
 
 def readFile(filename):
     filehandle = gdal.Open(filename)
@@ -144,82 +152,21 @@ def ncdump(nc_fid, verb=True):
 def normalizeTime(time):
     timeNormal =[]
     for i in range(0, len(time)):
+        if nc_fid.variables["time"].getncattr("units") == "Days since 1900-01-01":
+            fullDate = days_since_jan_1_1900_to_datetime(time[i])
+        elif nc_fid.variables["time"].getncattr("units") == "Days since 1901-01-01":
+            fullDate = days_since_jan_1_1901_to_datetime(time[i])
+        else:
+            print "Error"
         fullDate = days_since_jan_1_1900_to_datetime(time[i])
         timeNormal.append(fullDate)
     return timeNormal
 
 def days_since_jan_1_1900_to_datetime(d):
-    return datetime.datetime(1900,1,1) +         datetime.timedelta(days=d)
+    return datetime.datetime(1900,1,1) + datetime.timedelta(days=d)
 
-
-# In[7]:
-
-
-inputLocationSampleGeotiff = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
-
-
-# In[14]:
-
-
-[xsize,ysize,geotransform,geoproj,ZSample] = readFile(inputLocationSampleGeotiff)
-
-
-# These are the parameters of the standard geometry. 
-
-# In[15]:
-
-
-print xsize, ysize, geotransform
-
-
-# In[16]:
-
-
-NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/waterdemand"
-
-
-# Specify if you want to print metadata. This is similar to the previous step and might be redundant. 
-
-# In[24]:
-
-
-PRINT_METADATA = True
-
-
-# In[25]:
-
-
-files = os.listdir(NETCDFINPUTPATH)
-
-
-# In[26]:
-
-
-for oneFile in files:
-    netCDFInputFileName = oneFile
-    print oneFile
-    netCDFInputBaseName = netCDFInputFileName.split('.')[0]
-
-    nc_f = os.path.join(NETCDFINPUTPATH,netCDFInputFileName)
-    nc_fid = Dataset(nc_f, 'r')  # Dataset is the class behavior to open the file
-         # and create an instance of the ncCDF4 class
-    nc_attrs, nc_dims, nc_vars = ncdump(nc_fid, PRINT_METADATA)
-    parameter = nc_vars[3]
-
-    lats = nc_fid.variables['latitude'][:]  # extract/copy the data
-    lons = nc_fid.variables['longitude'][:]
-    time = nc_fid.variables['time'][:]
-    timeNormal = normalizeTime(time)
-
-
-# In[33]:
-
-
-
-
-
-# In[34]:
-
+def days_since_jan_1_1901_to_datetime(d):
+    return datetime.datetime(1901,1,1) + datetime.timedelta(days=d)
 
 def print_ncattr(key):
     """
@@ -236,16 +183,105 @@ def print_ncattr(key):
             print '\t\t%s:' % ncattr,                  repr(nc_fid.variables[key].getncattr(ncattr))
     except KeyError:
         print "\t\tWARNING: %s does not contain variable attributes" % key
+        
+def netCDFtoGeotiff(oneFile):
+    netCDFInputFileName = oneFile
+    print(oneFile)
+    netCDFInputBaseName = netCDFInputFileName.split('.')[0]
+
+    nc_f = os.path.join(NETCDFINPUTPATH,netCDFInputFileName)
+    nc_fid = Dataset(nc_f, 'r')  # Dataset is the class behavior to open the file
+         # and create an instance of the ncCDF4 class
+    nc_attrs, nc_dims, nc_vars = ncdump(nc_fid, PRINT_METADATA)
+    parameter = nc_vars[3]
+
+    lats = nc_fid.variables['latitude'][:]  # extract/copy the data
+    lons = nc_fid.variables['longitude'][:]
+    time = nc_fid.variables['time'][:]
+    timeNormal = normalizeTime(time)
+    
+    for i in range(0,len(timeNormal)):
+        print timeNormal[i].year
+        Z = nc_fid.variables[parameter][i, :, :]
+        Z[Z<-9990]= -9999
+        Z[Z>1e19] = -9999
+        outputFilename = netCDFInputBaseName + "I%0.3dY%0.2dM%0.2d.tif" %(i,timeNormal[i].year,timeNormal[i].month)
+        writefilename = os.path.join(OUTPUTPATH,outputFilename)
+        writeFile(writefilename,geotransform,geoproj,Z)
 
 
-# In[35]:
+# # Script
+
+# In[8]:
+
+NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/waterdemand"
 
 
-print_ncattr("time")
+# In[9]:
+
+PRINT_METADATA = False
+
+
+# In[10]:
+
+OUTPUTPATH = "/volumes/data/temp"
+
+
+# In[11]:
+
+inputLocationSampleGeotiff = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
+
+
+# In[12]:
+
+[xsize,ysize,geotransform,geoproj,ZSample] = readFile(inputLocationSampleGeotiff)
+
+
+# These are the parameters of the standard geometry. 
+
+# In[13]:
+
+print xsize, ysize, geotransform
+
+
+# Specify if you want to print metadata. This is similar to the previous step and might be redundant. 
+
+# In[14]:
+
+files = os.listdir(NETCDFINPUTPATH)
+
+
+# Copy PLivWN to PLivWW because Livestock Withdrawal = Livestock Consumption (see Yoshi's email'). This will solve some lookping issues in the future. 
+
+# Copies 4GB of data so takes a while
+
+# In[19]:
+
+get_ipython().system('cp /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWN_month_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWW_month_millionm3_5min_1960_2014.nc4')
+
+
+# In[20]:
+
+get_ipython().system('cp /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWN_year_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWW_year_millionm3_5min_1960_2014.nc4')
+
+
+# In[17]:
+
+for oneFile in files:
+    print oneFile
 
 
 # In[ ]:
 
+a =nc_fid.variables["time"].getncattr("units")
+
+
+# In[ ]:
+
+print(OUTPUTPATH)
+
+
+# In[ ]:
 
 
 
