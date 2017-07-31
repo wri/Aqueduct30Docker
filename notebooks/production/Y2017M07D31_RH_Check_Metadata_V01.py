@@ -31,7 +31,7 @@
 # ## CAVEATS
 #     I did not use a robust way to find the filename without extension. Filepath cannot contain periods. No error module built    in.
 
-# In[1]:
+# In[3]:
 
 
 try:
@@ -40,7 +40,7 @@ except:
     sys.exit('ERROR: cannot find GDAL/OGR modules')
 
 
-# In[2]:
+# In[4]:
 
 
 gdal.UseExceptions()
@@ -52,7 +52,7 @@ import datetime
 import math
 
 
-# In[60]:
+# In[5]:
 
 
 NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/waterdemand"
@@ -64,7 +64,7 @@ PRINT_METADATA = True
 
 # Add Definitions (functions) to the environment
 
-# In[4]:
+# In[6]:
 
 
 def ncdump(nc_fid, verb=True):
@@ -132,7 +132,7 @@ def ncdump(nc_fid, verb=True):
     return nc_attrs, nc_dims, nc_vars
 
 
-# In[5]:
+# In[7]:
 
 
 def normalizeTime(time):
@@ -143,26 +143,26 @@ def normalizeTime(time):
     return timeNormal
 
 
-# In[6]:
+# In[8]:
 
 
 def days_since_jan_1_1900_to_datetime(d):
     return datetime.datetime(1900,1,1) +         datetime.timedelta(days=d)
 
 
-# In[7]:
+# In[9]:
 
 
 files = os.listdir(NETCDFINPUTPATH)
 
 
-# In[8]:
+# In[10]:
 
 
 print "number of files: " +str(len(files))
 
 
-# In[9]:
+# In[11]:
 
 
 for oneFile in files:
@@ -201,7 +201,7 @@ for oneFile in files:
 # 
 # 
 
-# In[59]:
+# In[12]:
 
 
 print min(lats) , max(lats), min(lons), max(lons)    
@@ -209,14 +209,14 @@ print min(lats) , max(lats), min(lons), max(lons)
 
 # Number of cells 
 
-# In[12]:
+# In[13]:
 
 
 print len(lats)
 print len(lons)
 
 
-# In[16]:
+# In[14]:
 
 
 cellsize = 360.0/(len(lons))
@@ -224,7 +224,7 @@ cellsize2 = 180.0/(len(lats))
 print cellsize, cellsize2
 
 
-# In[20]:
+# In[15]:
 
 
 maxLat = max(lats)+0.5*cellsize
@@ -236,7 +236,7 @@ minLon = min(lons)-0.5*cellsize
 
 # The extent has a slight error, caused by the rounding error of the cellsize. This is due to the fact that the model uses 5 arc minute resolution and not a rational number. When creating a reference geotiff, you therefore make a slight error. 
 
-# In[23]:
+# In[16]:
 
 
 print maxLat, maxLon
@@ -249,7 +249,7 @@ print minLat, minLon
 # 
 # ArcGIS has a limited precision when storing CRS and the extent translates to (copied from ArcGIS/QGIS):
 
-# In[24]:
+# In[17]:
 
 
 maxLatArc =  090.0000025443094
@@ -261,7 +261,7 @@ maxLonArc =  179.999994912559
 
 # This yield a maximum error of (Degrees)
 
-# In[57]:
+# In[18]:
 
 
 errors = [maxLat-maxLatArc,minLat-minLatArc,maxLon-maxLonArc,minLon-minLonArc]
