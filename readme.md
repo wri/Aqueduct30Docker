@@ -265,7 +265,7 @@ git clone https://earthengine.googlesource.com/aqueduct30
 git pull origin
 
 
-# Recommanded, add HTTPS Security
+# Recommended, add HTTPS Security
 
 Run on your instance (not in docker container)
 
