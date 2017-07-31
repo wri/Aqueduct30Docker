@@ -31,8 +31,7 @@
 # ## CAVEATS
 #     I did not use a robust way to find the filename without extension. Filepath cannot contain periods. No error module built    in.
 
-# In[3]:
-
+# In[1]:
 
 try:
     from osgeo import ogr, osr, gdal
@@ -40,8 +39,7 @@ except:
     sys.exit('ERROR: cannot find GDAL/OGR modules')
 
 
-# In[4]:
-
+# In[2]:
 
 gdal.UseExceptions()
 import datetime as dt
@@ -52,20 +50,19 @@ import datetime
 import math
 
 
-# In[5]:
+# ## Settings
 
+# In[3]:
 
-NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/waterdemand"
-# you can also get the metadata for other folders. You can use the SSH terminal to list the folders. 
-
-
-PRINT_METADATA = True
+NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/"
+PRINT_METADATA = False
 
 
 # Add Definitions (functions) to the environment
 
-# In[6]:
+# ## Functions
 
+# In[7]:
 
 def ncdump(nc_fid, verb=True):
     '''
@@ -131,46 +128,33 @@ def ncdump(nc_fid, verb=True):
                 print_ncattr(var)
     return nc_attrs, nc_dims, nc_vars
 
-
-# In[7]:
-
-
 def normalizeTime(time):
     timeNormal =[]
     for i in range(0, len(time)):
+        if nc_fid.variables["time"].getncattr("units") == "Days since 1900-01-01":
+            fullDate = days_since_jan_1_1900_to_datetime(time[i])
+        elif nc_fid.variables["time"].getncattr("units") == "days since 1900-01-01 00:00:00":
+            fullDate = days_since_jan_1_1900_to_datetime(time[i])
+        elif nc_fid.variables["time"].getncattr("units") == "Days since 1901-01-01":
+            fullDate = days_since_jan_1_1901_to_datetime(time[i])
+        else:
+            print "Error"
+            print(nc_fid.variables["time"].getncattr("units"))
         fullDate = days_since_jan_1_1900_to_datetime(time[i])
         timeNormal.append(fullDate)
     return timeNormal
 
-
-# In[8]:
-
-
 def days_since_jan_1_1900_to_datetime(d):
-    return datetime.datetime(1900,1,1) +         datetime.timedelta(days=d)
+    return datetime.datetime(1900,1,1) + datetime.timedelta(days=d)
 
+def days_since_jan_1_1901_to_datetime(d):
+    return datetime.datetime(1901,1,1) + datetime.timedelta(days=d)
 
-# In[9]:
-
-
-files = os.listdir(NETCDFINPUTPATH)
-
-
-# In[10]:
-
-
-print "number of files: " +str(len(files))
-
-
-# In[11]:
-
-
-for oneFile in files:
+def printMetaData(oneFile):
     netCDFInputFileName = oneFile
     print oneFile
     netCDFInputBaseName = netCDFInputFileName.split('.')[0]
-
-    nc_f = os.path.join(NETCDFINPUTPATH,netCDFInputFileName)
+    nc_f = oneFile
     nc_fid = Dataset(nc_f, 'r')  # Dataset is the class behavior to open the file
          # and create an instance of the ncCDF4 class
     nc_attrs, nc_dims, nc_vars = ncdump(nc_fid, PRINT_METADATA)
@@ -181,16 +165,44 @@ for oneFile in files:
     time = nc_fid.variables['time'][:]
     timeNormal = normalizeTime(time)
 
-    print "Time Minimum: ", min(timeNormal), "Days since start (1901 or 1900)", min(time)
-    print "Time Maximum: ", max(timeNormal), "Days since start (1901 or 1900)", max(time)
-    print "Number of layers", len(timeNormal)
-    
-    print min(lats)
-    print max(lats)
-    print min(lons)
-    print max(lons)
-    
-    
+    #print "Time Minimum: ", min(timeNormal), "Days since start (1901 or 1900)", min(time)
+    #print "Time Maximum: ", max(timeNormal), "Days since start (1901 or 1900)", max(time)
+    #print "Number of layers", len(timeNormal)
+
+
+# In[8]:
+
+for root, dirs, files in os.walk(NETCDFINPUTPATH):
+    for file in files:
+        if file.endswith(".nc4"):
+            oneFile = os.path.join(root, file)
+            print(oneFile)
+            printMetaData(oneFile)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+nc_f = oneFile
+
+
+# In[ ]:
+
+nc_fid = Dataset(nc_f, 'r')
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+print "number of files: " +str(len(files))
 
 
 # this script was used to check the metadata. The results were copied to a texteditor and inpected. The results are not saved to disk. 
@@ -201,31 +213,27 @@ for oneFile in files:
 # 
 # 
 
-# In[12]:
-
+# In[ ]:
 
 print min(lats) , max(lats), min(lons), max(lons)    
 
 
 # Number of cells 
 
-# In[13]:
-
+# In[ ]:
 
 print len(lats)
 print len(lons)
 
 
-# In[14]:
-
+# In[ ]:
 
 cellsize = 360.0/(len(lons))
 cellsize2 = 180.0/(len(lats))
 print cellsize, cellsize2
 
 
-# In[15]:
-
+# In[ ]:
 
 maxLat = max(lats)+0.5*cellsize
 minLat = min(lats)-0.5*cellsize
@@ -236,8 +244,7 @@ minLon = min(lons)-0.5*cellsize
 
 # The extent has a slight error, caused by the rounding error of the cellsize. This is due to the fact that the model uses 5 arc minute resolution and not a rational number. When creating a reference geotiff, you therefore make a slight error. 
 
-# In[16]:
-
+# In[ ]:
 
 print maxLat, maxLon
 print minLat, minLon
@@ -249,8 +256,7 @@ print minLat, minLon
 # 
 # ArcGIS has a limited precision when storing CRS and the extent translates to (copied from ArcGIS/QGIS):
 
-# In[17]:
-
+# In[ ]:
 
 maxLatArc =  090.0000025443094
 minLatArc = -089.9999923682499
@@ -261,8 +267,7 @@ maxLonArc =  179.999994912559
 
 # This yield a maximum error of (Degrees)
 
-# In[18]:
-
+# In[ ]:
 
 errors = [maxLat-maxLatArc,minLat-minLatArc,maxLon-maxLonArc,minLon-minLonArc]
 
@@ -282,7 +287,6 @@ print "Maximum error in m: " + str(maxErrorm)
 # Done
 
 # In[ ]:
-
 
 
 

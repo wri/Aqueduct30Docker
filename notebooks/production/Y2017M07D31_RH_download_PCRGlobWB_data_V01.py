@@ -47,40 +47,55 @@ get_ipython().system('rm -r /volumes/data/PCRGlobWB20V01/')
 get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 /volumes/data/PCRGlobWB20V01/ --recursive')
 
 
-# List files downloaded 
+# List files downloaded (24 in my case)
 
-# In[3]:
+# In[9]:
 
 get_ipython().system('find /volumes/data/PCRGlobWB20V01/ -type f | wc -l')
 
 
 # As you can see there are some zipped files. Unzipping
 
-# In[ ]:
+# Unzipping the file results in a 24GB file which is signifact. Therefore this step will take quite some time
 
-Aqueduct30/processData/01PCRGlobWBV01/totalRunoff_monthTot_output.zip
+# In[10]:
+
+get_ipython().system('unzip /volumes/data/PCRGlobWB20V01/totalRunoff_monthTot_output.zip')
 
 
-# Back to Python
+# The total number of files should be around 25 but can change if the raw data changed. 
 
-# In[6]:
+# In[17]:
+
+get_ipython().system('ls -lah /volumes/data/PCRGlobWB20V01/')
+
+
+# In the data that Yoshi provided there is only Livestock data for consumption (WN). However in an email he specified that the withdrawal (WW) equals the consumption (100% consumption) for livestock. Therefore we copy the WN Livestock files to WW to make looping over WN and WW respectively easier. 
+
+# In[18]:
+
+get_ipython().system('cp /volumes/data/PCRGlobWB20V01/global_historical_PLivWN_month_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/global_historical_PLivWW_month_millionm3_5min_1960_2014.nc4')
+
+
+# In[19]:
+
+get_ipython().system('cp /volumes/data/PCRGlobWB20V01/global_historical_PLivWN_year_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/global_historical_PLivWW_year_millionm3_5min_1960_2014.nc4')
+
+
+# In[20]:
+
+get_ipython().system('ls -lah /volumes/data/PCRGlobWB20V01/')
+
+
+# In[21]:
 
 import os
-
-
-# In[7]:
-
-pathName = "/volumes/data/PCRGlobWB20V01/waterdemand"
-
-
-# In[8]:
-
+pathName = "/volumes/data/PCRGlobWB20V01/"
 files = os.listdir(pathName)
+print("Number of files: " + str(len(files)))
 
 
-# In[9]:
-
-print "Number of files: " + str(len(files))
+# In[ ]:
 
 
-# The total number of files should be 14. If your number of files is different, try running the first command (aws s3 sync) in a terminal. Remove any partially downloaded files. 
+

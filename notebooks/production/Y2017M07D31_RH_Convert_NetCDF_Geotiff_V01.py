@@ -56,6 +56,26 @@ import datetime
 import subprocess
 
 
+# # Settings
+
+# In[30]:
+
+NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/"
+PRINT_METADATA = False
+OUTPUTPATH = "/volumes/data/temp"
+inputLocationSampleGeotiff = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
 # # Functions
 
 # In[7]:
@@ -157,7 +177,7 @@ def normalizeTime(time):
         elif nc_fid.variables["time"].getncattr("units") == "Days since 1901-01-01":
             fullDate = days_since_jan_1_1901_to_datetime(time[i])
         else:
-            print "Error"
+            print "!!!!!!!!!!!!!!Error!!!!!!!!!!!!!!!!"
         fullDate = days_since_jan_1_1900_to_datetime(time[i])
         timeNormal.append(fullDate)
     return timeNormal
@@ -214,22 +234,7 @@ def netCDFtoGeotiff(oneFile):
 
 # In[21]:
 
-NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/"
 
-
-# In[9]:
-
-PRINT_METADATA = False
-
-
-# In[10]:
-
-OUTPUTPATH = "/volumes/data/temp"
-
-
-# In[11]:
-
-inputLocationSampleGeotiff = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
 
 
 # In[12]:
