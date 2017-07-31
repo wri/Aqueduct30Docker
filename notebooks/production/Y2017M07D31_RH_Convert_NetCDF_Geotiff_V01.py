@@ -43,7 +43,7 @@ get_ipython().system('mkdir /volumes/data/temp')
 get_ipython().system('ls /volumes/data/PCRGlobWB20V01/additional/')
 
 
-# In[6]:
+# In[25]:
 
 try:
     from osgeo import ogr, osr, gdal
@@ -212,9 +212,9 @@ def netCDFtoGeotiff(oneFile):
 
 # # Script
 
-# In[8]:
+# In[21]:
 
-NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/waterdemand"
+NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/"
 
 
 # In[9]:
@@ -246,11 +246,6 @@ print xsize, ysize, geotransform
 
 # Specify if you want to print metadata. This is similar to the previous step and might be redundant. 
 
-# In[14]:
-
-files = os.listdir(NETCDFINPUTPATH)
-
-
 # Copy PLivWN to PLivWW because Livestock Withdrawal = Livestock Consumption (see Yoshi's email'). This will solve some lookping issues in the future. 
 
 # Copies 4GB of data so takes a while
@@ -265,10 +260,13 @@ get_ipython().system('cp /volumes/data/PCRGlobWB20V01/waterdemand/global_histori
 get_ipython().system('cp /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWN_year_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWW_year_millionm3_5min_1960_2014.nc4')
 
 
-# In[17]:
+# In[28]:
 
-for oneFile in files:
-    print oneFile
+for root, dirs, files in os.walk(NETCDFINPUTPATH):
+    for file in files:
+        if file.endswith(".nc4"):
+            oneFile = os.path.join(root, file)
+                
 
 
 # In[ ]:
@@ -279,6 +277,11 @@ a =nc_fid.variables["time"].getncattr("units")
 # In[ ]:
 
 print(OUTPUTPATH)
+
+
+# In[24]:
+
+
 
 
 # In[ ]:
