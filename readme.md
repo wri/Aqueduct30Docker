@@ -112,10 +112,8 @@ For windows [PUTTY](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.htm
 check if docker is installed
 `docker version`
 
-1. download the latest docker image for aqueduct. Check https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=rutgerhofste&starCount=0  
-
+1. download the latest docker image for aqueduct. Check https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=rutgerhofste&starCount=0
 run your container  
-
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`
 
 1. (recommended) Set up HTTPS access
