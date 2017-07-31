@@ -103,7 +103,7 @@ for this I reccomend using the tutorials that are available on Amazon's and Goog
     	optionally you can set a name for your instance
     1. in step 6) Set the appropriate security rules.  
     	This is a crucial step. Eventually we will communicate over SSH (port 22) and HTTPS (port 443). You can whitelist your IP address or allow traffic from everywhere. As a minimum you need to allow SSH and HTTPS from your IP address. If you want to do testing with HTTP you can temporarily allow HTTP (port 80) traffic.
-    7. Launch your instance
+    1. Launch your instance
 1. Connect to your instance using SSH
 [Connect to your instance](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)  
 For windows [PUTTY](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html) is recommended, for Mac and Linux you can use your terminal. 
@@ -112,13 +112,9 @@ For windows [PUTTY](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.htm
 check if docker is installed
 `docker version`
 
-download the latest docker image for aqueduct. Check https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=rutgerhofste&starCount=0
+1. download the latest docker image for aqueduct. Check https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=rutgerhofste&starCount=0  
 
-pull the latest image 
-
-`docker pull rutgerhofste/xxx:vxx`
-
-run your container 
+run your container  
 
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`
 
@@ -128,44 +124,43 @@ in your container create a certificate by running
 
 `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/mykey.key -out /.keys/mycert.pem`
 
-and answer some questions needed for the certificate
+and answer some questions needed for the certificate  
 
-Setup SSH access keys:
+1. Optional: Setup SSH access keys:  
 https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
 
 `ssh-keygen -t rsa -b 4096 -C "rutgerhofste@gmail.com"`
 
 `cat /root/.ssh/id_rsa.pub`
 
+1. Clone your repo in a new folder    
+`mkdir /volumes/repos`  
+`cd /volumes/repos`  
+If you setup github SSH (see above):  
+`git clone git@github.com:rutgerhofste/Aqueduct30Docker.git`  
+otherwise:  
+`git clone https://github.com/rutgerhofste/Aqueduct30Docker.git`  
+You might have to specify credentials.  
 
-Clone (using SSH) to get the appropriate config file. 
+1. Specify who you are by running 
 
-`cd /`
-
-`git clone git@github.com:rutgerhofste/Aqueduct30Docker.git`
 
 Copy config file that includes password and SSL for HTTPS
 
-# no longer required  
-cp /Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
+1. Start your notebook with the certificates
 
-now start your notebook with the certificates
+`jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /volumes/repos/Aqueduct30Docker/ --config=/volumes/repos/Aqueduct30Docker/jupyter_notebook_config.py`  
 
-jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /Aqueduct30Docker/ --config=/Aqueduct30Docker/jupyter_notebook_config.py
-
-Now go to 
-
+1. in your browser you can go to: 
 https://<your public IP address>:8888
 
-your browser will give you a warning because you are using a self created certificate. Do you trust yourself :) ? 
+your browser will give you a warning because you are using a self created certificate. Do you trust your self created certificate :) ? 
 
 If you trust yourself, click advanced (Chrome) and proceed to the site. 
-Copy the token from you terminal to access your notebooks. 
-
-The notebook will ask you for a password. For now, this password is managed by Rutger Hofste. You can disable or change the password in the configuration file. This will change in the future. 
+The current config file is password protected. I will change to something generic in the future. If you want to change this password please see this [link](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)  
 
 
-2. you will need to authenticate for a couple of services including using AWS and Google Earth Engin. 
+1. Congratulations you are up and running. to make most use of these notebooks, you will need to authenticate for a couple of services including using AWS and Google Earth Engine. 
 
 * ssh into your machine and run bash in your Docker container using the following command  
 `docker ps -a`  
