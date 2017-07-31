@@ -8,7 +8,8 @@
 # 
 # 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V01.ipynb**  
 #     Download the data to your machine
-# 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V01.ipynb**
+# 1.  **Y2017M07D31_RH_Check_Metadata_V01.ipynb**  
+#     Check PCRGlobWB metadata
 # 
 # 
 
