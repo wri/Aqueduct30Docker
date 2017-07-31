@@ -88,27 +88,27 @@ You can now start working on notebooks
 for this I reccomend using the tutorials that are available on Amazon's and Google's websites.  
 [Amazon tutorial](https://aws.amazon.com/ec2/getting-started/)
 
-2. Use the specifics below when setting up you EC2 instance. If you miss one step, your instance will likely not work.  
+1. Use the specifics below when setting up you EC2 instance. If you miss one step, your instance will likely not work.  
     1. In step 1) select Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
-    2. In step 2), if your budget allows, choose T2.Medium  
+    1. In step 2), if your budget allows, choose T2.Medium  
     [calculate costs](https://calculator.s3.amazonaws.com/index.html)
-    3. In step 3) make sure
+    1. In step 3) make sure
         1. If you are within a VPC, allow IP addresses to be set  
         Auto-assign Public IP = enable
         2. Under advanced details, set user data to as file and upload the startup.sh script from the /other folder on Github.
-    4. in step 4) add storage
+    1. in step 4) add storage
     	depending on the steps in the data process, we recommend setting the size to 200GB.  
     	[calculate costs](https://calculator.s3.amazonaws.com/index.html)
-    5. in step 5) add tags  
+    1. in step 5) add tags  
     	optionally you can set a name for your instance
-    6. in step 6) Set the appropriate security rules.  
+    1. in step 6) Set the appropriate security rules.  
     	This is a crucial step. Eventually we will communicate over SSH (port 22) and HTTPS (port 443). You can whitelist your IP address or allow traffic from everywhere. As a minimum you need to allow SSH and HTTPS from your IP address. If you want to do testing with HTTP you can temporarily allow HTTP (port 80) traffic.
     7. Launch your instance
-3. Connect to your instance using SSH
+1. Connect to your instance using SSH
 [Connect to your instance](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)  
 For windows [PUTTY](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html) is recommended, for Mac and Linux you can use your terminal. 
 
-4. Once logged in into your system  
+1. Once logged in into your system  
 check if docker is installed
 `docker version`
 
@@ -122,11 +122,10 @@ run your container
 
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`
 
-3. (recommended) Set up HTTPS access
+1. (recommended) Set up HTTPS access
 
 in your container create a certificate by running
 
-`cd /.keys`
 `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/mykey.key -out /.keys/mycert.pem`
 
 and answer some questions needed for the certificate
@@ -147,7 +146,7 @@ Clone (using SSH) to get the appropriate config file.
 
 Copy config file that includes password and SSL for HTTPS
 
-# no longer required
+# no longer required  
 cp /Aqueduct30Docker/jupyter_notebook_config.py /root/.jupyter/.
 
 now start your notebook with the certificates
