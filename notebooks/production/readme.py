@@ -13,7 +13,11 @@
 # 1.  **Y2017M07D31_RH_Check_Metadata_V01.ipynb**  
 #     Check PCRGlobWB metadata
 # 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01**
-# 
+#     convert netCDF4 to Geotiff
+# 1.  **Y2017M08D02_RH_Upload_to_GoogleCS_V01**
+#     upload files to Google Cloud Storage. This is needed to ingest the data
+#     
+#     
 # 
 
 # In[ ]:

@@ -43,7 +43,7 @@ get_ipython().system('mkdir /volumes/data/temp')
 get_ipython().system('ls /volumes/data/PCRGlobWB20V01/additional/')
 
 
-# In[25]:
+# In[6]:
 
 try:
     from osgeo import ogr, osr, gdal
@@ -58,27 +58,52 @@ import subprocess
 
 # # Settings
 
-# In[30]:
+# In[7]:
 
 NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/"
 PRINT_METADATA = False
-OUTPUTPATH = "/volumes/data/temp"
+OUTPUTPATH = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/"
 inputLocationSampleGeotiff = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
 
 
-# In[ ]:
+# In[8]:
 
-
-
-
-# In[ ]:
-
-
+get_ipython().system('mkdir /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01')
 
 
 # # Functions
 
-# In[7]:
+# In[9]:
+
+def netCDF4toGeotiff(fileName,fileLocation):
+    netCDFInputBaseName = fileName.split('.')[0]
+    nc_fid = Dataset(fileLocation, 'r')
+    nc_attrs, nc_dims, nc_vars = ncdump(nc_fid, PRINT_METADATA)
+    parameter = nc_vars[3]
+    lats = nc_fid.variables['latitude'][:]  # extract/copy the data
+    lons = nc_fid.variables['longitude'][:]
+    times = nc_fid.variables['time'][:]
+    timeUnit = nc_fid.variables["time"].getncattr("units")
+    timeNormal =[]
+    for time in times:
+        if timeUnit == ("days since 1900-01-01 00:00:00") or (timeUnit =="Days since 1900-01-01"):
+            timeNormal.append(datetime.datetime(1900,1,1) + datetime.timedelta(days=time))
+        elif timeUnit == "days since 1901-01-01 00:00:00":
+            timeNormal.append(datetime.datetime(1901,1,1) + datetime.timedelta(days=time))
+        else:
+            print "Error"
+            timeNormal.append(-9999)
+            
+    for i in range(0,len(timeNormal)):
+        print timeNormal[i].year
+        Z = nc_fid.variables[parameter][i, :, :]
+        Z[Z<-9990]= -9999
+        Z[Z>1e19] = -9999
+        outputFilename = netCDFInputBaseName + "I%0.3dY%0.2dM%0.2d.tif" %(i,timeNormal[i].year,timeNormal[i].month)
+        writefilename = os.path.join(OUTPUTPATH,outputFilename)
+        writeFile(writefilename,geotransform,geoproj,Z)
+    
+    return time, timeUnit, timeNormal
 
 def readFile(filename):
     filehandle = gdal.Open(filename)
@@ -169,124 +194,64 @@ def ncdump(nc_fid, verb=True):
                 print_ncattr(var)
     return nc_attrs, nc_dims, nc_vars
 
-def normalizeTime(time):
-    timeNormal =[]
-    for i in range(0, len(time)):
-        if nc_fid.variables["time"].getncattr("units") == "Days since 1900-01-01":
-            fullDate = days_since_jan_1_1900_to_datetime(time[i])
-        elif nc_fid.variables["time"].getncattr("units") == "Days since 1901-01-01":
-            fullDate = days_since_jan_1_1901_to_datetime(time[i])
-        else:
-            print "!!!!!!!!!!!!!!Error!!!!!!!!!!!!!!!!"
-        fullDate = days_since_jan_1_1900_to_datetime(time[i])
-        timeNormal.append(fullDate)
-    return timeNormal
-
-def days_since_jan_1_1900_to_datetime(d):
-    return datetime.datetime(1900,1,1) + datetime.timedelta(days=d)
-
-def days_since_jan_1_1901_to_datetime(d):
-    return datetime.datetime(1901,1,1) + datetime.timedelta(days=d)
-
-def print_ncattr(key):
-    """
-    Prints the NetCDF file attributes for a given key
-
-    Parameters
-    ----------
-    key : unicode
-        a valid netCDF4.Dataset.variables key
-    """
-    try:
-        print "\t\ttype:", repr(nc_fid.variables[key].dtype)
-        for ncattr in nc_fid.variables[key].ncattrs():
-            print '\t\t%s:' % ncattr,                  repr(nc_fid.variables[key].getncattr(ncattr))
-    except KeyError:
-        print "\t\tWARNING: %s does not contain variable attributes" % key
-        
-def netCDFtoGeotiff(oneFile):
-    netCDFInputFileName = oneFile
-    print(oneFile)
-    netCDFInputBaseName = netCDFInputFileName.split('.')[0]
-
-    nc_f = os.path.join(NETCDFINPUTPATH,netCDFInputFileName)
-    nc_fid = Dataset(nc_f, 'r')  # Dataset is the class behavior to open the file
-         # and create an instance of the ncCDF4 class
-    nc_attrs, nc_dims, nc_vars = ncdump(nc_fid, PRINT_METADATA)
-    parameter = nc_vars[3]
-
-    lats = nc_fid.variables['latitude'][:]  # extract/copy the data
-    lons = nc_fid.variables['longitude'][:]
-    time = nc_fid.variables['time'][:]
-    timeNormal = normalizeTime(time)
-    
-    for i in range(0,len(timeNormal)):
-        print timeNormal[i].year
-        Z = nc_fid.variables[parameter][i, :, :]
-        Z[Z<-9990]= -9999
-        Z[Z>1e19] = -9999
-        outputFilename = netCDFInputBaseName + "I%0.3dY%0.2dM%0.2d.tif" %(i,timeNormal[i].year,timeNormal[i].month)
-        writefilename = os.path.join(OUTPUTPATH,outputFilename)
-        writeFile(writefilename,geotransform,geoproj,Z)
-
 
 # # Script
 
-# In[21]:
-
-
-
-
-# In[12]:
+# In[10]:
 
 [xsize,ysize,geotransform,geoproj,ZSample] = readFile(inputLocationSampleGeotiff)
 
 
 # These are the parameters of the standard geometry. 
 
-# In[13]:
+# In[11]:
 
 print xsize, ysize, geotransform
 
 
-# Specify if you want to print metadata. This is similar to the previous step and might be redundant. 
-
-# Copy PLivWN to PLivWW because Livestock Withdrawal = Livestock Consumption (see Yoshi's email'). This will solve some lookping issues in the future. 
-
-# Copies 4GB of data so takes a while
-
-# In[19]:
-
-get_ipython().system('cp /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWN_month_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWW_month_millionm3_5min_1960_2014.nc4')
-
-
-# In[20]:
-
-get_ipython().system('cp /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWN_year_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/waterdemand/global_historical_PLivWW_year_millionm3_5min_1960_2014.nc4')
-
-
-# In[28]:
+# In[12]:
 
 for root, dirs, files in os.walk(NETCDFINPUTPATH):
-    for file in files:
-        if file.endswith(".nc4"):
-            oneFile = os.path.join(root, file)
+    for oneFile in files:
+        if oneFile.endswith(".nc4"):
+            fileLocation = os.path.join(root, oneFile)
+            fileName = oneFile
+            netCDF4toGeotiff(fileName,fileLocation)
                 
 
 
-# In[ ]:
+# In[13]:
 
-a =nc_fid.variables["time"].getncattr("units")
-
-
-# In[ ]:
-
-print(OUTPUTPATH)
+files = os.listdir(OUTPUTPATH)
+print("Number of files: " + str(len(files)))
 
 
-# In[24]:
+# Some files from Utrecht contain double years, removing the erroneous ones (used Panoply/Qgis to inspect those files):
+# 
+# global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif
+# global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif
+# global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif
+# 
+# 
+# 
+
+# In[15]:
+
+get_ipython().system('mkdir /volumes/data/trash')
 
 
+# In[16]:
+
+get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
+get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
+get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif')
+
+
+
+# In[17]:
+
+files = os.listdir(OUTPUTPATH)
+print("Number of files: " + str(len(files)))
 
 
 # In[ ]:
