@@ -66,14 +66,14 @@ OUTPUTPATH = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/"
 inputLocationSampleGeotiff = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
 
 
-# In[8]:
+# In[13]:
 
 get_ipython().system('mkdir /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01')
 
 
 # # Functions
 
-# In[9]:
+# In[14]:
 
 def netCDF4toGeotiff(fileName,fileLocation):
     netCDFInputBaseName = fileName.split('.')[0]
@@ -95,7 +95,7 @@ def netCDF4toGeotiff(fileName,fileLocation):
             timeNormal.append(-9999)
             
     for i in range(0,len(timeNormal)):
-        print timeNormal[i].year
+        #print timeNormal[i].year
         Z = nc_fid.variables[parameter][i, :, :]
         Z[Z<-9990]= -9999
         Z[Z>1e19] = -9999
@@ -197,30 +197,31 @@ def ncdump(nc_fid, verb=True):
 
 # # Script
 
-# In[10]:
+# In[15]:
 
 [xsize,ysize,geotransform,geoproj,ZSample] = readFile(inputLocationSampleGeotiff)
 
 
 # These are the parameters of the standard geometry. 
 
-# In[11]:
+# In[16]:
 
 print xsize, ysize, geotransform
 
 
-# In[12]:
+# In[17]:
 
 for root, dirs, files in os.walk(NETCDFINPUTPATH):
     for oneFile in files:
         if oneFile.endswith(".nc4") or oneFile.endswith(".nc"):
+            print(oneFile)
             fileLocation = os.path.join(root, oneFile)
             fileName = oneFile
             netCDF4toGeotiff(fileName,fileLocation)
                 
 
 
-# In[13]:
+# In[18]:
 
 files = os.listdir(OUTPUTPATH)
 print("Number of files: " + str(len(files)))
@@ -235,12 +236,12 @@ print("Number of files: " + str(len(files)))
 # 
 # 
 
-# In[15]:
+# In[19]:
 
 get_ipython().system('mkdir /volumes/data/trash')
 
 
-# In[16]:
+# In[20]:
 
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
@@ -248,7 +249,7 @@ get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01
 
 
 
-# In[17]:
+# In[21]:
 
 files = os.listdir(OUTPUTPATH)
 print("Number of files: " + str(len(files)))

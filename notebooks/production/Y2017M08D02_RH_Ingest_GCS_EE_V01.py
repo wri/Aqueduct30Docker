@@ -16,7 +16,7 @@
 
 # Run in your terminal `gcloud config set project aqueduct30`
 
-# In[85]:
+# In[1]:
 
 import subprocess
 import datetime
@@ -142,7 +142,7 @@ print(parameters)
 # We will store the geotiff images of each NetCDF4 file in imageCollections. The imageCollections will have the same name and content as the original NetCDF4files. 
 # 
 
-# In[19]:
+# In[18]:
 
 for parameter in parameters:
     eeLocation = EE_BASE + "/" + parameter
@@ -155,7 +155,7 @@ for parameter in parameters:
 
 # Now that the folder and collections have been created we can start ingesting the data. It is crucial to store the relevant metadata with the images. 
 
-# In[20]:
+# In[19]:
 
 df_parameter = pd.DataFrame()
 i = 0
@@ -167,81 +167,104 @@ for parameter in parameters:
     
 
 
-# In[21]:
+# In[20]:
 
 df_parameter.head()
 
 
-# In[22]:
+# In[21]:
 
 df_parameter.tail()
 
 
-# In[23]:
+# In[22]:
 
 df_parameter.shape
 
 
-# In[24]:
+# In[23]:
 
 df_complete = df.merge(df_parameter,how='left',left_on='parameter',right_on='parameter')
 
 
 # Adding NoData value, ingested_by and exportdescription
 
-# In[72]:
+# In[24]:
 
 df_complete["nodata"] = -9999
 df_complete["ingested_by"] ="RutgerHofste"
 df_complete["exportdescription"] = df_complete["indicator"] + "_" + df_complete["temporal_resolution"]+"Y"+df_complete["year"]+"M"+df_complete["month"]
 
 
-# In[73]:
+# In[25]:
 
 df_complete.head()
 
 
-# In[74]:
+# In[26]:
 
 df_complete.tail()
 
 
-# In[75]:
+# In[27]:
 
 list(df_complete.columns.values)
 
 
-# In[76]:
+# In[30]:
 
-row = df_complete.loc[100]
-
-
-# In[95]:
-
-def uploadEE(row):
+def uploadEE(index,row):
     target = EE_BASE +"/"+ row.parameter + "/" + row.fileName
     source = GCS_BASE + row.fileName + "." + row.extension
     metadata = "--nodata_value=%s --time_start %s-%s-01 -p extension=%s -p filename=%s -p identifier=%s -p year=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p temporal_range=%s -p temporal_range_max=%s -p temporal_range_min=%s -p temporal_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.year,row.month,row.extension,row.fileName,row.identifier,row.year,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range,row.temporal_range_max,row.temporal_range_min, row.temporal_resolution, row.units, row.ingested_by, row.exportdescription)
     command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
     try:
-        subprocess.check_output(command, shell=True)
+        response = subprocess.check_output(command, shell=True)
+        outDict = {"command":command,"response":response,"error":0}
+        df_errors2 = pd.DataFrame(outDict,index=[index])
+        pass
     except:
-        print("ERROR!!")
-        print(command)
-    return 1
+        try:
+            outDict = {"command":command,"response":response,"error":1}
+        except:
+            outDict = {"command":command,"response":-9999}
+        df_errors2 = pd.DataFrame(outDict,index=[index])
+        print("error")
+    return df_errors2
 
 
 
 # In[ ]:
 
+df_errors = pd.DataFrame()
 start_time = time.time()
 for index, row in df_complete.iterrows():
     elapsed_time = time.time() - start_time 
     print(index,"%.2f" %((index/8548.0)*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
-    uploadEE(row)
+    df_errors2 = uploadEE(index,row)
+    df_errors = df_errors.append(df_errors2)
     
     
-    
+
+
+# In[ ]:
+
+df_errors.head()
+
+
+# In[ ]:
+
+get_ipython().system('mkdir /volumes/data/temp')
+
+
+# In[ ]:
+
+df_errors.to_csv("/volumes/data/temp/df_errors.csv")
+
+
+# In[ ]:
+
+get_ipython().system('aws s3 cp  /volumes/data/temp/df_errors.csv s3://wri-projects/Aqueduct30/temp/df_errors.csv')
 
 
 # In[ ]:
