@@ -58,9 +58,9 @@ get_ipython().system('find /volumes/data/PCRGlobWB20V01/ -type f | wc -l')
 
 # Unzipping the file results in a 24GB file which is signifact. Therefore this step will take quite some time
 
-# In[6]:
+# In[ ]:
 
-get_ipython().system('unzip /volumes/data/PCRGlobWB20V01/totalRunoff_monthTot_output.zip')
+get_ipython().system('unzip /volumes/data/PCRGlobWB20V01/totalRunoff_monthTot_output.zip -d /volumes/data/PCRGlobWB20V01/')
 
 
 # The total number of files should be around 25 but can change if the raw data changed. 
@@ -109,7 +109,7 @@ get_ipython().system('cp /volumes/data/PCRGlobWB20V01/global_historical_PLivWN_y
 
 # Some files that WRI received from Utrecht refer to water "Use" instead of WN (net). Renaming the relevant file. Renaming them
 
-# In[14]:
+# In[17]:
 
 get_ipython().system('ls /volumes/data/PCRGlobWB20V01/')
 
@@ -128,7 +128,23 @@ get_ipython().system('mv /volumes/data/PCRGlobWB20V01/global_historical_PIndUse_
 get_ipython().system('ls /volumes/data/PCRGlobWB20V01/')
 
 
+# As you can see, the filename structure of the runoff files is different. Using Panoply to inspect the units, we rename the files accordingly. 
+# 
+# new names for annual:  
+# 
+# global_historical_runoff_year_myear_5min_1958_2014.nc
+# 
+# new name for monthly:  
+# 
+# global_historical_runoff_month_mmonth_5min_1958_2014.nc
+# 
+
 # In[ ]:
 
+get_ipython().system('mv /volumes/data/PCRGlobWB20V01/totalRunoff_annuaTot_output.nc /volumes/data/PCRGlobWB20V01/global_historical_runoff_year_myear_5min_1958_2014.nc')
 
+
+# In[ ]:
+
+get_ipython().system('mv /volumes/data/PCRGlobWB20V01/totalRunoff_monthTot_output.nc /volumes/data/PCRGlobWB20V01/global_historical_runoff_month_mmonth_5min_1958_2014.nc')
 

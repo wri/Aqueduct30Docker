@@ -213,7 +213,7 @@ print xsize, ysize, geotransform
 
 for root, dirs, files in os.walk(NETCDFINPUTPATH):
     for oneFile in files:
-        if oneFile.endswith(".nc4"):
+        if oneFile.endswith(".nc4") or oneFile.endswith(".nc"):
             fileLocation = os.path.join(root, oneFile)
             fileName = oneFile
             netCDF4toGeotiff(fileName,fileLocation)
