@@ -16,19 +16,32 @@
 
 # Run in your terminal `gcloud config set project aqueduct30`
 
-# In[1]:
+# In[85]:
 
 import subprocess
 import datetime
 import os
 import time
+from datetime import timedelta
 import re
 import pandas as pd
 
 
-# ## Functions
+# ## Settings
 
 # In[2]:
+
+GCS_BASE = "gs://aqueduct30_v01/Y2017M08D02_RH_Upload_to_GoogleCS_V01/"
+
+
+# In[3]:
+
+EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V05"
+
+
+# ## Functions
+
+# In[4]:
 
 def splitKey(key):
     # will yield the root file code and extension of a set of keys
@@ -42,7 +55,8 @@ def splitKey(key):
     return outDict
 
 def splitParameter(parameter):
-    values = parameter.split("_")
+    #values = parameter.split("_")
+    values = re.split("_|-", parameter) #soilmoisture uses a hyphen instead of underscore between the years
     keys = ["geographic_range","temporal_range","indicator","temporal_resolution","units","spatial_resolution","temporal_range_min","temporal_range_max"]
     # ['global', 'historical', 'PDomWN', 'month', 'millionm3', '5min', '1960', '2014']
     outDict = dict(zip(keys, values))
@@ -52,113 +66,100 @@ def splitParameter(parameter):
 
 # ## Script
 
-# In[ ]:
-
-
-
-
-# In[3]:
-
-eeBasePath = "projects/WRI-Aquaduct/PCRGlobWB20V05"
-
-
-# In[4]:
-
-command = ("earthengine create folder %s") %eeBasePath
-
-
 # In[5]:
 
-print(command)
+command = ("earthengine create folder %s") %EE_BASE
 
 
 # In[6]:
 
-subprocess.check_output(command,shell=True)
+print(command)
 
 
 # In[7]:
 
-command = ("/opt/google-cloud-sdk/bin/gsutil ls gs://aqueduct30_v01/Y2017M08D02_RH_Upload_to_GoogleCS_V01/")
+subprocess.check_output(command,shell=True)
 
 
 # In[8]:
 
-keys = subprocess.check_output(command,shell=True)
+command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_BASE)
 
 
 # In[9]:
+
+keys = subprocess.check_output(command,shell=True)
+
+
+# In[10]:
 
 keys = keys.decode('UTF-8').splitlines()
 
 
 # Removing first item from the list. The first item contains a folder without file name
 
-# In[10]:
+# In[11]:
 
 keys2 = keys[1:]
 
 
-# In[11]:
+# In[12]:
 
 df = pd.DataFrame()
 i = 0
 for key in keys2:
-    print(key)
     i = i+1
     outDict = splitKey(key)
     df2 = pd.DataFrame(outDict,index=[i])
     df = df.append(df2)    
 
 
-# In[12]:
+# In[13]:
 
 df.head()
 
 
-# In[13]:
+# In[14]:
 
 df.tail()
 
 
-# In[14]:
+# In[15]:
 
 df.shape
 
 
-# In[15]:
+# In[16]:
 
 parameters = df.parameter.unique()
 
 
-# In[16]:
+# In[17]:
 
 print(parameters)
 
 
-# In[17]:
+# We will store the geotiff images of each NetCDF4 file in imageCollections. The imageCollections will have the same name and content as the original NetCDF4files. 
+# 
 
-print(len(parameters))
-
-
-# In[18]:
+# In[19]:
 
 for parameter in parameters:
-    eeLocation = eeBasePath + "/" + parameter
+    eeLocation = EE_BASE + "/" + parameter
     command = ("earthengine create collection %s") %eeLocation
+    # Uncomment the following command if you run this script for the first time
     #subprocess.check_output(command,shell=True)
-    print(command)
+    #print(command)
     
 
 
 # Now that the folder and collections have been created we can start ingesting the data. It is crucial to store the relevant metadata with the images. 
 
-# In[19]:
+# In[20]:
 
 df_parameter = pd.DataFrame()
 i = 0
 for parameter in parameters:
-    print(parameter)
     i = i+1
     outDict_parameter = splitParameter(parameter)
     df_parameter2 = pd.DataFrame(outDict_parameter,index=[i])
@@ -166,40 +167,84 @@ for parameter in parameters:
     
 
 
-# In[20]:
+# In[21]:
 
 df_parameter.head()
 
 
-# In[21]:
-
-df_parameter.shape
-
-
 # In[22]:
 
-df_complete = df.merge(df_parameter,how='left',left_on='parameter',right_on='parameter')
-
-
-# In[26]:
-
-df_complete.shape
+df_parameter.tail()
 
 
 # In[23]:
 
-df_complete.head()
+df_parameter.shape
 
 
 # In[24]:
 
+df_complete = df.merge(df_parameter,how='left',left_on='parameter',right_on='parameter')
+
+
+# Adding NoData value, ingested_by and exportdescription
+
+# In[72]:
+
+df_complete["nodata"] = -9999
+df_complete["ingested_by"] ="RutgerHofste"
+df_complete["exportdescription"] = df_complete["indicator"] + "_" + df_complete["temporal_resolution"]+"Y"+df_complete["year"]+"M"+df_complete["month"]
+
+
+# In[73]:
+
+df_complete.head()
+
+
+# In[74]:
+
 df_complete.tail()
 
 
-# In[28]:
+# In[75]:
 
 list(df_complete.columns.values)
 
 
-# Missing : NoData 
-# Missing : exportDescription
+# In[76]:
+
+row = df_complete.loc[100]
+
+
+# In[95]:
+
+def uploadEE(row):
+    target = EE_BASE +"/"+ row.parameter + "/" + row.fileName
+    source = GCS_BASE + row.fileName + "." + row.extension
+    metadata = "--nodata_value=%s --time_start %s-%s-01 -p extension=%s -p filename=%s -p identifier=%s -p year=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p temporal_range=%s -p temporal_range_max=%s -p temporal_range_min=%s -p temporal_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.year,row.month,row.extension,row.fileName,row.identifier,row.year,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range,row.temporal_range_max,row.temporal_range_min, row.temporal_resolution, row.units, row.ingested_by, row.exportdescription)
+    command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
+    try:
+        subprocess.check_output(command, shell=True)
+    except:
+        print("ERROR!!")
+        print(command)
+    return 1
+
+
+
+# In[ ]:
+
+start_time = time.time()
+for index, row in df_complete.iterrows():
+    elapsed_time = time.time() - start_time 
+    print(index,"%.2f" %((index/8548.0)*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
+    uploadEE(row)
+    
+    
+    
+
+
+# In[ ]:
+
+
+
