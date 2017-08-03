@@ -227,7 +227,7 @@ def uploadEE(index,row):
         try:
             outDict = {"command":command,"response":response,"error":1}
         except:
-            outDict = {"command":command,"response":-9999}
+            outDict = {"command":command,"response":-9999,"error":2}
         df_errors2 = pd.DataFrame(outDict,index=[index])
         print("error")
     return df_errors2

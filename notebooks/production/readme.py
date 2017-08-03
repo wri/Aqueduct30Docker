@@ -6,6 +6,8 @@
 # This document will keep track of what scripts to run to get to the resulst
 # 
 # 
+# ### Main Branch
+# 
 # 1.  **Y2017M07D31_RH_copy_S3raw_s3process_V01.ipynb**  
 #     Copy files from raw data folder to process data folder, all within S3. 
 # 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V01.ipynb**  
@@ -19,9 +21,17 @@
 # 1. **Y2017M08D02_RH_Ingest_GCS_EE_V01**  
 #     ingest data from Google Cloud Storage to EarthEngine, adding metadata
 # 1. **Y2017M08D02_RH_Merge_HydroBasins_V01**  
-#     copy hydrobasin files from S3 and merge in pyhton
+#     copy hydrobasin files from S3 and merge in pyhton using Fiona
+# 1. **Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01**  
+#     rasterize hydrobasin level 6, download additional rasters from S3 and ingest all to Earth Engine
 # 
+# ### Groundwater Branch
 # 
+# ### Flood Risk Branch
+# 
+# ### Country Shapefile Branch
+# 
+# ### Other Indicators Branch
 #     
 #     
 # 

@@ -86,16 +86,6 @@ get_ipython().system("find . -name '*.zip' -exec unzip {} \\;")
 get_ipython().system("find / -name '*lev06_v1c.zip' -exec unzip -o {} \\;")
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
 # In[61]:
 
 import os
@@ -117,11 +107,6 @@ files = os.listdir(filePath)
 get_ipython().system('pwd')
 
 
-# In[ ]:
-
-
-
-
 # Create output folder
 
 # In[91]:
@@ -129,7 +114,7 @@ get_ipython().system('pwd')
 get_ipython().system('mkdir /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
 
 
-# In[ ]:
+# In[92]:
 
 meta = fiona.open('hybas_ar_lev06_v1c.shp').meta
 with fiona.open('./output/hybas_lev06_v1c_merged_fiona_V01.shp', 'w', **meta) as output:
@@ -143,59 +128,17 @@ with fiona.open('./output/hybas_lev06_v1c_merged_fiona_V01.shp', 'w', **meta) as
     
 
 
-# In[77]:
+# In[94]:
+
+get_ipython().system('tar -zcvf /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/hybas_lev06_v1c_merged_fiona_V01.tar.gz /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
 
 
+# In[97]:
+
+get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output s3://wri-projects/Aqueduct30/temp/ --recursive')
 
 
-# In[ ]:
-
-
-
-
-# In[87]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[88]:
-
-
-
-
-# In[81]:
-
-get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/merge.shp s3://wri-projects/Aqueduct30/temp/ ')
-get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/merge.dbf s3://wri-projects/Aqueduct30/temp/')
-get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/merge.prj s3://wri-projects/Aqueduct30/temp/')
-get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/merge.cpg s3://wri-projects/Aqueduct30/temp/')
-get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/merge.shx s3://wri-projects/Aqueduct30/temp/    ')
-
-
-# In[82]:
-
-
-
-
-# In[83]:
-
-
-
-
-# In[84]:
-
-
-
-
-# In[85]:
-
-
-
+# The merged shapefile is stored in /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output
 
 # In[ ]:
 
