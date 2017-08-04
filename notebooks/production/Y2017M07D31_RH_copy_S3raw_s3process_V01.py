@@ -47,9 +47,14 @@ get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/add
 get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/soilmoisture s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 --recursive')
 
 
+# ## Indicators (0.5GB)
+
+# In[3]:
+
+get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/indicators s3://wri-projects/Aqueduct30/processData/03PCRGlobWBIndicatorsV01 --recursive')
+
+
 # In[ ]:
 
 
 
-
-# 

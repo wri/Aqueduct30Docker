@@ -134,7 +134,7 @@ df.shape
 parameters = df.parameter.unique()
 
 
-# In[17]:
+# In[44]:
 
 print(parameters)
 
@@ -142,14 +142,14 @@ print(parameters)
 # We will store the geotiff images of each NetCDF4 file in imageCollections. The imageCollections will have the same name and content as the original NetCDF4files. 
 # 
 
-# In[18]:
+# In[45]:
 
 for parameter in parameters:
     eeLocation = EE_BASE + "/" + parameter
     command = ("earthengine create collection %s") %eeLocation
     # Uncomment the following command if you run this script for the first time
-    #subprocess.check_output(command,shell=True)
-    #print(command)
+    subprocess.check_output(command,shell=True)
+    print(command)
     
 
 
@@ -211,7 +211,7 @@ df_complete.tail()
 list(df_complete.columns.values)
 
 
-# In[30]:
+# In[49]:
 
 def uploadEE(index,row):
     target = EE_BASE +"/"+ row.parameter + "/" + row.fileName
@@ -234,37 +234,46 @@ def uploadEE(index,row):
 
 
 
-# In[ ]:
+# In[50]:
 
 df_errors = pd.DataFrame()
 start_time = time.time()
 for index, row in df_complete.iterrows():
     elapsed_time = time.time() - start_time 
-    print(index,"%.2f" %((index/8548.0)*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
+    print(index,"%.2f" %((index/9289.0)*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
     df_errors2 = uploadEE(index,row)
     df_errors = df_errors.append(df_errors2)
     
     
 
 
-# In[ ]:
-
-df_errors.head()
-
-
-# In[ ]:
+# In[33]:
 
 get_ipython().system('mkdir /volumes/data/temp')
 
 
-# In[ ]:
+# In[51]:
 
 df_errors.to_csv("/volumes/data/temp/df_errors.csv")
 
 
-# In[ ]:
+# In[52]:
 
 get_ipython().system('aws s3 cp  /volumes/data/temp/df_errors.csv s3://wri-projects/Aqueduct30/temp/df_errors.csv')
+
+
+# Retry the ones with errors
+
+# In[41]:
+
+df_retry = df_errors.loc[df_errors['error'] != 0]
+
+
+# In[43]:
+
+for index, row in df_retry.iterrows():
+    response = subprocess.check_output(row.command, shell=True)
+    
 
 
 # In[ ]:
