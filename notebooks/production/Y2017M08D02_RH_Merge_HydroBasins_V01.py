@@ -37,6 +37,11 @@
 # 
 # 
 
+# In[10]:
+
+import subprocess
+
+
 # In[38]:
 
 get_ipython().system('cd /')
@@ -149,12 +154,12 @@ get_ipython().system('ls /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/outp
 
 # We also like to have rasterized versions of the shapefiles at 5min and 30s resolution (0.0833333 degrees and 0.00833333 degrees)
 
-# In[107]:
+# In[6]:
 
 lonSize5min = 4320
 latSize5min = 2160
 lonSize30s = 43200 
-latSuze30s = 21600
+latSize30s = 21600
 
 
 # Rasterizing on PFAF_ID and PFAF_12
@@ -163,42 +168,30 @@ latSuze30s = 21600
 
 # In[ ]:
 
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
 get_ipython().system('cd /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
 
 
-# In[111]:
+# In[11]:
 
-command = "gdal_rasterize -a PFAF_ID -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev06_v1c_merged_fiona_V01 -a_nodata -9999 hybas_lev06_v1c_merged_fiona_V01.shp hybas_lev06_v1c_merged_fiona_V01.tif" %(lonSize5min,latSize5min)
-
-
-# In[112]:
-
-print(command)
-
-
-# In[ ]:
+commands =[]
+commands.append("gdal_rasterize -a PFAF_ID -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev06_v1c_merged_fiona_V01 -a_nodata -9999 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona__5minV01.tif" %(lonSize5min,latSize5min))
+commands.append("gdal_rasterize -a PFAF_ID -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev06_v1c_merged_fiona_V01 -a_nodata -9999 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_30sV01.tif" %(lonSize30s,latSize30s))
+commands.append("gdal_rasterize -a PFAF_12 -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev00_v1c_merged_fiona_V01 -a_nodata -9999 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona__5minV01.tif" %(lonSize5min,latSize5min))
+commands.append("gdal_rasterize -a PFAF_12 -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev00_v1c_merged_fiona_V01 -a_nodata -9999 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona__30sV01.tif" %(lonSize30s,latSize30s))
 
 
+# Rasterizing (takes a while)
+
+# In[12]:
+
+for command in commands:
+    print(command)
+    response = subprocess.check_output(command,shell=True)
 
 
-# In[ ]:
+# In[13]:
 
-
-
-
-# In[113]:
-
-get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output --recursive')
+get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output --recursive --quiet')
 
 
 # In[ ]:
