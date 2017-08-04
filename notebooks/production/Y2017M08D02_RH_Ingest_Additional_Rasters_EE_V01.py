@@ -69,7 +69,7 @@ GCS_BASE = "gs://aqueduct30_v01/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/
 EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V05"
 
 
-# In[90]:
+# In[117]:
 
 try:
     from osgeo import ogr, osr, gdal
@@ -78,13 +78,15 @@ except:
     
 from netCDF4 import Dataset
 import os
+import time
+from datetime import timedelta
 import datetime
 import subprocess
 import pandas as pd
 import re
 
 
-# In[92]:
+# In[126]:
 
 def readFile(filename):
     filehandle = gdal.Open(filename)
@@ -124,6 +126,35 @@ def splitFileName(fileName):
     outDict["fileName"] = fileName
     return outDict
 
+def uploadEE(index,row):
+    target = EE_BASE + "/" + row.fileName
+    source = GCS_BASE + row.fileName + "." + row.extension
+    metadata = "--nodata_value=%s -p extension=%s -p filename=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p temporal_range_max=%s -p temporal_range_min=%s -p units=dimensionless -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.extension,row.fileName,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range_max,row.temporal_range_min, row.ingested_by, row.exportdescription)
+    command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
+    try:
+        response = subprocess.check_output(command, shell=True)
+        outDict = {"command":command,"response":response,"error":0}
+        df_errors2 = pd.DataFrame(outDict,index=[index])
+    except:
+        try:
+            outDict = {"command":command,"response":response,"error":1}
+        except:
+            outDict = {"command":command,"response":-9999,"error":2}
+        df_errors2 = pd.DataFrame(outDict,index=[index])
+        print("error")
+    return df_errors2
+
+
+# extension                                                           tif
+# fileName              global_droughtseveritystandardisedsoilmoisture...
+# geographic_range                                                 global
+# indicator                       droughtseveritystandardisedsoilmoisture
+# spatial_resolution                                                 5min
+# temporal_range_max                                                 2014
+# temporal_range_min                                                 1960
+# nodata                                                            -9999
+# ingested_by                                                RutgerHofste
+# exportdescription               droughtseveritystandardisedsoilmoisture
 
 # In[49]:
 
@@ -213,6 +244,36 @@ df_complete = df.merge(df_fileName,how='left',left_on='fileName',right_on='fileN
 # In[110]:
 
 df_complete.head()
+
+
+# As you can seem, the structure of the filename is slightly different than the netCDF4 files from Utrecht. The unit for example is not stored int the fileName. 
+
+# In[111]:
+
+df_complete["nodata"] = -9999
+df_complete["ingested_by"] ="RutgerHofste"
+df_complete["exportdescription"] = df_complete["indicator"]
+
+
+# In[115]:
+
+df_complete.head()
+
+
+# In[127]:
+
+df_errors = pd.DataFrame()
+start_time = time.time()
+for index, row in df_complete.iterrows():
+    elapsed_time = time.time() - start_time 
+    print(index,"elapsed: ", str(timedelta(seconds=elapsed_time)))
+    df_errors2 = uploadEE(index,row)
+    df_errors = df_errors.append(df_errors2)
+
+
+# In[130]:
+
+df_errors
 
 
 # In[ ]:

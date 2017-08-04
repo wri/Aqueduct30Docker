@@ -3,7 +3,7 @@
 
 # ### Merge WWF's HydroBasins
 # 
-# * Purpose of script: This notebooks will copy the relevant files from raw ro process and merge the shapefiles of level 6
+# * Purpose of script: This notebooks will copy the relevant files from raw ro process and merge the shapefiles of level 6 and level 00
 # * Author: Rutger Hofste
 # * Kernel used: python35
 # * Date created: 20170802
@@ -64,7 +64,7 @@ get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/processData/02Hydro
 
 # Unzip shapefiles 
 
-# In[45]:
+# In[98]:
 
 get_ipython().system('cd /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01')
 
@@ -81,9 +81,10 @@ get_ipython().system("find . -name '*.zip' -exec unzip {} \\;")
 
 # For now we will only use Level 6. Extracting in the same directory (/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01)
 
-# In[53]:
+# In[99]:
 
 get_ipython().system("find / -name '*lev06_v1c.zip' -exec unzip -o {} \\;")
+get_ipython().system("find / -name '*lev00_v1c.zip' -exec unzip -o {} \\;")
 
 
 # In[61]:
@@ -92,34 +93,34 @@ import os
 import fiona
 
 
-# In[54]:
+# In[100]:
 
 filePath = "/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01"
 
 
-# In[56]:
+# In[101]:
 
 files = os.listdir(filePath)
 
 
-# In[75]:
+# In[103]:
 
 get_ipython().system('pwd')
 
 
 # Create output folder
 
-# In[91]:
+# In[104]:
 
 get_ipython().system('mkdir /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
 
 
-# In[92]:
+# In[105]:
 
 meta = fiona.open('hybas_ar_lev06_v1c.shp').meta
-with fiona.open('./output/hybas_lev06_v1c_merged_fiona_V01.shp', 'w', **meta) as output:
+with fiona.open('/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_V01.shp', 'w', **meta) as output:
     for oneFile in files:    
-        if oneFile.endswith(".shp"):
+        if oneFile.endswith("lev06_v1c.shp"):
             print(oneFile)
             for features in fiona.open(oneFile):
                 output.write(features)
@@ -128,17 +129,77 @@ with fiona.open('./output/hybas_lev06_v1c_merged_fiona_V01.shp', 'w', **meta) as
     
 
 
-# In[94]:
+# In[106]:
 
-get_ipython().system('tar -zcvf /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/hybas_lev06_v1c_merged_fiona_V01.tar.gz /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
-
-
-# In[97]:
-
-get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output s3://wri-projects/Aqueduct30/temp/ --recursive')
+meta = fiona.open('hybas_ar_lev00_v1c.shp').meta
+with fiona.open('/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona_V01.shp', 'w', **meta) as output:
+    for oneFile in files:    
+        if oneFile.endswith("lev00_v1c.shp"):
+            print(oneFile)
+            for features in fiona.open(oneFile):
+                output.write(features)
 
 
 # The merged shapefile is stored in /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output
+
+# In[108]:
+
+get_ipython().system('ls /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
+
+
+# We also like to have rasterized versions of the shapefiles at 5min and 30s resolution (0.0833333 degrees and 0.00833333 degrees)
+
+# In[107]:
+
+lonSize5min = 4320
+latSize5min = 2160
+lonSize30s = 43200 
+latSuze30s = 21600
+
+
+# Rasterizing on PFAF_ID and PFAF_12
+# Layer name hybas_lev00_v1c_merged_fiona_V01
+# 
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+get_ipython().system('cd /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
+
+
+# In[111]:
+
+command = "gdal_rasterize -a PFAF_ID -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev06_v1c_merged_fiona_V01 -a_nodata -9999 hybas_lev06_v1c_merged_fiona_V01.shp hybas_lev06_v1c_merged_fiona_V01.tif" %(lonSize5min,latSize5min)
+
+
+# In[112]:
+
+print(command)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[113]:
+
+get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output --recursive')
+
 
 # In[ ]:
 
