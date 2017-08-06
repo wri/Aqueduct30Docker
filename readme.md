@@ -5,7 +5,7 @@
 
 If you are not viewing this document on Github, please find a stylized version [here](https://github.com/rutgerhofste/Aqueduct30Docker)   
 
-The coding environment uses Docker images that can be found [here](https://hub.docker.com/u/rutgerhofste/gisdocker)
+The coding environment uses Docker images that can be found [here](https://hub.docker.com/r/rutgerhofste/gisdocker/)
 
 this document explains each and every step for the data processing of Aqueduct 3.0. Everything is here, from raw data to code to explanation. We also epxlain how you could replicate the calculations on your local machine or in a cloud environment. 
 
@@ -13,11 +13,8 @@ The overall structure is as follows:
 
 * Data is stored on WRI's Amazon S3 Storage
 * Code and versionion is stored on Github 
-* The environment description is stored in a Docker file 
-* A jupyter notebook can be used to run the code in a virtual machine. 
-
-For steps that do not include code, such as adding columns to a shapefile in QGIS, a description is included to replicate the proces on your local machine. Note that this setup is currently not compatible with ArcPY.
-
+* The Python environment description is stored in a Docker Image  
+* Coding and dat operation are done in Jupyter Notebooks  
 
 A link to the flowchart:
 https://docs.google.com/drawings/d/1IjTVlQUHNYj2w0zrS8SKQV1Bpworvt0XDp7UE2tPms0/edit?usp=sharing
@@ -45,17 +42,21 @@ There are two options to setup your working environment:
 
 Both options are based on Docker and Jupyter. Although you might be able to do the lion's share of the data processing on your local machine, there are good reasons to work with a cloud based solution
 
-* mount a large harddrive to store the data. you will need appr. 200GB
-* easy to pick an appropratia intance size (number of CPU's and RAM)
+* mount a large harddrive to store the data. you will need appr. 300GB
+* easy to pick an appropriata instance size (number of CPU's and RAM)
 
 There are also downsides
 
 * Additional security steps required
-* Account needed
+* Account(s) needed
 * Costs
 
 
 ## Locally 
+
+Requirements:
+* The Docker image requires approximately 12GB of Storage and is not a lightweight solution. 
+* If you want to replicate the Aqueduct data processing steps, you will need approximately 300GB of disk space. 
 
 1. install docker cummunity edition  
 [instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)  
