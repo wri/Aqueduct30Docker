@@ -3,9 +3,9 @@
 # Aqueduct 3.0 Data Processing workflow
 ## A modern geospatial analysis setup based on Jupyter
 
-View this readme on Github: https://github.com/rutgerhofste/Aqueduct30Docker  
+If you are not viewing this document on Github, please find a stylized version [here](https://github.com/rutgerhofste/Aqueduct30Docker)   
 
-Docker Hub: https://hub.docker.com/u/rutgerhofste/  
+The coding environment uses Docker images that can be found [here](https://hub.docker.com/u/rutgerhofste/gisdocker)
 
 this document explains each and every step for the data processing of Aqueduct 3.0. Everything is here, from raw data to code to explanation. We also epxlain how you could replicate the calculations on your local machine or in a cloud environment. 
 
