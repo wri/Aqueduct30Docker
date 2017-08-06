@@ -82,7 +82,7 @@ Learn more about how forking works [here](https://help.github.com/articles/fork-
 
 
 5. Launch a Jupyter Notebook server  
-`jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /Aqueduct30Docker/`
+`jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /volumes/repos/Aqueduct30Docker/`  
 
 6. Open your browser and go to http://localhost:8888
 
