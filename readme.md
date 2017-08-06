@@ -72,11 +72,11 @@ This will download the docker image and run a container with name aqueduct in -i
 4. Clone the Git repository
 You have two options here: 1) Clone the Aqueduct Repository 2) Create a so-called fork of the Aqueduct Project and work in the fork. The first option requires you to be added as a collaborator in order to be able to push your edits to the repo. The latter option allows you to work independent from the official Aqueduct repo. You will need to make a pull request to have your edits incorporated in the main repo of Aqueduct3.0.
     1. Option 1) Clone original Aqueduct3.0 repository:  
-While in your Docker Image (root@... $ ) 
-`mkdir /volumes/repos` (might already exist)  
-`git clone https://github.com/rutgerhofste/Aqueduct30Docker.git /volumes/repos/`
+While in your Docker Image (root@... $ )   
+`mkdir /volumes/repos` (might already exist)    
+`git clone https://github.com/rutgerhofste/Aqueduct30Docker.git /volumes/repos/`  
     1. Option 2) Fork repository first  
-Fork repository on [Github](https://github.com/rutgerhofste/Aqueduct30Docker)
+Fork repository on [Github](https://github.com/rutgerhofste/Aqueduct30Docker)  
 `mkdir /volumes/repos` (might already exist)  
 `git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/`
 
