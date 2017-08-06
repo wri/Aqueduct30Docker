@@ -1,7 +1,6 @@
-# Work in Progres!!
+## Work in Progres!!
 
-# Aqueduct 3.0 Data Processing workflow
-## A modern geospatial analysis setup based on Jupyter
+# WRI Aqueduct 3.0 Data Processing workflow
 
 If you are not viewing this document on Github, please find a stylized version [here](https://github.com/rutgerhofste/Aqueduct30Docker)   
 
@@ -77,6 +76,7 @@ While in your Docker Image (root@... $ )
 `git clone https://github.com/rutgerhofste/Aqueduct30Docker.git /volumes/repos/`  
     1. Option 2) Fork repository first  
 Fork repository on [Github](https://github.com/rutgerhofste/Aqueduct30Docker)  
+Learn more about how forking works [here](https://help.github.com/articles/fork-a-repo/)  
 `mkdir /volumes/repos` (might already exist)  
 `git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/`
 
