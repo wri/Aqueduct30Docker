@@ -69,9 +69,19 @@ you can check if docker is installed by typing `docker -v` in your terminal or c
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`  
 This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. 
 
-4. Update the git repository  
-`cd /Aqueduct30docker/`  
-`git pull origin`
+4. Clone the Git repository
+You have two options here: 1) Clone the Aqueduct Repository 2) Create a so-called fork of the Aqueduct Project and work in the fork. The first option requires you to be added as a collaborator in order to be able to push your edits to the repo. The latter option allows you to work independent from the official Aqueduct repo. You will need to make a pull request to have your edits incorporated in the main repo of Aqueduct3.0.  
+
+Option 1) Clone original Aqueduct3.0 repository:  
+While in your Docker Image (root@... $ ) 
+`mkdir /volumes/repos` (might already exist)  
+`git clone https://github.com/rutgerhofste/Aqueduct30Docker.git /volumes/repos/`
+
+Option 2) Fork repository first  
+Fork repository on [Github](https://github.com/rutgerhofste/Aqueduct30Docker)
+`mkdir /volumes/repos` (might already exist)  
+`git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/`
+
 
 5. Launch a Jupyter Notebook server  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /Aqueduct30Docker/`
