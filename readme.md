@@ -148,8 +148,8 @@ otherwise:
 `git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/Aqueduct30Docker/`  
 You might have to specify credentials.  
 
-1. Create a TMUX session before spinning up your Jupyter Notebook server  
-Although this is an extra step, it will allow you to have multiple windows open and allows you to detach and attac in case you lose a connection. `tmux new -s aqueducttmux`. 
+1. Create a TMUX session before spinning up your Jupyter Notebook server.    
+Although this is an extra step, it will allow you to have multiple windows open and allows you to detach and attach in case you lose a connection. `tmux new -s aqueducttmux`. 
 
 1. Split your session window into two panes using `crtl-b "`. The way TMUX works is that you press `crtl+b`, release it and then press `"`. [more info on TMUX](https://www.youtube.com/watch?v=BHhA_ZKjyxo&t=213s). You can change panes by using `ctrl-b o` (opposite).  
 
