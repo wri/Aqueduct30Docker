@@ -163,24 +163,24 @@ The current config file is password protected. I will change to something generi
 1. The standard password for your notebooks is `Aqueduct2017!`, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)  
 1. Congratulations you are up and running. to make most use of these notebooks, you will need to authenticate for a couple of services including using AWS and Google Earth Engine. 
 
-# Additional Steps After Starting your jupyter Notebook server
-now authenticate for AWS  
+# Additional Steps After Starting your jupyter Notebook server  
+Let's check what we've done so far. You are now able to connect to a jupyter notebook server that either runs locally or in the cloud. In addition to your browser, you have an open terminal (or command prompt) window open with two TMUX panes. One is logging what is happening on your Jupyter notebook server, the other is idle but connected to you container. You can tell if you are in a container by the username and machine name in your window. It should say something like root@240c3eb5620e:. remember that you can switch panes by `ctrl-b o` 
+
+1. Authenticate for AWS  
+In your tmux pane type
 `aws configure`
 
+you should now be able to provide your AWS credentials. Please ask Susan Minnemeyer if you haven't received those already. 
+
+1. Autenticate for Google Cloud SDK  
+similar to AWS, you might need Google Cloud acces. 
+
+1. Autenticate for Earth Engine
 and for earth engine (if needed, you can also do this from within Jupyter)  
 `earthengine authenticate`  
 
 
-sync WRI's bucket with your instance (into Docker Volume). You can choose to sync all or just the data you require. The bucket rawData is currently around 100GB so will probably download per task. 
 
-
-
-2. Go to your instance's external IP address appended by port 8888 xx.xxx.xx.xx:8888 
-3. Login with password (ask me)
-
-# Test
-
-bla bla
 
 # Commit to development
 
