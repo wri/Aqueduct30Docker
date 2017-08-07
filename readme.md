@@ -71,7 +71,8 @@ This will download the docker image and run a container with name aqueduct in -i
 
 1. Setup Security certificates:  
 in your container create a certificate by running:  
-`openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/mykey.key -out /.keys/mycert.pem`
+`openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/mykey.key -out /.keys/mycert.pem`  
+You are asked some quesions like country name etc. which you can leave blank. Just press return a couple of times.
 
 1. Clone the Git repository
 You have two options here: 1) Clone the Aqueduct Repository 2) Create a so-called fork of the Aqueduct Project and work in the fork. The first option requires you to be added as a collaborator in order to be able to push your edits to the repo. The latter option allows you to work independent from the official Aqueduct repo. You will need to make a pull request to have your edits incorporated in the main repo of Aqueduct3.0.
