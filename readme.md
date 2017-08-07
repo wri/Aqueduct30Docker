@@ -84,7 +84,7 @@ While in your Docker Image (root@... $ )
 Fork repository on [Github](https://github.com/rutgerhofste/Aqueduct30Docker)  
 Learn more about how forking works [here](https://help.github.com/articles/fork-a-repo/)  
 `mkdir /volumes/repos` (might already exist)  
-`git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/`
+`git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/Aqueduct30Docker/`
 
 
 1. Launch a Jupyter Notebook server  
@@ -152,13 +152,8 @@ https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-s
 If you setup github SSH (see above):  
 `git clone git@github.com:rutgerhofste/Aqueduct30Docker.git`  
 otherwise:  
-`git clone https://github.com/rutgerhofste/Aqueduct30Docker.git`  
+`git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/Aqueduct30Docker/`  
 You might have to specify credentials.  
-
-1. Specify who you are by running 
-
-
-Copy config file that includes password and SSL for HTTPS
 
 1. Start your notebook with the certificates
 
