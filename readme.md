@@ -1,11 +1,8 @@
 ## Work in Progres!!
-for Tianyi and Sam: [agenda](https://docs.google.com/presentation/d/1mTQoslUD0Jt6DG3hM20rS1NwW3BQNDnYcruZ5e2VFvw/edit?usp=sharing)  
-
 
 # WRI Aqueduct 3.0 Data Processing workflow
 
 If you are not viewing this document on Github, please find a stylized version [here](https://github.com/rutgerhofste/Aqueduct30Docker)   
-
 The coding environment uses Docker images that can be found [here](https://hub.docker.com/r/rutgerhofste/gisdocker/)
 
 this document explains each and every step for the data processing of Aqueduct 3.0. Everything is here, from raw data to code to explanation. We also epxlain how you could replicate the calculations on your local machine or in a cloud environment. 
@@ -90,10 +87,8 @@ Learn more about how forking works [here](https://help.github.com/articles/fork-
 1. Launch a Jupyter Notebook server  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /volumes/repos/Aqueduct30Docker/`  
 
-1. Open your browser and go to http://localhost:8888
-
-1. Type in the token that you see in your terminal  
-You can now start working on notebooks 
+1. Open your browser and go to http://localhost:8888  
+The standard password for your notebooks is Aqueduct2017!, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)
 
 1. To save you progress, please see the section below.  
 
