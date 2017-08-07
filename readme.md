@@ -61,7 +61,7 @@ Requirements:
 For windows it requires some additional steps. 
 
 1. Start docker  
-you can check if docker is installed by typing `docker -v` in your terminal or command prompt  
+you can check if docker is installed by typing `docker -v` in your terminal or command prompt. If you ever got stuck in one of the next steps or closed your terminal window it is important to understand some basic docker commands. First, you need to understand the concpet of an [image and a container](https://stackoverflow.com/questions/23735149/docker-image-vs-container). You can list your images using `docker images` and you can list your active containers using `docker ps` and all your containers using `docker ps -a`. If your container is still running you can bash (terminal) into your container using `docker exec -it aqueduct bash`. Furthermore you can delete containers using `docker rm -f <ContainerName>` and images using `docker rmi <imageName>`. I also created a couple of cheatsheets for various tools. 
 
 1. Run a Docker Container:  
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`  
@@ -88,7 +88,7 @@ Learn more about how forking works [here](https://help.github.com/articles/fork-
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /volumes/repos/Aqueduct30Docker/`  
 
 1. Open your browser and go to http://localhost:8888  
-The standard password for your notebooks is Aqueduct2017!, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)
+The standard password for your notebooks is `Aqueduct2017!`, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)
 
 1. To save you progress, please see the section below.  
 
