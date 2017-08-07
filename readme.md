@@ -97,7 +97,7 @@ Although this is an extra step, it will allow you to have multiple windows open 
 1. Open your browser and go to http://localhost:8888  
 The standard password for your notebooks is `Aqueduct2017!`, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)
 
-1. To save you progress, please see the section below.  
+1. Congratulations, you can start running code in your browser. This tuturial continues in the section [Additional Steps After Starting your jupyter Notebook server](#AdditionalSteps)
 
 ## Cloud based solution (recommended)
 
@@ -149,20 +149,21 @@ otherwise:
 You might have to specify credentials.  
 
 1. Create a TMUX session before spinning up your Jupyter Notebook server.    
-Although this is an extra step, it will allow you to have multiple windows open and allows you to detach and attach in case you lose a connection. `tmux new -s aqueducttmux`. 
+Although this is an extra step, it will allow you to have multiple windows open and allows you to detach and attach in case you lose a connection. `tmux new -s aqueducttmux` 
 
-1. Split your session window into two panes using `crtl-b "`. The way TMUX works is that you press `crtl+b`, release it and then press `"`. [more info on TMUX](https://www.youtube.com/watch?v=BHhA_ZKjyxo&t=213s). You can change panes by using `ctrl-b o` (opposite).  
+1. Split your session window into two panes using `crtl-b "` The way TMUX works is that you press `crtl+b`, release it and then press `"`. [more info on TMUX](https://www.youtube.com/watch?v=BHhA_ZKjyxo&t=213s). You can change panes by using `ctrl-b o` (opposite).  
 
 1. Start your notebook with the certificates  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /volumes/repos/Aqueduct30Docker/ --config=/volumes/repos/Aqueduct30Docker/jupyter_notebook_config.py`  
-1. in your browser you can go to: 
-You can find your public IP address on the overview page of amazon EC2. 
-`https://<your public IP address>:8888`  
-your browser will give you a warning because you are using a self created certificate. Do you trust your self created certificate :) ?  
+1. in your browser, go to: 
+`https://<your public IP address>:8888`
+You can find your public IP address on the overview page of amazon EC2. your browser will give you a warning because you are using a self created certificate. Do you trust your self created certificate?  
 If you trust yourself, click advanced (Chrome) and proceed to the site. 
 The current config file is password protected. I will change to something generic in the future. If you want to change this password please see this [link](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)  
+1. The standard password for your notebooks is `Aqueduct2017!`, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)  
 1. Congratulations you are up and running. to make most use of these notebooks, you will need to authenticate for a couple of services including using AWS and Google Earth Engine. 
 
+# Additional Steps After Starting your jupyter Notebook server
 now authenticate for AWS  
 `aws configure`
 
