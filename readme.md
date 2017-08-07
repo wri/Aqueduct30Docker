@@ -1,4 +1,6 @@
 ## Work in Progres!!
+for Tianyi and Sam: [agenda](https://docs.google.com/presentation/d/1mTQoslUD0Jt6DG3hM20rS1NwW3BQNDnYcruZ5e2VFvw/edit?usp=sharing)  
+
 
 # WRI Aqueduct 3.0 Data Processing workflow
 
