@@ -63,19 +63,23 @@ Requirements:
 [instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)  
 For windows it requires some additional steps. 
 
-2. Start docker  
+1. Start docker  
 you can check if docker is installed by typing `docker -v` in your terminal or command prompt  
 
-3. Run a Docker Container:  
+1. Run a Docker Container:  
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`  
 This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. 
 
-4. Clone the Git repository
+1. Setup Security certificates:  
+in your container create a certificate by running:  
+`openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/mykey.key -out /.keys/mycert.pem`
+
+1. Clone the Git repository
 You have two options here: 1) Clone the Aqueduct Repository 2) Create a so-called fork of the Aqueduct Project and work in the fork. The first option requires you to be added as a collaborator in order to be able to push your edits to the repo. The latter option allows you to work independent from the official Aqueduct repo. You will need to make a pull request to have your edits incorporated in the main repo of Aqueduct3.0.
     1. Option 1) Clone original Aqueduct3.0 repository:  
 While in your Docker Image (root@... $ )   
 `mkdir /volumes/repos` (might already exist)    
-`git clone https://github.com/rutgerhofste/Aqueduct30Docker.git /volumes/repos/`  
+`git clone https://github.com/rutgerhofste/Aqueduct30Docker.git /volumes/repos/Aqueduct30Docker/`  
     1. Option 2) Fork repository first  
 Fork repository on [Github](https://github.com/rutgerhofste/Aqueduct30Docker)  
 Learn more about how forking works [here](https://help.github.com/articles/fork-a-repo/)  
@@ -83,15 +87,15 @@ Learn more about how forking works [here](https://help.github.com/articles/fork-
 `git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/`
 
 
-5. Launch a Jupyter Notebook server  
+1. Launch a Jupyter Notebook server  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /volumes/repos/Aqueduct30Docker/`  
 
-6. Open your browser and go to http://localhost:8888
+1. Open your browser and go to http://localhost:8888
 
-7. Type in the token that you see in your terminal  
+1. Type in the token that you see in your terminal  
 You can now start working on notebooks 
 
-8. To save you progress, please see the section below.  
+1. To save you progress, please see the section below.  
 
 ## Cloud based solution (recommended)
 
