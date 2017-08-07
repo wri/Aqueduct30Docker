@@ -67,7 +67,7 @@ you can check if docker is installed by typing `docker -v` in your terminal or c
 
 1. Run a Docker Container:  
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`  
-This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. 
+This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. You can tell if you are in a container by the first characters in you terminal. It will state something like "root@240c3eb5620e:/#" indicating you are a root user on the virtual machine named "240c3eb5620e". The code will be different in your case. 
 
 1. Setup Security certificates:  
 in your container create a certificate by running:  
