@@ -89,7 +89,7 @@ Although this is an extra step, it will allow you to have multiple windows open 
 1. Split your session window into two panes using `crtl-b "`. The way TMUX works is that you press `crtl+b`, release it and then press `"`. [more info on TMUX](https://www.youtube.com/watch?v=BHhA_ZKjyxo&t=213s). You can change panes by using `ctrl-b o` (opposite).  
 
 1. In one of your panes, launch a Jupyter Notebook server  
-`jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /volumes/repos/Aqueduct30Docker/`  
+`jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /volumes/repos/Aqueduct30Docker/ --config=/volumes/repos/Aqueduct30Docker/jupyter_notebook_config.py`
 
 1. Open your browser and go to http://localhost:8888  
 The standard password for your notebooks is `Aqueduct2017!`, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)
