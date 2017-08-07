@@ -86,9 +86,9 @@ Learn more about how forking works [here](https://help.github.com/articles/fork-
 1. Create a TMUX session before spinning up your Jupyter Notebook server  
 Although this is an extra step, it will allow you to have multiple windows open and allows you to detach and attac in case you lose a connection. `tmux new -s aqueducttmux`.  
 
-1. Split your session window into two panes using `crtl-b "`. The way TMUX works is that you press `crtl+b`, release it and then press `"`. [more info on TMUX](https://www.youtube.com/watch?v=BHhA_ZKjyxo&t=213s)
+1. Split your session window into two panes using `crtl-b "`. The way TMUX works is that you press `crtl+b`, release it and then press `"`. [more info on TMUX](https://www.youtube.com/watch?v=BHhA_ZKjyxo&t=213s). You can change panes by using `ctrl-b o` (opposite).  
 
-1. Launch a Jupyter Notebook server  
+1. In one of your panes, launch a Jupyter Notebook server  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /volumes/repos/Aqueduct30Docker/`  
 
 1. Open your browser and go to http://localhost:8888  
@@ -144,6 +144,11 @@ If you setup github SSH (see above):
 otherwise:  
 `git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/Aqueduct30Docker/`  
 You might have to specify credentials.  
+
+1. Create a TMUX session before spinning up your Jupyter Notebook server  
+Although this is an extra step, it will allow you to have multiple windows open and allows you to detach and attac in case you lose a connection. `tmux new -s aqueducttmux`. 
+
+1. Split your session window into two panes using `crtl-b "`. The way TMUX works is that you press `crtl+b`, release it and then press `"`. [more info on TMUX](https://www.youtube.com/watch?v=BHhA_ZKjyxo&t=213s). You can change panes by using `ctrl-b o` (opposite).  
 
 1. Start your notebook with the certificates  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /volumes/repos/Aqueduct30Docker/ --config=/volumes/repos/Aqueduct30Docker/jupyter_notebook_config.py`  
