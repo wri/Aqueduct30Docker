@@ -20,7 +20,8 @@
 #------------------------------------------------------------------------------
 # Password to use for web authentication
 c = get_config()
-c.NotebookApp.password = u'sha1:1f89ed9bab8a:cfd7939777a37f99883541980e3b05dde7078346'
+#c.NotebookApp.password = u'sha1:1f89ed9bab8a:cfd7939777a37f99883541980e3b05dde7078346'
+c.NotebookApp.password = u'sha1:d749a7a286a1:8d47f994d7bc3eea5ab1050b5f3f15e38139cf15'
 ## Base class for Jupyter applications
 
 ## Answer yes to any prompts.
