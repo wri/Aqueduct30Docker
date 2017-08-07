@@ -97,7 +97,7 @@ Although this is an extra step, it will allow you to have multiple windows open 
 1. Open your browser and go to http://localhost:8888  
 The standard password for your notebooks is `Aqueduct2017!`, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)
 
-1. Congratulations, you can start running code in your browser. This tuturial continues in the section [Additional Steps After Starting your jupyter Notebook server](#AdditionalSteps)
+1. Congratulations, you can start running code in your browser. This tuturial continues in the section [Additional Steps After Starting your jupyter Notebook server](#additional-steps-after-starting-your-jupyter-notebook-server)
 
 ## Cloud based solution (recommended)
 
