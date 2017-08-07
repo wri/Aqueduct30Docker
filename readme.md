@@ -122,30 +122,21 @@ for this I reccomend using the tutorials that are available on Amazon's and Goog
 1. Connect to your instance using SSH
 [Connect to your instance](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)  
 For windows [PUTTY](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html) is recommended, for Mac and Linux you can use your terminal. 
-
 1. Once logged in into your system  
 check if docker is installed
 `docker version`
-
 1. download the latest docker image for aqueduct. Check https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=rutgerhofste&starCount=0
 run your container  
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`
-
 1. (recommended) Set up HTTPS access
-
-in your container create a certificate by running
-
+in your container create a certificate by running  
 `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/mykey.key -out /.keys/mycert.pem`
-
 and answer some questions needed for the certificate  
 
-1. Optional: Setup SSH access keys:  
-https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
-
-`ssh-keygen -t rsa -b 4096 -C "rutgerhofste@gmail.com"`
-
-`cat /root/.ssh/id_rsa.pub`
-
+1. Optional: Setup SSH access keys:   
+https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/  
+`ssh-keygen -t rsa -b 4096 -C "rutgerhofste@gmail.com"`  
+`cat /root/.ssh/id_rsa.pub`  
 1. Clone your repo in a new folder    
 `mkdir /volumes/repos`  
 `cd /volumes/repos`  
