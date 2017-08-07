@@ -83,6 +83,10 @@ Learn more about how forking works [here](https://help.github.com/articles/fork-
 `mkdir /volumes/repos` (might already exist)  
 `git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/Aqueduct30Docker/`
 
+1. Create a TMUX session before spinning up your Jupyter Notebook server  
+Although this is an extra step, it will allow you to have multiple windows open and allows you to detach and attac in case you lose a connection. `tmux new -s aqueducttmux`.  
+
+1. Split your session window into two panes using `crtl-b "`. The way TMUX works is that you press `crtl+b`, release it and then press `"`. [more info on TMUX](https://www.youtube.com/watch?v=BHhA_ZKjyxo&t=213s)
 
 1. Launch a Jupyter Notebook server  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --notebook-dir= /volumes/repos/Aqueduct30Docker/`  
@@ -165,7 +169,9 @@ sync WRI's bucket with your instance (into Docker Volume). You can choose to syn
 2. Go to your instance's external IP address appended by port 8888 xx.xxx.xx.xx:8888 
 3. Login with password (ask me)
 
+# Test
 
+bla bla
 
 # Commit to development
 
