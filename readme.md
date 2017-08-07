@@ -141,25 +141,15 @@ otherwise:
 `git clone https://github.com/<Replace with your Github username>/Aqueduct30Docker.git /volumes/repos/Aqueduct30Docker/`  
 You might have to specify credentials.  
 
-1. Start your notebook with the certificates
-
+1. Start your notebook with the certificates  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /volumes/repos/Aqueduct30Docker/ --config=/volumes/repos/Aqueduct30Docker/jupyter_notebook_config.py`  
-
 1. in your browser you can go to: 
-https://<your public IP address>:8888
-
-your browser will give you a warning because you are using a self created certificate. Do you trust your self created certificate :) ? 
-
+You can find your public IP address on the overview page of amazon EC2. 
+`https://<your public IP address>:8888`  
+your browser will give you a warning because you are using a self created certificate. Do you trust your self created certificate :) ?  
 If you trust yourself, click advanced (Chrome) and proceed to the site. 
 The current config file is password protected. I will change to something generic in the future. If you want to change this password please see this [link](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)  
-
-
 1. Congratulations you are up and running. to make most use of these notebooks, you will need to authenticate for a couple of services including using AWS and Google Earth Engine. 
-
-* ssh into your machine and run bash in your Docker container using the following command  
-`docker ps -a`  
-check the container name and run  
-`docker exec -it <container name> bash`  
 
 now authenticate for AWS  
 `aws configure`
