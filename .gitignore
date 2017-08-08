@@ -1,6 +1,13 @@
 Untitled.ipynb
+Untitled.py
+.ipynb_checkpoints
 .*
 !/.gitignore
 
 
+
+*.tif
+*.tiff
+*.map
 *.nc4
+*.nc
