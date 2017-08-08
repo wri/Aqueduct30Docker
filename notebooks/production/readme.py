@@ -12,7 +12,7 @@
 #     Copy files from raw data folder to process data folder, all within S3. 
 # 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V01.ipynb**  
 #     Download the data to your machine, unzip files
-# 1.  **Y2017M07D31_RH_Check_Metadata_V01.ipynb (needs update or remove**  
+# 1.  **Y2017M07D31_RH_Check_Metadata_V01.ipynb (needs update or remove)**  
 #     Check PCRGlobWB metadata
 # 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01**  
 #     convert netCDF4 to Geotiff

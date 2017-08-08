@@ -16,31 +16,32 @@
 
 # Run the following command just in case an old folder exists. _If no older folder exist you will get the error: rm: cannot remove '/volumes/data/PCRGlobWB20V01/additional/*': No such file or directory_
 
+# # Settings
+
 # In[1]:
 
-get_ipython().system('rm -r /volumes/data/PCRGlobWB20V01/additional/*')
+EC2_INPUT_PATH_ADDITIONAL = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/input"
+S3_INPUT_PATH_ADDITIONAL = "s3://wri-projects/Aqueduct30/rawData/WRI/samplegeotiff/"
+EC2_INPUT_PATH = "/volumes/data/Y2017M07D31_RH_download_PCRGlobWB_data_V01/output/"
+PRINT_METADATA = False
+EC2_OUTPUTPATH = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/output"
 
 
 # In[2]:
 
-get_ipython().system('aws s3 sync s3://wri-projects/Aqueduct30/rawData/WRI/samplegeotiff/ /volumes/data/PCRGlobWB20V01/additional/')
-
-
-# Check if the file is actually copied
-
-# In[3]:
-
-get_ipython().system('rm -r /volumes/data/temp*')
+get_ipython().system('mkdir -p {EC2_INPUT_PATH_ADDITIONAL}')
 
 
 # In[4]:
 
-get_ipython().system('mkdir /volumes/data/temp')
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_ADDITIONAL} {EC2_INPUT_PATH_ADDITIONAL} --recursive')
 
+
+# Check if the file is actually copied
 
 # In[5]:
 
-get_ipython().system('ls /volumes/data/PCRGlobWB20V01/additional/')
+get_ipython().system('ls {EC2_INPUT_PATH_ADDITIONAL}')
 
 
 # In[6]:
@@ -56,14 +57,11 @@ import datetime
 import subprocess
 
 
-# # Settings
+# 
 
 # In[7]:
 
-NETCDFINPUTPATH = "/volumes/data/PCRGlobWB20V01/"
-PRINT_METADATA = False
-OUTPUTPATH = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/"
-inputLocationSampleGeotiff = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
+inputLocationSampleGeotiff = os.path.join(EC2_INPUT_PATH_ADDITIONAL,"sampleGeotiff.tiff")
 
 
 # In[13]:
@@ -211,7 +209,7 @@ print xsize, ysize, geotransform
 
 # In[17]:
 
-for root, dirs, files in os.walk(NETCDFINPUTPATH):
+for root, dirs, files in os.walk(EC2_INPUT_PATH):
     for oneFile in files:
         if oneFile.endswith(".nc4") or oneFile.endswith(".nc"):
             print(oneFile)

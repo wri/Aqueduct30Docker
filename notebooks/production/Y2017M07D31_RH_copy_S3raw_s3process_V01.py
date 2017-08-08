@@ -14,14 +14,14 @@
 
 # In[1]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/waterdemand s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 --recursive')
+get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/waterdemand s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V01/output --recursive')
 
 
 # ## River Discharge (5GB)
 
 # In[2]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/wateravailability s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 --recursive')
+get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/wateravailability s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V01/output --recursive')
 
 
 # Some files were later obtained from Rens van Beek to complete the analysis, that is why the files are from different sources 
@@ -30,28 +30,28 @@ get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yos
 
 # In[3]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/waterstress s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 --recursive')
+get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/waterstress s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V01/output --recursive')
 
 
 # ## Local Runoff (6GB)
 
 # In[4]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/wateravailability s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 --recursive')
+get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/wateravailability s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V01/output --recursive')
 
 
 # ## Soil Moisture (4GB)
 
 # In[5]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/soilmoisture s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 --recursive')
+get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/soilmoisture s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V01/output --recursive')
 
 
 # ## Indicators (0.5GB)
 
-# In[3]:
+# In[6]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/indicators s3://wri-projects/Aqueduct30/processData/03PCRGlobWBIndicatorsV01 --recursive')
+get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/indicators s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V01/output --recursive')
 
 
 # In[ ]:

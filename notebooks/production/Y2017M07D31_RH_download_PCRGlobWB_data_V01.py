@@ -14,89 +14,72 @@
 
 # Create folder to store the data
 
-# In[3]:
-
-get_ipython().system('mkdir /volumes/data/PCRGlobWB20V01/')
-
-
-# In[4]:
-
-get_ipython().system('ls /volumes/data/PCRGlobWB20V01/')
-
-
-# Total number of files in folder
-
-# In[5]:
-
-get_ipython().system('find /volumes/data/PCRGlobWB20V01/ -type f | wc -l')
-
-
-# ---------ONLY RUN IF YOU WANT TO DELETE FILES IN FOLDER /volumes/data/PCRGlobWB20V01/ ON YOUR INSTANCE ------------
-
 # In[6]:
 
-#!rm -r /volumes/data/PCRGlobWB20V01/
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V01/output/"
 
-
-# -----------------------------------------End danger zone------------------------------------------------------------------
-# 
-# 
-# 
-# 
-# 
-
-# Grab a coffee before you run the following command. This will copy the files from S3 to your EC2 instance. 
 
 # In[7]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 /volumes/data/PCRGlobWB20V01/ --recursive')
+EC2_PATH = "/volumes/data/Y2017M07D31_RH_download_PCRGlobWB_data_V01/output/"
 
-
-# List files downloaded (24 in my case)
 
 # In[8]:
 
-get_ipython().system('find /volumes/data/PCRGlobWB20V01/ -type f | wc -l')
+get_ipython().system('mkdir -p {EC2_PATH}')
+
+
+# Grab a coffee before you run the following command. This will copy the files from S3 to your EC2 instance. 
+
+# In[9]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_PATH} --recursive')
+
+
+# List files downloaded (32 in my case)
+
+# In[12]:
+
+get_ipython().system('find {EC2_PATH} -type f | wc -l')
 
 
 # As you can see there are some zipped files. Unzipping
 
 # Unzipping the file results in a 24GB file which is signifact. Therefore this step will take quite some time
 
-# In[9]:
+# In[13]:
 
-get_ipython().system('unzip /volumes/data/PCRGlobWB20V01/totalRunoff_monthTot_output.zip -d /volumes/data/PCRGlobWB20V01/')
+get_ipython().system('unzip {EC2_PATH}totalRunoff_monthTot_output.zip -d {EC2_PATH}')
 
 
 # The total number of files should be around 25 but can change if the raw data changed. 
 
-# In[10]:
+# In[14]:
 
-get_ipython().system('ls -lah /volumes/data/PCRGlobWB20V01/')
+get_ipython().system('ls -lah {EC2_PATH}')
 
 
 # In the data that Yoshi provided there is only Livestock data for consumption (WN). However in an email he specified that the withdrawal (WW) equals the consumption (100% consumption) for livestock. Therefore we copy the WN Livestock files to WW to make looping over WN and WW respectively easier. 
 
-# In[11]:
+# In[15]:
 
-get_ipython().system('cp /volumes/data/PCRGlobWB20V01/global_historical_PLivWN_month_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/global_historical_PLivWW_month_millionm3_5min_1960_2014.nc4')
-
-
-# In[12]:
-
-get_ipython().system('cp /volumes/data/PCRGlobWB20V01/global_historical_PLivWN_year_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/global_historical_PLivWW_year_millionm3_5min_1960_2014.nc4')
+get_ipython().system('cp {EC2_PATH}/global_historical_PLivWN_month_millionm3_5min_1960_2014.nc4 {EC2_PATH}/global_historical_PLivWW_month_millionm3_5min_1960_2014.nc4')
 
 
-# In[13]:
+# In[16]:
 
-get_ipython().system('ls -lah /volumes/data/PCRGlobWB20V01/')
+get_ipython().system('cp {EC2_PATH}/global_historical_PLivWN_year_millionm3_5min_1960_2014.nc4 {EC2_PATH}/global_historical_PLivWW_year_millionm3_5min_1960_2014.nc4')
 
 
-# In[14]:
+# In[17]:
+
+get_ipython().system('ls -lah {EC2_PATH}')
+
+
+# In[18]:
 
 import os
-pathName = "/volumes/data/PCRGlobWB20V01/"
-files = os.listdir(pathName)
+files = os.listdir(EC2_PATH)
 print("Number of files: " + str(len(files)))
 
 
@@ -104,18 +87,13 @@ print("Number of files: " + str(len(files)))
 
 # Some files that WRI received from Utrecht refer to water "Use" instead of WN (net). Renaming the relevant file. Renaming them
 
-# In[16]:
+# In[19]:
 
-get_ipython().system('ls /volumes/data/PCRGlobWB20V01/')
+get_ipython().system('mv {EC2_PATH}/global_historical_PDomUse_month_millionm3_5min_1960_2014.nc4 {EC2_PATH}/global_historical_PDomWN_month_millionm3_5min_1960_2014.nc4')
+get_ipython().system('mv {EC2_PATH}/global_historical_PDomUse_year_millionm3_5min_1960_2014.nc4 {EC2_PATH}/global_historical_PDomWN_year_millionm3_5min_1960_2014.nc4')
 
-
-# In[17]:
-
-get_ipython().system('mv /volumes/data/PCRGlobWB20V01/global_historical_PDomUse_month_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/global_historical_PDomWN_month_millionm3_5min_1960_2014.nc4')
-get_ipython().system('mv /volumes/data/PCRGlobWB20V01/global_historical_PDomUse_year_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/global_historical_PDomWN_year_millionm3_5min_1960_2014.nc4')
-
-get_ipython().system('mv /volumes/data/PCRGlobWB20V01/global_historical_PIndUse_month_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/global_historical_PIndWN_month_millionm3_5min_1960_2014.nc4')
-get_ipython().system('mv /volumes/data/PCRGlobWB20V01/global_historical_PIndUse_year_millionm3_5min_1960_2014.nc4 /volumes/data/PCRGlobWB20V01/global_historical_PIndWN_year_millionm3_5min_1960_2014.nc4')
+get_ipython().system('mv {EC2_PATH}/global_historical_PIndUse_month_millionm3_5min_1960_2014.nc4 {EC2_PATH}/global_historical_PIndWN_month_millionm3_5min_1960_2014.nc4')
+get_ipython().system('mv {EC2_PATH}/global_historical_PIndUse_year_millionm3_5min_1960_2014.nc4 {EC2_PATH}/global_historical_PIndWN_year_millionm3_5min_1960_2014.nc4')
 
 
 # As you can see, the filename structure of the runoff files is different. Using Panoply to inspect the units, we rename the files accordingly. 
@@ -129,22 +107,24 @@ get_ipython().system('mv /volumes/data/PCRGlobWB20V01/global_historical_PIndUse_
 # global_historical_runoff_month_mmonth_5min_1958_2014.nc
 # 
 
-# In[19]:
-
-get_ipython().system('mv /volumes/data/PCRGlobWB20V01/totalRunoff_annuaTot_output.nc /volumes/data/PCRGlobWB20V01/global_historical_runoff_year_myear_5min_1958_2014.nc')
-
-
 # In[20]:
 
-get_ipython().system('mv /volumes/data/PCRGlobWB20V01/totalRunoff_monthTot_output.nc /volumes/data/PCRGlobWB20V01/global_historical_runoff_month_mmonth_5min_1958_2014.nc')
+get_ipython().system('mv {EC2_PATH}/totalRunoff_annuaTot_output.nc {EC2_PATH}/global_historical_runoff_year_myear_5min_1958_2014.nc')
+
+
+# In[21]:
+
+get_ipython().system('mv {EC2_PATH}/totalRunoff_monthTot_output.nc {EC2_PATH}/global_historical_runoff_month_mmonth_5min_1958_2014.nc')
 
 
 # Final Folder strcuture
 
-# In[21]:
+# In[22]:
 
-get_ipython().system('ls /volumes/data/PCRGlobWB20V01/')
+get_ipython().system('ls {EC2_PATH}')
 
+
+# 
 
 # In[ ]:
 
