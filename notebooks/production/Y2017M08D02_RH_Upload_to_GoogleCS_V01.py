@@ -13,6 +13,12 @@
 # run `gcloud init()` in your terminal and paste your login code
 # 
 
+# In[ ]:
+
+EC2_INPUT_PATH = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/output/"
+GCS_OUTPUT_PATH = "gs://aqueduct30_v01/Y2017M08D02_RH_Upload_to_GoogleCS_V01"
+
+
 # In[1]:
 
 get_ipython().system('gsutil version')
@@ -29,7 +35,7 @@ get_ipython().system('gcloud config set project aqueduct30')
 
 # In[3]:
 
-get_ipython().system('gsutil -m cp /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/*.tif gs://aqueduct30_v01/Y2017M08D02_RH_Upload_to_GoogleCS_V01')
+get_ipython().system('gsutil -m cp {EC2_INPUT_PATH}*.tif {GCS_OUTPUT_PATH}')
 
 
 # 

@@ -24,12 +24,17 @@ EC2_INPUT_PATH_ADDITIONAL = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff
 S3_INPUT_PATH_ADDITIONAL = "s3://wri-projects/Aqueduct30/rawData/WRI/samplegeotiff/"
 EC2_INPUT_PATH = "/volumes/data/Y2017M07D31_RH_download_PCRGlobWB_data_V01/output/"
 PRINT_METADATA = False
-EC2_OUTPUTPATH = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/output"
+EC2_OUTPUTPATH = "/volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/output/"
 
 
 # In[2]:
 
 get_ipython().system('mkdir -p {EC2_INPUT_PATH_ADDITIONAL}')
+
+
+# In[3]:
+
+get_ipython().system('mkdir -p {EC2_OUTPUTPATH}')
 
 
 # In[4]:
@@ -57,21 +62,19 @@ import datetime
 import subprocess
 
 
-# 
-
 # In[7]:
 
 inputLocationSampleGeotiff = os.path.join(EC2_INPUT_PATH_ADDITIONAL,"sampleGeotiff.tiff")
 
 
-# In[13]:
+# In[8]:
 
-get_ipython().system('mkdir /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01')
+print(inputLocationSampleGeotiff)
 
 
 # # Functions
 
-# In[14]:
+# In[9]:
 
 def netCDF4toGeotiff(fileName,fileLocation):
     netCDFInputBaseName = fileName.split('.')[0]
@@ -98,7 +101,7 @@ def netCDF4toGeotiff(fileName,fileLocation):
         Z[Z<-9990]= -9999
         Z[Z>1e19] = -9999
         outputFilename = netCDFInputBaseName + "I%0.3dY%0.2dM%0.2d.tif" %(i,timeNormal[i].year,timeNormal[i].month)
-        writefilename = os.path.join(OUTPUTPATH,outputFilename)
+        writefilename = os.path.join(EC2_OUTPUTPATH,outputFilename)
         writeFile(writefilename,geotransform,geoproj,Z)
     
     return time, timeUnit, timeNormal
@@ -195,19 +198,19 @@ def ncdump(nc_fid, verb=True):
 
 # # Script
 
-# In[15]:
+# In[10]:
 
 [xsize,ysize,geotransform,geoproj,ZSample] = readFile(inputLocationSampleGeotiff)
 
 
 # These are the parameters of the standard geometry. 
 
-# In[16]:
+# In[11]:
 
 print xsize, ysize, geotransform
 
 
-# In[17]:
+# In[12]:
 
 for root, dirs, files in os.walk(EC2_INPUT_PATH):
     for oneFile in files:
@@ -219,7 +222,7 @@ for root, dirs, files in os.walk(EC2_INPUT_PATH):
                 
 
 
-# In[18]:
+# In[ ]:
 
 files = os.listdir(OUTPUTPATH)
 print("Number of files: " + str(len(files)))
@@ -234,12 +237,12 @@ print("Number of files: " + str(len(files)))
 # 
 # 
 
-# In[19]:
+# In[ ]:
 
 get_ipython().system('mkdir /volumes/data/trash')
 
 
-# In[20]:
+# In[ ]:
 
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
@@ -247,7 +250,7 @@ get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01
 
 
 
-# In[21]:
+# In[ ]:
 
 files = os.listdir(OUTPUTPATH)
 print("Number of files: " + str(len(files)))
