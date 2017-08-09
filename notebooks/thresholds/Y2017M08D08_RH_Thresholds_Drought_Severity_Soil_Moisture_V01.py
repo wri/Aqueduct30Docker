@@ -105,7 +105,4 @@ get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 print(S3_OUTPUT_PATH)
 
 
-# In[ ]:
-
-
-
+# You can download the resulting geotiff using the following [URL](https://s3.amazonaws.com/wri-projects/Aqueduct30/processData/Y2017M08D08_RH_Thresholds_Drought_Severity_Soil_Moisture_V01/output/global_droughtseveritystandardisedsoilmoisture_5min_1960-2014_Categorized.tif)
