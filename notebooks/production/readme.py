@@ -18,7 +18,7 @@
 #     upload files to Google Cloud Storage. 
 # 1. **Y2017M08D02_RH_Ingest_GCS_EE_V01**  
 #     ingest data from Google Cloud Storage to EarthEngine, adding metadata
-# 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01**
+# 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01**  
 #     A couple of indicators are shared in ASCII format. Converting to geotiff
 # 1. **Y2017M08D02_RH_Merge_HydroBasins_V01**  
 #     copy hydrobasin files from S3 and merge in pyhton using Fiona

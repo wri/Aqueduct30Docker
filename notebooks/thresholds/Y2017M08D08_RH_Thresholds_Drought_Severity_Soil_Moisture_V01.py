@@ -95,7 +95,7 @@ categorizeRaster(inputRasterPath,outputRasterPath,bins)
 
 # In[25]:
 
-get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --acl public-read')
 
 
 # The results are on S3 in bucket :

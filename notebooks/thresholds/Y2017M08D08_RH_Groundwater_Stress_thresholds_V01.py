@@ -126,32 +126,37 @@ df['significant'] =df['r_squared'] > 0.9
 
 # In[10]:
 
-df['slope_of_decline_cm.year-1_categorized'] = np.where(df['significant'],df['slope_of_decline_cm.year-1_categorized_excl_mask'],NON_SIGNIFICANT_CATEGORY)
+df.significant = df.significant.astype(int)
 
 
 # In[11]:
 
-df.tail()
+df['slope_of_decline_cm.year-1_categorized'] = np.where(df['significant'],df['slope_of_decline_cm.year-1_categorized_excl_mask'],NON_SIGNIFICANT_CATEGORY)
 
 
 # In[12]:
 
-outputLocation = os.path.join(EC2_OUTPUT_PATH,"aquifer_table_sorted.csv")
+df.tail()
 
 
 # In[13]:
 
-print(outputLocation)
+outputLocation = os.path.join(EC2_OUTPUT_PATH,"aquifer_table_sorted.csv")
 
 
 # In[14]:
 
-df.to_csv(outputLocation)
+print(outputLocation)
 
 
 # In[15]:
 
-get_ipython().system('aws s3 cp {outputLocation} {S3_OUTPUT_PATH}')
+df.to_csv(outputLocation)
+
+
+# In[17]:
+
+get_ipython().system('aws s3 cp {outputLocation} {S3_OUTPUT_PATH} --acl public-read')
 
 
 # The file for Aquifer level can be downloaded with this [URL](https://s3.amazonaws.com/wri-projects/Aqueduct30/processData/Y2017M08D08_RH_Groundwater_Stress_thresholds_V01/output/aquifer_table_sorted.csv)

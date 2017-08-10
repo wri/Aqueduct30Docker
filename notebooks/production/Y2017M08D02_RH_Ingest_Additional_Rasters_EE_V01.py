@@ -3,10 +3,10 @@
 
 # # Ingest Additional Rasters on Earth Engine
 # 
-# * Purpose of script: This notebook will ingest some of the missing rasters to Earth Engine 
+# * Purpose of script: This notebook will ingest some of the missing rasters to Earth Engine like streamflow direction, DEM etc. 
 # * Author: Rutger Hofste
 # * Kernel used: python27
-# * Date created: 20170803
+# * Date created: 20170802
 
 # ## Preparation
 # 
@@ -15,65 +15,35 @@
 # 1. aws authorization (`aws configure`)
 # 
 
-# In[16]:
+# In[1]:
 
-get_ipython().system('rm -r /volumes/data/PCRGlobWB20V01/additional')
+S3_INPUT_PATH_SAMPLE = "s3://wri-projects/Aqueduct30/rawData/WRI/samplegeotiff"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/flowNetwork/topo_pcrglobwb_05min"
+INPUTLOCATION_SAMPLE_GEOTIFF = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
+EC2_INPUT_PATH = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/input"
+EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/output"
+GCS_PATH = "gs://aqueduct30_v01/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/output/"
+EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V05/"
 
 
-# In[17]:
+# In[2]:
 
-get_ipython().system('mkdir /volumes/data/PCRGlobWB20V01/additional')
+get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
+get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[18]:
+# In[3]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/WRI/samplegeotiff /volumes/data/PCRGlobWB20V01/additional --recursive')
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_SAMPLE} {EC2_INPUT_PATH} --recursive')
 
 
 # Check if the file is actually copied
-
-# In[19]:
-
-get_ipython().system('ls /volumes/data/PCRGlobWB20V01/additional/')
-
-
-# Copy Indicator files to EC2 instance
-
-# In[20]:
-
-get_ipython().system('mkdir /volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01')
-
-
-# In[21]:
-
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/processData/03PCRGlobWBIndicatorsV01 /volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01 --recursive --quiet')
-
-
-# Create output folder to store geotiffs
-
-# In[30]:
-
-get_ipython().system('mkdir /volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/output')
-
 
 # ## Script
 
 # Create working environment and copy relevant files. 
 
-# In[46]:
-
-INPUTLOCATION_SAMPLE_GEOTIFF = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
-INPUTLOCATION_INDICATORS = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/"
-INPUTLOCATION_AUXILIARY = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/auxiliary"
-OUTPUTLOCATION_INDICATORS = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/output"
-OUTPUTLOCATION_AUX = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/auxiliary/output"
-GCS_BASE = "gs://aqueduct30_v01/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/"
-GCS_BASE_AUX = "gs://aqueduct30_v01/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01_AUX/"
-GCS_BASE_HYBAS = "gs://aqueduct30_v01/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01_HYBAS/"
-EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V05"
-
-
-# In[10]:
+# In[4]:
 
 try:
     from osgeo import ogr, osr, gdal
@@ -90,7 +60,7 @@ import pandas as pd
 import re
 
 
-# In[14]:
+# In[5]:
 
 def readFile(filename):
     filehandle = gdal.Open(filename)
@@ -120,25 +90,23 @@ def writeFile(filename,geotransform,geoprojection,data):
 def splitKey(key):
     prefix, extension = key.split(".")
     fileName = prefix.split("/")[-1]
-    outDict = {"fileName":fileName,"extension":extension}
-    return outDict
-
-def splitFileName(fileName):
     values = re.split("_|-", fileName)
-    keys = ["geographic_range","indicator","spatial_resolution","temporal_range_min","temporal_range_max"]
-    outDict = dict(zip(keys, values))
-    outDict["fileName"] = fileName
+    keyz = ["indicator","spatial_resolution","units"]
+    outDict = dict(zip(keyz, values))
+    outDict["fileName"]=fileName
+    outDict["extension"]=extension
     return outDict
 
 def uploadEE(index,row):
-    target = EE_BASE + "/" + row.fileName
-    source = GCS_BASE + row.fileName + "." + row.extension
-    metadata = "--nodata_value=%s -p extension=%s -p filename=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p temporal_range_max=%s -p temporal_range_min=%s -p units=dimensionless -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.extension,row.fileName,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range_max,row.temporal_range_min, row.ingested_by, row.exportdescription)
+    target = EE_BASE + row.fileName
+    source = GCS_PATH + row.fileName + "." + row.extension
+    metadata = "--nodata_value=%s -p extension=%s -p filename=%s -p indicator=%s -p spatial_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.extension,row.fileName,row.indicator,row.spatial_resolution, row.units, row.ingested_by, row.exportdescription)
     command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
     try:
         response = subprocess.check_output(command, shell=True)
         outDict = {"command":command,"response":response,"error":0}
         df_errors2 = pd.DataFrame(outDict,index=[index])
+        pass
     except:
         try:
             outDict = {"command":command,"response":response,"error":1}
@@ -163,144 +131,22 @@ def uploadEE(index,row):
 # ingested_by                                                RutgerHofste
 # exportdescription               droughtseveritystandardisedsoilmoisture
 
-# In[19]:
+# In[6]:
 
-[xsizeSample,ysizeSample,geotransformSample,geoprojSample,ZSample] = readFile(INPUTLOCATION_SAMPLE_GEOTIFF)
-
-
-# In[50]:
-
-files = os.listdir(INPUTLOCATION_INDICATORS)
-
-
-# In[53]:
-
-newExtension =".tif"
-for oneFile in files:
-    if oneFile.endswith(".asc"):
-        base , extension = oneFile.split(".")
-        xsize,ysize,geotransform,geoproj,Z = readFile(os.path.join(INPUTLOCATION_INDICATORS,oneFile))
-        Z[Z<-9990]= -9999
-        Z[Z>1e19] = -9999
-        outputFileName = base + newExtension
-        writeFile(os.path.join(OUTPUTLOCATION_INDICATORS,outputFileName),geotransformSample,geoprojSample,Z)
-    
-
-
-# ## Upload PCRGlobWB indicators to GCS
-
-# In[66]:
-
-get_ipython().system('gsutil -m cp {OUTPUTLOCATION_INDICATORS}/*.tif {GCS_BASE}')
-
-
-# Ingest to earthengine
-
-# In[64]:
-
-command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_BASE)
-
-
-# In[94]:
-
-keys = subprocess.check_output(command,shell=True)
-keys2 = keys.decode('UTF-8').splitlines()
-
-
-# In[95]:
-
-df = pd.DataFrame()
-i = 0
-for key in keys2:
-    i = i+1
-    outDict_key = splitKey(key)
-    df2 = pd.DataFrame(outDict_key,index=[i])
-    df = df.append(df2)   
-
-
-# In[96]:
-
-df.head()
-
-
-# In[107]:
-
-df_fileName = pd.DataFrame()
-
-for index, row in df.iterrows():
-    outDict_fileName = splitFileName(row.fileName)
-    df2 = pd.DataFrame(outDict_fileName,index=[index])
-    df_fileName = df_fileName.append(df2)  
-
-
-# In[108]:
-
-df_fileName.head()
-
-
-# In[109]:
-
-df_complete = df.merge(df_fileName,how='left',left_on='fileName',right_on='fileName')
-
-
-# In[110]:
-
-df_complete.head()
-
-
-# As you can seem, the structure of the filename is slightly different than the netCDF4 files from Utrecht. The unit for example is not stored int the fileName. 
-
-# In[111]:
-
-df_complete["nodata"] = -9999
-df_complete["ingested_by"] ="RutgerHofste"
-df_complete["exportdescription"] = df_complete["indicator"]
-
-
-# In[115]:
-
-df_complete.head()
-
-
-# In[127]:
-
-df_errors = pd.DataFrame()
-start_time = time.time()
-for index, row in df_complete.iterrows():
-    elapsed_time = time.time() - start_time 
-    print(index,"elapsed: ", str(timedelta(seconds=elapsed_time)))
-    df_errors2 = uploadEE(index,row)
-    df_errors = df_errors.append(df_errors2)
-
-
-# In[130]:
-
-df_errors
+[xsizeSample,ysizeSample,geotransformSample,geoprojSample,ZSample] = readFile(os.path.join(EC2_INPUT_PATH,"sampleGeotiff.tiff"))
 
 
 # ## PCRGlobWB auxiliary datasets
 # 
 # after receiving the results from Yoshi, there was a fair amount of information missing such as flow direction, basins etc. Rens van Beek has been very supportive and provided WRI with some auxiliary datasets. This script will put them in the right format, upload to GCS and ingest them to Earth Engine.  
 # 
-# Copy relevant datasets to processData folder:
-# 
 
-# In[5]:
+# In[7]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/flowNetwork/topo_pcrglobwb_05min s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01 --recursive --quiet')
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
 
 
 # Copy to EC2 instance
-
-# In[35]:
-
-get_ipython().system('mkdir {INPUTLOCATION_AUXILIARY}')
-
-
-# In[36]:
-
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01 /volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/auxiliary --recursive --quiet')
-
 
 # renaming the files with a structured name indicator_5min_unit.map
 # 
@@ -325,98 +171,95 @@ get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/processData/Y2017M0
 # 
 # 
 
-# In[37]:
+# In[8]:
 
-get_ipython().system('mv {INPUTLOCATION_AUXILIARY}/accumulated_drainage_area_05min_sqkm.map {INPUTLOCATION_AUXILIARY}/accumulateddrainagearea_05min_km2.map')
-get_ipython().system('mv {INPUTLOCATION_AUXILIARY}/cellsize05min.correct.map {INPUTLOCATION_AUXILIARY}/cellsize_05min_m2.map')
-get_ipython().system('mv {INPUTLOCATION_AUXILIARY}/gtopo05min.map {INPUTLOCATION_AUXILIARY}/gtopo_05min_km2.map')
-get_ipython().system('mv {INPUTLOCATION_AUXILIARY}/lddsound_05min.map {INPUTLOCATION_AUXILIARY}/lddsound_05min_numpad.map')
-
-
-
-# Create output directory for the Auxiliary geotiffs
-
-# In[38]:
-
-get_ipython().system('mkdir {OUTPUTLOCATION_AUX}')
+get_ipython().system('mv {EC2_INPUT_PATH}/accumulated_drainage_area_05min_sqkm.map {EC2_INPUT_PATH}/accumulateddrainagearea_05min_km2.map')
+get_ipython().system('mv {EC2_INPUT_PATH}/cellsize05min.correct.map {EC2_INPUT_PATH}/cellsize_05min_m2.map')
+get_ipython().system('mv {EC2_INPUT_PATH}/gtopo05min.map {EC2_INPUT_PATH}/gtopo_05min_m.map')
+get_ipython().system('mv {EC2_INPUT_PATH}/lddsound_05min.map {EC2_INPUT_PATH}/lddsound_05min_numpad.map')
 
 
-# In[39]:
 
-filesAux = os.listdir(INPUTLOCATION_AUXILIARY)
+# In[9]:
+
+files = os.listdir(EC2_INPUT_PATH)
 
 
-# In[40]:
+# In[10]:
+
+print(files)
+
+
+# In[11]:
 
 newExtension =".tif"
-for oneFileAux in filesAux:
-    if oneFileAux.endswith(".map"):
-        print(oneFileAux)
-        base , extension = oneFileAux.split(".")
-        xsize,ysize,geotransform,geoproj,Z = readFile(os.path.join(INPUTLOCATION_AUXILIARY,oneFileAux))
+for oneFile in files:
+    if oneFile.endswith(".map"):
+        print(oneFile)
+        base , extension = oneFile.split(".")
+        xsize,ysize,geotransform,geoproj,Z = readFile(os.path.join(EC2_INPUT_PATH,oneFile))
         Z[Z<-9990]= -9999
         Z[Z>1e19] = -9999
         outputFileName = base + newExtension
-        writeFile(os.path.join(OUTPUTLOCATION_AUX,outputFileName),geotransformSample,geoprojSample,Z)
+        writeFile(os.path.join(EC2_OUTPUT_PATH,outputFileName),geotransformSample,geoprojSample,Z)
         
-
-
-# In[41]:
-
-get_ipython().system('ls /volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/auxiliary/output')
 
 
 # Upload Auxiliary files to GCS
 
-# In[43]:
+# In[12]:
 
-get_ipython().system('gsutil -m cp {OUTPUTLOCATION_AUX}/*.tif {GCS_BASE_AUX}')
+get_ipython().system('gsutil -m cp {EC2_OUTPUT_PATH}/*.tif {GCS_PATH}')
 
 
 # Ingest GCS data in earthengine. Some metadata is missing, therefore 
 
-# In[ ]:
+# In[13]:
 
-def uploadEEaux(index,row):
-    target = EE_BASE_AUX + "/" + row.fileName
-    source = GCS_BASE + row.fileName + "." + row.extension
-    metadata = "--nodata_value=%s -p extension=%s -p filename=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p temporal_range_max=%s -p temporal_range_min=%s -p units=dimensionless -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.extension,row.fileName,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range_max,row.temporal_range_min, row.ingested_by, row.exportdescription)
-    command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
-    try:
-        response = subprocess.check_output(command, shell=True)
-        outDict = {"command":command,"response":response,"error":0}
-        df_errors2 = pd.DataFrame(outDict,index=[index])
-    except:
-        try:
-            outDict = {"command":command,"response":response,"error":1}
-        except:
-            outDict = {"command":command,"response":-9999,"error":2}
-        df_errors2 = pd.DataFrame(outDict,index=[index])
-        print("error")
-    return df_errors2
+command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_PATH)
 
 
-# In[48]:
-
-command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_BASE_AUX)
-
-
-# In[49]:
+# In[14]:
 
 keys = subprocess.check_output(command,shell=True)
-keys2 = keys.decode('UTF-8').splitlines()
+keys = keys.decode('UTF-8').splitlines()
 
 
-# In[50]:
+# In[15]:
 
-
+print(keys)
 
 
 # Upload Rasterized HydroBasin files to GCS
 
-# In[47]:
+# In[16]:
 
-get_ipython().system('gsutil -m cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/*.tif {GCS_BASE_HYBAS}')
+df = pd.DataFrame()
+i = 0
+for key in keys:
+    i = i+1
+    outDict = splitKey(key)
+    df2 = pd.DataFrame(outDict,index=[i])
+    df = df.append(df2)    
+
+
+# In[17]:
+
+df["nodata"] = -9999
+df["ingested_by"] ="RutgerHofste"
+df["exportdescription"] = df["indicator"]
+
+
+# In[18]:
+
+df_errors = pd.DataFrame()
+start_time = time.time()
+rows = df.shape[0]*1.0
+for index, row in df.iterrows():
+    elapsed_time = time.time() - start_time 
+    print(index,"%.2f" %((index/rows)*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
+    df_errors2 = uploadEE(index,row)
+    df_errors = df_errors.append(df_errors2)
 
 
 # In[ ]:
