@@ -112,7 +112,7 @@ df['groundwater_stress_categorized'] = df['groundwater_stress'].apply(categorize
 # |4 | > 8 | High Depletion |
 # 
 # Furthermore, we should mask out areas where the trend is not siginicant. (r-squared <0.9) and 
-# Aquifers that are not significant will be assiged a value of 
+# Aquifers that are not significant will be assiged a value of NON_SIGNIFICANT_CATEGORY = -9998. 
 
 # In[8]:
 
@@ -155,6 +155,11 @@ get_ipython().system('aws s3 cp {outputLocation} {S3_OUTPUT_PATH}')
 
 
 # The file for Aquifer level can be downloaded with this [URL](https://s3.amazonaws.com/wri-projects/Aqueduct30/processData/Y2017M08D08_RH_Groundwater_Stress_thresholds_V01/output/aquifer_table_sorted.csv)
+
+# $$ s_{GW} = \begin{cases} min \left(5,\frac{ln(r_{GW})-ln(5)}{ln(2)}+2 \right) & \mbox{for } r_{GW} \geq 5  \\ 
+# 2 & \mbox{for } 3.5 \leq r_{GW} < 5 \\
+# max \left(0,\frac{ln(r_{GW}+1.5)-ln(5)}{ln(2)} +2 \right) & \mbox{for } r_{GW} < 3.5
+#  \end{cases} $$
 
 # In[ ]:
 
