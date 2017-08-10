@@ -23,7 +23,7 @@
 # 1. **Y2017M08D02_RH_Merge_HydroBasins_V01**  
 #     copy hydrobasin files from S3 and merge in pyhton using Fiona
 # 1. **Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01**  
-#     rasterize hydrobasin level 6, download additional rasters from S3 and ingest all to Earth Engine
+#     This script ingests some auxiliary datafile onto earth engine included DEM, StreamFlow Network etc. 
 # 
 # ### Groundwater Branch
 # 

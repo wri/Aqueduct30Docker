@@ -37,107 +37,128 @@
 # 
 # 
 
+# In[4]:
+
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/WWF/HydroSheds30sComplete/"
+S3_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/input/"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
+EC2_INPUT_PATH = "/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/input/"
+EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
+GCS_OUTPUT = "gs://aqueduct30_v01/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
+EE_OUTPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V05/"
+
+
 # In[10]:
 
+import os
+import fiona
 import subprocess
+import pandas as pd
+import re
 
 
-# In[38]:
+# ## functions
 
-get_ipython().system('cd /')
+# In[16]:
+
+def splitKey(key):
+    # will yield the root file code and extension of a set of keys
+    prefix, extension = key.split(".")
+    fileName = prefix.split("/")[-1]
+    values = re.split("_|-", fileName)
+    keyz = ["indicator","spatial_resolution","WWFversion","geographic_range","library","spatial_resolution","version"]
+    outDict = dict(zip(keyz, values))
+    outDict["fileName"]=fileName
+    outDict["extension"]=extension
+    return outDict
+
+def uploadEE(index,row):
+    target = EE_OUTPUT_PATH + row.fileName
+    source = GCS_OUTPUT + row.fileName + "." + row.extension
+    metadata = "--nodata_value=%s -p extension=%s -p filename=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" 
+    get_ipython().magic('(row.nodata,row.extension,row.fileName,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range_max,row.temporal_range_min, row.units, row.ingested_by, row.exportdescription)')
+    command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
+    try:
+        #response = subprocess.check_output(command, shell=True)
+        outDict = {"command":command,"response":response,"error":0}
+        df_errors2 = pd.DataFrame(outDict,index=[index])
+        pass
+    except:
+        try:
+            outDict = {"command":command,"response":response,"error":1}
+        except:
+            outDict = {"command":command,"response":-9999,"error":2}
+        df_errors2 = pd.DataFrame(outDict,index=[index])
+        print("error")
+    return df_errors2
 
 
-# In[25]:
+# In[2]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/WWF/HydroSheds30sComplete/HydrobasinsStandardAfr-Eu.zip s3://wri-projects/Aqueduct30/processData/02HydroBasinsV01/')
-
-
-# In[24]:
-
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/rawData/WWF/HydroSheds30sComplete/HydrobasinsStandardGR-SI.zip s3://wri-projects/Aqueduct30/processData/02HydroBasinsV01/')
+get_ipython().system('aws s3 cp {S3_INPUT_PATH}HydrobasinsStandardAfr-Eu.zip {S3_PATH}')
 
 
-# In[34]:
+# In[5]:
 
-get_ipython().system('mkdir /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01')
+get_ipython().system('aws s3 cp {S3_INPUT_PATH}HydrobasinsStandardGR-SI.zip {S3_PATH}')
 
 
-# In[42]:
+# In[29]:
 
-get_ipython().system('aws s3 cp s3://wri-projects/Aqueduct30/processData/02HydroBasinsV01 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01 --recursive')
+get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
+get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
+
+
+# In[16]:
+
+get_ipython().system('mkdir -p /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/temp')
+
+
+# In[8]:
+
+get_ipython().system('aws s3 cp {S3_PATH} {EC2_INPUT_PATH} --recursive')
 
 
 # Unzip shapefiles 
 
-# In[98]:
+# In[23]:
 
-get_ipython().system('cd /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01')
-
-
-# In[46]:
-
-get_ipython().system('pwd')
+os.chdir(EC2_INPUT_PATH)
 
 
-# In[48]:
+# In[25]:
 
 get_ipython().system("find . -name '*.zip' -exec unzip {} \\;")
 
 
-# For now we will only use Level 6. Extracting in the same directory (/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01)
-
-# In[99]:
+# In[26]:
 
 get_ipython().system("find / -name '*lev06_v1c.zip' -exec unzip -o {} \\;")
 get_ipython().system("find / -name '*lev00_v1c.zip' -exec unzip -o {} \\;")
 
 
-# In[61]:
-
-import os
-import fiona
-
-
-# In[100]:
-
-filePath = "/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01"
-
-
-# In[101]:
-
-files = os.listdir(filePath)
-
-
-# In[103]:
-
-get_ipython().system('pwd')
-
-
 # Create output folder
 
-# In[104]:
+# In[7]:
 
-get_ipython().system('mkdir /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
+files = os.listdir(EC2_INPUT_PATH)
 
 
-# In[105]:
+# In[33]:
 
 meta = fiona.open('hybas_ar_lev06_v1c.shp').meta
-with fiona.open('/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_V01.shp', 'w', **meta) as output:
+with fiona.open(EC2_OUTPUT_PATH+"/hybas_lev06_v1c_merged_fiona_V01.shp", 'w', **meta) as output:
     for oneFile in files:    
         if oneFile.endswith("lev06_v1c.shp"):
             print(oneFile)
             for features in fiona.open(oneFile):
-                output.write(features)
-    
-    
-    
+                output.write(features)    
 
 
-# In[106]:
+# In[36]:
 
 meta = fiona.open('hybas_ar_lev00_v1c.shp').meta
-with fiona.open('/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona_V01.shp', 'w', **meta) as output:
+with fiona.open(EC2_OUTPUT_PATH+"/hybas_lev00_v1c_merged_fiona_V01.shp", 'w', **meta) as output:
     for oneFile in files:    
         if oneFile.endswith("lev00_v1c.shp"):
             print(oneFile)
@@ -145,16 +166,9 @@ with fiona.open('/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas
                 output.write(features)
 
 
-# The merged shapefile is stored in /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output
-
-# In[108]:
-
-get_ipython().system('ls /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
-
-
 # We also like to have rasterized versions of the shapefiles at 5min and 30s resolution (0.0833333 degrees and 0.00833333 degrees)
 
-# In[6]:
+# In[38]:
 
 lonSize5min = 4320
 latSize5min = 2160
@@ -166,35 +180,64 @@ latSize30s = 21600
 # Layer name hybas_lev00_v1c_merged_fiona_V01
 # 
 
-# In[ ]:
-
-get_ipython().system('cd /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output')
-
-
-# In[11]:
+# In[44]:
 
 commands =[]
-commands.append("gdal_rasterize -a PFAF_ID -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev06_v1c_merged_fiona_V01 -a_nodata -9999 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona__5minV01.tif" %(lonSize5min,latSize5min))
-commands.append("gdal_rasterize -a PFAF_ID -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev06_v1c_merged_fiona_V01 -a_nodata -9999 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_30sV01.tif" %(lonSize30s,latSize30s))
-commands.append("gdal_rasterize -a PFAF_12 -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev00_v1c_merged_fiona_V01 -a_nodata -9999 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona__5minV01.tif" %(lonSize5min,latSize5min))
-commands.append("gdal_rasterize -a PFAF_12 -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev00_v1c_merged_fiona_V01 -a_nodata -9999 /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona__30sV01.tif" %(lonSize30s,latSize30s))
+commands.append("gdal_rasterize -a PFAF_ID -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev06_v1c_merged_fiona_V01 -a_nodata -9999 %shybas_lev06_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona__5min_V01.tif" %(lonSize5min,latSize5min,EC2_OUTPUT_PATH))
+commands.append("gdal_rasterize -a PFAF_ID -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev06_v1c_merged_fiona_V01 -a_nodata -9999 %shybas_lev06_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev06_v1c_merged_fiona_30s_V01.tif" %(lonSize30s,latSize30s,EC2_OUTPUT_PATH))
+commands.append("gdal_rasterize -a PFAF_12 -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev00_v1c_merged_fiona_V01 -a_nodata -9999 %shybas_lev00_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona_5min_V01.tif" %(lonSize5min,latSize5min,EC2_OUTPUT_PATH))
+commands.append("gdal_rasterize -a PFAF_12 -ot Integer64 -of GTiff -te -180 -90 180 90 -ts %s %s -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l hybas_lev00_v1c_merged_fiona_V01 -a_nodata -9999 %shybas_lev00_v1c_merged_fiona_V01.shp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/hybas_lev00_v1c_merged_fiona_30s_V01.tif" %(lonSize30s,latSize30s,EC2_OUTPUT_PATH))
 
 
 # Rasterizing (takes a while)
 
-# In[12]:
+# In[46]:
 
 for command in commands:
-    print(command)
+    #print(command)
     response = subprocess.check_output(command,shell=True)
 
 
-# In[13]:
+# In[27]:
 
-get_ipython().system('aws s3 cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output --recursive --quiet')
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --quiet ')
+
+
+# In[28]:
+
+get_ipython().system('gsutil -m cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/*.tif {GCS_OUTPUT}')
+
+
+# # HIER GEBLEVEN
+
+# In[29]:
+
+command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_OUTPUT)
+keys = subprocess.check_output(command,shell=True)
+keys = keys.decode('UTF-8').splitlines()
+print(keys)
+
+
+# In[30]:
+
+df = pd.DataFrame()
+i = 0
+for key in keys:
+    i = i+1
+    outDict = splitKey(key)
+    df2 = pd.DataFrame(outDict,index=[i])
+    df = df.append(df2)
+
+
+# In[25]:
+
+df
 
 
 # In[ ]:
 
-
+df["nodata"] = -9999
+df["ingested_by"] ="RutgerHofste"
+df["exportdescription"] = df["indicator"]
+df["units"] = "PFAF_ID"
 
