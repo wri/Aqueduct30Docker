@@ -210,8 +210,6 @@ get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive -
 get_ipython().system('gsutil -m cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/*.tif {GCS_OUTPUT}')
 
 
-# # HIER GEBLEVEN
-
 # In[34]:
 
 command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_OUTPUT)
