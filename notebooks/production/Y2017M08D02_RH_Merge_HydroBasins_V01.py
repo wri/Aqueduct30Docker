@@ -48,18 +48,20 @@ GCS_OUTPUT = "gs://aqueduct30_v01/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
 EE_OUTPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V05/"
 
 
-# In[10]:
+# In[39]:
 
 import os
 import fiona
 import subprocess
 import pandas as pd
 import re
+import time
+from datetime import timedelta
 
 
 # ## functions
 
-# In[16]:
+# In[55]:
 
 def splitKey(key):
     # will yield the root file code and extension of a set of keys
@@ -75,11 +77,11 @@ def splitKey(key):
 def uploadEE(index,row):
     target = EE_OUTPUT_PATH + row.fileName
     source = GCS_OUTPUT + row.fileName + "." + row.extension
-    metadata = "--nodata_value=%s -p extension=%s -p filename=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" 
-    get_ipython().magic('(row.nodata,row.extension,row.fileName,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range_max,row.temporal_range_min, row.units, row.ingested_by, row.exportdescription)')
+    
+    metadata = "--nodata_value=%s -p wwfversion=%s -p extension=%s -p filename=%s -p geographic_range=%s -p library=%s -p spatial_resolution=%s -p version=%s -p ingested_by=%s -p exportdescription=%s -p units=%s" %(row.nodata,row.WWFversion,row.extension,row.fileName,row.geographic_range, row.library, row.spatial_resolution, row.version, row.ingested_by, row.exportdescription, row.units)
     command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
     try:
-        #response = subprocess.check_output(command, shell=True)
+        response = subprocess.check_output(command, shell=True)
         outDict = {"command":command,"response":response,"error":0}
         df_errors2 = pd.DataFrame(outDict,index=[index])
         pass
@@ -198,19 +200,19 @@ for command in commands:
     response = subprocess.check_output(command,shell=True)
 
 
-# In[27]:
+# In[32]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --quiet ')
 
 
-# In[28]:
+# In[33]:
 
 get_ipython().system('gsutil -m cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/*.tif {GCS_OUTPUT}')
 
 
 # # HIER GEBLEVEN
 
-# In[29]:
+# In[34]:
 
 command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_OUTPUT)
 keys = subprocess.check_output(command,shell=True)
@@ -218,7 +220,7 @@ keys = keys.decode('UTF-8').splitlines()
 print(keys)
 
 
-# In[30]:
+# In[35]:
 
 df = pd.DataFrame()
 i = 0
@@ -229,15 +231,41 @@ for key in keys:
     df = df.append(df2)
 
 
-# In[25]:
+# In[36]:
 
 df
 
 
-# In[ ]:
+# In[37]:
 
 df["nodata"] = -9999
 df["ingested_by"] ="RutgerHofste"
 df["exportdescription"] = df["indicator"]
 df["units"] = "PFAF_ID"
+
+
+# In[42]:
+
+df
+
+
+# In[56]:
+
+df_errors = pd.DataFrame()
+start_time = time.time()
+for index, row in df.iterrows():
+    elapsed_time = time.time() - start_time 
+    print(index,"%.2f" %((index/4)*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
+    df_errors2 = uploadEE(index,row)
+    df_errors = df_errors.append(df_errors2)
+
+
+# In[57]:
+
+df_errors
+
+
+# In[ ]:
+
+
 
