@@ -33,6 +33,8 @@
 #     add downstream PFAFIDs to he merged hydrobasin csv file
 # 1. **Y2017M08D23_RH_Merge_FAONames_V01**  
 #     merge the FAO shapefiles into one Shapefile (UTF-8)
+# 1. **Y2017M08D23_RH_Buffer_FAONames_V01**  
+#     Create a negative buffer for the FAO basins to avoid sliver polygons
 #     
 # 
 # ### Groundwater Branch

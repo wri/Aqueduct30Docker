@@ -148,12 +148,12 @@ files = os.listdir(EC2_INPUT_PATH)
 
 # In[33]:
 
-meta = fiona.open('hybas_ar_lev06_v1c.shp').meta
+meta = fiona.open('hybas_ar_lev06_v1c.shp',encoding='UTF-8').meta
 with fiona.open(EC2_OUTPUT_PATH+"/hybas_lev06_v1c_merged_fiona_V01.shp", 'w', **meta) as output:
     for oneFile in files:    
         if oneFile.endswith("lev06_v1c.shp"):
             print(oneFile)
-            for features in fiona.open(oneFile):
+            for features in fiona.open(oneFile,encoding='UTF-8'):
                 output.write(features)    
 
 

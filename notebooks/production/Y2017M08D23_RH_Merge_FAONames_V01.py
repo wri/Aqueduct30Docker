@@ -21,18 +21,57 @@
 # |Central America | http://www.fao.org/geonetwork/srv/en/main.home?uuid=bc9139e6-ccc9-4ded-a0c4-93b91cb54dde |
 # |North America | http://ref.data.fao.org/map?entryId=b06dc828-3166-461a-a17d-26f4dc9f9819 |
 
-# In[ ]:
+# In[1]:
 
-S3_RAW_INPUT_PATH
-S3_INPUT_PATH
-
-
-# In[ ]:
-
-Copy to working file
+S3_RAW_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/FAO/namedHydrobasins/"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_FAONames_V01/input"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_FAONames_V01/output/"
+EC2_INPUT_PATH = "/volumes/data/Y2017M08D23_RH_Merge_FAONames_V01/input/"
+EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D23_RH_Merge_FAONames_V01/output/"
 
 
-# In[ ]:
+# In[2]:
 
-get_ipython().system('aws s3 cp ')
+get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
+get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
+
+
+# In[3]:
+
+import os
+import fiona
+
+
+# Copy to working file directory on S3 and EC2
+
+# In[4]:
+
+get_ipython().system('aws s3 cp {S3_RAW_INPUT_PATH} {S3_INPUT_PATH} --recursive --quiet')
+
+
+# In[5]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
+
+
+# In[6]:
+
+os.chdir(EC2_INPUT_PATH)
+files = os.listdir(EC2_INPUT_PATH)
+
+
+# In[7]:
+
+meta = fiona.open('hydrobasins_africa.shp').meta
+with fiona.open(EC2_OUTPUT_PATH+"/hydrobasins_fao_fiona_merged_v01.shp", 'w', **meta,encoding='UTF-8') as output:
+    for oneFile in files:    
+        if oneFile.endswith(".shp"):
+            print(oneFile)
+            for features in fiona.open(oneFile):
+                output.write(features)   
+
+
+# In[8]:
+
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --quiet')
 
