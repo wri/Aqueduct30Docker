@@ -10,7 +10,7 @@
 
 # https://gist.github.com/tmcw/3987659
 
-# In[18]:
+# In[1]:
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_FAONames_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Buffer_FAONames_V01/output/"
@@ -18,7 +18,7 @@ EC2_INPUT_PATH = "/volumes/data/Y2017M08D23_RH_Buffer_FAONames_V01/input/"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D23_RH_Buffer_FAONames_V01/output/"
 INPUT_FILE_NAME = "hydrobasins_fao_fiona_merged_v01.shp"
 OUTPUT_FILE_NAME = "hydrobasins_fao_fiona_merged_buffered_v01.shp"
-OUTPUT_FILE_NAME_PROJ = "hydrobasins_fao_fiona_merged_buffered_v01_WTF.prj"
+OUTPUT_FILE_NAME_PROJ = "hydrobasins_fao_fiona_merged_buffered_v01_backup.prj"
 BUFFERDIST = -0.005 # Buffer distance in Degrees 
 
 
@@ -33,10 +33,14 @@ get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
 
 
-# In[11]:
+# In[4]:
 
-from osgeo import gdal,ogr,osr
 import os
+if 'GDAL_DATA' not in os.environ:
+    os.environ['GDAL_DATA'] = r'/usr/share/gdal/2.1'
+from osgeo import gdal,ogr,osr
+'GDAL_DATA' in os.environ
+# If false, the GDAL_DATA variable is set incorrectly. You need this variable to obtain the spatial reference
 
 
 # In[5]:
@@ -62,8 +66,11 @@ def createBuffer(inputfn, outputBufferfn, bufferDist):
     if os.path.exists(outputBufferfn):
         shpdriver.DeleteDataSource(outputBufferfn)
     outputBufferds = shpdriver.CreateDataSource(outputBufferfn)
-    bufferlyr = outputBufferds.CreateLayer(outputBufferfn, geom_type=ogr.wkbPolygon)
+    dest_srs = ogr.osr.SpatialReference()
+    dest_srs.ImportFromEPSG(4326)
+    bufferlyr = outputBufferds.CreateLayer(outputBufferfn,dest_srs, geom_type=ogr.wkbPolygon)
     featureDefn = bufferlyr.GetLayerDefn()
+    featureDefn2 = inputlyr.GetLayerDefn()
     
     i = 0
     for feature in inputlyr:
@@ -85,39 +92,25 @@ def createBuffer(inputfn, outputBufferfn, bufferDist):
 createBuffer(inputLocation, outputLocation, BUFFERDIST)
 
 
-# In[12]:
-
-spatialRef = osr.SpatialReference()
-spatialRef.ImportFromEPSG(4326)
-
-
-# In[19]:
+# In[9]:
 
 outputLocationProj = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME_PROJ)
 
 
-# In[22]:
+# The next command will create a secondary .prj file in case the crs of the original file is missing
+
+# In[10]:
 
 spatialRef = osr.SpatialReference()
-spatialRef.ImportFromEPSG(26912)
-
+spatialRef.ImportFromEPSG(4326)
+print(spatialRef)
 spatialRef.MorphToESRI()
 file = open(outputLocationProj, 'w')
 file.write(spatialRef.ExportToWkt())
 file.close()
 
 
-# In[21]:
+# In[11]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --quiet')
-
-
-# In[24]:
-
-print(GDAL_DATA)
-
-
-# In[ ]:
-
-
 
