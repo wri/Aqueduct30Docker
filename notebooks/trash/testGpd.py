@@ -1,18 +1,21 @@
 
 # coding: utf-8
 
-# In[26]:
+# In[64]:
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/test/testGpd/"
 EC2_INPUT_PATH = "/volumes/data/temp/"
+EC2_OUTPUT_PATH = "/volumes/data/temp/output/"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/test/output/"
 
 
-# In[27]:
+# In[59]:
 
 get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
+get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[28]:
+# In[31]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive')
 
@@ -33,78 +36,38 @@ from shapely.wkt import loads
 from shapely.geometry import Point
 
 
-# In[4]:
+# In[49]:
 
-data = {'name': ['a', 'b', 'c'],
-        'lat': [45, 46, 47.5],
-        'lon': [-120, -121.2, -122.9]}
-
-
-# In[5]:
-
-geometry = [Point(xy) for xy in zip(data['lon'], data['lat'])]
-geometry
+gdfFAO = gpd.read_file('/volumes/data/temp/FAO/faoBuffered.shp')
+gdfHybas = gpd.read_file('/volumes/data/temp/Hybas/hybas_lev06_v1c_merged_fiona_Cropped_V01.shp')
 
 
-# In[6]:
+# In[51]:
 
-df = pd.DataFrame(data)
-df
-
-
-# In[9]:
-
-geometry = [Point(xy) for xy in zip(df['lon'], df['lat'])]
-gdfCities = gpd.GeoDataFrame(df, geometry=geometry)
+gdfHybas.head()
 
 
-# In[10]:
+# In[66]:
 
-gdfCities
-
-
-# In[17]:
-
-gdfCities.crs = {'init': 'epsg:4326'}
+gdfHybas.set_index('PFAF_ID')
 
 
-# In[18]:
+# In[73]:
 
-gdfWorld = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-gdfWorld.head(2)
-
-
-# In[24]:
-
-gdfJoined = gpd.sjoin(gdfWorld,gdfCities, how="right", op='intersects')
+gdfHybasBuffer = gdfHybas['geometry'].buffer(-0.005,resolution=16)
 
 
-# In[25]:
+# In[70]:
 
-gdfJoined
-
-
-# In[ ]:
-
-m = folium.Map(location=[47.8, -122.5], zoom_start=7,tiles='Stamen Toner')
+gdfHybas[]
 
 
-# In[ ]:
+# In[60]:
 
-geo_str = world.to_json()
-
-
-# In[ ]:
-
-m.choropleth(geo_str=geo_str)
+gdfHybasBuffer.to_file(os.path.join(EC2_OUTPUT_PATH,'output.shp'))
 
 
-# In[ ]:
+# In[65]:
 
-m
-
-
-# In[ ]:
-
-
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
