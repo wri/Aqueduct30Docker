@@ -8,8 +8,6 @@
 # * Kernel used: python35
 # * Date created: 20170823
 
-# https://gist.github.com/tmcw/3987659
-
 # In[1]:
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_FAONames_V01/output/"
@@ -19,21 +17,27 @@ EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D23_RH_Buffer_FAONames_V01/output/"
 INPUT_FILE_NAME = "hydrobasins_fao_fiona_merged_v01.shp"
 OUTPUT_FILE_NAME = "hydrobasins_fao_fiona_merged_buffered_v01.shp"
 OUTPUT_FILE_NAME_PROJ = "hydrobasins_fao_fiona_merged_buffered_v01_backup.prj"
-BUFFERDIST = -0.005 # Buffer distance in Degrees 
+BUFFERDIST = -0.002 # Buffer distance in Degrees, set so that 15 arc s will not cause any problems with a negative number
+RESOLUTION = 3 # number of point per quarter arc
+TESTING = False
+INDEX = None
 
 
 # In[2]:
+
+get_ipython().system('rm -r {EC2_INPUT_PATH}')
+get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
 
 get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[3]:
+# In[5]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
 
 
-# In[4]:
+# In[3]:
 
 import os
 if 'GDAL_DATA' not in os.environ:
@@ -41,76 +45,77 @@ if 'GDAL_DATA' not in os.environ:
 from osgeo import gdal,ogr,osr
 'GDAL_DATA' in os.environ
 # If false, the GDAL_DATA variable is set incorrectly. You need this variable to obtain the spatial reference
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import time
+get_ipython().magic('matplotlib notebook')
 
-
-# In[5]:
-
-inputLocation = os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME)
-outputLocation = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME)
-
-
-# In[6]:
-
-os.environ['SHAPE_ENCODING'] = "utf-8"
+from shapely.wkt import loads
+from shapely.geometry import Point
 
 
 # In[7]:
 
-def createBuffer(inputfn, outputBufferfn, bufferDist):
-    inputds = ogr.Open(inputfn)
-    inputlyr = inputds.GetLayer()
-    featureCount = inputlyr.GetFeatureCount()
-    print(featureCount)
+INPUTSHP = os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME)
+OUTPUTSHP = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME)
 
-    shpdriver = ogr.GetDriverByName('ESRI Shapefile')
-    if os.path.exists(outputBufferfn):
-        shpdriver.DeleteDataSource(outputBufferfn)
-    outputBufferds = shpdriver.CreateDataSource(outputBufferfn)
-    dest_srs = ogr.osr.SpatialReference()
-    dest_srs.ImportFromEPSG(4326)
-    bufferlyr = outputBufferds.CreateLayer(outputBufferfn,dest_srs, geom_type=ogr.wkbPolygon)
-    featureDefn = bufferlyr.GetLayerDefn()
-    featureDefn2 = inputlyr.GetLayerDefn()
-    
-    i = 0
-    for feature in inputlyr:
-        if i % 500 ==0:
-            print("Percentage Completed: %0.2d"% ((i/featureCount)*100))
-        i += 1
-            
-        ingeom = feature.GetGeometryRef()
-        geomBuffer = ingeom.Buffer(bufferDist)
 
-        outFeature = ogr.Feature(featureDefn)
-        outFeature.SetGeometry(geomBuffer)
-        bufferlyr.CreateFeature(outFeature)
-        outFeature = None
+def buffer(INPUTSHP,BUFFERDIST,RESOLUTION,OUTPUTSHP):
+    #INPUTSHP path to shapefile
+    #INDEX name of index column, can be set to None if you want geopandas to create a new index column. Index must be unique
+    #BUFFERDIST buffer distance in degrees,can also be negative
+    #RESOLUTION number of points per quarter circle. See shapely / geopandas docs for documentation
+    #OUTPUTSHP path to output shapefile
+    print("1/3 Reading file: ", INPUTSHP)
+    gdf =  gpd.read_file(INPUTSHP)
+    try:
+        gdf = gdf.set_index(INDEX)
+        gdf['index_copy'] = gdf.index
+        
+    except:
+        gdf['index1'] = gdf.index
+        gdf['index_copy'] = gdf['index1']
+        
+    dfIn = gdf
+    dfIn = dfIn.drop('geometry',1)
+    print("2/3 Creating buffer")
+    gsBuffer = gdf['geometry'].buffer(BUFFERDIST,resolution=RESOLUTION)
+    gdfBuffer =gpd.GeoDataFrame(geometry=gsBuffer)
+    gdfBuffer['index_copy'] = gdfBuffer.index
+    gsArea = gdfBuffer.geometry.area
+    dfArea = pd.DataFrame(gsArea)
+    dfArea.columns = ['area']
+    dfArea['index_copy'] = dfArea.index
+    dfValidArea = dfArea.loc[dfArea['area'] > 0]
+    dfInValidArea = dfArea.loc[dfArea['area'] <= 0]
+    gdfTemp = gdfBuffer.merge(dfValidArea,how="inner",on="index_copy")
+    gdfOut = gdfTemp.merge(dfIn,how="left",on="index_copy")
+    gdfOut = gdfOut.set_index("index_copy")
+    print("3/3 Writing output")
+    gdfOut.to_file(OUTPUTSHP)
+    print("file saved to: ",OUTPUTSHP)    
+    return dfInValidArea    
 
 
 # In[8]:
 
-createBuffer(inputLocation, outputLocation, BUFFERDIST)
+dfInValidArea = buffer(INPUTSHP,BUFFERDIST,RESOLUTION,OUTPUTSHP)
 
 
 # In[9]:
 
-outputLocationProj = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME_PROJ)
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --quiet')
 
 
-# The next command will create a secondary .prj file in case the crs of the original file is missing
-
-# In[10]:
-
-spatialRef = osr.SpatialReference()
-spatialRef.ImportFromEPSG(4326)
-print(spatialRef)
-spatialRef.MorphToESRI()
-file = open(outputLocationProj, 'w')
-file.write(spatialRef.ExportToWkt())
-file.close()
-
+# The following polygons were removed from the dataset
 
 # In[11]:
 
-get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --quiet')
+dfInValidArea
+
+
+# In[ ]:
+
+
 
