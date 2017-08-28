@@ -60,7 +60,7 @@ from shapely.geometry import Point
 INPUTSHP = os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME)
 OUTPUTSHP = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME)
 
-
+# This function can be optimized in the future by using: https://gis.stackexchange.com/questions/253224/geopandas-buffer-using-geodataframe-while-maintaining-the-dataframe
 def buffer(INPUTSHP,BUFFERDIST,RESOLUTION,OUTPUTSHP):
     #INPUTSHP path to shapefile
     #INDEX name of index column, can be set to None if you want geopandas to create a new index column. Index must be unique
