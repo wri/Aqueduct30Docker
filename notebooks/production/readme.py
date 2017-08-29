@@ -37,6 +37,8 @@
 #     Create a negative buffer for the FAO basins to avoid sliver polygons
 # 1. **Y2017M08D25_RH_spatial_join_FAONames_V01**  
 #     Add the FAO Names to the HydroBasins shapefile
+# 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01**
+#     join the tables with the FAO names and the upstream / downstream relations
 #     
 # 
 # ### Groundwater Branch

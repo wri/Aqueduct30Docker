@@ -12,11 +12,12 @@
 
 import pandas as pd
 import numpy as np
-import os, ftplib, urllib2
+import os, ftplib
 from datetime import datetime, timedelta
+from ast import literal_eval
 
 
-# In[22]:
+# In[2]:
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D22_RH_Upstream_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Downstream_V01/output/"
@@ -26,34 +27,56 @@ INPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_V01.csv"
 OUTPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_V01.csv"
 
 
-# In[17]:
+# In[3]:
 
 get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[9]:
+# In[4]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive')
 
 
-# In[18]:
+# In[5]:
+
+def stringToList(string):
+    # input format : "[42, 42, 42]" , note the spaces after the commas, in this case I have a list of integers
+    string = string[1:len(string)-1]
+    try:
+        if len(string) != 0: 
+            tempList = string.split(", ")
+            newList = list(map(lambda x: int(x), tempList))
+        else:
+            newList = []
+    except:
+        newList = [-9999]
+    return(newList)
+
+
+# In[9]:
 
 inputLocation = os.path.join(EC2_INPUT_PATH,INPUT_FILENAME)
 outputLocation = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME)
 
 
-# In[19]:
+# In[10]:
 
 df = pd.read_csv(inputLocation)
 
 
-# In[20]:
+# In[11]:
 
 df.head()
 
 
-# In[21]:
+# In[12]:
+
+df["Upstream_HYBAS_IDs"] = df["Upstream_HYBAS_IDs"].apply(lambda x: stringToList(x))
+df["Upstream_PFAF_IDs"] = df["Upstream_PFAF_IDs"].apply(lambda x: stringToList(x))
+
+
+# In[13]:
 
 header = df.dtypes
 
@@ -68,24 +91,23 @@ df_out = df.copy()
 
 df_out['Downstream_HYBAS_IDs'] = "Nodata"
 df_out['Downstream_PFAF_IDs'] = "Nodata"
-df_out['Basin_HYBAS_IDs'] = "Nodata"
-df_out['Basin_PFAF_IDs'] = "Nodata"
 
-print df_out.dtypes
+print(df_out.dtypes)
 
 i = 1
 for id in df.index:
-    print "item: ", i, " id: ",id
+    print("item: ", i, " id: ",id)
     i += 1
     writeID = id
     allDownID = []
-    allDownPFAF = []
+    allDownPFAF = []    
 
     sinkHybasID = np.int64(df.loc[id]["NEXT_SINK"])
     sinkPfafID = np.int64(df.loc[sinkHybasID]["PFAF_ID"])
 
 
     while id != 0:
+              
         series = df.loc[id]
         downId = np.int64(series["NEXT_DOWN"]) # Next down ID
         if downId != 0 :
@@ -95,32 +117,77 @@ for id in df.index:
             allDownPFAF.append(pfafID)
             id = downId
         else:
-            # most downstream basin
-            if (len(series["Upstream_HYBAS_IDs"]) == 2 ):
-                allBasinIDs =  "[" + str(sinkHybasID)+ "]" #super ugly but it works
-                allBasinPFAFs ="[" + str(sinkPfafID) + "]"
-            else:
-                allBasinIDs = series["Upstream_HYBAS_IDs"][:-1] + ", " + str(sinkHybasID) + "]"  # super ugly but it works
-                allBasinPFAFs = series["Upstream_PFAF_IDs"][:-1] + ", " + str(sinkPfafID) + "]"
             id = 0
             pass
 
-
-
     df_out.set_value(writeID, 'Downstream_HYBAS_IDs', allDownID)
     df_out.set_value(writeID, 'Downstream_PFAF_IDs',allDownPFAF)
-    df_out.set_value(writeID, 'Basin_HYBAS_IDs', allBasinIDs)
-    df_out.set_value(writeID, 'Basin_PFAF_IDs',allBasinPFAFs)
 
     df_out.set_value(writeID, 'NEXT_SINK_PFAF', sinkPfafID )
 
 
 df_out.to_csv(outputLocation)
 
-print "done"
+print("done")
 
 
-# In[24]:
+# In[14]:
+
+df_out.tail()
+
+
+# In[16]:
+
+df_out.tail()
+
+
+# In[44]:
+
+def rutger(row):
+    return row["Downstream_HYBAS_IDs"].append(row["Upstream_HYBAS_IDs"])
+
+
+# In[45]:
+
+df_out['Basin_HYBAS_IDs'] = df_out.apply(rutger, axis=1)
+
+
+# In[46]:
+
+df_out.head()
+
+
+# In[ ]:
+
+
+
+
+# In[17]:
+
+test = df_out.loc[6060068110]
+
+
+# In[18]:
+
+print(test)
+
+
+# In[30]:
+
+weirdString = list(test.Upstream_PFAF_IDs  + test.Upstream_PFAF_IDs + test.HYBAS_ID)
+
+
+# In[31]:
+
+type(weirdString)
+
+
+# In[32]:
+
+print(weirdString)
+
+
+# In[21]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 

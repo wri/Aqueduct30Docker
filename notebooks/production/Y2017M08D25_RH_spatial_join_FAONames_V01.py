@@ -234,20 +234,3 @@ df_out.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME),encoding="UTF-8")
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
-
-# In[ ]:
-
-
-
-
-# testing purposes 
-
-# In[ ]:
-
-gdfFAOTest.to_file(os.path.join(EC2_OUTPUT_PATH,"test.shp"))
-
-
-# In[ ]:
-
-
-
