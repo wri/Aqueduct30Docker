@@ -72,90 +72,55 @@ dfFAO = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_FAO))
 
 # In[8]:
 
-dfFAO.head()
+dfDownstream = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_DOWNSTREAM))
 
 
 # In[9]:
 
-dfFAO.shape
+gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
 
 
 # In[10]:
 
-dfDownstream = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_DOWNSTREAM))
+gdfOut = gdfHybas.merge(dfDownstream, on='PFAF_ID',how="outer")
 
 
 # In[11]:
 
-dfDownstream.head()
+gdfOut = gdfOut.merge(dfFAO,on='PFAF_ID',how="outer")
 
 
 # In[12]:
 
-list(dfDownstream)
+dfOut = gdfOut.drop('geometry',1)
 
 
 # In[13]:
 
-dfDownstream.shape
+dfOut.head()
 
 
 # In[14]:
 
-gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
+dfOutSimple = dfOut["PFAF_ID"]
 
 
 # In[15]:
 
-gdfOut = gdfHybas.merge(dfDownstream, on='PFAF_ID',how="inner")
+gdfOutSimple = gpd.GeoDataFrame(dfOutSimple, geometry=gdfOut.geometry)
 
 
 # In[16]:
 
-gdfOut = gdfOut.merge(dfFAO,on='PFAF_ID',how="inner")
+gdfOutSimple.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
 
 
 # In[17]:
 
-dfOut = gdfOut.drop('geometry',1)
+dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
 
 
 # In[18]:
 
-dfOut.head()
-
-
-# In[19]:
-
-dfOutSimple = dfOut["PFAF_ID"]
-
-
-# In[20]:
-
-gdfOutSimple = gpd.GeoDataFrame(dfOutSimple, geometry=gdfOut.geometry)
-
-
-# In[21]:
-
-gdfOutSimple.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
-
-
-# In[22]:
-
-dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
-
-
-# In[23]:
-
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
 

@@ -54,29 +54,18 @@ def stringToList(string):
     return(newList)
 
 
-# In[9]:
+# In[6]:
 
-inputLocation = os.path.join(EC2_INPUT_PATH,INPUT_FILENAME)
-outputLocation = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME)
-
-
-# In[10]:
-
-df = pd.read_csv(inputLocation)
+df = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME))
 
 
-# In[11]:
-
-df.head()
-
-
-# In[12]:
+# In[7]:
 
 df["Upstream_HYBAS_IDs"] = df["Upstream_HYBAS_IDs"].apply(lambda x: stringToList(x))
 df["Upstream_PFAF_IDs"] = df["Upstream_PFAF_IDs"].apply(lambda x: stringToList(x))
 
 
-# In[13]:
+# In[8]:
 
 header = df.dtypes
 
@@ -131,63 +120,39 @@ df_out.to_csv(outputLocation)
 print("done")
 
 
+# In[9]:
+
+def concatenateHybas(row):
+    return row["Downstream_HYBAS_IDs"] + row["Upstream_HYBAS_IDs"] + [row["HYBAS_ID"]]
+
+
+# In[10]:
+
+df_out['Basin_HYBAS_IDs'] = df_out.apply(concatenateHybas, axis=1)
+
+
+# In[11]:
+
+def concatenatePFAF(row):
+    return row["Downstream_PFAF_IDs"] + row["Upstream_PFAF_IDs"] + [row["PFAF_ID"]]
+
+
+# In[12]:
+
+df_out['Basin_PFAF_IDs'] = df_out.apply(concatenatePFAF, axis=1)
+
+
+# In[13]:
+
+df_out.tail()
+
+
 # In[14]:
 
-df_out.tail()
+df_out.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME))
 
 
-# In[16]:
-
-df_out.tail()
-
-
-# In[44]:
-
-def rutger(row):
-    return row["Downstream_HYBAS_IDs"].append(row["Upstream_HYBAS_IDs"])
-
-
-# In[45]:
-
-df_out['Basin_HYBAS_IDs'] = df_out.apply(rutger, axis=1)
-
-
-# In[46]:
-
-df_out.head()
-
-
-# In[ ]:
-
-
-
-
-# In[17]:
-
-test = df_out.loc[6060068110]
-
-
-# In[18]:
-
-print(test)
-
-
-# In[30]:
-
-weirdString = list(test.Upstream_PFAF_IDs  + test.Upstream_PFAF_IDs + test.HYBAS_ID)
-
-
-# In[31]:
-
-type(weirdString)
-
-
-# In[32]:
-
-print(weirdString)
-
-
-# In[21]:
+# In[15]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
