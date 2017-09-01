@@ -160,7 +160,7 @@ get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --q
 # |---:|---:|---:|---:| ---:| ---:|
 # |37325056|  02-24-2017| 15:46 |  accumulated_drainage_area_05min_sqkm.map| $$km^2$$ |accumulateddrainagearea_05min_km2.map |
 # |37325056|  02-24-2017 |15:45 |  cellsize05min.correct.map| $$m^2$$ |cellsize_05min_m2.map |
-# |37325056| 02-24-2017| 15:44 |  gtopo05min.map| $$km^2$$ |gtopo_05min_km2.map|
+# |37325056| 02-24-2017| 15:44 |  gtopo05min.map| $$m$$ |gtopo_05min_km2.map|
 # |9331456|  02-24-2017| 15:45 |   lddsound_05min.map| numpad |lddsound_05min_numpad.map |
 # |121306624| | |               4 files| | |
 # 

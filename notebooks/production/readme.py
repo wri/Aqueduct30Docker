@@ -42,6 +42,9 @@
 # 1. **To be removed later but this is where I ran the Hydrobasins and FAO Names scripts**
 # 1. **Y2017M08D30_RH_Average_Supply_EE_V01**  
 #     This script will canculate the average PCRGlobWB2.0 supply (local runoff) using the ee python API
+# 1. **Y2017M09D01_RH_linear_trend_Ag_Demand_EE_V01**  
+#     Due to the sensitivity of the model to irrigation demand we take the linear trend of 2004 - 2014 for ag demand
+#     
 #     
 #     
 #     
