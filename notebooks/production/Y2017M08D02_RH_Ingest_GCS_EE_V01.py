@@ -36,7 +36,7 @@ GCS_BASE = "gs://aqueduct30_v01/Y2017M08D02_RH_Upload_to_GoogleCS_V01/"
 
 # In[3]:
 
-EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V05"
+EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 
 # ## Functions
@@ -134,7 +134,7 @@ df.shape
 parameters = df.parameter.unique()
 
 
-# In[44]:
+# In[17]:
 
 print(parameters)
 
@@ -142,7 +142,7 @@ print(parameters)
 # We will store the geotiff images of each NetCDF4 file in imageCollections. The imageCollections will have the same name and content as the original NetCDF4files. 
 # 
 
-# In[45]:
+# In[18]:
 
 for parameter in parameters:
     eeLocation = EE_BASE + "/" + parameter
@@ -211,12 +211,12 @@ df_complete.tail()
 list(df_complete.columns.values)
 
 
-# In[49]:
+# In[30]:
 
 def uploadEE(index,row):
     target = EE_BASE +"/"+ row.parameter + "/" + row.fileName
     source = GCS_BASE + row.fileName + "." + row.extension
-    metadata = "--nodata_value=%s --time_start %s-%s-01 -p extension=%s -p filename=%s -p identifier=%s -p year=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p temporal_range=%s -p temporal_range_max=%s -p temporal_range_min=%s -p temporal_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.year,row.month,row.extension,row.fileName,row.identifier,row.year,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range,row.temporal_range_max,row.temporal_range_min, row.temporal_resolution, row.units, row.ingested_by, row.exportdescription)
+    metadata = "--nodata_value=%s --time_start %s-%s-01 -p extension=%s -p filename=%s -p identifier=%s -p month=%s -p parameter=%s -p year=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p temporal_range=%s -p temporal_range_max=%s -p temporal_range_min=%s -p temporal_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.year,row.month,row.extension,row.fileName,row.identifier,row.month,row.parameter,row.year,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range,row.temporal_range_max,row.temporal_range_min, row.temporal_resolution, row.units, row.ingested_by, row.exportdescription)
     command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
     try:
         response = subprocess.check_output(command, shell=True)
@@ -234,7 +234,7 @@ def uploadEE(index,row):
 
 
 
-# In[50]:
+# In[ ]:
 
 df_errors = pd.DataFrame()
 start_time = time.time()
@@ -247,33 +247,38 @@ for index, row in df_complete.iterrows():
     
 
 
-# In[33]:
+# In[37]:
 
 get_ipython().system('mkdir /volumes/data/temp')
 
 
-# In[51]:
+# In[38]:
 
 df_errors.to_csv("/volumes/data/temp/df_errors.csv")
 
 
-# In[52]:
+# In[39]:
 
 get_ipython().system('aws s3 cp  /volumes/data/temp/df_errors.csv s3://wri-projects/Aqueduct30/temp/df_errors.csv')
 
 
 # Retry the ones with errors
 
-# In[41]:
+# In[40]:
 
 df_retry = df_errors.loc[df_errors['error'] != 0]
 
 
-# In[43]:
+# In[41]:
 
 for index, row in df_retry.iterrows():
     response = subprocess.check_output(row.command, shell=True)
     
+
+
+# In[53]:
+
+uniques = df_errors["error"].unique()
 
 
 # In[ ]:

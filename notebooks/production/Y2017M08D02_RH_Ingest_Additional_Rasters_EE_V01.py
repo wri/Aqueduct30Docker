@@ -23,7 +23,7 @@ INPUTLOCATION_SAMPLE_GEOTIFF = "/volumes/data/PCRGlobWB20V01/additional/sampleGe
 EC2_INPUT_PATH = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/output"
 GCS_PATH = "gs://aqueduct30_v01/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/output/"
-EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V05/"
+EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
 
 
 # In[2]:
@@ -214,25 +214,25 @@ get_ipython().system('gsutil -m cp {EC2_OUTPUT_PATH}/*.tif {GCS_PATH}')
 
 # Ingest GCS data in earthengine. Some metadata is missing, therefore 
 
-# In[13]:
+# In[12]:
 
 command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_PATH)
 
 
-# In[14]:
+# In[13]:
 
 keys = subprocess.check_output(command,shell=True)
 keys = keys.decode('UTF-8').splitlines()
 
 
-# In[15]:
+# In[14]:
 
 print(keys)
 
 
 # Upload Rasterized HydroBasin files to GCS
 
-# In[16]:
+# In[15]:
 
 df = pd.DataFrame()
 i = 0
@@ -243,14 +243,14 @@ for key in keys:
     df = df.append(df2)    
 
 
-# In[17]:
+# In[16]:
 
 df["nodata"] = -9999
 df["ingested_by"] ="RutgerHofste"
 df["exportdescription"] = df["indicator"]
 
 
-# In[18]:
+# In[17]:
 
 df_errors = pd.DataFrame()
 start_time = time.time()
