@@ -28,7 +28,7 @@ EE_INPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
 YEAR_MIN = 2004
 YEAR_MAX = 2014
 
-VERSION = 12
+VERSION = 15
 
 INPUT_FILE_NAME_WW_ANNUAL = "global_historical_PIrrWW_year_millionm3_5min_1960_2014"
 INPUT_FILE_NAME_WN_ANNUAL = "global_historical_PIrrWN_year_millionm3_5min_1960_2014"
@@ -119,7 +119,7 @@ print(command)
 subprocess.check_output(command,shell=True)
 
 
-# In[21]:
+# In[12]:
 
 def createTimeBand(image):
     # Adds a timeband to the single band image. band is "b1" 
@@ -137,12 +137,23 @@ def linearTrendAnnual(ic,yearmin,yearmax,eeIcNameAnnual,eeIName,units,exportdesc
     offset = fit.select(["offset"])
     scale = fit.select(["scale"]) #Note that this definition of scale is a as in y = ax+b
     newImageYearMax = scale.multiply(yearmax).add(offset).select(["scale"],["newValue"])
+    newImageYearMax = newImageYearMax.set("time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,12,1) )
     exportImageToAsset(newImageYearMax,eeIcNameAnnual,eeIName,units,exportdescription,nominalScale,parameter,version)
     return newImageYearMax
 
 
 def exportImageToAsset(image,eeIcName,eeIName,units,exportdescription,scale,parameter,version):
-    image = image.set("rangeMin",ee.Number(YEAR_MIN)).set("rangeMax",ee.Number(YEAR_MAX)).set("units",units).set("exportdescription",exportdescription).set("creation","RutgerHofste_20170902_Python27").set("parameter",parameter)
+    properties = {"rangeMin":YEAR_MIN,
+                  "rangeMax":YEAR_MAX,
+                  "units":units,
+                  "exportdescription":exportdescription,
+                  "creation":"RutgerHofste_20170902_Python27",
+                  "parameter":parameter,
+                  "nodata_value":-9999,
+                  "method":"lineartrend"
+                 }
+    image = image.set(properties)    
+    
     eeIName = eeIName + "V%0.2d" %(version)  
     assetId = EE_INPUT_PATH + eeIcName +"/" + eeIName
     task = ee.batch.Export.image.toAsset(
@@ -175,28 +186,30 @@ def linearTrendMonth(ic,yearmin,yearmax,eeIcName,eeIName,units,exportdescription
     offset = fit.select(["offset"])
     scale = fit.select(["scale"]) #Note that this definition of scale is a as in ax+b
     newImageYearMax = scale.multiply(YEAR_MAX).add(offset).select(["scale"],["newValue"])
+    newImageYearMax = newImageYearMax.set("month",month)
+    newImageYearMax = newImageYearMax.set("time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,month,1) )
     exportImageToAsset(newImageYearMax,eeIcName,eeIName,units,exportdescription,nominalScale,parameter,version)
     return newImageYearMax
 
 
-# In[22]:
+# In[ ]:
 
 parameter = "IrrWWlinear_year"
 image = linearTrendAnnual(icWWannua,YEAR_MIN,YEAR_MAX,EE_IC_NAME_ANNUAL_WW,EE_I_NAME_ANNUAL_WW,UNITS,ANNUAL_EXPORTDESCRIPTION_WW,parameter,VERSION)
 
 
-# In[23]:
+# In[ ]:
 
 parameter = "IrrWNlinear_year"
 image = linearTrendAnnual(icWNannua,YEAR_MIN,YEAR_MAX,EE_IC_NAME_ANNUAL_WN,EE_I_NAME_ANNUAL_WN,UNITS,ANNUAL_EXPORTDESCRIPTION_WN,parameter,VERSION)
 
 
-# In[24]:
+# In[ ]:
 
 months = list(range(1,13))
 
 
-# In[25]:
+# In[ ]:
 
 icWWmonth = ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_WW_MONTH));
 icWNmonth = ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_WN_MONTH));
@@ -204,7 +217,7 @@ icWNmonth = ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_WN_MON
 
 # ## Define all parameters prior to running the mapping function
 
-# In[26]:
+# In[ ]:
 
 ic = icWWmonth
 yearmin = YEAR_MIN
@@ -217,12 +230,12 @@ parameter = "IrrWWlinear_month"
 version = VERSION
 
 
-# In[27]:
+# In[ ]:
 
 map(iterateMonths,months)
 
 
-# In[28]:
+# In[ ]:
 
 ic = icWNmonth
 yearmin = YEAR_MIN
@@ -235,12 +248,7 @@ parameter = "IrrWNlinear_month"
 version = VERSION
 
 
-# In[29]:
-
-map(iterateMonths,months)
-
-
 # In[ ]:
 
-
+map(iterateMonths,months)
 

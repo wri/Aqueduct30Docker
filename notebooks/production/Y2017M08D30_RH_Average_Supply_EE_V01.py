@@ -42,7 +42,7 @@ ANNUAL_UNITS = "m/year"
 MONTHLY_UNITS = "m/month"
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = "33"
+VERSION = "35"
 
 
 # The Standardized format to store assets on Earth Engine is EE_INPUT_PATH / EE_IC_NAME / EE_I_NAME and every image should have the property expertdescription that would allow to export the data to a table header. 
@@ -52,7 +52,16 @@ VERSION = "33"
 def exportToAssetAnnual(ic):
     annualExportDescription = ANNUAL_EXPORTDESCRIPTION + "Y%sY%s" %(YEAR_MIN,YEAR_MAX)
     annualImage = ee.Image(ic.reduce(ee.Reducer.mean()))
-    annualImage = annualImage.set("rangeMin",ee.Number(YEAR_MIN)).set("rangeMax",ee.Number(YEAR_MAX)).set("units",ANNUAL_UNITS).set("exportdescription",annualExportDescription).set("creation","RutgerHofste_20170901_Python27")
+    properties = {"rangeMin":ee.Number(YEAR_MIN),
+                  "rangeMax":ee.Number(YEAR_MAX),
+                  "units":ANNUAL_UNITS,
+                  "exportdescription":annualExportDescription,
+                  "creation":"RutgerHofste_20170901_Python27",
+                  "nodata_value":-9999,
+                  "reducer":"mean",
+                  "time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,12,1) 
+                 }
+    annualImage = annualImage.set(properties)
     scale = ee.Image(icAnnual.first()).projection().nominalScale().getInfo()
     assetId = EE_INPUT_PATH + EE_IC_NAME_ANNUAL + "V" +VERSION+ "/" + EE_I_NAME_ANNUAL + "V" + VERSION    
     task = ee.batch.Export.image.toAsset(
@@ -71,7 +80,19 @@ def exportToAssetMonth(month):
     monthlyExportDescription = MONTHLY_EXPORTDESCRIPTION + "Y%sY%sM%0.2d" %(YEAR_MIN,YEAR_MAX,month)
     monthlyImage = filteredMonthlyCollection.filter(ee.Filter.eq("month",ee.Number(month)))
     monthlyImage = filteredMonthlyCollection.reduce(ee.Reducer.mean())
-    monthlyImage  = monthlyImage.set("month",ee.Number(month)).set("rangeMin",ee.Number(YEAR_MIN)).set("rangeMax",ee.Number(YEAR_MAX)).set("reducer",ee.String("mean")).set("units",MONTHLY_UNITS).set("exportdescription",monthlyExportDescription).set("creation","RutgerHofste_20170901_Python27")
+    properties = {"month":month,
+                  "reducer":"mean",
+                  "rangeMin":ee.Number(YEAR_MIN),
+                  "rangeMax":ee.Number(YEAR_MAX),
+                  "units":MONTHLY_UNITS,
+                  "exportdescription":monthlyExportDescription,
+                  "creation":"RutgerHofste_20170901_Python27",
+                  "nodata_value":-9999,
+                  "time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,month,1) 
+                 }
+    monthlyImage  =  monthlyImage.set(properties)
+
+    
     scale = ee.Image(icMonthly.first()).projection().nominalScale().getInfo()
 
     assetId = EE_INPUT_PATH + EE_IC_NAME_MONTH + "V" +VERSION+ "/" + EE_I_NAME_MONTH + "M%0.2dV%s" %(month,VERSION)  
