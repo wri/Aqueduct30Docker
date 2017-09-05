@@ -32,6 +32,7 @@ EE_IC_NAME_MONTH =   "global_historical_reducedmeanrunoff_month_mmonth_5min_1960
 EE_I_NAME_ANNUAL = EE_IC_NAME_ANNUAL
 EE_I_NAME_MONTH = EE_IC_NAME_MONTH
 
+DIMENSION5MIN = "4320x2160"
 
 INPUT_FILE_NAME_ANNUAL = "global_historical_runoff_year_myear_5min_1958_2014"
 INPUT_FILE_NAME_MONTH = "global_historical_runoff_month_mmonth_5min_1958_2014"
@@ -42,7 +43,7 @@ ANNUAL_UNITS = "m/year"
 MONTHLY_UNITS = "m/month"
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = "35"
+VERSION = "36"
 
 
 # The Standardized format to store assets on Earth Engine is EE_INPUT_PATH / EE_IC_NAME / EE_I_NAME and every image should have the property expertdescription that would allow to export the data to a table header. 
@@ -68,12 +69,13 @@ def exportToAssetAnnual(ic):
         image =  ee.Image(annualImage),
         description = EE_I_NAME_ANNUAL + "V" + VERSION,
         assetId = assetId,
-        scale = scale,
+        dimensions = DIMENSION5MIN,
         region = geometry.bounds().getInfo()['coordinates'][0],
         maxPixels = 1e10
     )
     task.start()
-    return 1
+    print(assetId)
+    return annualImage
 
 
 def exportToAssetMonth(month):
@@ -100,7 +102,7 @@ def exportToAssetMonth(month):
         image =  ee.Image(monthlyImage),
         description = EE_I_NAME_MONTH + "M%0.2dV%s" %(month,VERSION) ,
         assetId = assetId,
-        scale = scale,
+        dimensions = DIMENSION5MIN,
         region = geometry.bounds().getInfo()['coordinates'][0],
         maxPixels = 1e10
     )
@@ -136,48 +138,83 @@ filteredMonthlyCollection = ee.ImageCollection(icMonthly.filter(dateFilterMin).f
 
 # In[9]:
 
+sampleImage = ee.Image(filteredAnnualCollection.first())
+
+
+# In[10]:
+
 icAnnualPath = os.path.join(EE_INPUT_PATH,EE_IC_NAME_ANNUAL+ "V" + VERSION)
 command = ("earthengine create collection %s") %icAnnualPath
 print(command)
 
 
-# In[10]:
+# In[11]:
 
 subprocess.check_output(command,shell=True)
 
 
-# In[11]:
+# In[12]:
 
 icMonthPath = os.path.join(EE_INPUT_PATH,EE_IC_NAME_MONTH+ "V" + VERSION)
 command = ("earthengine create collection %s") %icMonthPath
 print(command)
 
 
-# In[12]:
+# In[13]:
 
 subprocess.check_output(command,shell=True)
 
 
-# In[ ]:
-
-
-
-
 # ### Run the functions
 
-# In[13]:
+# In[16]:
 
-exportToAssetAnnual(filteredAnnualCollection)
+annualImage = exportToAssetAnnual(filteredAnnualCollection)
 
 
-# In[14]:
+# In[ ]:
 
 months = list(range(1,13))
 
 
-# In[15]:
+# In[ ]:
 
 map(exportToAssetMonth,months)
+
+
+# ## check results
+
+# In[ ]:
+
+annualImage = annualImage.reproject('EPSG:4326',sampleImage.projection().getInfo())
+
+
+# In[ ]:
+
+lat = 39.495159
+lon = -107.3689237
+zoom_start=5
+
+
+# In[ ]:
+
+m = folium.Map(location=[lat, lon], tiles="OpenStreetMap", zoom_start=zoom_start)
+
+
+# In[ ]:
+
+vis_params = {'min':0.0, 'max':100, 'palette':'00FFFF,0000FF'}
+
+
+# In[ ]:
+
+folium_gee_layer(m,annualImage,vis_params=vis_params,folium_kwargs={'overlay':True,'name':'reducedRunoff'})
+
+
+# In[ ]:
+
+m.add_child(folium.LayerControl())
+m
 
 
 # In[ ]:

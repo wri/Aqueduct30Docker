@@ -28,7 +28,9 @@ EE_INPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
 YEAR_MIN = 2004
 YEAR_MAX = 2014
 
-VERSION = 15
+DIMENSION5MIN = "4320x2160"
+
+VERSION = 17
 
 INPUT_FILE_NAME_WW_ANNUAL = "global_historical_PIrrWW_year_millionm3_5min_1960_2014"
 INPUT_FILE_NAME_WN_ANNUAL = "global_historical_PIrrWN_year_millionm3_5min_1960_2014"
@@ -52,7 +54,6 @@ ANNUAL_EXPORTDESCRIPTION_WW = "IrrWWLinear_yearY%0.4d" %(YEAR_MAX)  # add Yxxxx 
 ANNUAL_EXPORTDESCRIPTION_WN = "IrrWNLinear_yearY%0.4d" %(YEAR_MAX)  # add Yxxxx e.g. Y2014 
 MONTHLY_EXPORTDESCRIPTION_WW = "IrrWWLinear_monthY%0.4d" %(YEAR_MAX)#add YxxxxMxx e.g. Y2014M01
 MONTHLY_EXPORTDESCRIPTION_WN = "IrrWNLinear_monthY%0.4d" %(YEAR_MAX)#add YxxxxMxx e.g. Y2014M01
-
 
 UNITS = "millionm3"
 
@@ -160,7 +161,7 @@ def exportImageToAsset(image,eeIcName,eeIName,units,exportdescription,scale,para
         image =  ee.Image(image),
         description = eeIName ,
         assetId = assetId,
-        scale = scale,
+        dimensions = DIMENSION5MIN ,
         region = geometry.bounds().getInfo()['coordinates'][0],
         maxPixels = 1e10
     )
