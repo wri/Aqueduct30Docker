@@ -137,7 +137,7 @@ def linearTrendAnnual(ic,yearmin,yearmax,eeIcNameAnnual,eeIName,units,exportdesc
     offset = fit.select(["offset"])
     scale = fit.select(["scale"]) #Note that this definition of scale is a as in y = ax+b
     newImageYearMax = scale.multiply(yearmax).add(offset).select(["scale"],["newValue"])
-    newImageYearMax = newImageYearMax.set("time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,12,1) )
+    newImageYearMax = newImageYearMax.set("time_start", "%04d-%0.2d-%0.2d" %(YEAR_MAX,12,1) )
     exportImageToAsset(newImageYearMax,eeIcNameAnnual,eeIName,units,exportdescription,nominalScale,parameter,version)
     return newImageYearMax
 
@@ -187,29 +187,29 @@ def linearTrendMonth(ic,yearmin,yearmax,eeIcName,eeIName,units,exportdescription
     scale = fit.select(["scale"]) #Note that this definition of scale is a as in ax+b
     newImageYearMax = scale.multiply(YEAR_MAX).add(offset).select(["scale"],["newValue"])
     newImageYearMax = newImageYearMax.set("month",month)
-    newImageYearMax = newImageYearMax.set("time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,month,1) )
+    newImageYearMax = newImageYearMax.set("time_start", "%04d-%0.2d-%0.2d" %(YEAR_MAX,month,1) )
     exportImageToAsset(newImageYearMax,eeIcName,eeIName,units,exportdescription,nominalScale,parameter,version)
     return newImageYearMax
 
 
-# In[ ]:
+# In[13]:
 
 parameter = "IrrWWlinear_year"
 image = linearTrendAnnual(icWWannua,YEAR_MIN,YEAR_MAX,EE_IC_NAME_ANNUAL_WW,EE_I_NAME_ANNUAL_WW,UNITS,ANNUAL_EXPORTDESCRIPTION_WW,parameter,VERSION)
 
 
-# In[ ]:
+# In[14]:
 
 parameter = "IrrWNlinear_year"
 image = linearTrendAnnual(icWNannua,YEAR_MIN,YEAR_MAX,EE_IC_NAME_ANNUAL_WN,EE_I_NAME_ANNUAL_WN,UNITS,ANNUAL_EXPORTDESCRIPTION_WN,parameter,VERSION)
 
 
-# In[ ]:
+# In[15]:
 
 months = list(range(1,13))
 
 
-# In[ ]:
+# In[16]:
 
 icWWmonth = ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_WW_MONTH));
 icWNmonth = ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_WN_MONTH));
@@ -217,7 +217,7 @@ icWNmonth = ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_WN_MON
 
 # ## Define all parameters prior to running the mapping function
 
-# In[ ]:
+# In[17]:
 
 ic = icWWmonth
 yearmin = YEAR_MIN
@@ -230,12 +230,12 @@ parameter = "IrrWWlinear_month"
 version = VERSION
 
 
-# In[ ]:
+# In[18]:
 
 map(iterateMonths,months)
 
 
-# In[ ]:
+# In[19]:
 
 ic = icWNmonth
 yearmin = YEAR_MIN
@@ -248,7 +248,7 @@ parameter = "IrrWNlinear_month"
 version = VERSION
 
 
-# In[ ]:
+# In[20]:
 
 map(iterateMonths,months)
 

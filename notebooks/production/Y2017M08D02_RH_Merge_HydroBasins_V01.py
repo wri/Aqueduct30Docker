@@ -37,7 +37,7 @@
 # 
 # 
 
-# In[4]:
+# In[1]:
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/WWF/HydroSheds30sComplete/"
 S3_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/input/"
@@ -45,10 +45,10 @@ S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_
 EC2_INPUT_PATH = "/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/input/"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
 GCS_OUTPUT = "gs://aqueduct30_v01/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
-EE_OUTPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V05/"
+EE_OUTPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
 
 
-# In[39]:
+# In[3]:
 
 import os
 import fiona
@@ -61,7 +61,7 @@ from datetime import timedelta
 
 # ## functions
 
-# In[55]:
+# In[4]:
 
 def splitKey(key):
     # will yield the root file code and extension of a set of keys
@@ -210,7 +210,7 @@ get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive -
 get_ipython().system('gsutil -m cp /volumes/data/Y2017M08D02_RH_Merge_HydroBasins_V01/output/*.tif {GCS_OUTPUT}')
 
 
-# In[34]:
+# In[5]:
 
 command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_OUTPUT)
 keys = subprocess.check_output(command,shell=True)
@@ -218,7 +218,7 @@ keys = keys.decode('UTF-8').splitlines()
 print(keys)
 
 
-# In[35]:
+# In[6]:
 
 df = pd.DataFrame()
 i = 0
@@ -229,12 +229,12 @@ for key in keys:
     df = df.append(df2)
 
 
-# In[36]:
+# In[7]:
 
 df
 
 
-# In[37]:
+# In[8]:
 
 df["nodata"] = -9999
 df["ingested_by"] ="RutgerHofste"
@@ -242,12 +242,12 @@ df["exportdescription"] = df["indicator"]
 df["units"] = "PFAF_ID"
 
 
-# In[42]:
+# In[9]:
 
 df
 
 
-# In[56]:
+# In[10]:
 
 df_errors = pd.DataFrame()
 start_time = time.time()
@@ -258,7 +258,7 @@ for index, row in df.iterrows():
     df_errors = df_errors.append(df_errors2)
 
 
-# In[57]:
+# In[11]:
 
 df_errors
 
