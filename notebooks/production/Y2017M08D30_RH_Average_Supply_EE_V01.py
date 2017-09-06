@@ -26,198 +26,162 @@ ee.Initialize()
 
 EE_INPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
 
+# Unfortunately specifying the dimensions caused the script to crash (internal error on Google's side) Specify scale instead.
+DIMENSION5MIN = "4320x2160"
+
+INPUT_FILE_NAME_ANNUAL = "global_historical_runoff_year_myear_5min_1958_2014"
+INPUT_FILE_NAME_MONTH = "global_historical_runoff_month_mmonth_5min_1958_2014"
+
 EE_IC_NAME_ANNUAL =  "global_historical_reducedmeanrunoff_year_myear_5min_1960_2014"
 EE_IC_NAME_MONTH =   "global_historical_reducedmeanrunoff_month_mmonth_5min_1960_2014"
 
 EE_I_NAME_ANNUAL = EE_IC_NAME_ANNUAL
 EE_I_NAME_MONTH = EE_IC_NAME_MONTH
 
-DIMENSION5MIN = "4320x2160"
-
-INPUT_FILE_NAME_ANNUAL = "global_historical_runoff_year_myear_5min_1958_2014"
-INPUT_FILE_NAME_MONTH = "global_historical_runoff_month_mmonth_5min_1958_2014"
-
 YEAR_MIN = 1960
 YEAR_MAX = 2014
+
 ANNUAL_UNITS = "m/year"
 MONTHLY_UNITS = "m/month"
+
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = "36"
+VERSION = 38
+
+MAXPIXELS =1e10
 
 
 # The Standardized format to store assets on Earth Engine is EE_INPUT_PATH / EE_IC_NAME / EE_I_NAME and every image should have the property expertdescription that would allow to export the data to a table header. 
 
 # In[4]:
 
-def exportToAssetAnnual(ic):
-    annualExportDescription = ANNUAL_EXPORTDESCRIPTION + "Y%sY%s" %(YEAR_MIN,YEAR_MAX)
-    annualImage = ee.Image(ic.reduce(ee.Reducer.mean()))
-    properties = {"rangeMin":ee.Number(YEAR_MIN),
-                  "rangeMax":ee.Number(YEAR_MAX),
-                  "units":ANNUAL_UNITS,
-                  "exportdescription":annualExportDescription,
-                  "creation":"RutgerHofste_20170901_Python27",
-                  "nodata_value":-9999,
-                  "reducer":"mean",
-                  "time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,12,1) 
-                 }
-    annualImage = annualImage.set(properties)
-    scale = ee.Image(icAnnual.first()).projection().nominalScale().getInfo()
-    assetId = EE_INPUT_PATH + EE_IC_NAME_ANNUAL + "V" +VERSION+ "/" + EE_I_NAME_ANNUAL + "V" + VERSION    
-    task = ee.batch.Export.image.toAsset(
-        image =  ee.Image(annualImage),
-        description = EE_I_NAME_ANNUAL + "V" + VERSION,
-        assetId = assetId,
-        dimensions = DIMENSION5MIN,
-        region = geometry.bounds().getInfo()['coordinates'][0],
-        maxPixels = 1e10
-    )
-    task.start()
-    print(assetId)
-    return annualImage
-
-
-def exportToAssetMonth(month):
-    monthlyExportDescription = MONTHLY_EXPORTDESCRIPTION + "Y%sY%sM%0.2d" %(YEAR_MIN,YEAR_MAX,month)
-    monthlyImage = filteredMonthlyCollection.filter(ee.Filter.eq("month",ee.Number(month)))
-    monthlyImage = filteredMonthlyCollection.reduce(ee.Reducer.mean())
-    properties = {"month":month,
-                  "reducer":"mean",
-                  "rangeMin":ee.Number(YEAR_MIN),
-                  "rangeMax":ee.Number(YEAR_MAX),
-                  "units":MONTHLY_UNITS,
-                  "exportdescription":monthlyExportDescription,
-                  "creation":"RutgerHofste_20170901_Python27",
-                  "nodata_value":-9999,
-                  "time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,month,1) 
-                 }
-    monthlyImage  =  monthlyImage.set(properties)
-
-    
-    scale = ee.Image(icMonthly.first()).projection().nominalScale().getInfo()
-
-    assetId = EE_INPUT_PATH + EE_IC_NAME_MONTH + "V" +VERSION+ "/" + EE_I_NAME_MONTH + "M%0.2dV%s" %(month,VERSION)  
-    task = ee.batch.Export.image.toAsset(
-        image =  ee.Image(monthlyImage),
-        description = EE_I_NAME_MONTH + "M%0.2dV%s" %(month,VERSION) ,
-        assetId = assetId,
-        dimensions = DIMENSION5MIN,
-        region = geometry.bounds().getInfo()['coordinates'][0],
-        maxPixels = 1e10
-    )
-    task.start()
-    print(month)
-    return 1
-    
-    
+geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 89], [180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
 # In[5]:
 
-icAnnual = ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL))
-icMonthly = ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_MONTH))
+scale = ee.Image(ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)).first()).projection().nominalScale().getInfo()
 
 
 # In[6]:
 
-dateFilterMin = ee.Filter.gte("year",YEAR_MIN)
-dateFilterMax = ee.Filter.lte("year",YEAR_MAX)
+print(scale)
 
 
 # In[7]:
 
-geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 89], [180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+def reduceMean(ic,yearMin,yearMax):
+    dateFilterMin = ee.Filter.gte("year",yearMin)
+    dateFilterMax = ee.Filter.lte("year",yearMax)
+    filteredIc = ee.ImageCollection(ic.filter(dateFilterMin).filter(dateFilterMax))
+    reducedImage = ee.Image(filteredIc.reduce(ee.Reducer.mean()))
+    return reducedImage
+
+def exportToAsset(image,description,assetId,dimensions,region,maxPixels):
+    task = ee.batch.Export.image.toAsset(
+        image =  ee.Image(image),
+        description = description,
+        assetId = assetId,
+        #dimensions = dimensions,
+        scale = scale,
+        region = geometry.bounds().getInfo()['coordinates'][0],
+        maxPixels = maxPixels
+    )
+    print(assetId)
+    task.start()
+    return 1
+
+def addValidProperties(image,d):
+    nestedNewDict = {}
+    #remove non string or real properties
+    for nestedKey, nestedValue in d.iteritems():
+        if isinstance(nestedValue,str) or isinstance(nestedValue,int):
+            newDict[nestedKey] = nestedValue
+        else:
+            pass
+            #print("removing property: ",nestedKey )
+    image = ee.Image(image).set(nestedNewDict)
+    return image
+
+def createImageCollections(d):
+    command = ("earthengine create collection %s%s") %(EE_INPUT_PATH,d["ic_name"])
+    response = subprocess.check_output(command,shell=True)
+    print(response)
+    
+    
 
 
 # In[8]:
 
-filteredAnnualCollection = ee.ImageCollection(icAnnual.filter(dateFilterMin).filter(dateFilterMax))
-filteredMonthlyCollection = ee.ImageCollection(icMonthly.filter(dateFilterMin).filter(dateFilterMax))
+d = {}
 
 
 # In[9]:
 
-sampleImage = ee.Image(filteredAnnualCollection.first())
+d["annual"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)),
+                        "ic_name": EE_IC_NAME_ANNUAL+"V%0.2d" %(VERSION) ,
+                        "image_name": EE_IC_NAME_ANNUAL+"V%0.2d" %(VERSION),
+                        "temporal_resolution":"year",
+                        "rangeMin":YEAR_MIN,
+                        "rangeMax":YEAR_MAX,
+                        "units":ANNUAL_UNITS,
+                        "exportdescription": ANNUAL_EXPORTDESCRIPTION + "Y%sY%s" %(YEAR_MIN,YEAR_MAX),
+                        "creation":"RutgerHofste_20170901_Python27",
+                        "nodata_value":-9999,
+                        "reducer":"mean",
+                        "time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,12,1),
+                        "version":VERSION
+                        }
 
 
 # In[10]:
 
-icAnnualPath = os.path.join(EE_INPUT_PATH,EE_IC_NAME_ANNUAL+ "V" + VERSION)
-command = ("earthengine create collection %s") %icAnnualPath
-print(command)
+d["monthly"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_MONTH)),
+                         "ic_name": EE_IC_NAME_MONTH +"V%0.2d" %(VERSION),
+                         "temporal_resolution":"month",
+                         "rangeMin":YEAR_MIN,
+                         "rangeMax":YEAR_MAX,
+                         "units":MONTHLY_UNITS,
+                         "creation":"RutgerHofste_20170901_Python27",
+                         "nodata_value":-9999,
+                         "reducer":"mean",                         
+                         "version":VERSION,
+                         # add month , image_name and exportdexription
+                        }
 
 
 # In[11]:
 
-subprocess.check_output(command,shell=True)
+for key, value in d.iteritems():
+    createImageCollections(value)
 
 
 # In[12]:
 
-icMonthPath = os.path.join(EE_INPUT_PATH,EE_IC_NAME_MONTH+ "V" + VERSION)
-command = ("earthengine create collection %s") %icMonthPath
-print(command)
-
-
-# In[13]:
-
-subprocess.check_output(command,shell=True)
-
-
-# ### Run the functions
-
-# In[16]:
-
-annualImage = exportToAssetAnnual(filteredAnnualCollection)
-
-
-# In[ ]:
-
-months = list(range(1,13))
-
-
-# In[ ]:
-
-map(exportToAssetMonth,months)
-
-
-# ## check results
-
-# In[ ]:
-
-annualImage = annualImage.reproject('EPSG:4326',sampleImage.projection().getInfo())
-
-
-# In[ ]:
-
-lat = 39.495159
-lon = -107.3689237
-zoom_start=5
-
-
-# In[ ]:
-
-m = folium.Map(location=[lat, lon], tiles="OpenStreetMap", zoom_start=zoom_start)
-
-
-# In[ ]:
-
-vis_params = {'min':0.0, 'max':100, 'palette':'00FFFF,0000FF'}
-
-
-# In[ ]:
-
-folium_gee_layer(m,annualImage,vis_params=vis_params,folium_kwargs={'overlay':True,'name':'reducedRunoff'})
-
-
-# In[ ]:
-
-m.add_child(folium.LayerControl())
-m
-
-
-# In[ ]:
-
-
+newDict = {}
+for key, value in d.iteritems():
+    newDict[key] = value
+    reducedImage = reduceMean(value["ic"],YEAR_MIN,YEAR_MAX)
+    if value["temporal_resolution"] == "year":
+        reducedImage = reduceMean(value["ic"],value["rangeMin"],newDict[key]["rangeMax"])
+        validImage = addValidProperties(reducedImage,value)
+        assetId = EE_INPUT_PATH+newDict[key]["ic_name"]+"/"+newDict[key]["image_name"]
+        exportToAsset(validImage,newDict[key]["exportdescription"],assetId,DIMENSION5MIN,geometry,MAXPIXELS)
+        
+    if value["temporal_resolution"] == "month":
+        #for month in range(1,13):
+        for month in range(1,3):
+            newDict[key]["month"] = month
+            newDict[key]["image_name"] = EE_IC_NAME_MONTH +"M%0.2dV%0.2d" %(month,VERSION)
+            newDict[key]["exportdescription"] = ANNUAL_EXPORTDESCRIPTION + "Y%sY%sM%0.d" %(YEAR_MIN,YEAR_MAX,month)
+            
+            reducedImage = reduceMean(value["ic"],newDict[key]["rangeMin"],newDict[key]["rangeMax"])
+            validImage = addValidProperties(reducedImage,value)
+            assetId = EE_INPUT_PATH+newDict[key]["ic_name"]+"/"+newDict[key]["image_name"]
+            exportToAsset(validImage,value["exportdescription"],assetId,DIMENSION5MIN,geometry,MAXPIXELS)            
+        pass
+        
+        
+    
+    
 
