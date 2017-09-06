@@ -71,7 +71,7 @@ propertiesWNannua = {"units":"millionm3","parameter":"IrrWNlinear_year","year":2
 
 # In[5]:
 
-geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 89], [180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 89], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
 # In[6]:

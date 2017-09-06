@@ -8,7 +8,7 @@
 # * Kernel used: python27
 # * Date created: 20170830
 
-# In[1]:
+# In[15]:
 
 import os
 import ee
@@ -17,17 +17,20 @@ from folium_gee import *
 import subprocess
 
 
-# In[2]:
+# In[16]:
 
 ee.Initialize()
 
 
-# In[3]:
+# In[17]:
 
 EE_INPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
 
 # Unfortunately specifying the dimensions caused the script to crash (internal error on Google's side) Specify scale instead.
-DIMENSION5MIN = "4320x2160"
+
+DIMENSION5MIN = {}
+DIMENSION5MIN["x"] = 4320
+DIMENSION5MIN["y"] = 2160
 
 INPUT_FILE_NAME_ANNUAL = "global_historical_runoff_year_myear_5min_1958_2014"
 INPUT_FILE_NAME_MONTH = "global_historical_runoff_month_mmonth_5min_1958_2014"
@@ -46,29 +49,43 @@ MONTHLY_UNITS = "m/month"
 
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = 38
+VERSION = 10
 
 MAXPIXELS =1e10
 
 
 # The Standardized format to store assets on Earth Engine is EE_INPUT_PATH / EE_IC_NAME / EE_I_NAME and every image should have the property expertdescription that would allow to export the data to a table header. 
 
-# In[4]:
+# In[18]:
 
-geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 89], [180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+dimensions = "%sx%s" %(DIMENSION5MIN["x"],DIMENSION5MIN["y"])
 
 
-# In[5]:
+# In[14]:
 
-scale = ee.Image(ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)).first()).projection().nominalScale().getInfo()
+projection = ee.Image(ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)).first()).projection().getInfo()
 
 
 # In[6]:
 
-print(scale)
+print(projection)
 
 
-# In[7]:
+# In[22]:
+
+def boundingBoxFromProj(projection,dimensions):
+    boundingBox = []
+    coords = {}
+    coords["xmin"]=projection["transform"][2]
+    coords["xmax"]=projection["transform"][2]+dimensions["x"]*projection["transform"][0]
+    coords["ymin"]=projection["transform"][5]+dimensions["y"]*projection["transform"][4]
+    coords["ymax"]=projection["transform"][5]
+    geometry = ee.Geometry.Polygon(coords=[[coords["xmin"], coords["ymin"]], 
+                                           [coords["xmax"], coords["ymin"]],
+                                           [coords["xmax"], coords["ymax"]],
+                                           [coords["xmin"], coords["ymax"]]],
+                                            proj= ee.Projection('EPSG:4326'),geodesic=False )
+    return geometry
 
 def reduceMean(ic,yearMin,yearMax):
     dateFilterMin = ee.Filter.gte("year",yearMin)
@@ -82,8 +99,8 @@ def exportToAsset(image,description,assetId,dimensions,region,maxPixels):
         image =  ee.Image(image),
         description = description,
         assetId = assetId,
-        #dimensions = dimensions,
-        scale = scale,
+        dimensions = dimensions,
+        #scale = scale,
         region = geometry.bounds().getInfo()['coordinates'][0],
         maxPixels = maxPixels
     )
@@ -111,12 +128,17 @@ def createImageCollections(d):
     
 
 
-# In[8]:
+# In[9]:
+
+geometry = boundingBoxFromProj(projection,DIMENSION5MIN)
+
+
+# In[ ]:
 
 d = {}
 
 
-# In[9]:
+# In[ ]:
 
 d["annual"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)),
                         "ic_name": EE_IC_NAME_ANNUAL+"V%0.2d" %(VERSION) ,
@@ -134,7 +156,7 @@ d["annual"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NA
                         }
 
 
-# In[10]:
+# In[ ]:
 
 d["monthly"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_MONTH)),
                          "ic_name": EE_IC_NAME_MONTH +"V%0.2d" %(VERSION),
@@ -150,13 +172,13 @@ d["monthly"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_N
                         }
 
 
-# In[11]:
+# In[ ]:
 
 for key, value in d.iteritems():
     createImageCollections(value)
 
 
-# In[12]:
+# In[ ]:
 
 newDict = {}
 for key, value in d.iteritems():
@@ -169,8 +191,7 @@ for key, value in d.iteritems():
         exportToAsset(validImage,newDict[key]["exportdescription"],assetId,DIMENSION5MIN,geometry,MAXPIXELS)
         
     if value["temporal_resolution"] == "month":
-        #for month in range(1,13):
-        for month in range(1,3):
+        for month in range(1,13):
             newDict[key]["month"] = month
             newDict[key]["image_name"] = EE_IC_NAME_MONTH +"M%0.2dV%0.2d" %(month,VERSION)
             newDict[key]["exportdescription"] = ANNUAL_EXPORTDESCRIPTION + "Y%sY%sM%0.d" %(YEAR_MIN,YEAR_MAX,month)
