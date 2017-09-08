@@ -8,7 +8,7 @@
 # * Kernel used: python27
 # * Date created: 20170830
 
-# In[15]:
+# In[1]:
 
 import os
 import ee
@@ -17,12 +17,12 @@ from folium_gee import *
 import subprocess
 
 
-# In[16]:
+# In[2]:
 
 ee.Initialize()
 
 
-# In[17]:
+# In[3]:
 
 EE_INPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
 
@@ -49,32 +49,60 @@ MONTHLY_UNITS = "m/month"
 
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = 10
+VERSION = 16
 
 MAXPIXELS =1e10
 
 
 # The Standardized format to store assets on Earth Engine is EE_INPUT_PATH / EE_IC_NAME / EE_I_NAME and every image should have the property expertdescription that would allow to export the data to a table header. 
 
-# In[18]:
+# In[4]:
 
 dimensions = "%sx%s" %(DIMENSION5MIN["x"],DIMENSION5MIN["y"])
 
 
-# In[14]:
+# In[5]:
 
-projection = ee.Image(ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)).first()).projection().getInfo()
+print(dimensions)
 
 
 # In[6]:
 
-print(projection)
+sampleImage = ee.Image(ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)).first())
 
 
-# In[22]:
+# In[7]:
 
-def boundingBoxFromProj(projection,dimensions):
-    boundingBox = []
+projection = sampleImage.projection().getInfo()
+
+
+# In[8]:
+
+crs = sampleImage.projection().crs().getInfo()
+
+
+# posted question in EE dev forum. Apparently it is easier to print the tranform in Javascipt and paste it into this script. 
+
+# In[9]:
+
+crsTransform = [
+                0.0833333309780367,
+                0,
+                -179.99999491255934,
+                0,
+                -0.0833333309780367,
+                90.00000254430942
+              ]
+
+
+# In[10]:
+
+scale = ee.Image(ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)).first()).projection().nominalScale().getInfo()
+
+
+# In[11]:
+
+def geometryFromProj(projection,dimensions):
     coords = {}
     coords["xmin"]=projection["transform"][2]
     coords["xmax"]=projection["transform"][2]+dimensions["x"]*projection["transform"][0]
@@ -95,13 +123,16 @@ def reduceMean(ic,yearMin,yearMax):
     return reducedImage
 
 def exportToAsset(image,description,assetId,dimensions,region,maxPixels):
+    print(dimensions)
     task = ee.batch.Export.image.toAsset(
         image =  ee.Image(image),
         description = description,
         assetId = assetId,
         dimensions = dimensions,
         #scale = scale,
-        region = geometry.bounds().getInfo()['coordinates'][0],
+        crs = crs,
+        crsTransform = crsTransform,
+        #region = geometry.bounds().getInfo()['coordinates'][0],
         maxPixels = maxPixels
     )
     print(assetId)
@@ -128,17 +159,17 @@ def createImageCollections(d):
     
 
 
-# In[9]:
+# In[12]:
 
-geometry = boundingBoxFromProj(projection,DIMENSION5MIN)
+geometry = geometryFromProj(projection,DIMENSION5MIN)
 
 
-# In[ ]:
+# In[13]:
 
 d = {}
 
 
-# In[ ]:
+# In[14]:
 
 d["annual"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)),
                         "ic_name": EE_IC_NAME_ANNUAL+"V%0.2d" %(VERSION) ,
@@ -156,7 +187,7 @@ d["annual"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NA
                         }
 
 
-# In[ ]:
+# In[15]:
 
 d["monthly"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_MONTH)),
                          "ic_name": EE_IC_NAME_MONTH +"V%0.2d" %(VERSION),
@@ -172,13 +203,13 @@ d["monthly"] = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_N
                         }
 
 
-# In[ ]:
+# In[16]:
 
 for key, value in d.iteritems():
     createImageCollections(value)
 
 
-# In[ ]:
+# In[17]:
 
 newDict = {}
 for key, value in d.iteritems():
@@ -188,7 +219,7 @@ for key, value in d.iteritems():
         reducedImage = reduceMean(value["ic"],value["rangeMin"],newDict[key]["rangeMax"])
         validImage = addValidProperties(reducedImage,value)
         assetId = EE_INPUT_PATH+newDict[key]["ic_name"]+"/"+newDict[key]["image_name"]
-        exportToAsset(validImage,newDict[key]["exportdescription"],assetId,DIMENSION5MIN,geometry,MAXPIXELS)
+        exportToAsset(validImage,newDict[key]["exportdescription"]+"V%s"%(newDict[key]["version"]),assetId,dimensions,geometry,MAXPIXELS)
         
     if value["temporal_resolution"] == "month":
         for month in range(1,13):
@@ -199,10 +230,15 @@ for key, value in d.iteritems():
             reducedImage = reduceMean(value["ic"],newDict[key]["rangeMin"],newDict[key]["rangeMax"])
             validImage = addValidProperties(reducedImage,value)
             assetId = EE_INPUT_PATH+newDict[key]["ic_name"]+"/"+newDict[key]["image_name"]
-            exportToAsset(validImage,value["exportdescription"],assetId,DIMENSION5MIN,geometry,MAXPIXELS)            
+            exportToAsset(validImage,value["exportdescription"]+"V%s" %(newDict[key]["version"]),assetId,dimensions,geometry,MAXPIXELS)            
         pass
         
         
     
     
+
+
+# In[ ]:
+
+
 
