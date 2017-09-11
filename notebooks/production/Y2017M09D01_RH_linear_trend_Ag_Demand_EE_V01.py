@@ -154,7 +154,7 @@ def iterateFunction(parameter,temporalScale):
         exportToAsset(newImageYearMax,outputIcName,outputIName)
         
     elif r[1] =="month":
-        for month in range(1,2):
+        for month in range(1,13):
             properties["exportdescription"] = "Irr%sLinear_%sY%0.4dM%0.2d" %(r[0],r[1],YEAR_MAX,month)
             properties["month"] = month
             properties["temporal_scale"] = r[1]   

@@ -10,53 +10,91 @@
 
 # In[1]:
 
+import time
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+print(dateString,timeString)
+
+
+# In[2]:
+
 import ee
 import numpy as np
 
 
-# In[2]:
+# In[3]:
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
 
 DIMENSION5MIN = "4320x2160"
 DIMENSION30S = "43200x21600"
+CRS = "EPSG:4326"
 
-VERSION = 10
+VERSION = 11
 
 
-# In[3]:
+# In[4]:
+
+crsTransform5min = [
+    0.08333333333333333,
+    0,
+    -180,
+    0,
+    -0.08333333333333333,
+    90
+]
+
+
+# In[5]:
+
+crsTransform30s = [
+    0.008333333333333333,
+    0,
+    -180,
+    0,
+    -0.008333333333333333,
+    90
+  ]
+
+
+# In[6]:
 
 ee.Initialize()
 
 
-# In[4]:
+# In[7]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 89], [180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
 # These "random" images are used to set the scales. These images were used because they were created using GDAL which is the most reliable way to create the rasters. 
 
-# In[5]:
+# In[8]:
 
 hybas_lev06_v1c_merged_fiona_30s_V01 = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev06_v1c_merged_fiona_30s_V01")
 hybas_lev06_v1c_merged_fiona_5min_V01 = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev06_v1c_merged_fiona_5min_V01")
 
 
-# In[6]:
+# In[9]:
 
 scale30s = hybas_lev06_v1c_merged_fiona_30s_V01.projection().nominalScale().getInfo()
 scale5min = hybas_lev06_v1c_merged_fiona_5min_V01.projection().nominalScale().getInfo()
 
 
-# In[7]:
+# In[10]:
 
 onesRaster = ee.Image.constant(1)
 areaRaster = ee.Image.pixelArea()
 
 
-# In[8]:
+# In[11]:
 
 def exportToAsset(eePath, geometry,d):
+    if d["spatial_resolution"] == "5min":
+        crsTransform = crsTransform5min
+    elif d["spatial_resolution"] == "30s":
+        crsTransform = crsTransform30s
+        
     image = d["image"]
     dimensions = d["dimensions"]
     
@@ -73,18 +111,20 @@ def exportToAsset(eePath, geometry,d):
         description = d["exportdescription"] + "V%0.2d" %(VERSION),
         assetId = assetId,
         dimensions = dimensions,
-        region = geometry.bounds().getInfo()['coordinates'][0],
+        #region = geometry.bounds().getInfo()['coordinates'][0],
+        crs = CRS,
+        crsTransform = crsTransform,
         maxPixels = 1e10
         )
     task.start()
 
 
-# In[9]:
+# In[12]:
 
 properties ={}
 
 
-# In[10]:
+# In[13]:
 
 properties["ones_5min"] = {"image":onesRaster,
                            "dimensions":DIMENSION5MIN,
@@ -97,7 +137,7 @@ properties["ones_5min"] = {"image":onesRaster,
                             }
 
 
-# In[11]:
+# In[14]:
 
 properties["ones_30s"] = {"image":onesRaster,
                           "dimensions":DIMENSION30S,
@@ -110,7 +150,7 @@ properties["ones_30s"] = {"image":onesRaster,
                             }
 
 
-# In[12]:
+# In[15]:
 
 properties["area_5min_m2"] = {"image":areaRaster,
                               "dimensions":DIMENSION5MIN,
@@ -123,7 +163,7 @@ properties["area_5min_m2"] = {"image":areaRaster,
                              }
 
 
-# In[13]:
+# In[16]:
 
 properties["area_30s_m2"] = {"image":areaRaster,
                              "dimensions":DIMENSION30S,
@@ -136,7 +176,7 @@ properties["area_30s_m2"] = {"image":areaRaster,
                              }
 
 
-# In[14]:
+# In[17]:
 
 for key, value in properties.iteritems():
     exportToAsset(EE_PATH, geometry,value)
