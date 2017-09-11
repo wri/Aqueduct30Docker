@@ -46,9 +46,8 @@
 #     Due to the sensitivity of the model to irrigation demand we take the linear trend of 2004 - 2014 for ag demand
 # 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
 #     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa
-#     
-#     
-#     
+# 1. **Y2017M09D11_RH_zonal_stats_EE_V01**  
+#     Calculate zonal statistics for EE images and HydroBasin level 6 zones. 
 #     
 #     
 # 

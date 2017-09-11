@@ -57,11 +57,6 @@ parameters = ["WW","WN"]
 ee.Initialize()
 
 
-# In[6]:
-
-geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 89], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
-
-
 # posted question in EE dev forum. Apparently it is easier to print the tranform in Javascipt and paste it into this script. 
 
 # In[7]:

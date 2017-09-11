@@ -62,11 +62,6 @@ crsTransform30s = [
 ee.Initialize()
 
 
-# In[7]:
-
-geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 89], [180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
-
-
 # These "random" images are used to set the scales. These images were used because they were created using GDAL which is the most reliable way to create the rasters. 
 
 # In[8]:
