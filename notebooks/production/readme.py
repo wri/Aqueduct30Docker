@@ -3,7 +3,7 @@
 
 # # Steps for Aqueduct 30
 # 
-# This document will keep track of what scripts to run to get to the resulst. 
+# This document will keep track of what scripts to run to get to the results. 
 # 
 # 
 # ## HydroBasins and FAO names
