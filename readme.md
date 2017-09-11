@@ -62,7 +62,7 @@ Requirements:
 [instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)  
 For windows it requires some additional steps and might require enabling Hyper-V virtualization. There are cases in which you have to enable this in your BIOS. In case of WRI Windows 10 Dell Latitude E7250 Laptops, the following links are helpful:  
 [Manually enable Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v)  
-[Troubleshoot](https://docs.docker.com/docker-for-windows/troubleshoot/#hyper-v) 
+[Troubleshoot](https://docs.docker.com/docker-for-windows/troubleshoot/#hyper-v)  
 [Adding your user to Docker](https://technet.microsoft.com/en-us/library/cc772524(v=ws.11).aspx)  
 
 
