@@ -1,4 +1,4 @@
-## Work in Progres!!
+## Work in Progress!!
 
 # WRI Aqueduct 3.0 Data Processing workflow
 
