@@ -56,7 +56,9 @@ There are also downsides
 
 Requirements:
 * The Docker image requires approximately 12GB of Storage and is not a lightweight solution. 
-* If you want to replicate the Aqueduct data processing steps, you will need approximately 300GB of disk space. 
+* If you want to replicate the Aqueduct data processing steps, you will need approximately 300GB of disk space.   
+
+If you are on a windows machine, the standard command prompt is limited. I found it useful to install a custom application to replace the command line. [conEmu](https://conemu.github.io/en/Downloads.html)  
 
 1. install docker cummunity edition  
 [instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)  
