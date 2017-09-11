@@ -60,7 +60,12 @@ Requirements:
 
 1. install docker cummunity edition  
 [instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)  
-For windows it requires some additional steps and might require enabling Hyper-V virtualization. There are cases in which you have to enable this in your BIOS. 
+For windows it requires some additional steps and might require enabling Hyper-V virtualization. There are cases in which you have to enable this in your BIOS. In case of WRI Windows 10 Dell Latitude E7250 Laptops, the following links are helpful:  
+[Manually enable Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v)  
+[Troubleshoot](https://docs.docker.com/docker-for-windows/troubleshoot/#hyper-v) 
+[Adding your user to Docker](https://technet.microsoft.com/en-us/library/cc772524(v=ws.11).aspx)  
+
+
 
 1. Start docker  
 you can check if docker is installed by typing `docker -v` in your terminal or command prompt. If you ever got stuck in one of the next steps or closed your terminal window it is important to understand some basic docker commands. First, you need to understand the concpet of an [image and a container](https://stackoverflow.com/questions/23735149/docker-image-vs-container). You can list your images using `docker images` and you can list your active containers using `docker ps` and all your containers using `docker ps -a`. If your container is still running you can bash (terminal) into your container using `docker exec -it <container name> bash`. Furthermore you can delete containers using `docker rm -f <ContainerName>` and images using `docker rmi <imageName>`. I also created a couple of [cheatsheets](https://github.com/rutgerhofste/cheatsheets) for various tools. 
