@@ -1,4 +1,4 @@
-## Work in Progres!!
+## Work in Progress!!
 
 # WRI Aqueduct 3.0 Data Processing workflow
 
@@ -56,11 +56,18 @@ There are also downsides
 
 Requirements:
 * The Docker image requires approximately 12GB of Storage and is not a lightweight solution. 
-* If you want to replicate the Aqueduct data processing steps, you will need approximately 300GB of disk space. 
+* If you want to replicate the Aqueduct data processing steps, you will need approximately 300GB of disk space.   
+
+If you are on a windows machine, the standard command prompt is limited. I found it useful to install a custom application to replace the command line. [conEmu](https://conemu.github.io/en/Downloads.html)  
 
 1. install docker cummunity edition  
 [instructions](https://docs.docker.com/engine/installation/#time-based-release-schedule)  
-For windows it requires some additional steps and might require enabling Hyper-V virtualization. There are cases in which you have to enable this in your BIOS. 
+For windows it requires some additional steps and might require enabling Hyper-V virtualization. There are cases in which you have to enable this in your BIOS. In case of WRI Windows 10 Dell Latitude E7250 Laptops, the following links are helpful:  
+[Manually enable Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v)  
+[Troubleshoot](https://docs.docker.com/docker-for-windows/troubleshoot/#hyper-v)  
+[Adding your user to Docker](https://technet.microsoft.com/en-us/library/cc772524(v=ws.11).aspx)  
+
+
 
 1. Start docker  
 you can check if docker is installed by typing `docker -v` in your terminal or command prompt. If you ever got stuck in one of the next steps or closed your terminal window it is important to understand some basic docker commands. First, you need to understand the concpet of an [image and a container](https://stackoverflow.com/questions/23735149/docker-image-vs-container). You can list your images using `docker images` and you can list your active containers using `docker ps` and all your containers using `docker ps -a`. If your container is still running you can bash (terminal) into your container using `docker exec -it <container name> bash`. Furthermore you can delete containers using `docker rm -f <ContainerName>` and images using `docker rmi <imageName>`. I also created a couple of [cheatsheets](https://github.com/rutgerhofste/cheatsheets) for various tools. 
@@ -94,7 +101,7 @@ Although this is an extra step, it will allow you to have multiple windows open 
 1. In one of your panes, launch a Jupyter Notebook server  
 `jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --certfile=/.keys/mycert.pem --keyfile=/.keys/mykey.key --notebook-dir= /volumes/repos/Aqueduct30Docker/ --config=/volumes/repos/Aqueduct30Docker/jupyter_notebook_config.py`
 
-1. Open your browser and go to http://localhost:8888  
+1. Open your browser and go to https://localhost:8888  
 The standard password for your notebooks is `Aqueduct2017!`, you can change this [later](http://jupyter-notebook.readthedocs.io/en/latest/public_server.html)
 
 1. Congratulations, you can start running code in your browser. This tuturial continues in the section [Additional Steps After Starting your jupyter Notebook server](#additional-steps-after-starting-your-jupyter-notebook-server)
