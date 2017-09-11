@@ -118,7 +118,7 @@ def exportToAsset(image,outputIcName,outputIName):
     )
     task.start()
 
-def iterateFunction(parameter,temporalScale):
+def iterateFunction(r):
     inputIcName = "global_historical_PIrr%s_%s_millionm3_5min_1960_2014" %(r[0],r[1])
     outputIcName = "global_historical_PIrr%slinear_%s_millionm3_5min_%0.4d_%0.4dV%0.2d" %(r[0],r[1],YEAR_MIN,YEAR_MAX,VERSION)
     
@@ -176,9 +176,7 @@ def iterateFunction(parameter,temporalScale):
 
 for r in itertools.product(parameters, temporalScales): 
     r =list(r)
-    parameter = r[0]
-    temporalScale = r[1]
-    iterateFunction(parameter,temporalScale)
+    iterateFunction(r)
     
     
 
