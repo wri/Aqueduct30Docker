@@ -22,6 +22,9 @@ import ee
 import numpy as np
 import subprocess
 from retrying import retry
+import itertools
+import re
+from pprint import *
 
 
 # In[3]:
@@ -35,6 +38,9 @@ ee.Initialize()
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
+GCS_BUCKET= "aqueduct30_v01"
+GCS_OUTPUT_PATH = "Y2017M09D11_RH_zonal_stats_EE_V01/"
+
 HYBASLEVEL = 6
 
 DIMENSION5MIN = "4320x2160"
@@ -43,7 +49,7 @@ CRS = "EPSG:4326"
 
 VERSION = 10
 
-HYDROBASINS_IMAGE = "projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01"
+HYDROBASINS = "projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01"
 
 AREA5min = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_5min_m2V11" 
 AREA30s = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_30s_m2V11"
@@ -52,13 +58,13 @@ ONES30s = "projects/WRI-Aquaduct/PCRGlobWB20V07/ones_30sV11"
 
 
 
-# In[20]:
+# In[5]:
 
 reducers = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True)
 weightedReducers = reducers.splitWeights()
 
 
-# In[5]:
+# In[6]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
@@ -66,7 +72,7 @@ geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [
 
 # ## Functions
 
-# In[34]:
+# In[7]:
 
 def prepareZonalRaster(image):
     image    = ee.Image(image)
@@ -78,19 +84,26 @@ def prepareZonalRaster(image):
 
 def readAsset(assetId):
     try:
-        asset = ee.Image(assetId)
-        assetType = "image"
+        if ee.data.getInfo(assetId)["type"] == "Image":
+            asset = ee.Image(assetId)
+            assetType = "image"
+        elif ee.data.getInfo(assetId)["type"] == "ImageCollection":
+            asset = ee.ImageCollection(assetId)
+            assetType = "imageCollection"
+        else:
+            print("error")
     except:
-        asset = ee.ImageCollection(assetId)
-        assetType = "imageCollection"
+        print("error",assetId)
     return {"assetId":assetId,"asset":asset,"assetType":assetType}
 
 def addSuffix(fc,suffix):
     namesOld = ee.Feature(fc.first()).toDictionary().keys()
-    namesNew = namesOld.map(lambda x:ee.String(x).cat(ee.String(suffix)))
+    namesNew = namesOld.map(lambda x:ee.String(x).cat("_").cat(ee.String(suffix)))
     return fc.select(namesOld, namesNew)
 
-def zonalStats(valueImage, weightImage, zonesImage, suffix):
+def zonalStats(valueImage, weightImage, zonesImage):
+    # ee export function is client side. getInfo required
+    suffix = ee.Image(valueImage).get("exportdescription").getInfo() 
     scale = zonesImage.projection().nominalScale()
     totalImage = ee.Image(valueImage).addBands(ee.Image(weightImage)).addBands(ee.Image(zonesImage))
     resultsList = ee.List(totalImage.reduceRegion(
@@ -105,23 +118,27 @@ def zonalStats(valueImage, weightImage, zonesImage, suffix):
     return fc2
 
 #@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
-def export(fc,description,version):
+def export(fc):
+    # Make sure your fc has an attribute called exportdescription.    
+    # There is a bug in ee that adds ee_export.csv to your filename. Will remove in next steps
     fc = ee.FeatureCollection(fc)
-    myExportFC = ee.batch.Export.table.toDrive(collection=fc,
-                                                description=description + "%0.2d" %(version),
-                                                folder="EEOutput%0.2d" %version, 
-                                                fileNamePrefix=description+"%0.2d" %(version),
-                                                fileFormat="CSV")
+    description = fc.get("exportdescription").getInfo() + "V%0.2d" %(VERSION)
+    fileName = fc.get("exportdescription").getInfo() + "V%0.2d" %(VERSION)
+    myExportFC = ee.batch.Export.table.toCloudStorage(collection=fc,
+                                                    description= description,
+                                                    bucket = GCS_BUCKET,
+                                                    fileNamePrefix= GCS_OUTPUT_PATH  + fileName ,
+                                                    fileFormat="CSV")
     myExportFC.start()
     
 
 
-# In[35]:
+# In[8]:
 
 command = "earthengine ls %s" %(EE_PATH)
 
 
-# In[36]:
+# In[9]:
 
 assetList = subprocess.check_output(command,shell=True).splitlines()
 
@@ -140,34 +157,67 @@ assetList = subprocess.check_output(command,shell=True).splitlines()
 
 # ### Auxiliary Data
 
-# In[37]:
-
-hydroBasins06Image = prepareZonalRaster(ee.Image(HYDROBASINS_IMAGE))
+# In[ ]:
 
 
-# In[38]:
+
+
+# In[10]:
 
 d ={}
 
 
-# In[39]:
+# In[11]:
 
-d["zones"] = readAsset(hydroBasins06Image) 
+d["zones"] = readAsset(HYDROBASINS) 
 d["area5min"] = readAsset(AREA5min)
 d["area30s"] = readAsset(AREA30s)
 d["ones5min"] = readAsset(ONES5MIN)
 d["ones30s"] = readAsset(ONES30s)
 
+d["zones"]["image"] = prepareZonalRaster(ee.Image(HYDROBASINS))
 
 
-# In[40]:
+# In[12]:
 
-fc2 = zonalStats(d["area30s"]["asset"], d["ones30s"]["asset"],d["zones"]["asset"], "test%0.2d" %VERSION) 
+print(d)
 
 
-# In[41]:
+# In[13]:
 
-export(fc2,"latest",VERSION)
+dOut ={}
+
+
+# In[14]:
+
+dOut["fcArea"] = zonalStats(d["area30s"]["asset"], d["ones30s"]["asset"],d["zones"]["asset"])
+
+
+# ### PCRGLOBWB Data
+
+# In[15]:
+
+sectors = ["Dom","Ind","Irr","IrrLinear","Liv"]
+parameters = ["WW","WN"]
+temporalScales = ["year","month"]
+
+
+# In[16]:
+
+for r in itertools.product(sectors,parameters, temporalScales): 
+    regex = "%s%s_%s" %(r[0],r[1],r[2])
+    for assetId in assetList:
+        if re.search(regex,assetId):
+            d[regex] = readAsset(assetId)
+            d[regex]["PCRGlobWB"] = 1
+    
+
+    
+
+
+# In[17]:
+
+pprint(d)
 
 
 # In[ ]:
