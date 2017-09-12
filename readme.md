@@ -70,7 +70,6 @@ For windows it requires some additional steps and might require enabling Hyper-V
 
 
 1. Start docker  
-you can check if docker is installed by typing `docker -v` in your terminal or command prompt. If you ever got stuck in one of the next steps or closed your terminal window it is important to understand some basic docker commands. First, you need to understand the concpet of an [image and a container](https://stackoverflow.com/questions/23735149/docker-image-vs-container). You can list your images using `docker images` and you can list your active containers using `docker ps` and all your containers using `docker ps -a`. If your container is still running you can bash (terminal) into your container using `docker exec -it <container name> bash`. Furthermore you can delete containers using `docker rm -f <ContainerName>` and images using `docker rmi <imageName>`. I also created a couple of [cheatsheets](https://github.com/rutgerhofste/cheatsheets) for various tools. 
 
 1. Run a Docker Container:  
 `docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`  
