@@ -8,7 +8,7 @@
 # * Kernel used: python27
 # * Date created: 20170911
 
-# In[24]:
+# In[1]:
 
 import time
 dateString = time.strftime("Y%YM%mD%d")
@@ -36,6 +36,8 @@ ee.Initialize()
 
 # In[4]:
 
+TESTING =1
+
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 GCS_BUCKET= "aqueduct30_v01"
@@ -51,10 +53,10 @@ VERSION = 10
 
 HYDROBASINS = "projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01"
 
-AREA5min = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_5min_m2V11" 
-AREA30s = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_30s_m2V11"
+AREA5MIN = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_5min_m2V11" 
+AREA30S = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_30s_m2V11"
 ONES5MIN ="projects/WRI-Aquaduct/PCRGlobWB20V07/ones_5minV11"
-ONES30s = "projects/WRI-Aquaduct/PCRGlobWB20V07/ones_30sV11"
+ONES30S = "projects/WRI-Aquaduct/PCRGlobWB20V07/ones_30sV11"
 
 
 
@@ -72,7 +74,7 @@ geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [
 
 # ## Functions
 
-# In[7]:
+# In[24]:
 
 def prepareZonalRaster(image):
     image    = ee.Image(image)
@@ -121,7 +123,7 @@ def zonalStats(valueImage, weightImage, zonesImage):
 
 def volumeToFlux(image):
     image = ee.Image(image)
-    image = image.divide(ee.Image(AREA5min)).multiply(1e6).copyProperties(image)
+    image = image.divide(ee.Image(AREA5MIN)).multiply(1e6).copyProperties(image)
     image = image.set("units","m")
     image = image.set("convertedToFlux", 1)
     return image
@@ -136,9 +138,13 @@ def checkUnits(image):
     return ee.Image(outImage)
 
 def addWeightImage(d):
-    if d["PCRGlobWB"] = 1 :
-        print("added area as weights")
-
+    dOut = d
+    if d['PCRGlobWB'] == 1:
+        dOut["weightAsset30s"] = ee.Image(AREA30s)
+    else: 
+        pprint(d)
+        dOut["weightAsset30s"] = ee.Image(ONES30s)
+    return dOut
 
         
 #@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
@@ -179,37 +185,18 @@ assetList = subprocess.check_output(command,shell=True).splitlines()
 # 
 # 
 
-# ### Auxiliary Data
-
 # In[10]:
 
-d ={}
+regexList = []
 
 
 # In[11]:
 
-d["zones"] = readAsset(HYDROBASINS) 
-d["area_5min"] = readAsset(AREA5min)
-d["area_30s"] = readAsset(AREA30s)
-d["ones_5min"] = readAsset(ONES5MIN)
-d["ones_30s"] = readAsset(ONES30s)
-
-d["zones"]["image"] = prepareZonalRaster(ee.Image(HYDROBASINS))
+#auxList = ["zones","area_5min","area_30s","ones_5min","ones_30s"]
+auxList = ["zones","area_30s","ones_30s"]
 
 
 # In[12]:
-
-dOut ={}
-
-
-# In[13]:
-
-dOut["area30s"] = zonalStats(d["area30s"]["asset"], d["ones30s"]["asset"],d["zones"]["asset"])
-
-
-# ### PCRGLOBWB Data
-
-# In[18]:
 
 sectors = ["Dom","Ind","Irr","IrrLinear","Liv"]
 parameters = ["WW","WN"]
@@ -217,51 +204,87 @@ temporalScales = ["year","month"]
 runoffparameters = ["runoff","reducedmeanrunoff"]
 
 
-# Testing purposes
+# In[13]:
 
-# In[ ]:
+if TESTING:
+    sectors = ["Dom"]
+    parameters = ["WW"]
+    temporalScales = ["year"]
+    runoffparameters = ["runoff","reducedmeanrunoff"]
 
-sectors = ["Dom"]
-parameters = ["WW"]
-temporalScales = ["year"]
+
+# In[14]:
+
+demandList = []
+for r in itertools.product(sectors,parameters, temporalScales): 
+    regex = "%s%s_%s" %(r[0],r[1],r[2])
+    demandList = demandList + [regex]
 
 
 # In[15]:
 
-# for testing purposes
+supplyList = []
+for r in itertools.product(runoffparameters, temporalScales): 
+    regex = "%s_%s" %(r[0],r[1])
+    supplyList = supplyList + [regex]
 
 
+# In[16]:
 
-for r in itertools.product(sectors,parameters, temporalScales): 
-    regex = "%s%s_%s" %(r[0],r[1],r[2])
-    for assetId in assetList:
-        if re.search(regex,assetId):
-            d[regex] = readAsset(assetId)
-            d[regex]["PCRGlobWB"] = 1 
-            
-            
+regexList = regexList + auxList + demandList + supplyList
+
+
+# In[17]:
+
+d = dict(zip(regexList,[{}]*len(regexList)))
+
+
+# In[18]:
+
+for regex in regexList:
+    # item is also the regular expression
+    print(regex)
+    if regex == "zones":
+        d[regex] = readAsset(HYDROBASINS)
+        d[regex]["asset"] = prepareZonalRaster(ee.Image(HYDROBASINS))
+    else:
+        for assetId in assetList:
+            if re.search(regex,assetId):
+                d[regex] = readAsset(assetId)
+
+
+# In[19]:
+
+zonesImage = d["zones"]["asset"]
+
+
+# In[25]:
+
+for key, nestedDict in d.iteritems():
+    if key in auxList:
+        print(key," using ones instead of area as weights")
+        weightsImage = ee.Image(ONES30S)
+        
+    else:
+        print(key, " using area30s as weight")
+        weightsImage = ee.Image(AREA30S)
+        
+    if nestedDict["assetType"] == "image":
+        print("this is an image")
+        fcOut = zonalStats(nestedDict["asset"],weightsImage,zonesImage)
+        export(fcOut)
+    elif nestedDict["assetType"] == "imageCollection":
+        print("this is an imageCollection, filter for 2014")
+        
+        
 
 
 # In[22]:
 
-for r in itertools.product(runoffparameters, temporalScales): 
-    regex = "%s_%s" %(r[0],r[1])
-    for assetId in assetList:
-        if re.search(regex,assetId):
-            d[regex] = readAsset(assetId)
-            d[regex]["PCRGlobWB"] = 1 
-
-    
-    
-
-
-# In[23]:
-
-pprint(d)
+pprint(fcOut.getInfo())
 
 
 # In[ ]:
 
-for key, value in d.iteritems():
-    
+
 

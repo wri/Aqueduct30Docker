@@ -57,7 +57,7 @@ MONTHLY_UNITS = "m/month"
 
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = 14
+VERSION = 17
 
 MAXPIXELS =1e10
 
@@ -191,25 +191,25 @@ commonProperties = {"rangeMin":YEAR_MIN,
 
 # In[16]:
 
-d["annual"] = commonProperties
-d["monthly"] = commonProperties
+d["year"] = commonProperties
+d["month"] = commonProperties
 
 
 # In[17]:
 
-d["annual"].update({"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)),
+d["year"].update({"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)),
                     "ic_name": EE_IC_NAME_ANNUAL+"V%0.2d" %(VERSION) ,
                     "image_name": EE_IC_NAME_ANNUAL+"V%0.2d" %(VERSION),
                     "temporal_resolution":"year",
                     "units":ANNUAL_UNITS,
-                    "exportdescription": ANNUAL_EXPORTDESCRIPTION + "Y%sY%s" %(YEAR_MIN,YEAR_MAX),
+                    "exportdescription": ANNUAL_EXPORTDESCRIPTION + "_Y%sY%s" %(YEAR_MIN,YEAR_MAX),
                     "time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,12,1)
                     })
 
 
 # In[18]:
 
-d["monthly"].update({"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_MONTH)),
+d["month"].update({"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_MONTH)),
                      "ic_name": EE_IC_NAME_MONTH +"V%0.2d" %(VERSION),
                      "temporal_resolution":"month",
                      "units":MONTHLY_UNITS,
@@ -234,19 +234,24 @@ for key, value in d.iteritems():
         reducedImage = reduceMean(value["ic"],value["rangeMin"],newDict[key]["rangeMax"])
         validImage = addValidProperties(reducedImage,newDict[key])
         assetId = EE_INPUT_PATH+newDict[key]["ic_name"]+"/"+newDict[key]["image_name"]
-        exportToAsset(validImage,newDict[key]["exportdescription"]+"V%s"%(newDict[key]["version"]),assetId,dimensions,geometry,MAXPIXELS)
+        exportToAsset(validImage,newDict[key]["exportdescription"]+"_V%s"%(newDict[key]["version"]),assetId,dimensions,geometry,MAXPIXELS)
         
-    if value["temporal_resolution"] == "month":
+    elif value["temporal_resolution"] == "month":
         for month in range(1,13):
             newDict[key]["month"] = month
             newDict[key]["image_name"] = EE_IC_NAME_MONTH +"M%0.2dV%0.2d" %(month,VERSION)
-            newDict[key]["exportdescription"] = ANNUAL_EXPORTDESCRIPTION + "Y%sY%sM%0.d" %(YEAR_MIN,YEAR_MAX,month)
+            newDict[key]["exportdescription"] = MONTHLY_EXPORTDESCRIPTION + "_Y%sY%sM%0.d" %(YEAR_MIN,YEAR_MAX,month)
             
             reducedImage = reduceMean(value["ic"],newDict[key]["rangeMin"],newDict[key]["rangeMax"])
             validImage = addValidProperties(reducedImage,newDict[key])
             assetId = EE_INPUT_PATH+newDict[key]["ic_name"]+"/"+newDict[key]["image_name"]
             exportToAsset(validImage,value["exportdescription"]+"V%s" %(newDict[key]["version"]),assetId,dimensions,geometry,MAXPIXELS)            
         pass  
+
+
+# In[21]:
+
+print(newDict)
 
 
 # In[ ]:
