@@ -36,7 +36,7 @@ ee.Initialize()
 
 # In[4]:
 
-TESTING =0
+TESTING = 1
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
@@ -49,7 +49,7 @@ DIMENSION5MIN = "4320x2160"
 DIMENSION30S = "43200x21600"
 CRS = "EPSG:4326"
 
-VERSION = 10
+VERSION = 11
 
 HYDROBASINS = "projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01"
 
@@ -150,15 +150,6 @@ def addWeightImage(d):
         dOut["weightAsset30s"] = ee.Image(ONES30s)
     return dOut
 
-def filterCollection(ic,YEAR_MIN,YEAR_MAX):
-    dateFilterMin = ee.Filter.gte("year",yearMin)
-    dateFilterMax = ee.Filter.lte("year",yearMax)
-    filteredIc = ee.ImageCollection(ic.filter(dateFilterMin).filter(dateFilterMax))
-    return filteredIc
-
-def printKeys(d):
-    print(d.keys())
-        
 #@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
 def export(fc):
     # Make sure your fc has an attribute called exportdescription.    
@@ -221,7 +212,7 @@ runoffparameters = ["runoff","reducedmeanrunoff"]
 if TESTING:
     sectors = ["Dom"]
     parameters = ["WW"]
-    temporalScales = ["year"]
+    temporalScales = ["year","month"]
     runoffparameters = ["runoff","reducedmeanrunoff"]
 
 
@@ -270,12 +261,13 @@ for regex in regexList:
 zonesImage = d["zones"]["asset"]
 
 
-# In[26]:
+# In[20]:
 
 a = []
 
 for key, nestedDict in d.iteritems():
     if key in auxList:
+        print(key, " using ones30s as weight")
         weightsImage = ee.Image(ONES30S)
         
     else:
@@ -283,50 +275,18 @@ for key, nestedDict in d.iteritems():
         weightsImage = ee.Image(AREA30S)
         
     if nestedDict["assetType"] == "image":
-        print("this is an image")
         fcOut = zonalStats(nestedDict["asset"],weightsImage,zonesImage)
-        #export(fcOut)
+        export(fcOut)
     elif nestedDict["assetType"] == "imageCollection": 
         imagesList = ee.data.getList({"id":"%s" %(nestedDict["assetId"])} )
         for item in imagesList:
             imageId = item["id"]
             # Filter 2014 images
             if re.search(PATTERN,imageId):
-                print(imageId)
-                
-            
-            #fcOut = zonalStats(ee.Image(imageId),weightsImage,zonesImage)
-            
+                fcOut = zonalStats(ee.Image(imageId),weightsImage,zonesImage)
+                export(fcOut)
+    else:
+        print("error")
         
         
-
-
-# In[21]:
-
-print(a)
-
-
-# In[22]:
-
-test = ee.data.getList({"id":"projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_runoff_month_mmonth_5min_1958_2014"})
-
-
-# In[23]:
-
-test
-
-
-# In[24]:
-
-type(test)
-
-
-# In[25]:
-
-print(d.keys())
-
-
-# In[ ]:
-
-
 
