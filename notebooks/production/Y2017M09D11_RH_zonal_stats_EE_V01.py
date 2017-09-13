@@ -58,6 +58,8 @@ AREA30S = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_30s_m2V11"
 ONES5MIN ="projects/WRI-Aquaduct/PCRGlobWB20V07/ones_5minV11"
 ONES30S = "projects/WRI-Aquaduct/PCRGlobWB20V07/ones_30sV11"
 
+YEAR_MIN = 2014
+YEAR_MAX = 2014
 
 
 # In[5]:
@@ -146,6 +148,11 @@ def addWeightImage(d):
         dOut["weightAsset30s"] = ee.Image(ONES30s)
     return dOut
 
+def filterCollection(ic,YEAR_MIN,YEAR_MAX):
+    dateFilterMin = ee.Filter.gte("year",yearMin)
+    dateFilterMax = ee.Filter.lte("year",yearMax)
+    filteredIc = ee.ImageCollection(ic.filter(dateFilterMin).filter(dateFilterMax))
+    return filteredIc
         
 #@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
 def export(fc):
@@ -277,11 +284,8 @@ for key, nestedDict in d.iteritems():
         print("this is an imageCollection, filter for 2014")
         
         
-
-
-# In[22]:
-
-pprint(fcOut.getInfo())
+        
+        
 
 
 # In[ ]:

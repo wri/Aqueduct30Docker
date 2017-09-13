@@ -23,6 +23,8 @@ import ee
 import folium
 from folium_gee import *
 import subprocess
+from pprint import *
+from itertools import chain
 
 
 # In[3]:
@@ -57,7 +59,7 @@ MONTHLY_UNITS = "m/month"
 
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = 17
+VERSION = 19
 
 MAXPIXELS =1e10
 
@@ -185,46 +187,65 @@ commonProperties = {"rangeMin":YEAR_MIN,
                     "nodata_value":-9999,
                     "reducer":"mean",
                     "version":VERSION,
+                    "year":2014,
+                    "year_warning":"rangeNp"
                     "script_used":"Y2017M08D30_RH_Average_Supply_EE_V01"
                    }
 
 
 # In[16]:
 
-d["year"] = commonProperties
-d["month"] = commonProperties
+dYearOrig = commonProperties
+dMonthOrig = commonProperties
+
+
+# In[ ]:
+
+
 
 
 # In[17]:
 
-d["year"].update({"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)),
+dYearExtra = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_ANNUAL)),
                     "ic_name": EE_IC_NAME_ANNUAL+"V%0.2d" %(VERSION) ,
                     "image_name": EE_IC_NAME_ANNUAL+"V%0.2d" %(VERSION),
                     "temporal_resolution":"year",
                     "units":ANNUAL_UNITS,
                     "exportdescription": ANNUAL_EXPORTDESCRIPTION + "_Y%sY%s" %(YEAR_MIN,YEAR_MAX),
                     "time_start": "%04d-%0.2d-%0.2d" %(YEAR_MAX,12,1)
-                    })
+                    }
 
 
 # In[18]:
 
-d["month"].update({"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_MONTH)),
+dMonthExtra = {"ic": ee.ImageCollection(os.path.join(EE_INPUT_PATH,INPUT_FILE_NAME_MONTH)),
                      "ic_name": EE_IC_NAME_MONTH +"V%0.2d" %(VERSION),
                      "temporal_resolution":"month",
                      "units":MONTHLY_UNITS,
                      "nodata_value":-9999,
                      # add month , image_name and exportdexription
-                     })
+                     }
 
+
+# These commands will only work in python 2!
 
 # In[19]:
+
+d["year"] = dict(dYearOrig.items() + dYearExtra.items())
+
+
+# In[20]:
+
+d["month"] = dict(dMonthOrig.items() + dMonthExtra.items())
+
+
+# In[21]:
 
 for key, value in d.iteritems():
     createImageCollections(value)
 
 
-# In[20]:
+# In[22]:
 
 newDict = {}
 for key, value in d.iteritems():
@@ -246,15 +267,5 @@ for key, value in d.iteritems():
             validImage = addValidProperties(reducedImage,newDict[key])
             assetId = EE_INPUT_PATH+newDict[key]["ic_name"]+"/"+newDict[key]["image_name"]
             exportToAsset(validImage,value["exportdescription"]+"V%s" %(newDict[key]["version"]),assetId,dimensions,geometry,MAXPIXELS)            
-        pass  
-
-
-# In[21]:
-
-print(newDict)
-
-
-# In[ ]:
-
-
+        pass
 
