@@ -36,7 +36,7 @@ ee.Initialize()
 
 # In[4]:
 
-TESTING =1
+TESTING =0
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
@@ -61,6 +61,8 @@ ONES30S = "projects/WRI-Aquaduct/PCRGlobWB20V07/ones_30sV11"
 YEAR_MIN = 2014
 YEAR_MAX = 2014
 
+PATTERN = "Y2014"
+
 
 # In[5]:
 
@@ -76,7 +78,7 @@ geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [
 
 # ## Functions
 
-# In[24]:
+# In[7]:
 
 def prepareZonalRaster(image):
     image    = ee.Image(image)
@@ -153,6 +155,9 @@ def filterCollection(ic,YEAR_MIN,YEAR_MAX):
     dateFilterMax = ee.Filter.lte("year",yearMax)
     filteredIc = ee.ImageCollection(ic.filter(dateFilterMin).filter(dateFilterMax))
     return filteredIc
+
+def printKeys(d):
+    print(d.keys())
         
 #@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
 def export(fc):
@@ -265,11 +270,12 @@ for regex in regexList:
 zonesImage = d["zones"]["asset"]
 
 
-# In[25]:
+# In[26]:
+
+a = []
 
 for key, nestedDict in d.iteritems():
     if key in auxList:
-        print(key," using ones instead of area as weights")
         weightsImage = ee.Image(ONES30S)
         
     else:
@@ -279,13 +285,45 @@ for key, nestedDict in d.iteritems():
     if nestedDict["assetType"] == "image":
         print("this is an image")
         fcOut = zonalStats(nestedDict["asset"],weightsImage,zonesImage)
-        export(fcOut)
-    elif nestedDict["assetType"] == "imageCollection":
-        print("this is an imageCollection, filter for 2014")
+        #export(fcOut)
+    elif nestedDict["assetType"] == "imageCollection": 
+        imagesList = ee.data.getList({"id":"%s" %(nestedDict["assetId"])} )
+        for item in imagesList:
+            imageId = item["id"]
+            # Filter 2014 images
+            if re.search(PATTERN,imageId):
+                print(imageId)
+                
+            
+            #fcOut = zonalStats(ee.Image(imageId),weightsImage,zonesImage)
+            
         
         
-        
-        
+
+
+# In[21]:
+
+print(a)
+
+
+# In[22]:
+
+test = ee.data.getList({"id":"projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_runoff_month_mmonth_5min_1958_2014"})
+
+
+# In[23]:
+
+test
+
+
+# In[24]:
+
+type(test)
+
+
+# In[25]:
+
+print(d.keys())
 
 
 # In[ ]:

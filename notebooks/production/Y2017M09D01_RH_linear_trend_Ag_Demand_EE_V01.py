@@ -16,7 +16,7 @@ timeString = time.strftime("UTC %H:%M")
 print(dateString,timeString)
 
 
-# In[9]:
+# In[2]:
 
 import os
 import ee
@@ -41,7 +41,7 @@ YEAR_MAX = 2014
 DIMENSION5MIN = "4320x2160"
 CRS = "EPSG:4326"
 
-VERSION = 22
+VERSION = 24
 
 UNITS = "millionm3"
 MAXPIXELS =1e10
@@ -116,7 +116,7 @@ def exportToAsset(image,outputIcName,outputIName):
 
 def iterateFunction(r):
     inputIcName = "global_historical_PIrr%s_%s_millionm3_5min_1960_2014" %(r[0],r[1])
-    outputIcName = "global_historical_PIrrLinear%s_%s_millionm3_5min_%0.4d_%0.4dV%0.2d" %(r[0],r[1],YEAR_MIN,YEAR_MAX,VERSION)
+    outputIcName = "global_historical_PIrrLinear%s_%s_millionm3_5min_Y%0.4d_Y%0.4dV%0.2d" %(r[0],r[1],YEAR_MIN,YEAR_MAX,VERSION)
     
     # properties independent on temporal_scale
     properties = {}
@@ -146,7 +146,7 @@ def iterateFunction(r):
         print(properties["exportdescription"])
         newImageYearMax = linearTrend(icFiltered,YEAR_MIN,YEAR_MAX)
         newImageYearMax = addValidProperties(newImageYearMax,properties)        
-        outputIName = "global_historical_PIrrLinear%s_%s_millionm3_5min_%0.4d_%0.4dV%0.2d" %(r[0],r[1],YEAR_MIN,YEAR_MAX,VERSION)   
+        outputIName = "global_historical_PIrrLinear%s_%s_millionm3_5min_Y%0.4d_Y%0.4dV%0.2d" %(r[0],r[1],YEAR_MIN,YEAR_MAX,VERSION)   
         exportToAsset(newImageYearMax,outputIcName,outputIName)
         
     elif r[1] =="month":
@@ -160,7 +160,7 @@ def iterateFunction(r):
             newImageYearMax = linearTrend(icMonths,YEAR_MIN,YEAR_MAX)
             newImageYearMax = addValidProperties(newImageYearMax,properties)
             
-            outputIName = "global_historical_PIrrLinear%s_%s_millionm3_5min_%0.4d_%0.4dM%0.2dV%0.2d" %(r[0],r[1],YEAR_MIN,YEAR_MAX,month,VERSION)
+            outputIName = "global_historical_PIrrLinear%s_%s_millionm3_5min_Y%0.4d_Y%0.4dM%0.2dV%0.2d" %(r[0],r[1],YEAR_MIN,YEAR_MAX,month,VERSION)
             exportToAsset(newImageYearMax,outputIcName,outputIName)
     else:
         print("Error, check script")

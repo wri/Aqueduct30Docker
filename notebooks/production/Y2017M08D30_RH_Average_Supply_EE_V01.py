@@ -45,8 +45,8 @@ DIMENSION5MIN["y"] = 2160
 INPUT_FILE_NAME_ANNUAL = "global_historical_runoff_year_myear_5min_1958_2014"
 INPUT_FILE_NAME_MONTH = "global_historical_runoff_month_mmonth_5min_1958_2014"
 
-EE_IC_NAME_ANNUAL =  "global_historical_reducedmeanrunoff_year_myear_5min_1960_2014"
-EE_IC_NAME_MONTH =   "global_historical_reducedmeanrunoff_month_mmonth_5min_1960_2014"
+EE_IC_NAME_ANNUAL =  "global_historical_reducedmeanrunoff_year_myear_5min_Y1960_Y2014"
+EE_IC_NAME_MONTH =   "global_historical_reducedmeanrunoff_month_mmonth_5min_Y1960_Y2014"
 
 EE_I_NAME_ANNUAL = EE_IC_NAME_ANNUAL
 EE_I_NAME_MONTH = EE_IC_NAME_MONTH
@@ -59,7 +59,7 @@ MONTHLY_UNITS = "m/month"
 
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = 19
+VERSION = 20
 
 MAXPIXELS =1e10
 
@@ -188,7 +188,7 @@ commonProperties = {"rangeMin":YEAR_MIN,
                     "reducer":"mean",
                     "version":VERSION,
                     "year":2014,
-                    "year_warning":"rangeNp"
+                    "year_warning":"rangeNotOneYear",
                     "script_used":"Y2017M08D30_RH_Average_Supply_EE_V01"
                    }
 
