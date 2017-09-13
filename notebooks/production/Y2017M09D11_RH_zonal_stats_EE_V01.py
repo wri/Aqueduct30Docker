@@ -8,7 +8,7 @@
 # * Kernel used: python27
 # * Date created: 20170911
 
-# In[1]:
+# In[24]:
 
 import time
 dateString = time.strftime("Y%YM%mD%d")
@@ -217,13 +217,20 @@ temporalScales = ["year","month"]
 runoffparameters = ["runoff","reducedmeanrunoff"]
 
 
-# In[15]:
+# Testing purposes
 
-# for testing purposes
+# In[ ]:
 
 sectors = ["Dom"]
 parameters = ["WW"]
 temporalScales = ["year"]
+
+
+# In[15]:
+
+# for testing purposes
+
+
 
 for r in itertools.product(sectors,parameters, temporalScales): 
     regex = "%s%s_%s" %(r[0],r[1],r[2])
