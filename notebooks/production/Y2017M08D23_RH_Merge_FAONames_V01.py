@@ -8,6 +8,14 @@
 # * Kernel used: python35
 # * Date created: 20170823
 
+# In[9]:
+
+import time
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+print(dateString,timeString)
+
+
 # Data URL's, as you can see there is an error with the North America file on FAO's server. The data was downloaded using DownThemAll and stored on S3 
 
 # | Geography | URL |
@@ -74,4 +82,9 @@ with fiona.open(EC2_OUTPUT_PATH+"/hydrobasins_fao_fiona_merged_v01.shp", 'w', **
 # In[8]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --quiet')
+
+
+# In[ ]:
+
+
 

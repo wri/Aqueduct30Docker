@@ -83,18 +83,20 @@ def prepareZonalRaster(image):
     return newImage
 
 def readAsset(assetId):
-    try:
-        if ee.data.getInfo(assetId)["type"] == "Image":
-            asset = ee.Image(assetId)
-            assetType = "image"
-        elif ee.data.getInfo(assetId)["type"] == "ImageCollection":
-            asset = ee.ImageCollection(assetId)
-            assetType = "imageCollection"
-        else:
-            print("error")
-    except:
-        print("error",assetId)
-    return {"assetId":assetId,"asset":asset,"assetType":assetType}
+    # this function will read both images and imageCollections 
+    if ee.data.getInfo(assetId)["type"] == "Image":
+        asset = ee.Image(assetId)
+        assetType = "image"
+        newAsset = ee.Image(checkUnits(asset))
+
+    elif ee.data.getInfo(assetId)["type"] == "ImageCollection":
+        asset = ee.ImageCollection(assetId)
+        assetType = "imageCollection"
+        newAsset = ee.ImageCollection(asset.map(checkUnits))
+        
+    else:
+        print("error")        
+    return {"assetId":assetId,"asset":newAsset,"assetType":assetType}
 
 def addSuffix(fc,suffix):
     namesOld = ee.Feature(fc.first()).toDictionary().keys()
@@ -117,6 +119,28 @@ def zonalStats(valueImage, weightImage, zonesImage):
     fc2 = fc2.copyProperties(valueImage)
     return fc2
 
+def volumeToFlux(image):
+    image = ee.Image(image)
+    image = image.divide(ee.Image(AREA5min)).multiply(1e6).copyProperties(image)
+    image = image.set("units","m")
+    image = image.set("convertedToFlux", 1)
+    return image
+
+def checkUnits(image):
+    # function is server side
+    image = ee.Image(image)
+    condition = ee.Algorithms.IsEqual(image.get("units"),ee.String("millionm3"))
+    trueCase = volumeToFlux(image)
+    falseCase = image
+    outImage = ee.Algorithms.If(condition,trueCase,falseCase)
+    return ee.Image(outImage)
+
+def addWeightImage(d):
+    if d["PCRGlobWB"] = 1 :
+        print("added area as weights")
+
+
+        
 #@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
 def export(fc):
     # Make sure your fc has an attribute called exportdescription.    
@@ -157,11 +181,6 @@ assetList = subprocess.check_output(command,shell=True).splitlines()
 
 # ### Auxiliary Data
 
-# In[ ]:
-
-
-
-
 # In[10]:
 
 d ={}
@@ -170,57 +189,72 @@ d ={}
 # In[11]:
 
 d["zones"] = readAsset(HYDROBASINS) 
-d["area5min"] = readAsset(AREA5min)
-d["area30s"] = readAsset(AREA30s)
-d["ones5min"] = readAsset(ONES5MIN)
-d["ones30s"] = readAsset(ONES30s)
+d["area_5min"] = readAsset(AREA5min)
+d["area_30s"] = readAsset(AREA30s)
+d["ones_5min"] = readAsset(ONES5MIN)
+d["ones_30s"] = readAsset(ONES30s)
 
 d["zones"]["image"] = prepareZonalRaster(ee.Image(HYDROBASINS))
 
 
 # In[12]:
 
-print(d)
+dOut ={}
 
 
 # In[13]:
 
-dOut ={}
-
-
-# In[14]:
-
-dOut["fcArea"] = zonalStats(d["area30s"]["asset"], d["ones30s"]["asset"],d["zones"]["asset"])
+dOut["area30s"] = zonalStats(d["area30s"]["asset"], d["ones30s"]["asset"],d["zones"]["asset"])
 
 
 # ### PCRGLOBWB Data
 
-# In[15]:
+# In[18]:
 
 sectors = ["Dom","Ind","Irr","IrrLinear","Liv"]
 parameters = ["WW","WN"]
 temporalScales = ["year","month"]
+runoffparameters = ["runoff","reducedmeanrunoff"]
 
 
-# In[16]:
+# In[15]:
+
+# for testing purposes
+
+sectors = ["Dom"]
+parameters = ["WW"]
+temporalScales = ["year"]
 
 for r in itertools.product(sectors,parameters, temporalScales): 
     regex = "%s%s_%s" %(r[0],r[1],r[2])
     for assetId in assetList:
         if re.search(regex,assetId):
             d[regex] = readAsset(assetId)
-            d[regex]["PCRGlobWB"] = 1
-    
+            d[regex]["PCRGlobWB"] = 1 
+            
+            
+
+
+# In[22]:
+
+for r in itertools.product(runoffparameters, temporalScales): 
+    regex = "%s_%s" %(r[0],r[1])
+    for assetId in assetList:
+        if re.search(regex,assetId):
+            d[regex] = readAsset(assetId)
+            d[regex]["PCRGlobWB"] = 1 
 
     
+    
 
 
-# In[17]:
+# In[23]:
 
 pprint(d)
 
 
 # In[ ]:
 
-
+for key, value in d.iteritems():
+    
 
