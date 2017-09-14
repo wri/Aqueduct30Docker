@@ -25,7 +25,7 @@ EC2_OUTPUT_PATH = "/volumes/data/Y2017M09D14_RH_merge_EE_results_V01/output"
 STRING_TRIM = "V15ee_export.csv"
 # e.g. IrrLinearWW_monthY2014M12V15ee_export.csv -> IrrLinearWW_monthY2014M12
 
-#Aux files 
+#Aux files, do not change order i.e. zones, area, extra
 AUXFILES = ["Hybas06",
             "area_30s_m2",
             "ones_30s"
@@ -70,19 +70,20 @@ def prepareFile(oneFile):
         d["df"] = pd.read_csv(os.path.join(folder,oneFile))
         d["df"] = prepareDf(d["df"])
         d["trimFileName"] = trimFileName
-        return d
-        
-
-        
+        return d         
         
 
 def prepareDf(df):
     for column in df.columns:
         if re.search("PfafID",column):
             df2 = df.set_index(column)
-            df2 = df2.drop(DROP_COLUMNS,1)
-            
+            df2 = df2.drop(DROP_COLUMNS,1)        
             return df2
+        
+
+
+    
+    
 
 
 # In[82]:
@@ -134,19 +135,26 @@ for oneFile in files:
         
 
 
-# In[98]:
+# In[121]:
 
-dfLeft = dAux["Hybas06"]["df"]
-
-
-# In[99]:
-
-dfRight = d["IrrLinearWN_monthY2014M01"]["df"]
+dfLeft = dAux[AUXFILES[0]]["df"]
 
 
-# In[103]:
+# # Adding area to shapes
 
-dfMerge = dfLeft.merge(dfRight,
+# In[126]:
+
+dAux[AUXFILES[1]]["df"]["total_%s" %(AUXFILES[1])] = dAux[AUXFILES[1]]["df"]["count_%s" %(AUXFILES[1])] * dAux[AUXFILES[1]]["df"]["mean_%s" %(AUXFILES[1])]
+
+
+# In[127]:
+
+dAux[AUXFILES[1]]["df"]
+
+
+# In[155]:
+
+dfMerge = dAux[AUXFILES[0]]["df"].merge(dAux[AUXFILES[1]]["df"],
                        how="outer",
                        left_index=True,
                        right_index=True,
@@ -154,7 +162,24 @@ dfMerge = dfLeft.merge(dfRight,
                       )
 
 
-# In[104]:
+# In[157]:
+
+for key, value in d.items():
+    dfNew = value["df"].copy()
+    # total new value = area in m^2 times mean flux 
+    dfNew["total_volume_%s" %(value["trimFileName"])] = dAux[AUXFILES[1]]["df"]["total_%s" %(AUXFILES[1])] * value["df"]["mean_%s" %(value["trimFileName"])]
+    
+     
+    
+    dfMerge = dfMerge.merge(dfNew,
+                           how="outer",
+                           left_index=True,
+                           right_index=True,
+                           sort=True                   
+                           )
+
+
+# In[158]:
 
 dfMerge.head()
 
