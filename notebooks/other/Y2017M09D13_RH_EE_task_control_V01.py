@@ -8,7 +8,7 @@
 # * Kernel used: python27
 # * Date created: 20170913
 
-# In[1]:
+# In[10]:
 
 import time
 dateString = time.strftime("Y%YM%mD%d")
@@ -18,27 +18,28 @@ print(dateString,timeString)
 
 # # Settings
 
-# In[2]:
+# In[39]:
 
-MAXTASKS = 200
+MAXTASKS = 250
 CANCELTASKS = 0
 
 
-# In[3]:
+# In[40]:
 
 import pandas as pd
 import ee
 from retrying import retry
+import datetime
 
 
-# In[4]:
+# In[41]:
 
 ee.Initialize()
 
 
 # # Functions
 
-# In[5]:
+# In[42]:
 
 def get_tasks():
     return ee.batch.Task.list()
@@ -65,6 +66,7 @@ def get_details(taskList,MAXTASKS):
             dfNew["calctime(min)"] = (dfNew["update_timestamp_ms"]-dfNew["start_timestamp_ms"])/(1000*60)
             dfNew["queuetime(min)"] = (dfNew["start_timestamp_ms"]-dfNew["creation_timestamp_ms"])/(1000*60)
             dfNew["runtime(min)"]= dfNew["queuetime(min)"]+dfNew["calctime(min)"]
+            dfNew["start_timestamp_UTC"] = datetime.datetime.fromtimestamp(dfNew["start_timestamp_ms"]/1000).strftime('%H:%M:%S')
         except:
             pass
         df = df.append(dfNew)
@@ -73,17 +75,17 @@ def get_details(taskList,MAXTASKS):
     
 
 
-# In[6]:
+# In[43]:
 
 taskList = get_tasks()
 
 
-# In[7]:
+# In[44]:
 
 detailedTasks = get_details(taskList,MAXTASKS)
 
 
-# In[8]:
+# In[45]:
 
 detailedTasks
 
