@@ -36,12 +36,9 @@ ee.Initialize()
 
 # In[4]:
 
-TESTING = 1
+TESTING = 0
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
-
-GCS_BUCKET= "aqueduct30_v01"
-GCS_OUTPUT_PATH = "Y2017M09D11_RH_zonal_stats_EE_V01/"
 
 HYBASLEVEL = 6
 
@@ -49,7 +46,10 @@ DIMENSION5MIN = "4320x2160"
 DIMENSION30S = "43200x21600"
 CRS = "EPSG:4326"
 
-VERSION = 11
+VERSION = 15
+
+GCS_BUCKET= "aqueduct30_v01"
+GCS_OUTPUT_PATH = "Y2017M09D11_RH_zonal_stats_EE_V%0.2d/" %(VERSION)
 
 HYDROBASINS = "projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01"
 
@@ -73,7 +73,9 @@ weightedReducers = reducers.splitWeights()
 # In[6]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
-geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+
+if TESTING ==1:
+    geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
 # ## Functions
@@ -93,16 +95,15 @@ def readAsset(assetId):
     if ee.data.getInfo(assetId)["type"] == "Image":
         asset = ee.Image(assetId)
         assetType = "image"
-        newAsset = ee.Image(checkUnits(asset))
+
 
     elif ee.data.getInfo(assetId)["type"] == "ImageCollection":
         asset = ee.ImageCollection(assetId)
         assetType = "imageCollection"
-        newAsset = ee.ImageCollection(asset.map(checkUnits))
         
     else:
         print("error")        
-    return {"assetId":assetId,"asset":newAsset,"assetType":assetType}
+    return {"assetId":assetId,"asset":asset,"assetType":assetType}
 
 def addSuffix(fc,suffix):
     namesOld = ee.Feature(fc.first()).toDictionary().keys()
@@ -132,15 +133,6 @@ def volumeToFlux(image):
     image = image.set("convertedToFlux", 1)
     return image
 
-def checkUnits(image):
-    # function is server side
-    image = ee.Image(image)
-    condition = ee.Algorithms.IsEqual(image.get("units"),ee.String("millionm3"))
-    trueCase = volumeToFlux(image)
-    falseCase = image
-    outImage = ee.Algorithms.If(condition,trueCase,falseCase)
-    return ee.Image(outImage)
-
 def addWeightImage(d):
     dOut = d
     if d['PCRGlobWB'] == 1:
@@ -150,7 +142,7 @@ def addWeightImage(d):
         dOut["weightAsset30s"] = ee.Image(ONES30s)
     return dOut
 
-#@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
+@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
 def export(fc):
     # Make sure your fc has an attribute called exportdescription.    
     # There is a bug in ee that adds ee_export.csv to your filename. Will remove in next steps
@@ -256,37 +248,58 @@ for regex in regexList:
                 d[regex] = readAsset(assetId)
 
 
-# In[19]:
+# In[ ]:
 
 zonesImage = d["zones"]["asset"]
 
 
-# In[20]:
+# In[ ]:
 
 a = []
 
 for key, nestedDict in d.iteritems():
-    if key in auxList:
-        print(key, " using ones30s as weight")
-        weightsImage = ee.Image(ONES30S)
+    try:
+        if key in auxList:
+            print(key, " using ones30s as weight")
+            weightsImage = ee.Image(ONES30S)
+
+        else:
+            print(key, " using area30s as weight")
+            weightsImage = ee.Image(AREA30S)
+
+
+
+        if nestedDict["assetType"] == "image":
+            image = nestedDict["asset"]
+            units = image.get("units").getInfo()
+            if units == "millionm3":
+                image = volumeToFlux(image) 
+
+
+            fcOut = zonalStats(nestedDict["asset"],weightsImage,zonesImage)
+            export(fcOut)
+        elif nestedDict["assetType"] == "imageCollection": 
+            imagesList = ee.data.getList({"id":"%s" %(nestedDict["assetId"])} )
+            for item in imagesList:
+                imageId = item["id"]
+                # Filter 2014 images
+                image = ee.Image(imageId)
+                units = image.get("units").getInfo()
+                if units == "millionm3":
+                    image = volumeToFlux(image)           
+
+
+                if re.search(PATTERN,imageId):
+                    fcOut = zonalStats(ee.Image(image),weightsImage,zonesImage)
+                    export(fcOut)
+        else:
+            print("error")
+    except:
+        print("error",key)
         
-    else:
-        print(key, " using area30s as weight")
-        weightsImage = ee.Image(AREA30S)
-        
-    if nestedDict["assetType"] == "image":
-        fcOut = zonalStats(nestedDict["asset"],weightsImage,zonesImage)
-        export(fcOut)
-    elif nestedDict["assetType"] == "imageCollection": 
-        imagesList = ee.data.getList({"id":"%s" %(nestedDict["assetId"])} )
-        for item in imagesList:
-            imageId = item["id"]
-            # Filter 2014 images
-            if re.search(PATTERN,imageId):
-                fcOut = zonalStats(ee.Image(imageId),weightsImage,zonesImage)
-                export(fcOut)
-    else:
-        print("error")
-        
-        
+
+
+# In[ ]:
+
+
 

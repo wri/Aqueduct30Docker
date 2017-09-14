@@ -6,7 +6,7 @@
 # * Purpose of script: allows the user to list tasks and cancel all pending tasks
 # * Author: Rutger Hofste
 # * Kernel used: python27
-# * Date created: 20170911
+# * Date created: 20170913
 
 # In[1]:
 
