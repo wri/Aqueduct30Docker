@@ -16,11 +16,13 @@ timeString = time.strftime("UTC %H:%M")
 print(dateString,timeString)
 
 
-# In[64]:
+# In[2]:
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2017M09D11_RH_zonal_stats_EE_V15/"
 EC2_INPUT_PATH = "/volumes/data/Y2017M09D14_RH_merge_EE_results_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M09D14_RH_merge_EE_results_V01/output"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
+
 
 STRING_TRIM = "V15ee_export.csv"
 # e.g. IrrLinearWW_monthY2014M12V15ee_export.csv -> IrrLinearWW_monthY2014M12
@@ -33,33 +35,36 @@ AUXFILES = ["Hybas06",
 
 DROP_COLUMNS = [".geo","system:index"]
 
+VERSION = 12
+
+OUTPUTFILENAME = "mergedZonalStatsEE_V%0.2d" %(VERSION)
 
 
+# In[3]:
 
-# In[65]:
+get_ipython().system('rm -r {EC2_INPUT_PATH}')
+get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
+
+
+# In[4]:
 
 get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[66]:
+# In[5]:
 
-#!gsutil cp -r {GCS_INPUT_PATH} {EC2_INPUT_PATH} 
-
-
-# In[ ]:
+get_ipython().system('gsutil cp -r {GCS_INPUT_PATH} {EC2_INPUT_PATH} ')
 
 
-
-
-# In[67]:
+# In[6]:
 
 import pandas as pd
 import os
 import re
 
 
-# In[81]:
+# In[7]:
 
 def createRegex(aList):
     return '|'.join(aList)
@@ -86,19 +91,19 @@ def prepareDf(df):
     
 
 
-# In[82]:
+# In[8]:
 
 folder = os.path.join(EC2_INPUT_PATH,"Y2017M09D11_RH_zonal_stats_EE_V15/")
 
 
-# In[83]:
+# In[9]:
 
 files = os.listdir(folder)
 
 
 # ## Process Auxiliary Datasets (PfafID, Area, Ones)
 
-# In[84]:
+# In[10]:
 
 dAux ={}
 for regex in AUXFILES:
@@ -108,17 +113,17 @@ for regex in AUXFILES:
     dAux[regex] = prepareFile(oneFile)   
 
 
-# In[85]:
+# In[11]:
 
 regex = createRegex(AUXFILES)
 
 
-# In[86]:
+# In[12]:
 
 print(regex)
 
 
-# In[88]:
+# In[13]:
 
 d ={}
 dAux ={}
@@ -135,24 +140,19 @@ for oneFile in files:
         
 
 
-# In[121]:
+# In[14]:
 
 dfLeft = dAux[AUXFILES[0]]["df"]
 
 
 # # Adding area to shapes
 
-# In[126]:
+# In[15]:
 
 dAux[AUXFILES[1]]["df"]["total_%s" %(AUXFILES[1])] = dAux[AUXFILES[1]]["df"]["count_%s" %(AUXFILES[1])] * dAux[AUXFILES[1]]["df"]["mean_%s" %(AUXFILES[1])]
 
 
-# In[127]:
-
-dAux[AUXFILES[1]]["df"]
-
-
-# In[155]:
+# In[16]:
 
 dfMerge = dAux[AUXFILES[0]]["df"].merge(dAux[AUXFILES[1]]["df"],
                        how="outer",
@@ -162,7 +162,7 @@ dfMerge = dAux[AUXFILES[0]]["df"].merge(dAux[AUXFILES[1]]["df"],
                       )
 
 
-# In[157]:
+# In[17]:
 
 for key, value in d.items():
     dfNew = value["df"].copy()
@@ -179,9 +179,29 @@ for key, value in d.items():
                            )
 
 
-# In[158]:
+# In[18]:
 
 dfMerge.head()
+
+
+# In[19]:
+
+dfMerge.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUTFILENAME+".csv"))
+
+
+# In[20]:
+
+dfMerge.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUTFILENAME+".pkl"))
+
+
+# In[21]:
+
+outputLocation = os.path.join(S3_OUTPUT_PATH,OUTPUTFILENAME)
+
+
+# In[22]:
+
+get_ipython().system('aws s3 cp --recursive {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH}')
 
 
 # In[ ]:
