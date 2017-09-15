@@ -22,8 +22,6 @@
 #     Add the FAO Names to the HydroBasins shapefile
 # 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01**  
 #     join the tables with the FAO names and the upstream / downstream relations
-# 1. **Y2017M09D15_RH_Fix_Geometry_Geopandas_V01**  
-#     fixed some invalid polygons that are self intersecting
 # 
 #     
 # ### PCRGlobWB 2.0
@@ -52,6 +50,8 @@
 #     Calculate zonal statistics for EE images and HydroBasin level 6 zones. Export to GCS 
 # 1. **Y2017M09D14_RH_merge_EE_results_V01**  
 #     This script will merge the csv files into one big file/dataFrame    
+# 1. **Y2017M09D15_RH_Add_Basin_Data_V01**  
+#     add data from upstream, downstream and basin to dataframe
 #     
 # 
 # ### Groundwater Branch
