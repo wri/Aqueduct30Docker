@@ -22,6 +22,8 @@
 #     Add the FAO Names to the HydroBasins shapefile
 # 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01**  
 #     join the tables with the FAO names and the upstream / downstream relations
+# 1. **Y2017M09D15_RH_Fix_Geometry_Geopandas_V01**  
+#     fixed some invalid polygons that are self intersecting
 # 
 #     
 # ### PCRGlobWB 2.0

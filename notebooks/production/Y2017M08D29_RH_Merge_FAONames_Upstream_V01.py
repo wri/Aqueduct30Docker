@@ -18,8 +18,8 @@ INPUT_FILE_NAME_FAO = "hybas_lev06_v1c_merged_fiona_withFAO_V01.csv"
 INPUT_FILE_NAME_DOWNSTREAM = "hybas_lev06_v1c_merged_fiona_upstream_downstream_V01.csv"
 INPUT_FILE_NAME_HYBAS = "hybas_lev06_v1c_merged_fiona_V01.shp"
 
-EC2_INPUT_PATH = "Y2017M08D29_RH_Merge_FAONames_Upstream_V01/input/"
-EC2_OUTPUT_PATH = "Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output/"
+EC2_INPUT_PATH = "/volumes/data/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/input/"
+EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output/"
 
 OUTPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V01"
 
