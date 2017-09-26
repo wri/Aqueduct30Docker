@@ -10,6 +10,14 @@
 
 # In[1]:
 
+import time
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+print(dateString,timeString)
+
+
+# In[2]:
+
 S3_INPUT_PATH_FAO ="s3://wri-projects/Aqueduct30/processData/Y2017M08D25_RH_spatial_join_FAONames_V01/output/"
 S3_INPUT_PATH_DOWNSTREAM = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Downstream_V01/output/"
 S3_INPUT_PATH_HYBAS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
@@ -26,7 +34,7 @@ OUTPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V01"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output/"
 
 
-# In[2]:
+# In[3]:
 
 get_ipython().system('rm -r {EC2_INPUT_PATH}')
 get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
@@ -35,22 +43,22 @@ get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[3]:
+# In[4]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_FAO} {EC2_INPUT_PATH} --recursive ')
 
 
-# In[4]:
+# In[5]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_DOWNSTREAM} {EC2_INPUT_PATH} --recursive ')
 
 
-# In[5]:
+# In[6]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYBAS} {EC2_INPUT_PATH} --recursive --exclude *.tif')
 
 
-# In[6]:
+# In[7]:
 
 import os
 if 'GDAL_DATA' not in os.environ:
@@ -65,62 +73,82 @@ import time
 get_ipython().magic('matplotlib notebook')
 
 
-# In[7]:
+# In[8]:
 
 dfFAO = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_FAO))
 
 
-# In[8]:
-
-dfDownstream = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_DOWNSTREAM))
-
-
 # In[9]:
 
-gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
+dfFAO.head()
 
 
 # In[10]:
 
-gdfOut = gdfHybas.merge(dfDownstream, on='PFAF_ID',how="outer")
+dfDownstream = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_DOWNSTREAM))
 
 
 # In[11]:
 
-gdfOut = gdfOut.merge(dfFAO,on='PFAF_ID',how="outer")
+dfDownstream.head()
 
 
 # In[12]:
 
-dfOut = gdfOut.drop('geometry',1)
+gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
 
 
 # In[13]:
 
-dfOut.head()
+dfHybas = gdfHybas.drop('geometry',1)
 
 
 # In[14]:
 
-dfOutSimple = dfOut["PFAF_ID"]
+dfSimple = pd.DataFrame(dfHybas["PFAF_ID"])
 
 
 # In[15]:
 
-gdfOutSimple = gpd.GeoDataFrame(dfOutSimple, geometry=gdfOut.geometry)
+dfSimple = dfSimple.set_index("PFAF_ID", drop=False)
 
 
 # In[16]:
 
-gdfOutSimple.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
+gdfHybas2 = gdfHybas.set_index("PFAF_ID", drop=False)
 
 
 # In[17]:
 
-dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
+gdfHybasSimple = gpd.GeoDataFrame(dfSimple, geometry=gdfHybas2.geometry)
 
 
 # In[18]:
+
+dfDownstream.head()
+
+
+# In[19]:
+
+dfOut = dfSimple.merge(dfDownstream, on='PFAF_ID',how="outer")
+
+
+# In[20]:
+
+dfOut = dfOut.merge(dfFAO,on='PFAF_ID',how="outer")
+
+
+# In[ ]:
+
+gdfHybasSimple.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
+
+
+# In[ ]:
+
+dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
+
+
+# In[ ]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
