@@ -76,6 +76,7 @@ get_ipython().magic('matplotlib notebook')
 # In[8]:
 
 dfFAO = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_FAO))
+dfFAO = dfFAO.set_index("PFAF_ID", drop=False)
 
 
 # In[9]:
@@ -86,6 +87,7 @@ dfFAO.head()
 # In[10]:
 
 dfDownstream = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_DOWNSTREAM))
+dfDownstream = dfDownstream.set_index("PFAF_ID", drop=False)
 
 
 # In[11]:
@@ -96,59 +98,48 @@ dfDownstream.head()
 # In[12]:
 
 gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
+gdfHybas = gdfHybas.set_index("PFAF_ID", drop=False)
+
 
 
 # In[13]:
 
-dfHybas = gdfHybas.drop('geometry',1)
+dfHybas = pd.DataFrame(gdfHybas["PFAF_ID"])
 
+
+# Merging the the downstream and FAO datasets, adding Hybas geometry and export both Excel sheet and dataset.
 
 # In[14]:
 
-dfSimple = pd.DataFrame(dfHybas["PFAF_ID"])
+dfOut = dfDownstream.merge(dfFAO,how="outer")
 
 
 # In[15]:
 
-dfSimple = dfSimple.set_index("PFAF_ID", drop=False)
+dfOut = dfOut.set_index("PFAF_ID",drop=False)
 
 
 # In[16]:
 
-gdfHybas2 = gdfHybas.set_index("PFAF_ID", drop=False)
+gdfHybas.dtypes
 
 
 # In[17]:
 
-gdfHybasSimple = gpd.GeoDataFrame(dfSimple, geometry=gdfHybas2.geometry)
+gdfHybasSimple = gpd.GeoDataFrame(dfHybas, geometry=gdfHybas.geometry)
 
 
 # In[18]:
 
-dfDownstream.head()
+gdfHybasSimple.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
 
 
 # In[19]:
 
-dfOut = dfSimple.merge(dfDownstream, on='PFAF_ID',how="outer")
-
-
-# In[20]:
-
-dfOut = dfOut.merge(dfFAO,on='PFAF_ID',how="outer")
-
-
-# In[ ]:
-
-gdfHybasSimple.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
-
-
-# In[ ]:
-
 dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
 
 
-# In[ ]:
+# In[20]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
