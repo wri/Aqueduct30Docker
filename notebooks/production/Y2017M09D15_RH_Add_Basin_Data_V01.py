@@ -19,6 +19,7 @@ print(dateString,timeString)
 # In[2]:
 
 S3_INPUT_PATH_EE  = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
 
 S3_INPUT_PATH_HYDROBASINS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output/"
 
@@ -28,6 +29,10 @@ EC2_OUTPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/output"
 INPUT_FILENAME_EE =  "mergedZonalStatsEE_V12.pkl"
 INPUT_FILENAME_HYDROBASINS =  "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V01.pkl"
 
+OUTPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V01"
+
+
+# Note: There are two polygons with the same PFAF_ID (353020). This is caused by the fact that both poygons would otherwise cross the 180 degree meridian
 
 # In[3]:
 
@@ -90,14 +95,16 @@ df_HydroBasins = pd.read_pickle(inputLocationHydroBasins)
 df_complete = df_HydroBasins.merge(df_ee,how="left",left_index=True, right_index=True)
 
 
+# Note: There are two polygons with the same PFAF_ID (353020). This is caused by the fact that both poygons would otherwise cross the 180 degree meridian. 
+
 # In[13]:
 
-df_complete.dtypes
+df_complete = df_complete.drop_duplicates(subset='PFAF_ID', keep='first')
 
 
 # ## Functions
 
-# In[65]:
+# In[14]:
 
 def calculateTotalDemand(useType,temporalResolution,year,month):
     # This function will add Dom Ind IrrLinear and Livestock of all basins in the input list
@@ -118,13 +125,6 @@ def calculateTotalDemand(useType,temporalResolution,year,month):
     return dfDemand   
 
 
-def calculateUpstream():
-    # This function will add upstream data to the dataFrame 
-    # standard column format: upstream_sum_volumem3_TotWW_monthY2014M12
-    pass
-
-dfTest = pd.DataFrame()
- 
 def addUpstream2(listje):
     df_full_temp = df_complete.copy()
     df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
@@ -135,64 +135,86 @@ def addUpstream2(listje):
     for index, row in df_part_temp2.iterrows():
         i += 1
         print("i: ",i  ," index: ", index)
-        upstreamCatchments = df_part_temp2.loc[index, "Upstream_PFAF_IDs"]
-        upstreamCatchments = ast.literal_eval(upstreamCatchments)
-        df_upstream = df_full_temp[df_full_temp.index.isin(upstreamCatchments)]
-        # selecting columns based on regular expression
-        df_upstream = df_upstream.filter(regex=("total*"))
-        df_upstream = df_upstream.add_prefix("upstream_")
-        sumSeries = df_upstream.sum(0)
-        for key, value in sumSeries.iteritems():
-            df_out.loc[index, key] = value
-        df_out.loc[index, "errorCode"] = 0
-        
-        
-    
-    return(df_upstream,df_out)
-        
-    
-    
-def addUpstream(listje):
-    df_full_temp = df_complete.copy()
-    df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
-    df_part_temp2 = df_part_temp.copy()
-    df_out = df_part_temp2.copy()
-    i = 0
-    for index, row in df_part_temp2.iterrows():
-        i += 1
-        print("i: ",i  ," index: ", index)
         try:
             upstreamCatchments = df_part_temp2.loc[index, "Upstream_PFAF_IDs"]
             upstreamCatchments = ast.literal_eval(upstreamCatchments)
-            df_upstream = df_full_temp.loc[upstreamCatchments]
-            area = df_upstream["countarea30sm2"] * df_upstream["meanarea30sm2"]
-
-            df_new = pd.DataFrame()
-            df_new["aream2"] = area
-
-            for parameter in parameterList:
-                df_new["count_" + parameter] = df_upstream["count" + parameter]
-                df_new["volumem3_" + parameter] = area * df_upstream["mean" + parameter]
-
-            sumSeries = df_new.sum()
-
+            df_upstream = df_full_temp[df_full_temp.index.isin(upstreamCatchments)]
+            # selecting columns based on regular expression
+            df_upstream = df_upstream.filter(regex=("total*"))
+            df_upstream = df_upstream.add_prefix("upstream_")
+            sumSeries = df_upstream.sum(0)
             for key, value in sumSeries.iteritems():
-                newKey = "upstream_sum_" + key
-                df_out.loc[index, newKey] = value
+                df_out.loc[index, key] = value
             df_out.loc[index, "errorCode"] = 0
         except:
             print("error")
             df_out.loc[index, "errorCode"] = 1
             pass
+    
+    return df_out
+    
+    
+def addDownstream2(listje):
+    df_full_temp = df_complete.copy()
+    df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
+    df_part_temp2 = df_part_temp.copy()
+    df_out = df_part_temp2.copy()
+    
+    i = 0
+    for index, row in df_part_temp2.iterrows():
+        i += 1
+        print("i: ",i  ," index: ", index)
+        try:
+            upstreamCatchments = df_part_temp2.loc[index, "Downstream_PFAF_IDs"]
+            upstreamCatchments = ast.literal_eval(upstreamCatchments)
+            df_upstream = df_full_temp[df_full_temp.index.isin(upstreamCatchments)]
+            # selecting columns based on regular expression
+            df_upstream = df_upstream.filter(regex=("total*"))
+            df_upstream = df_upstream.add_prefix("downstream_")
+            sumSeries = df_upstream.sum(0)
+            for key, value in sumSeries.iteritems():
+                df_out.loc[index, key] = value
+            df_out.loc[index, "errorCode"] = 0
+        except:
+            print("error")
+            df_out.loc[index, "errorCode"] = 1
+            pass
+    
+    return df_out
 
-    return df_out   
+
+def addBasin2(listje):
+    df_full_temp = df_complete.copy()
+    df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
+    df_part_temp2 = df_part_temp.copy()
+    df_out = df_part_temp2.copy()
     
+    i = 0
+    for index, row in df_part_temp2.iterrows():
+        i += 1
+        print("i: ",i  ," index: ", index)
+        try:
+            upstreamCatchments = df_part_temp2.loc[index, "Basin_PFAF_IDs"]
+            upstreamCatchments = ast.literal_eval(upstreamCatchments)
+            df_upstream = df_full_temp[df_full_temp.index.isin(upstreamCatchments)]
+            # selecting columns based on regular expression
+            df_upstream = df_upstream.filter(regex=("total*"))
+            df_upstream = df_upstream.add_prefix("basin_")
+            sumSeries = df_upstream.sum(0)
+            for key, value in sumSeries.iteritems():
+                df_out.loc[index, key] = value
+            df_out.loc[index, "errorCode"] = 0
+        except:
+            print("error")
+            df_out.loc[index, "errorCode"] = 1
+            pass
     
+    return df_out
 
 
 # ## Script
 
-# In[18]:
+# In[15]:
 
 demandTypes = ["PDom","PInd","IrrLinear","PLiv"]
 useTypes = ["WW","WN"]
@@ -200,7 +222,7 @@ temporalResolutions = ["year","month"]
 years = [2014]
 
 
-# In[19]:
+# In[16]:
 
 dfDemand = pd.DataFrame(index=df_complete.index)
 for temporalResolution in temporalResolutions:
@@ -216,91 +238,86 @@ for temporalResolution in temporalResolutions:
                     dfDemand = calculateTotalDemand(useType,temporalResolution,year,month)          
 
 
-# In[20]:
+# In[17]:
 
 dfDemand.head()
 
 
-# In[21]:
+# In[18]:
 
-df_smaller = 
-
-
-# In[30]:
-
-listje = [292107]
+df_complete = df_complete.merge(dfDemand,how="left",left_index=True,right_index=True)
 
 
-# In[62]:
-
-df_upstream_sum,df_out = addUpstream2(listje)
-
-
-# In[63]:
-
-df_upstream_sum
-
-
-# In[49]:
-
-test = df_upstream_sum.sum(0)
-
-
-# In[64]:
-
-df_out.head()
-
-
-# In[ ]:
+# In[19]:
 
 mp.cpu_count()
 
 
-# In[ ]:
+# In[20]:
 
-print(inputLocation)
-
-
-# In[ ]:
-
-indices_full = df_full.index.values
+indices_full = df_complete.index.values
 indices_split = np.array_split(indices_full, mp.cpu_count())
 
 
-# In[ ]:
+# In[21]:
 
-print(indices_split)
+indices_split[1].shape
 
 
-# In[ ]:
+# In[22]:
 
 mp.log_to_stderr()
 
 
-# In[ ]:
+# In[23]:
 
 logger = mp.get_logger()
 logger.setLevel(logging.INFO)
 
 
-# In[ ]:
+# In[24]:
 
 pool = mp.Pool(mp.cpu_count())
 
 
-# In[ ]:
+# In[25]:
 
-df_out = pd.concat(pool.map(addUpstream, indices_split))
-
-
-# In[ ]:
-
-df_out = addUpstream([1])
+df_complete = pd.concat(pool.map(addUpstream2, indices_split))
 
 
-# In[ ]:
+# In[26]:
 
-df_out.head()
+df_complete = pd.concat(pool.map(addDownstream2, indices_split))
+
+
+# In[27]:
+
+df_complete = pd.concat(pool.map(addBasin2, indices_split))
+
+
+# In[28]:
+
+pool.close()
+
+
+# In[29]:
+
+df_complete.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".pkl"))
+
+
+# In[30]:
+
+df_complete.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".csv"))
+
+
+# In[31]:
+
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
+
+
+# In[32]:
+
+df_complete.head()
 
 
 # In[ ]:
