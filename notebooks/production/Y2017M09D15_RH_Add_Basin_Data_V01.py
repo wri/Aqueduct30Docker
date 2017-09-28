@@ -61,6 +61,7 @@ import numpy as np
 import itertools
 import logging
 import pprint
+import ast
 
 
 # In[8]:
@@ -89,74 +90,70 @@ df_HydroBasins = pd.read_pickle(inputLocationHydroBasins)
 df_complete = df_HydroBasins.merge(df_ee,how="left",left_index=True, right_index=True)
 
 
+# In[13]:
+
+df_complete.dtypes
+
+
 # ## Functions
 
-# In[13]:
+# In[65]:
 
 def calculateTotalDemand(useType,temporalResolution,year,month):
     # This function will add Dom Ind IrrLinear and Livestock of all basins in the input list
     
     if temporalResolution == "year":
-        keyTotal = "local_sum_volumem3_Tot%s_%sY%0.4d" %(useType,temporalResolution,year)
+        keyTotal = "local_sum_volumem3_Tot%s_%s_Y%0.4d" %(useType,temporalResolution,year)
     else:
-        keyTotal = "local_sum_volumem3_Tot%s_%sY%0.4dM%0.2d" %(useType,temporalResolution,year,month)
-    dfDemand[keyTotal] = 42
+        keyTotal = "local_sum_volumem3_Tot%s_%s_Y%0.4dM%0.2d" %(useType,temporalResolution,year,month)
     
+    # Create Column with zeros
+    dfDemand[keyTotal] = 0
     for demandType in demandTypes:
         if demandType == "IrrLinear" and temporalResolution == "year":
-            key = "total_volume_%s%s_%s_Y%0.4d" %(demandType,useType,temporalResolution,year)
+            key = "total_volume_%s%s_%sY%0.4d" %(demandType,useType,temporalResolution,year)
         else:
-            key = "total_volume_%s%s_%s_Y%0.4dM%0.2d" %(demandType,useType,temporalResolution,year,month)
+            key = "total_volume_%s%s_%sY%0.4dM%0.2d" %(demandType,useType,temporalResolution,year,month)
         dfDemand[keyTotal] = dfDemand[keyTotal] + df_complete[key]
     return dfDemand   
 
 
-# ## Script
+def calculateUpstream():
+    # This function will add upstream data to the dataFrame 
+    # standard column format: upstream_sum_volumem3_TotWW_monthY2014M12
+    pass
 
-# In[14]:
-
-demandTypes = ["PDom","PInd","IrrLinear","PLiv"]
-useTypes = ["WW","WN"]
-temporalResolutions = ["year","month"]
-years = [2014]
-
-
-# In[15]:
-
-
-dfDemand = pd.DataFrame(index=df_complete.index)
-for temporalResolution in temporalResolutions:
-    for useType in useTypes:
-        for year in years:
-            if temporalResolution == "year":
-                month = 12
-                print(useType,temporalResolution,year,month)
-                dfDemand = calculateTotalDemand(useType,temporalResolution,year,month)
-            else:
-                for month in range(1,13):
-                    print(useType,temporalResolution,year,month)
-                    dfDemand = calculateTotalDemand(useType,temporalResolution,year,month)          
-
-
-# In[ ]:
-
-dfDemand.head()
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
+dfTest = pd.DataFrame()
+ 
+def addUpstream2(listje):
+    df_full_temp = df_complete.copy()
+    df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
+    df_part_temp2 = df_part_temp.copy()
+    df_out = df_part_temp2.copy()
+    
+    i = 0
+    for index, row in df_part_temp2.iterrows():
+        i += 1
+        print("i: ",i  ," index: ", index)
+        upstreamCatchments = df_part_temp2.loc[index, "Upstream_PFAF_IDs"]
+        upstreamCatchments = ast.literal_eval(upstreamCatchments)
+        df_upstream = df_full_temp[df_full_temp.index.isin(upstreamCatchments)]
+        # selecting columns based on regular expression
+        df_upstream = df_upstream.filter(regex=("total*"))
+        df_upstream = df_upstream.add_prefix("upstream_")
+        sumSeries = df_upstream.sum(0)
+        for key, value in sumSeries.iteritems():
+            df_out.loc[index, key] = value
+        df_out.loc[index, "errorCode"] = 0
+        
+        
+    
+    return(df_upstream,df_out)
+        
+    
+    
 def addUpstream(listje):
-    df_full_temp = df_full.copy()
+    df_full_temp = df_complete.copy()
     df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
     df_part_temp2 = df_part_temp.copy()
     df_out = df_part_temp2.copy()
@@ -188,7 +185,70 @@ def addUpstream(listje):
             df_out.loc[index, "errorCode"] = 1
             pass
 
-    return df_out
+    return df_out   
+    
+    
+
+
+# ## Script
+
+# In[18]:
+
+demandTypes = ["PDom","PInd","IrrLinear","PLiv"]
+useTypes = ["WW","WN"]
+temporalResolutions = ["year","month"]
+years = [2014]
+
+
+# In[19]:
+
+dfDemand = pd.DataFrame(index=df_complete.index)
+for temporalResolution in temporalResolutions:
+    for useType in useTypes:
+        for year in years:
+            if temporalResolution == "year":
+                month = 12
+                print(useType,temporalResolution,year,month)
+                dfDemand = calculateTotalDemand(useType,temporalResolution,year,month)
+            else:
+                for month in range(1,13):
+                    print(useType,temporalResolution,year,month)
+                    dfDemand = calculateTotalDemand(useType,temporalResolution,year,month)          
+
+
+# In[20]:
+
+dfDemand.head()
+
+
+# In[21]:
+
+df_smaller = 
+
+
+# In[30]:
+
+listje = [292107]
+
+
+# In[62]:
+
+df_upstream_sum,df_out = addUpstream2(listje)
+
+
+# In[63]:
+
+df_upstream_sum
+
+
+# In[49]:
+
+test = df_upstream_sum.sum(0)
+
+
+# In[64]:
+
+df_out.head()
 
 
 # In[ ]:
@@ -198,22 +258,7 @@ mp.cpu_count()
 
 # In[ ]:
 
-
-
-
-# In[ ]:
-
 print(inputLocation)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-df_full.head()
 
 
 # In[ ]:
