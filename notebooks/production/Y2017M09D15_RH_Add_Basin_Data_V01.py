@@ -26,7 +26,7 @@ EC2_INPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/output"
 
 INPUT_FILENAME_EE =  "mergedZonalStatsEE_V12.pkl"
-INPUT_FILENAME_HYDROBASINS =  "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V01.csv"
+INPUT_FILENAME_HYDROBASINS =  "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V01.pkl"
 
 
 # In[3]:
@@ -48,7 +48,7 @@ get_ipython().system('aws s3 cp {S3_INPUT_PATH_EE} {EC2_INPUT_PATH} --recursive'
 
 # In[6]:
 
-get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYDROBASINS} {EC2_INPUT_PATH} --recursive --exclude "*" --include "*.csv"')
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYDROBASINS} {EC2_INPUT_PATH} --recursive --exclude "*" --include "*.pkl"')
 
 
 # In[7]:
@@ -60,6 +60,7 @@ import pickle
 import numpy as np
 import itertools
 import logging
+import pprint
 
 
 # In[8]:
@@ -75,38 +76,81 @@ df_ee = pd.read_pickle(inputLocationEE)
 
 # In[10]:
 
-df_HydroBasins = pd.read_csv(inputLocationHydroBasins)
+df_ee.index.names = ['PFAF_ID']
 
 
 # In[11]:
 
-df_ee.head()
+df_HydroBasins = pd.read_pickle(inputLocationHydroBasins)
 
 
 # In[12]:
 
-df_HydroBasins.head()
+df_complete = df_HydroBasins.merge(df_ee,how="left",left_index=True, right_index=True)
+
+
+# ## Functions
+
+# In[13]:
+
+def calculateTotalDemand(useType,temporalResolution,year,month):
+    # This function will add Dom Ind IrrLinear and Livestock of all basins in the input list
+    
+    if temporalResolution == "year":
+        keyTotal = "local_sum_volumem3_Tot%s_%sY%0.4d" %(useType,temporalResolution,year)
+    else:
+        keyTotal = "local_sum_volumem3_Tot%s_%sY%0.4dM%0.2d" %(useType,temporalResolution,year,month)
+    dfDemand[keyTotal] = 42
+    
+    for demandType in demandTypes:
+        if demandType == "IrrLinear" and temporalResolution == "year":
+            key = "total_volume_%s%s_%s_Y%0.4d" %(demandType,useType,temporalResolution,year)
+        else:
+            key = "total_volume_%s%s_%s_Y%0.4dM%0.2d" %(demandType,useType,temporalResolution,year,month)
+        dfDemand[keyTotal] = dfDemand[keyTotal] + df_complete[key]
+    return dfDemand   
+
+
+# ## Script
+
+# In[14]:
+
+demandTypes = ["PDom","PInd","IrrLinear","PLiv"]
+useTypes = ["WW","WN"]
+temporalResolutions = ["year","month"]
+years = [2014]
+
+
+# In[15]:
+
+
+dfDemand = pd.DataFrame(index=df_complete.index)
+for temporalResolution in temporalResolutions:
+    for useType in useTypes:
+        for year in years:
+            if temporalResolution == "year":
+                month = 12
+                print(useType,temporalResolution,year,month)
+                dfDemand = calculateTotalDemand(useType,temporalResolution,year,month)
+            else:
+                for month in range(1,13):
+                    print(useType,temporalResolution,year,month)
+                    dfDemand = calculateTotalDemand(useType,temporalResolution,year,month)          
 
 
 # In[ ]:
 
-sectors = ["Dom","Ind","Irr","IrrLinear","Liv"]
-parameters = ["WW","WN"]
-temporalScales = ["year","month"]
-runoffparameters = ["runoff","reducedmeanrunoff"]
+dfDemand.head()
 
 
 # In[ ]:
 
-demandList = []
-for r in itertools.product(sectors,parameters, temporalScales): 
-    regex = "%s%s_%s" %(r[0],r[1],r[2])
-    demandList = demandList + [regex]
+
 
 
 # In[ ]:
 
-print(demandList)
+
 
 
 # In[ ]:
@@ -145,20 +189,6 @@ def addUpstream(listje):
             pass
 
     return df_out
-
-
-# In[ ]:
-
-def addUpstream2(listje):
-    df_full_temp = df_full.copy()
-    df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
-    df_part_temp2 = df_part_temp.copy()
-    df_out = df_part_temp2.copy()
-    i = 0
-    for index, row in df_part_temp2.iterrows():
-        i += 1
-        print("i: ",i  ," index: ", index)
-    
 
 
 # In[ ]:
