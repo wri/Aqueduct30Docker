@@ -52,6 +52,8 @@
 #     This script will merge the csv files into one big file/dataFrame    
 # 1. **Y2017M09D15_RH_Add_Basin_Data_V01**  
 #     add data from upstream, downstream and basin to dataframe
+# 1. **Y2017M10D02_RH_Calculate_Water_Stress_V01**  
+#     calculate total demand (Dom, IrrLinear, Liv, Ind) and Reduced Runoff and water stress.
 #     
 # 
 # ### Groundwater Branch

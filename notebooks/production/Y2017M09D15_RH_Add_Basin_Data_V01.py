@@ -3,7 +3,7 @@
 
 # # Add upstream, downstream and basin information to the dataframe
 # 
-# * Purpose of script: add contextual data to the datafram. 
+# * Purpose of script: add contextual data to the dataframe. The script will sum the volumetric information of all upstream, downstream and basin parameters of the dataframe.  
 # * Author: Rutger Hofste
 # * Kernel used: python35
 # * Date created: 20170915
@@ -318,9 +318,4 @@ get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 # In[32]:
 
 df_complete.head()
-
-
-# In[ ]:
-
-
 
