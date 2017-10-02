@@ -16,7 +16,7 @@ timeString = time.strftime("UTC %H:%M")
 print(dateString,timeString)
 
 
-# In[13]:
+# In[2]:
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
 
@@ -47,36 +47,86 @@ get_ipython().system('mkdir -p {EC2_OUTPUT_PATH} ')
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive')
 
 
-# In[9]:
+# In[6]:
 
 import os
 import pandas as pd
 
 
-# In[10]:
+# In[7]:
 
 dfBasins = pd.read_pickle(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".pkl"))
 
 
-# In[24]:
+# In[8]:
 
 test = dfBasins.loc[TEST_BASIN]
 
 
-# In[25]:
+# In[9]:
 
 test
 
 
-# In[26]:
+# In[10]:
 
 demandTypes = ["PDom","PInd","IrrLinear","PLiv"]
 useTypes = ["WW","WN"]
 temporalResolutions = ["year","month"]
 years = [2014]
+basinTypes = ["upstream","downstream","basin"]
+
+
+# In[29]:
+
+def calculateTotal(basinType,useType,temporalResolution,year,month):
+    # This function will add Dom Ind IrrLinear and Livestock of all basins in the input list
+    
+    if temporalResolution == "year":
+        keyTotal = "%s_sum_volumem3_Tot%s_%s_Y%0.4d" %(basinType, useType,temporalResolution,year)
+    else:
+        keyTotal = "%s_sum_volumem3_Tot%s_%s_Y%0.4dM%0.2d" %(basinType,useType,temporalResolution,year,month)
+    
+    # Create Column with zeros
+    dfDemand[keyTotal] = 0
+    for demandType in demandTypes:
+        if demandType == "IrrLinear" and temporalResolution == "year":
+            # template basin_total_volume_IrrLinearWN_monthY2014M01
+            key = "%s_total_volume_%s%s_%sY%0.4d" %(basinType,demandType,useType,temporalResolution,year)
+            print(key)
+        else:
+            key = "%s_total_volume_%s%s_%sY%0.4dM%0.2d" %(basinType,demandType,useType,temporalResolution,year,month)
+        dfDemand[keyTotal] = dfDemand[keyTotal] + dfBasins[key]
+    return dfDemand   
+
+
+
+# In[30]:
+
+demandType = "PDom"
+useType = "WW"
+temporalResolution = "year"
+year = 2014
+basinType = "upstream"
+month = 12
 
 
 # In[31]:
+
+dfDemand = pd.DataFrame(index=dfBasins.index)
+
+
+# In[32]:
+
+dfDemand = calculateTotal(basinType,useType,temporalResolution,year,month)
+
+
+# In[33]:
+
+dfDemand
+
+
+# In[11]:
 
 for temporalResolution in temporalResolutions:
     if temporalResolution == "year":
@@ -91,7 +141,7 @@ for temporalResolution in temporalResolutions:
                 totalTemp = 0
                 for demandType in demandTypes:
                     print(demandType,useType,temporalResolution,year,month)
-                    indicatorName = 
+
     
 
 

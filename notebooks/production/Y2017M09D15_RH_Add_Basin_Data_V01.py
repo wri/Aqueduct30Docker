@@ -110,9 +110,9 @@ def calculateTotalDemand(useType,temporalResolution,year,month):
     # This function will add Dom Ind IrrLinear and Livestock of all basins in the input list
     
     if temporalResolution == "year":
-        keyTotal = "local_sum_volumem3_Tot%s_%s_Y%0.4d" %(useType,temporalResolution,year)
+        keyTotal = "total_volumem3_Tot%s_%s_Y%0.4d" %(useType,temporalResolution,year)
     else:
-        keyTotal = "local_sum_volumem3_Tot%s_%s_Y%0.4dM%0.2d" %(useType,temporalResolution,year,month)
+        keyTotal = "total_sum_volumem3_Tot%s_%s_Y%0.4dM%0.2d" %(useType,temporalResolution,year,month)
     
     # Create Column with zeros
     dfDemand[keyTotal] = 0
