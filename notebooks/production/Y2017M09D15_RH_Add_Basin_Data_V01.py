@@ -125,11 +125,12 @@ def calculateTotalDemand(useType,temporalResolution,year,month):
     return dfDemand   
 
 
+# This functions can take only one argument because I map them over the pooler.
 def addUpstream2(listje):
     df_full_temp = df_complete.copy()
     df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
     df_part_temp2 = df_part_temp.copy()
-    df_out = df_part_temp2.copy()
+    df_out = pd.DataFrame(index=df_part_temp2.index)
     
     i = 0
     for index, row in df_part_temp2.iterrows():
@@ -158,7 +159,7 @@ def addDownstream2(listje):
     df_full_temp = df_complete.copy()
     df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
     df_part_temp2 = df_part_temp.copy()
-    df_out = df_part_temp2.copy()
+    df_out = pd.DataFrame(index=df_part_temp2.index)
     
     i = 0
     for index, row in df_part_temp2.iterrows():
@@ -187,7 +188,8 @@ def addBasin2(listje):
     df_full_temp = df_complete.copy()
     df_part_temp = df_full_temp[df_full_temp.index.isin(listje)]
     df_part_temp2 = df_part_temp.copy()
-    df_out = df_part_temp2.copy()
+    #df_out = df_part_temp2.copy()
+    df_out = pd.DataFrame(index=df_part_temp2.index)
     
     i = 0
     for index, row in df_part_temp2.iterrows():
@@ -282,17 +284,17 @@ pool = mp.Pool(mp.cpu_count())
 
 # In[25]:
 
-df_complete = pd.concat(pool.map(addUpstream2, indices_split))
+df_upstream = pd.concat(pool.map(addUpstream2, indices_split))
 
 
 # In[26]:
 
-df_complete = pd.concat(pool.map(addDownstream2, indices_split))
+df_downstream = pd.concat(pool.map(addDownstream2, indices_split))
 
 
 # In[27]:
 
-df_complete = pd.concat(pool.map(addBasin2, indices_split))
+df_basin = pd.concat(pool.map(addBasin2, indices_split))
 
 
 # In[28]:
@@ -302,20 +304,35 @@ pool.close()
 
 # In[29]:
 
-df_complete.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".pkl"))
+df_complete = df_complete.merge(df_upstream,how="left",left_index=True,right_index=True)
 
 
 # In[30]:
 
-df_complete.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".csv"))
+df_complete = df_complete.merge(df_downstream,how="left",left_index=True,right_index=True)
 
 
 # In[31]:
 
-get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
+df_complete = df_complete.merge(df_basin,how="left",left_index=True,right_index=True)
 
 
 # In[32]:
+
+df_complete.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".pkl"))
+
+
+# In[33]:
+
+df_complete.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".csv"))
+
+
+# In[34]:
+
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
+
+
+# In[35]:
 
 df_complete.head()
 
