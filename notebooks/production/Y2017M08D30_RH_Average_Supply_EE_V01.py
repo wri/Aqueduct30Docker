@@ -20,8 +20,6 @@ print(dateString,timeString)
 
 import os
 import ee
-import folium
-from folium_gee import *
 import subprocess
 from pprint import *
 from itertools import chain
@@ -59,7 +57,7 @@ MONTHLY_UNITS = "m/month"
 
 ANNUAL_EXPORTDESCRIPTION = "reducedmeanrunoff_year" #final format reducedmeanrunoff_yearY1960Y2014
 MONTHLY_EXPORTDESCRIPTION = "reducedmeanrunoff_month" #final format reducedmeanrunoff_monthY1960Y2014M01
-VERSION = 20
+VERSION = 21
 
 MAXPIXELS =1e10
 
@@ -261,7 +259,7 @@ for key, value in d.iteritems():
         for month in range(1,13):
             newDict[key]["month"] = month
             newDict[key]["image_name"] = EE_IC_NAME_MONTH +"M%0.2dV%0.2d" %(month,VERSION)
-            newDict[key]["exportdescription"] = MONTHLY_EXPORTDESCRIPTION + "_Y%sY%sM%0.d" %(YEAR_MIN,YEAR_MAX,month)
+            newDict[key]["exportdescription"] = MONTHLY_EXPORTDESCRIPTION + "_Y%sY%sM%0.2d" %(YEAR_MIN,YEAR_MAX,month)
             
             reducedImage = reduceMean(value["ic"],newDict[key]["rangeMin"],newDict[key]["rangeMax"])
             validImage = addValidProperties(reducedImage,newDict[key])

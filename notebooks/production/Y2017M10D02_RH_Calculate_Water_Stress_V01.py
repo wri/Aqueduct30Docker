@@ -55,22 +55,22 @@ import os
 import pandas as pd
 
 
-# In[7]:
+# In[8]:
 
 dfBasins = pd.read_pickle(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".pkl"))
 
 
-# In[8]:
+# In[ ]:
 
-dfSelection = dfBasins.loc[TEST_BASINS]
-
-
-# In[9]:
-
-dfSelection
+#dfSelection = dfBasins.loc[TEST_BASINS]
 
 
-# In[10]:
+# In[ ]:
+
+#dfSelection
+
+
+# In[ ]:
 
 columnsOfInterest = ["total_area_30s_m2",
                      "count_area_30s_m2",
@@ -90,14 +90,14 @@ columnsOfInterest = ["total_area_30s_m2",
                     ]
 
 
-# In[11]:
+# In[ ]:
 
-dfSimple = dfSelection[columnsOfInterest]
+#dfSimple = dfSelection[columnsOfInterest]
 
 
-# In[12]:
+# In[ ]:
 
-dfSimple.head()
+#dfSimple.head()
 
 
 # In[ ]:
@@ -109,89 +109,82 @@ dfSimple.head()
 
 # In[ ]:
 
-
-
-
-# In[13]:
-
+"""
 demandTypes = ["PDom","PInd","IrrLinear","PLiv"]
 useTypes = ["WW","WN"]
 temporalResolutions = ["year","month"]
 years = [2014]
 basinTypes = ["upstream","downstream","basin"]
+"""
 
 
-# In[14]:
+# In[ ]:
 
+"""
 demandType = "PDom"
 useType = "WW"
 temporalResolution = "year"
 year = 2014
 basinType = "upstream"
 month = 12
+"""
 
 
-# In[15]:
+# In[12]:
 
-dfIn = dfSimple
-
-
-# In[16]:
-
-dfOut = pd.DataFrame(index=dfIn.index)
+dfOut = dfBasins
 
 
-# In[17]:
+# In[13]:
 
-dfOut.head()
+def calculateWaterStressYear(temporalResolution,year,df):
+    dfTemp = df.copy()
+    dfTemp["ws_yearY%0.4d" %(year)] = dfTemp["total_volume_TotWW_year_Y%0.4d" %(year)] /      (dfTemp["upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014"] +      dfTemp["total_volume_reducedmeanrunoff_year_Y1960Y2014"] -      dfTemp["upstream_total_volume_TotWN_year_Y%0.4d" %(year)])
+    return dfTemp
+    
+def calculateWaterStressMonth(temporalResolution,year,month,df):
+    dfTemp = df.copy()
+    dfTemp["ws_monthY%0.4dM%0.2d" %(year,month)] = dfTemp["total_volume_TotWW_month_Y%0.4dM%0.2d" %(year,month)] /      (dfTemp["upstream_total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] +      dfTemp["total_volume_reducedmeanrunoff_month_Y1960Y2014" %(month)] -      dfTemp["upstream_total_volume_TotWN_month_Y%0.4dM0.2d" %(year,month)])
+    return dfTemp
+    
+    
 
 
 # In[18]:
 
-def calculateWaterStressYear(temporalResolution,year,df):
-    dfTemp = df.copy()
-    dfTemp["ws_yearY%0.4d" %(year)] = dfTemp["total_volume_TotWW_year_Y%0.4d" %(year)] /      (dfTemp["upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014"] +      dfTemp["total_volume_reducedmeanrunoff_year_Y1960Y2014"] -      dfSelection["upstream_total_volume_TotWN_year_Y2014"])
-    
-def calculateWaterStressMonth(temporalResolution,year,month,df):
+temporalResolutions = ["year","month"]
+year = 2014
 
 
 # In[19]:
 
-dfOut.head()
-
-
-# In[25]:
-
 for temporalResolution in temporalResolutions:
     if temporalResolution == "year":
         months = [12]
+        dfOut = calculateWaterStressYear(temporalResolution,year,dfOut)
+        
     elif temporalResolution == "month":
-        months = range(1,13)
-
-    for year in years:    
+        months = range(1,13)    
         for month in months:
-            for useType in useTypes:
-                
-
-    
+            dfOut = calculateWaterStressMonth(temporalResolution,year,month,dfOut)
 
 
-# In[21]:
+# In[ ]:
 
 dfOut = dfOut.merge(dfSimple,left_index=True,right_index=True,how="left")
 
 
-# In[22]:
+# In[ ]:
 
 dfOut.head()
 
 
-# In[23]:
+# In[ ]:
 
 dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+"V06.csv"))
 
 
-# In[24]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
