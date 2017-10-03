@@ -13,7 +13,7 @@
 import time, datetime
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
-start_time = time.time()
+start = datetime.datetime.now()
 print(dateString,timeString)
 
 
@@ -111,9 +111,9 @@ def calculateTotalDemand(useType,temporalResolution,year,month):
     # This function will add Dom Ind IrrLinear and Livestock of all basins in the input list
     
     if temporalResolution == "year":
-        keyTotal = "total_volumem3_Tot%s_%s_Y%0.4d" %(useType,temporalResolution,year)
+        keyTotal = "total_volume_Tot%s_%s_Y%0.4d" %(useType,temporalResolution,year)
     else:
-        keyTotal = "total_volumem3_Tot%s_%s_Y%0.4dM%0.2d" %(useType,temporalResolution,year,month)
+        keyTotal = "total_volume_Tot%s_%s_Y%0.4dM%0.2d" %(useType,temporalResolution,year,month)
     
     # Create Column with zeros
     dfDemand[keyTotal] = 0
@@ -340,10 +340,9 @@ df_complete.head()
 
 # In[36]:
 
-elapsed_time = time.time() - start_time
-m, s = divmod(elapsed_time, 60)
-h, m = divmod(m, 60)
-print("Elapsed: %d:%02d:%02d" %(h, m, s))
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
 
 # In[ ]:
