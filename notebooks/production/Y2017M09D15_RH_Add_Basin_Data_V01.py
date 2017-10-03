@@ -10,9 +10,10 @@
 
 # In[1]:
 
-import time
+import time, datetime
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
+start_time = time.time()
 print(dateString,timeString)
 
 
@@ -112,7 +113,7 @@ def calculateTotalDemand(useType,temporalResolution,year,month):
     if temporalResolution == "year":
         keyTotal = "total_volumem3_Tot%s_%s_Y%0.4d" %(useType,temporalResolution,year)
     else:
-        keyTotal = "total_sum_volumem3_Tot%s_%s_Y%0.4dM%0.2d" %(useType,temporalResolution,year,month)
+        keyTotal = "total_volumem3_Tot%s_%s_Y%0.4dM%0.2d" %(useType,temporalResolution,year,month)
     
     # Create Column with zeros
     dfDemand[keyTotal] = 0
@@ -335,4 +336,17 @@ get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 # In[35]:
 
 df_complete.head()
+
+
+# In[36]:
+
+elapsed_time = time.time() - start_time
+m, s = divmod(elapsed_time, 60)
+h, m = divmod(m, 60)
+print("Elapsed: %d:%02d:%02d" %(h, m, s))
+
+
+# In[ ]:
+
+
 

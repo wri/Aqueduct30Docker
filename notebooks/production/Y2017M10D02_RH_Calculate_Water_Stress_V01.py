@@ -8,7 +8,7 @@
 # * Kernel used: python35
 # * Date created: 20171002
 
-# In[1]:
+# In[34]:
 
 import time
 dateString = time.strftime("Y%YM%mD%d")
@@ -16,7 +16,7 @@ timeString = time.strftime("UTC %H:%M")
 print(dateString,timeString)
 
 
-# In[2]:
+# In[35]:
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
 
@@ -30,40 +30,40 @@ TEST_BASIN = 292107
 
 # Read Pickle file instead of csv 
 
-# In[3]:
+# In[36]:
 
 get_ipython().system('rm -r {EC2_INPUT_PATH} ')
 get_ipython().system('rm -r {EC2_OUTPUT_PATH} ')
 
 
-# In[4]:
+# In[37]:
 
 get_ipython().system('mkdir -p {EC2_INPUT_PATH} ')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH} ')
 
 
-# In[5]:
+# In[38]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive')
 
 
-# In[6]:
+# In[39]:
 
 import os
 import pandas as pd
 
 
-# In[7]:
+# In[40]:
 
 dfBasins = pd.read_pickle(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".pkl"))
 
 
-# In[8]:
+# In[41]:
 
 test = dfBasins.loc[TEST_BASIN]
 
 
-# In[9]:
+# In[42]:
 
 test
 
