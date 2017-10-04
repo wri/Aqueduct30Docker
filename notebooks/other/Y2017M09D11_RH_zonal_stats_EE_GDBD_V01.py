@@ -41,18 +41,19 @@ TESTING = 0
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
-HYBASLEVEL = 6
+#HYBASLEVEL = 6
 
 DIMENSION5MIN = "4320x2160"
 DIMENSION30S = "43200x21600"
 CRS = "EPSG:4326"
 
-VERSION = 16
+VERSION = 2
 
 GCS_BUCKET= "aqueduct30_v01"
-GCS_OUTPUT_PATH = "Y2017M09D11_RH_zonal_stats_EE_V%0.2d/" %(VERSION)
+GCS_OUTPUT_PATH = "Y2017M09D11_RH_zonal_stats_EE_GDBD_V%0.2d/" %(VERSION)
 
-HYDROBASINS = "projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01"
+#HYDROBASINS = "projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01"
+GDBD = "users/rutgerhofste/PCRGlobWB20V04/support/GDBDRasterized30sV04"
 
 AREA5MIN = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_5min_m2V11" 
 AREA30S = "projects/WRI-Aquaduct/PCRGlobWB20V07/area_30s_m2V11"
@@ -83,6 +84,7 @@ if TESTING ==1:
 
 # In[7]:
 
+"""
 def prepareZonalRaster(image):
     image    = ee.Image(image)
     newImage = ee.Image(image.divide(ee.Number(10).pow(ee.Number(12).subtract(HYBASLEVEL))).floor())
@@ -90,6 +92,16 @@ def prepareZonalRaster(image):
     newImage = ee.Image(newImage).toInt64().select(["b1"],["PfafID"])
     newImage = newImage.set({"exportdescription":"Hybas%0.2d" %(HYBASLEVEL)})     
     return newImage
+"""
+
+def prepareZonalRaster(image):
+    image    = ee.Image(image)
+    newImage = ee.Image(image)
+    newImage = newImage.copyProperties(image)
+    newImage = ee.Image(newImage).toInt64().select(["b1"],["GDBD_ID"])
+    newImage = newImage.set({"exportdescription":"GDBD"})     
+    return newImage
+
 
 def readAsset(assetId):
     # this function will read both images and imageCollections 
@@ -118,7 +130,7 @@ def zonalStats(valueImage, weightImage, zonesImage):
     totalImage = ee.Image(valueImage).addBands(ee.Image(weightImage)).addBands(ee.Image(zonesImage))
     resultsList = ee.List(totalImage.reduceRegion(
         geometry= geometry,
-        reducer= weightedReducers.group(groupField= 2, groupName= "PfafID"),
+        reducer= weightedReducers.group(groupField= 2, groupName= "GDBD_ID"),
         scale= scale,
         maxPixels= 1e10
         ).get("groups"))
@@ -230,31 +242,31 @@ for r in itertools.product(runoffparameters, temporalScales):
 regexList = regexList + auxList + demandList + supplyList
 
 
-# In[17]:
+# In[ ]:
 
 d = dict(zip(regexList,[{}]*len(regexList)))
 
 
-# In[18]:
+# In[ ]:
 
 for regex in regexList:
     # item is also the regular expression
     print(regex)
     if regex == "zones":
-        d[regex] = readAsset(HYDROBASINS)
-        d[regex]["asset"] = prepareZonalRaster(ee.Image(HYDROBASINS))
+        d[regex] = readAsset(GDBD)
+        d[regex]["asset"] = prepareZonalRaster(ee.Image(GDBD))
     else:
         for assetId in assetList:
             if re.search(regex,assetId):
                 d[regex] = readAsset(assetId)
 
 
-# In[19]:
+# In[ ]:
 
 zonesImage = d["zones"]["asset"]
 
 
-# In[20]:
+# In[ ]:
 
 a = []
 
@@ -300,9 +312,14 @@ for key, nestedDict in d.iteritems():
         
 
 
-# In[21]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+
 

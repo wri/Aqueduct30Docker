@@ -10,9 +10,10 @@
 
 # In[1]:
 
-import time
+import time, datetime
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
 print(dateString,timeString)
 
 
@@ -24,8 +25,9 @@ S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calcul
 EC2_INPUT_PATH = "/volumes/data/Y2017M10D02_RH_Calculate_Water_Stress_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M10D02_RH_Calculate_Water_Stress_V01/output"
 
-INPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V01"
-OUTPUT_FILENAME = "Y2017M10D02_RH_Calculate_Water_Stress_V01"
+INPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V02"
+OUTPUT_FILENAME = "Y2017M10D02_RH_Calculate_Water_Stress_V03"
+
 
 TEST_BASINS = [292107,292101,292103,292108,292109]
 
@@ -55,87 +57,19 @@ import os
 import pandas as pd
 
 
-# In[8]:
+# In[7]:
 
 dfBasins = pd.read_pickle(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".pkl"))
 
 
-# In[ ]:
-
-#dfSelection = dfBasins.loc[TEST_BASINS]
-
-
-# In[ ]:
-
-#dfSelection
-
-
-# In[ ]:
-
-columnsOfInterest = ["total_area_30s_m2",
-                     "count_area_30s_m2",
-                     "Basin_PFAF_IDs",
-                     "Upstream_PFAF_IDs",
-                     "Downstream_PFAF_IDs",
-                     "basin_total_area_30s_m2",
-                     "upstream_total_area_30s_m2",
-                     "downstream_total_area_30s_m2",
-                     "total_volume_PDomWN_yearY2014M12",
-                     "upstream_total_volume_PDomWN_yearY2014M12",
-                     "downstream_total_volume_PDomWN_yearY2014M12",
-                     "basin_total_volume_PDomWN_yearY2014M12",
-                     "upstream_total_volume_TotWN_year_Y2014",
-                     "upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014",
-                     "upstream_total_volume_runoff_yearY2014M12"
-                    ]
-
-
-# In[ ]:
-
-#dfSimple = dfSelection[columnsOfInterest]
-
-
-# In[ ]:
-
-#dfSimple.head()
-
-
-# In[ ]:
-
-
-
-
 # WS = Local WW / (avail runoff)  = Local WW / (Runoff_up + Runoff_local - WN_up)
 
-# In[ ]:
-
-"""
-demandTypes = ["PDom","PInd","IrrLinear","PLiv"]
-useTypes = ["WW","WN"]
-temporalResolutions = ["year","month"]
-years = [2014]
-basinTypes = ["upstream","downstream","basin"]
-"""
-
-
-# In[ ]:
-
-"""
-demandType = "PDom"
-useType = "WW"
-temporalResolution = "year"
-year = 2014
-basinType = "upstream"
-month = 12
-"""
-
-
-# In[12]:
+# In[8]:
 
 dfOut = dfBasins
 
 
-# In[13]:
+# In[9]:
 
 def calculateWaterStressYear(temporalResolution,year,df):
     dfTemp = df.copy()
@@ -144,19 +78,19 @@ def calculateWaterStressYear(temporalResolution,year,df):
     
 def calculateWaterStressMonth(temporalResolution,year,month,df):
     dfTemp = df.copy()
-    dfTemp["ws_monthY%0.4dM%0.2d" %(year,month)] = dfTemp["total_volume_TotWW_month_Y%0.4dM%0.2d" %(year,month)] /      (dfTemp["upstream_total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] +      dfTemp["total_volume_reducedmeanrunoff_month_Y1960Y2014" %(month)] -      dfTemp["upstream_total_volume_TotWN_month_Y%0.4dM0.2d" %(year,month)])
+    dfTemp["ws_monthY%0.4dM%0.2d" %(year,month)] = dfTemp["total_volume_TotWW_month_Y%0.4dM%0.2d" %(year,month)] /      (dfTemp["upstream_total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] +      dfTemp["total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] -      dfTemp["upstream_total_volume_TotWN_month_Y%0.4dM%0.2d" %(year,month)])
     return dfTemp
     
     
 
 
-# In[18]:
+# In[10]:
 
 temporalResolutions = ["year","month"]
 year = 2014
 
 
-# In[19]:
+# In[11]:
 
 for temporalResolution in temporalResolutions:
     if temporalResolution == "year":
@@ -169,27 +103,24 @@ for temporalResolution in temporalResolutions:
             dfOut = calculateWaterStressMonth(temporalResolution,year,month,dfOut)
 
 
-# In[ ]:
+# In[12]:
 
-dfOut = dfOut.merge(dfSimple,left_index=True,right_index=True,how="left")
-
-
-# In[ ]:
-
-dfOut.head()
+dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".csv"))
 
 
-# In[ ]:
+# In[13]:
 
-dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+"V06.csv"))
+dfOut.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".pkl"))
 
 
-# In[ ]:
+# In[14]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
-# In[ ]:
+# In[15]:
 
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 

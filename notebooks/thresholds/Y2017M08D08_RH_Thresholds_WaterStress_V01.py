@@ -7,7 +7,6 @@
 # * Author: Rutger Hofste
 # * Kernel used: python35
 # * Date created: 20170808
-# * Viewed by Tianyi Luo on Sept 12, 2017
 
 # In[1]:
 

@@ -8,7 +8,7 @@
 # * Kernel used: python27
 # * Date created: 20170913
 
-# In[10]:
+# In[1]:
 
 import time
 dateString = time.strftime("Y%YM%mD%d")
@@ -18,13 +18,13 @@ print(dateString,timeString)
 
 # # Settings
 
-# In[39]:
+# In[2]:
 
 MAXTASKS = 250
 CANCELTASKS = 0
 
 
-# In[40]:
+# In[3]:
 
 import pandas as pd
 import ee
@@ -32,14 +32,14 @@ from retrying import retry
 import datetime
 
 
-# In[41]:
+# In[4]:
 
 ee.Initialize()
 
 
 # # Functions
 
-# In[42]:
+# In[5]:
 
 def get_tasks():
     return ee.batch.Task.list()
@@ -75,24 +75,24 @@ def get_details(taskList,MAXTASKS):
     
 
 
-# In[43]:
+# In[ ]:
 
 taskList = get_tasks()
 
 
-# In[44]:
+# In[ ]:
 
 detailedTasks = get_details(taskList,MAXTASKS)
 
 
-# In[45]:
+# In[ ]:
 
 detailedTasks
 
 
 # # DANGER ZONE
 
-# In[9]:
+# In[ ]:
 
 if CANCELTASKS == 1:
     pendingTasks = [task for task in taskList if task.config['state'] in (u'RUNNING',u'UNSUBMITTED',u'READY')]

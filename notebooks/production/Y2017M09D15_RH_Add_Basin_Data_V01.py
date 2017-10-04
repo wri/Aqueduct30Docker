@@ -8,13 +8,14 @@
 # * Kernel used: python35
 # * Date created: 20170915
 
-# In[1]:
+# In[37]:
 
-import time, datetime
+import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
 start = datetime.datetime.now()
 print(dateString,timeString)
+sys.version
 
 
 # In[2]:
@@ -27,10 +28,10 @@ S3_INPUT_PATH_HYDROBASINS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D2
 EC2_INPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/output"
 
-INPUT_FILENAME_EE =  "mergedZonalStatsEE_V12.pkl"
+INPUT_FILENAME_EE =  "mergedZonalStatsEE_V14.pkl"
 INPUT_FILENAME_HYDROBASINS =  "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V01.pkl"
 
-OUTPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V01"
+OUTPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V02"
 
 
 # Note: There are two polygons with the same PFAF_ID (353020). This is caused by the fact that both poygons would otherwise cross the 180 degree meridian

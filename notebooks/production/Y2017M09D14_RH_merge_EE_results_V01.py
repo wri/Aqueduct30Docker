@@ -10,21 +10,24 @@
 
 # In[1]:
 
-import time
+import time, datetime
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
 print(dateString,timeString)
 
 
 # In[2]:
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2017M09D11_RH_zonal_stats_EE_V15/"
+GCS_VERSION = 16
+
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2017M09D11_RH_zonal_stats_EE_V%0.2d/" %(GCS_VERSION)
 EC2_INPUT_PATH = "/volumes/data/Y2017M09D14_RH_merge_EE_results_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M09D14_RH_merge_EE_results_V01/output"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
 
 
-STRING_TRIM = "V15ee_export.csv"
+STRING_TRIM = "V%0.2dee_export.csv" %(GCS_VERSION)
 # e.g. IrrLinearWW_monthY2014M12V15ee_export.csv -> IrrLinearWW_monthY2014M12
 
 #Aux files, do not change order i.e. zones, area, extra
@@ -35,7 +38,7 @@ AUXFILES = ["Hybas06",
 
 DROP_COLUMNS = [".geo","system:index"]
 
-VERSION = 12
+VERSION = 14
 
 OUTPUTFILENAME = "mergedZonalStatsEE_V%0.2d" %(VERSION)
 
@@ -93,7 +96,7 @@ def prepareDf(df):
 
 # In[8]:
 
-folder = os.path.join(EC2_INPUT_PATH,"Y2017M09D11_RH_zonal_stats_EE_V15/")
+folder = os.path.join(EC2_INPUT_PATH,"Y2017M09D11_RH_zonal_stats_EE_V%0.2d/" %(GCS_VERSION)) 
 
 
 # In[9]:
@@ -204,7 +207,9 @@ outputLocation = os.path.join(S3_OUTPUT_PATH,OUTPUTFILENAME)
 get_ipython().system('aws s3 cp --recursive {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH}')
 
 
-# In[ ]:
+# In[23]:
 
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
