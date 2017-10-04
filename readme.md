@@ -180,7 +180,8 @@ In your tmux pane type
 you should now be able to provide your AWS credentials. Please ask Susan Minnemeyer if you haven't received those already. 
 
 1. Autenticate for Google Cloud SDK  
-similar to AWS, you might need Google Cloud acces. 
+similar to AWS, you might need Google Cloud acces.  
+`gcloud auth login`  
 
 1. Autenticate for Earth Engine
 and for earth engine (if needed, you can also do this from within Jupyter)  
