@@ -19,6 +19,8 @@ print(dateString,timeString)
 
 # In[2]:
 
+VERSION = 8
+
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
 
@@ -26,8 +28,7 @@ EC2_INPUT_PATH = "/volumes/data/Y2017M10D02_RH_Calculate_Water_Stress_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M10D02_RH_Calculate_Water_Stress_V01/output"
 
 INPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V02"
-OUTPUT_FILENAME = "Y2017M10D02_RH_Calculate_Water_Stress_V03"
-
+OUTPUT_FILENAME = "Y2017M10D02_RH_Calculate_Water_Stress_V%0.2d" %(VERSION)
 
 TEST_BASINS = [292107,292101,292103,292108,292109]
 
@@ -73,12 +74,17 @@ dfOut = dfBasins
 
 def calculateWaterStressYear(temporalResolution,year,df):
     dfTemp = df.copy()
-    dfTemp["ws_yearY%0.4d" %(year)] = dfTemp["total_volume_TotWW_year_Y%0.4d" %(year)] /      (dfTemp["upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014"] +      dfTemp["total_volume_reducedmeanrunoff_year_Y1960Y2014"] -      dfTemp["upstream_total_volume_TotWN_year_Y%0.4d" %(year)])
+    dfTemp["total_volume_availableSupply_year_Y%0.4d" %(year)] = (dfTemp["upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014"] +                                                      dfTemp["total_volume_reducedmeanrunoff_year_Y1960Y2014"] -                                                      dfTemp["upstream_total_volume_TotWN_year_Y%0.4d" %(year)])
+    
+    dfTemp["ws_year_Y%0.4d" %(year)] = dfTemp["total_volume_TotWW_year_Y%0.4d" %(year)] /                                        dfTemp["total_volume_availableSupply_year_Y%0.4d" %(year)]
+    
     return dfTemp
     
 def calculateWaterStressMonth(temporalResolution,year,month,df):
     dfTemp = df.copy()
-    dfTemp["ws_monthY%0.4dM%0.2d" %(year,month)] = dfTemp["total_volume_TotWW_month_Y%0.4dM%0.2d" %(year,month)] /      (dfTemp["upstream_total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] +      dfTemp["total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] -      dfTemp["upstream_total_volume_TotWN_month_Y%0.4dM%0.2d" %(year,month)])
+    dfTemp["total_volume_availableSupply_month_Y%0.4dM%0.2d" %(year,month)] =(dfTemp["upstream_total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] +                                                                  dfTemp["total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] -                                                                  dfTemp["upstream_total_volume_TotWN_month_Y%0.4dM%0.2d" %(year,month)])
+    
+    dfTemp["ws_month_Y%0.4dM%0.2d" %(year,month)] = dfTemp["total_volume_TotWW_month_Y%0.4dM%0.2d" %(year,month)] /                                                     dfTemp["total_volume_availableSupply_month_Y%0.4dM%0.2d" %(year,month)]
     return dfTemp
     
     
