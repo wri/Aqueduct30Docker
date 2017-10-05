@@ -242,12 +242,12 @@ for r in itertools.product(runoffparameters, temporalScales):
 regexList = regexList + auxList + demandList + supplyList
 
 
-# In[ ]:
+# In[17]:
 
 d = dict(zip(regexList,[{}]*len(regexList)))
 
 
-# In[ ]:
+# In[18]:
 
 for regex in regexList:
     # item is also the regular expression
@@ -261,12 +261,12 @@ for regex in regexList:
                 d[regex] = readAsset(assetId)
 
 
-# In[ ]:
+# In[19]:
 
 zonesImage = d["zones"]["asset"]
 
 
-# In[ ]:
+# In[20]:
 
 a = []
 
@@ -312,7 +312,7 @@ for key, nestedDict in d.iteritems():
         
 
 
-# In[ ]:
+# In[21]:
 
 end = datetime.datetime.now()
 elapsed = end - start
