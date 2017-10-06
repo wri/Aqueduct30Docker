@@ -19,7 +19,8 @@ print(dateString,timeString)
 
 # In[2]:
 
-VERSION = 8
+INPUT_VERSION = 3
+OUTPUT_VERSION = 9
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
@@ -27,8 +28,8 @@ S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calcul
 EC2_INPUT_PATH = "/volumes/data/Y2017M10D02_RH_Calculate_Water_Stress_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M10D02_RH_Calculate_Water_Stress_V01/output"
 
-INPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V02"
-OUTPUT_FILENAME = "Y2017M10D02_RH_Calculate_Water_Stress_V%0.2d" %(VERSION)
+INPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V%0.2d" %(INPUT_VERSION)
+OUTPUT_FILENAME = "Y2017M10D02_RH_Calculate_Water_Stress_V%0.2d" %(OUTPUT_VERSION)
 
 TEST_BASINS = [292107,292101,292103,292108,292109]
 

@@ -18,12 +18,20 @@ print(dateString,timeString)
 sys.version
 
 
+# ## Settings
+
 # In[2]:
 
-S3_INPUT_PATH =  "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
+INPUT_VERSION = 9
+OUTPUT_VERSION = 4
 
-INPUT_FILE_NAME = "Y2017M10D02_RH_Calculate_Water_Stress_V08"
-OUTPUT_FILE_NAME = "Y2017M10D04_RH_Threshold_WaterStress_V01"
+
+S3_INPUT_PATH =  "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D04_RH_Threshold_WaterStress_V02/output/"
+
+
+INPUT_FILE_NAME = "Y2017M10D02_RH_Calculate_Water_Stress_V%0.2d" %(INPUT_VERSION)
+OUTPUT_FILE_NAME = "Y2017M10D04_RH_Threshold_WaterStress_"
 
 EC2_INPUT_PATH = "/volumes/data/Y2017M10D04_RH_Threshold_WaterStress_V02/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M10D04_RH_Threshold_WaterStress_V02/output"
@@ -32,6 +40,8 @@ YEAR = 2014
 
 THRESHOLD_ARID = 0.03 #units are m/year, threshold defined by Aqueduct 2.1
 THRESHOLD_LOW_WATER_USE = 0.012 #units are m/year, threshold defined by Aqueduct 2.1 
+
+
 
 
 # In[3]:
@@ -142,32 +152,27 @@ for temporalResolution in temporalResolutions:
                                             
 
 
-# In[ ]:
-
-
-
-
 # In[12]:
 
 df.head()
 
 
+# In[13]:
+
+df.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+"V%0.2d.csv" %(OUTPUT_VERSION)))
+
+
+# In[14]:
+
+df.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+"V%0.2d.pkl" %(OUTPUT_VERSION)))
+
+
 # In[15]:
-
-df.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
-
-
-# In[16]:
-
-df.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".pkl"))
-
-
-# In[17]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
-# In[18]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start

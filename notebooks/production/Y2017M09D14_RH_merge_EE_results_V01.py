@@ -19,7 +19,7 @@ print(dateString,timeString)
 
 # In[2]:
 
-GCS_VERSION = 16
+GCS_VERSION = 17
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2017M09D11_RH_zonal_stats_EE_V%0.2d/" %(GCS_VERSION)
 EC2_INPUT_PATH = "/volumes/data/Y2017M09D14_RH_merge_EE_results_V01/input"
@@ -38,7 +38,7 @@ AUXFILES = ["Hybas06",
 
 DROP_COLUMNS = [".geo","system:index"]
 
-VERSION = 14
+VERSION = 15
 
 OUTPUTFILENAME = "mergedZonalStatsEE_V%0.2d" %(VERSION)
 

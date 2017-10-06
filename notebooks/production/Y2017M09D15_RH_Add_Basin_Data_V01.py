@@ -8,7 +8,7 @@
 # * Kernel used: python35
 # * Date created: 20170915
 
-# In[37]:
+# In[1]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -20,6 +20,9 @@ sys.version
 
 # In[2]:
 
+INPUT_VERSION = 15
+OUTPUT_VERSION = 3
+
 S3_INPUT_PATH_EE  = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
 
@@ -28,10 +31,10 @@ S3_INPUT_PATH_HYDROBASINS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D2
 EC2_INPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/input"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/output"
 
-INPUT_FILENAME_EE =  "mergedZonalStatsEE_V14.pkl"
+INPUT_FILENAME_EE =  "mergedZonalStatsEE_V%0.2d.pkl" %(INPUT_VERSION)
 INPUT_FILENAME_HYDROBASINS =  "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V01.pkl"
 
-OUTPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V02"
+OUTPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V%0.2d" %(OUTPUT_VERSION)
 
 
 # Note: There are two polygons with the same PFAF_ID (353020). This is caused by the fact that both poygons would otherwise cross the 180 degree meridian
