@@ -20,8 +20,6 @@ print(dateString,timeString)
 
 import os
 import ee
-import folium
-from folium_gee import *
 import subprocess
 import itertools
 import pprint
@@ -41,7 +39,7 @@ YEAR_MAX = 2014
 DIMENSION5MIN = "4320x2160"
 CRS = "EPSG:4326"
 
-VERSION = 24
+VERSION = 25
 
 UNITS = "millionm3"
 MAXPIXELS =1e10
@@ -100,6 +98,10 @@ def linearTrend(ic,yearmin,yearmax):
     offset = fit.select(["offset"])
     scale = fit.select(["scale"]) #Note that this definition of scale is a as in y = ax+b
     newImageYearMax = scale.multiply(yearmax).add(offset).select(["scale"],["newValue"])
+    
+    # These lines were added after sharing GDBD results with Sam. Masking out negative values
+    PositiveMask = ee.Image(newImageYearMax.gte(0))
+    newImageYearMax = ee.Image(newImageYearMax.multiply(PositiveMask))    
     return ee.Image(newImageYearMax)
 
 def exportToAsset(image,outputIcName,outputIName):    
