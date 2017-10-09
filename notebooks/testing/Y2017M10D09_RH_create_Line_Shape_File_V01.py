@@ -136,16 +136,51 @@ for index, row in df.iterrows():
 df.head()
 
 
-# In[24]:
+# In[32]:
+
+geometry = [Point(xy) for xy in zip(df['centroid_x'], df['centroid_y'])]
+
+
+# In[38]:
+
+gs = gpd.GeoSeries(geometry, index=df['HYBAS_ID'])
+
+
+# In[33]:
+
+gdfNew = gpd.GeoDataFrame(df,geometry="geometry")
+
+
+# In[34]:
 
 def createLine(row):
-    line = LineString([Point({row.centroid_x,centroid_y}),Point({row.to_centroid_x,to_centroid_y})])
+    line = LineString([Point({row.centroid_x,row.centroid_y}),Point({row.next_centroid_x,row.next_centroid_y})])
     return line
+
+
+# In[29]:
+
+gdfNew.set_value(6060000200,"geometry",Point({1,2})) 
+
+
+# In[25]:
+
+for index, row in gdfNew.iterrows():
+    print(index)
+    gdfNew.set_value(index,"geometry",createLine(row))    
 
 
 # In[ ]:
 
 
+
+
+# In[ ]:
+
+
+    
+    
+    
 
 
 # In[ ]:
