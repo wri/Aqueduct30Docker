@@ -20,6 +20,7 @@ print(dateString,timeString)
 # In[2]:
 
 GCS_VERSION = 17
+OUTPUT_VERSION = 16
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2017M09D11_RH_zonal_stats_EE_V%0.2d/" %(GCS_VERSION)
 EC2_INPUT_PATH = "/volumes/data/Y2017M09D14_RH_merge_EE_results_V01/input"
@@ -38,9 +39,7 @@ AUXFILES = ["Hybas06",
 
 DROP_COLUMNS = [".geo","system:index"]
 
-VERSION = 15
-
-OUTPUTFILENAME = "mergedZonalStatsEE_V%0.2d" %(VERSION)
+OUTPUTFILENAME = "mergedZonalStatsEE_V%0.2d" %(OUTPUT_VERSION)
 
 
 # In[3]:
@@ -187,29 +186,34 @@ for key, value in d.items():
 dfMerge.head()
 
 
-# In[19]:
+# In[25]:
 
 dfMerge.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUTFILENAME+".csv"))
 
 
-# In[20]:
+# In[26]:
 
 dfMerge.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUTFILENAME+".pkl"))
 
 
-# In[21]:
+# In[27]:
 
 outputLocation = os.path.join(S3_OUTPUT_PATH,OUTPUTFILENAME)
 
 
-# In[22]:
+# In[28]:
 
 get_ipython().system('aws s3 cp --recursive {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH}')
 
 
-# In[23]:
+# In[29]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+
 

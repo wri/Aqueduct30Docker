@@ -20,8 +20,8 @@ sys.version
 
 # In[2]:
 
-INPUT_VERSION = 15
-OUTPUT_VERSION = 3
+INPUT_VERSION = 16
+OUTPUT_VERSION = 4
 
 S3_INPUT_PATH_EE  = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
