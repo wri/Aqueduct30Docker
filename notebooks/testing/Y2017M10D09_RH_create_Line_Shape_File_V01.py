@@ -16,12 +16,13 @@ timeString = time.strftime("UTC %H:%M")
 start = datetime.datetime.now()
 print(dateString,timeString)
 sys.version
+get_ipython().magic('matplotlib inline')
 
 
 # In[2]:
 
 INPUT_VERSION = 1
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 1
 
 S3_INPUT_PATH =  "s3://wri-projects/Aqueduct30/processData/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D09_RH_create_Line_Shape_File_V01/output/"
@@ -96,223 +97,128 @@ print(df.shape,gdf.shape)
 
 # In[14]:
 
-gdfOut = gdf.copy()
+#gdfOut = gdf.copy()
 
 
 # In[15]:
 
-gdfOut['geometry'] = gdf.geometry.centroid
+gdf['geometry'] = gdf.geometry.centroid
 
 
 # In[16]:
 
-df["centroid_x"] = gdfOut.geometry.x
+gdf["centroid_x"] = gdf.geometry.x
 
 
 # In[17]:
 
-df["centroid_y"] = gdfOut.geometry.y
+gdf["centroid_y"] = gdf.geometry.y
 
 
 # In[18]:
 
-df.head()
+gdf["HYBAS_ID"] = df["HYBAS_ID"]
+gdf["NEXT_DOWN"] = df["NEXT_DOWN"]
+gdf["ENDO"] = df["ENDO"]
 
 
 # In[19]:
 
-df = df.set_index("HYBAS_ID",drop=False)   
+gdf = gdf.set_index("HYBAS_ID",drop=False)   
 
 
 # In[20]:
 
-for index, row in df.iterrows():    
-    df.set_value(index,"next_centroid_x",df.loc[index]["centroid_x"])
-    df.set_value(index,"next_centroid_y",df.loc[index]["centroid_y"])
+gdf.plot()
 
 
 # In[21]:
 
+for index, row in gdf.iterrows():
+    if row["NEXT_DOWN"] != 0 and row["ENDO"] != 2:
+        gdf.set_value(index,"next_centroid_x",gdf.loc[row["NEXT_DOWN"]]["centroid_x"])
+        gdf.set_value(index,"next_centroid_y",gdf.loc[row["NEXT_DOWN"]]["centroid_y"])
+    else:
+        gdf.set_value(index,"next_centroid_x",gdf.loc[index]["centroid_x"])
+        gdf.set_value(index,"next_centroid_y",gdf.loc[index]["centroid_y"])
+
+
+# In[22]:
+
+def fxy(x, y, xx, yy):
+    point1 = Point(x,y)
+    point2 = Point(xx,yy)
+    geom = LineString([point1,point2])
+    return geom
+
+
+# In[23]:
+
+df = gdf.drop("geometry",axis=1)
+
+
+# In[24]:
+
 df.head()
-
-
-# In[32]:
-
-geometry = [Point(xy) for xy in zip(df['centroid_x'], df['centroid_y'])]
-
-
-# In[38]:
-
-gs = gpd.GeoSeries(geometry, index=df['HYBAS_ID'])
-
-
-# In[33]:
-
-gdfNew = gpd.GeoDataFrame(df,geometry="geometry")
-
-
-# In[34]:
-
-def createLine(row):
-    line = LineString([Point({row.centroid_x,row.centroid_y}),Point({row.next_centroid_x,row.next_centroid_y})])
-    return line
-
-
-# In[29]:
-
-gdfNew.set_value(6060000200,"geometry",Point({1,2})) 
 
 
 # In[25]:
 
-for index, row in gdfNew.iterrows():
-    print(index)
-    gdfNew.set_value(index,"geometry",createLine(row))    
+dfSimple = pd.DataFrame(df["PFAF_ID"])
 
 
-# In[ ]:
+# In[26]:
 
+gdfSimple = gpd.GeoDataFrame(dfSimple)
 
 
+# In[27]:
 
-# In[ ]:
+gs = gpd.GeoSeries(index=dfSimple.index)
 
 
-    
-    
-    
+# In[28]:
 
+listje = []
+for index, row in df.iterrows():      
+    listje.append(fxy(row.centroid_x,row.centroid_y,row.next_centroid_x,row.next_centroid_y) )
 
-# In[ ]:
 
+# In[29]:
 
+#gs = gpd.GeoSeries(df.apply(lambda x: fxy(x['centroid_x'], x['centroid_y'],x['next_centroid_x'],x['next_centroid_y']), axis=1))
 
 
-# In[ ]:
 
 
+# In[30]:
 
+gdf_Out2 = gpd.GeoDataFrame(dfSimple,geometry=listje)
 
-# In[ ]:
 
-d = {'Lat' : [1., 2., 3., 4.],
-     'Lon' : [4., 3., 2., 1.],
-     'Id': [1,1,2,2],
-     'rutger':[42,43,44,45]}
+# In[31]:
 
+gdf_Out2 = gdf_Out2.set_index("PFAF_ID",drop=False)
 
-# In[ ]:
 
-df = pd.DataFrame(d)
+# In[32]:
 
+gdf_Out2.crs = {'init' :'epsg:4326'}
 
-# In[ ]:
 
-df
+# In[33]:
 
+gdf_Out2.plot()
 
-# In[ ]:
 
-geometry = [Point(xy) for xy in zip(df.Lon, df.Lat)]
+# In[34]:
 
+gdf_Out2.to_file(driver = 'ESRI Shapefile', filename = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME))
 
-# In[ ]:
 
-point1 = Point({42,43})
-point2 = Point({44,45})
-
-lineString = LineString([point1,point2])
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf = gpd.GeoDataFrame(df, geometry=geometry)
-
-
-# In[ ]:
-
-gdf
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf = df.groupby(['Id'])['geometry'].apply(lambda x: LineString(x.tolist()))
-
-
-# In[ ]:
-
-# Aggregate these points with the GroupBy
-geometry = df.groupby(['Id'])['geometry'].apply(lambda x: LineString(x.tolist()))
-
-
-# In[ ]:
-
-gdf = gpd.GeoDataFrame(gdf, geometry='geometry')
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf
-
-
-# In[ ]:
-
-gdf.crs = {'init' :'epsg:4326'}
-
-
-# In[ ]:
-
-gdf.to_file(driver = 'ESRI Shapefile', filename = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME))
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf2 = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME))
-
-
-# In[ ]:
-
-gdf2['geometry'] = gdf2.geometry.centroid
-
-
-# In[ ]:
-
-gdf2
-
-
-# In[ ]:
-
-gdf2.to_file(driver = 'ESRI Shapefile', filename = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME2))
-
-
-# In[ ]:
+# In[35]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
-
-
-# In[ ]:
-
-
 
 
 # In[ ]:
