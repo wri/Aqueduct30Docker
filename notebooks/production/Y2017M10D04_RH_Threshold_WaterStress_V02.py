@@ -22,8 +22,8 @@ sys.version
 
 # In[2]:
 
-INPUT_VERSION = 9
-OUTPUT_VERSION = 4
+INPUT_VERSION = 3
+OUTPUT_VERSION = 5
 
 
 S3_INPUT_PATH =  "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
