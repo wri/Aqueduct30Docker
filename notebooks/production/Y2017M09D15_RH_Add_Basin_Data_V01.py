@@ -20,8 +20,8 @@ sys.version
 
 # In[2]:
 
-INPUT_VERSION = 18
-OUTPUT_VERSION = 7
+INPUT_VERSION = 16
+OUTPUT_VERSION = 4
 
 S3_INPUT_PATH_EE  = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
@@ -148,17 +148,7 @@ def addUpstream2(listje):
             # selecting columns based on regular expression
             df_upstream = df_upstream.filter(regex=("total*"))
             df_upstream = df_upstream.add_prefix("upstream_")
-            
-            # added later (2017 10 11) to prevent negative runoff from upstream to propagate downstream. 
-            # Setting upstream runoff to 0 when it is negative. Setting 0 before summation
-            
-            #df_right = df_upstream.filter(regex=("upstream_total_volume_reducedmeanrunoff*|upstream_total_volume_runoff*")).clip(lower=0)
-            #df_left = df_upstream.drop(list(df_right.columns), 1)
-            #df_upstream_capped = df_left.merge(df_right,left_index=True,right_index=True,how="outer")
-            
-            
             sumSeries = df_upstream.sum(0)
-            #sumSeries = df_upstream_capped.sum(0)
             for key, value in sumSeries.iteritems():
                 df_out.loc[index, key] = value
             df_out.loc[index, "errorCode"] = 0
@@ -186,8 +176,7 @@ def addDownstream2(listje):
             df_upstream = df_full_temp[df_full_temp.index.isin(upstreamCatchments)]
             # selecting columns based on regular expression
             df_upstream = df_upstream.filter(regex=("total*"))
-            df_upstream = df_upstream.add_prefix("downstream_")     
-            
+            df_upstream = df_upstream.add_prefix("downstream_")
             sumSeries = df_upstream.sum(0)
             for key, value in sumSeries.iteritems():
                 df_out.loc[index, key] = value
@@ -305,60 +294,55 @@ df_upstream = pd.concat(pool.map(addUpstream2, indices_split))
 
 # In[26]:
 
-df_upstream.loc[155697]["upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014"]
+df_downstream = pd.concat(pool.map(addDownstream2, indices_split))
 
 
 # In[27]:
 
-df_downstream = pd.concat(pool.map(addDownstream2, indices_split))
+df_basin = pd.concat(pool.map(addBasin2, indices_split))
 
 
 # In[28]:
 
-df_basin = pd.concat(pool.map(addBasin2, indices_split))
+pool.close()
 
 
 # In[29]:
 
-pool.close()
+df_complete = df_complete.merge(df_upstream,how="left",left_index=True,right_index=True)
 
 
 # In[30]:
 
-df_complete = df_complete.merge(df_upstream,how="left",left_index=True,right_index=True)
+df_complete = df_complete.merge(df_downstream,how="left",left_index=True,right_index=True)
 
 
 # In[31]:
 
-df_complete = df_complete.merge(df_downstream,how="left",left_index=True,right_index=True)
+df_complete = df_complete.merge(df_basin,how="left",left_index=True,right_index=True)
 
 
 # In[32]:
 
-df_complete = df_complete.merge(df_basin,how="left",left_index=True,right_index=True)
+df_complete.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".pkl"))
 
 
 # In[33]:
 
-df_complete.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".pkl"))
+df_complete.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".csv"))
 
 
 # In[34]:
 
-df_complete.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".csv"))
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
 # In[35]:
 
-get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
-
-
-# In[36]:
-
 df_complete.head()
 
 
-# In[37]:
+# In[36]:
 
 end = datetime.datetime.now()
 elapsed = end - start

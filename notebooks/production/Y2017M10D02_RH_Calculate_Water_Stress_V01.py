@@ -19,8 +19,8 @@ print(dateString,timeString)
 
 # In[2]:
 
-INPUT_VERSION = 7
-OUTPUT_VERSION = 1
+INPUT_VERSION = 3
+OUTPUT_VERSION = 9
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
@@ -75,8 +75,7 @@ dfOut = dfBasins
 
 def calculateWaterStressYear(temporalResolution,year,df):
     dfTemp = df.copy()
-    dfTemp["total_volume_naturalSupply_year_Y%0.4d" %(year)] = (dfTemp["upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014"] + dfTemp["total_volume_reducedmeanrunoff_year_Y1960Y2014"]) 
-    dfTemp["total_volume_availableSupply_year_Y%0.4d" %(year)] = (dfTemp["total_volume_supply_year_Y%0.4d" %(year)] -                                                      dfTemp["upstream_total_volume_TotWN_year_Y%0.4d" %(year)])
+    dfTemp["total_volume_availableSupply_year_Y%0.4d" %(year)] = (dfTemp["upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014"] +                                                      dfTemp["total_volume_reducedmeanrunoff_year_Y1960Y2014"] -                                                      dfTemp["upstream_total_volume_TotWN_year_Y%0.4d" %(year)])
     
     dfTemp["ws_year_Y%0.4d" %(year)] = dfTemp["total_volume_TotWW_year_Y%0.4d" %(year)] /                                        dfTemp["total_volume_availableSupply_year_Y%0.4d" %(year)]
     
@@ -84,8 +83,7 @@ def calculateWaterStressYear(temporalResolution,year,df):
     
 def calculateWaterStressMonth(temporalResolution,year,month,df):
     dfTemp = df.copy()
-    dfTemp["total_volume_naturalSupply_month_Y%0.4dM%0.2d" %(year,month)] = (dfTemp["upstream_total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] + dfTemp["total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)]) 
-    dfTemp["total_volume_availableSupply_month_Y%0.4dM%0.2d" %(year,month)] = (dfTemp["total_volume_naturalSupply_month_Y%0.4dM%0.2d" %(year,month)] -                                                                  dfTemp["upstream_total_volume_TotWN_month_Y%0.4dM%0.2d" %(year,month)])
+    dfTemp["total_volume_availableSupply_month_Y%0.4dM%0.2d" %(year,month)] =(dfTemp["upstream_total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] +                                                                  dfTemp["total_volume_reducedmeanrunoff_month_Y1960Y2014M%0.2d" %(month)] -                                                                  dfTemp["upstream_total_volume_TotWN_month_Y%0.4dM%0.2d" %(year,month)])
     
     dfTemp["ws_month_Y%0.4dM%0.2d" %(year,month)] = dfTemp["total_volume_TotWW_month_Y%0.4dM%0.2d" %(year,month)] /                                                     dfTemp["total_volume_availableSupply_month_Y%0.4dM%0.2d" %(year,month)]
     return dfTemp
@@ -112,22 +110,22 @@ for temporalResolution in temporalResolutions:
             dfOut = calculateWaterStressMonth(temporalResolution,year,month,dfOut)
 
 
-# In[ ]:
+# In[12]:
 
 dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".csv"))
 
 
-# In[ ]:
+# In[13]:
 
 dfOut.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".pkl"))
 
 
-# In[ ]:
+# In[14]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
-# In[ ]:
+# In[15]:
 
 end = datetime.datetime.now()
 elapsed = end - start
