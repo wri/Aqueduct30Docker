@@ -1,9 +1,9 @@
 
 # coding: utf-8
 
-# In[9]:
+# In[1]:
 
-INPUT_VERSION = 18
+INPUT_VERSION = 15
 OUTPUT_VERSION = 3
 
 S3_INPUT_PATH_EE  = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
@@ -20,29 +20,29 @@ INPUT_FILENAME_HYDROBASINS =  "hybas_lev06_v1c_merged_fiona_upstream_downstream_
 OUTPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V%0.2d" %(OUTPUT_VERSION)
 
 
-# In[10]:
+# In[2]:
 
 get_ipython().system('rm -r {EC2_INPUT_PATH} ')
 get_ipython().system('rm -r {EC2_OUTPUT_PATH} ')
 
 
-# In[11]:
+# In[3]:
 
 get_ipython().system('mkdir -p {EC2_INPUT_PATH} ')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH} ')
 
 
-# In[12]:
+# In[4]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_EE} {EC2_INPUT_PATH} --recursive')
 
 
-# In[13]:
+# In[5]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYDROBASINS} {EC2_INPUT_PATH} --recursive --exclude "*" --include "*.pkl"')
 
 
-# In[14]:
+# In[6]:
 
 import os
 import pandas as pd
@@ -55,69 +55,39 @@ import pprint
 import ast
 
 
-# In[15]:
+# In[7]:
 
 inputLocationEE = os.path.join(EC2_INPUT_PATH,INPUT_FILENAME_EE)
 
 
-# In[16]:
+# In[8]:
 
 df_ee = pd.read_pickle(inputLocationEE)
 
 
-# In[17]:
+# In[9]:
 
 df_ee.index.names = ['PFAF_ID']
 
 
-# In[18]:
+# In[10]:
 
 df_ee.head()
 
 
-# In[23]:
-
-sumSeries = df_ee.sum(0)
-
-
-# In[24]:
-
-sumSeries
-
-
-# In[37]:
-
-sumSeries["count_Hybas06"] = -1
-
-
-# In[38]:
-
-test = sumSeries.filter(regex=("count_Hybas06*|count_area_30s_m2")).clip(lower=0)
-
-
-# In[39]:
-
-test
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
+# In[11]:
 
 dfTest = df_ee[df_ee["total_volume_reducedmeanrunoff_month_Y1960Y2014M01"] < 0 ]
 
 
-# In[ ]:
+# In[17]:
 
 mask = df_ee["total_volume_reducedmeanrunoff_month_Y1960Y2014M01"] < 0
 
 df_ee.loc[mask, "total_volume_reducedmeanrunoff_month_Y1960Y2014M01"] = 0
 
 
-# In[ ]:
+# In[19]:
 
 df_ee.total_volume_reducedmeanrunoff_month_Y1960Y2014M01.min()
 

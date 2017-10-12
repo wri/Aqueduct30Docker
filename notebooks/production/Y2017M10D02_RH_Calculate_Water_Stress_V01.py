@@ -19,8 +19,8 @@ print(dateString,timeString)
 
 # In[2]:
 
-INPUT_VERSION = 9
-OUTPUT_VERSION = 4
+INPUT_VERSION = 7
+OUTPUT_VERSION = 1
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
@@ -76,7 +76,7 @@ dfOut = dfBasins
 def calculateWaterStressYear(temporalResolution,year,df):
     dfTemp = df.copy()
     dfTemp["total_volume_naturalSupply_year_Y%0.4d" %(year)] = (dfTemp["upstream_total_volume_reducedmeanrunoff_year_Y1960Y2014"] + dfTemp["total_volume_reducedmeanrunoff_year_Y1960Y2014"]) 
-    dfTemp["total_volume_availableSupply_year_Y%0.4d" %(year)] = dfTemp["total_volume_naturalSupply_year_Y%0.4d" %(year)] -                                                      dfTemp["upstream_total_volume_TotWN_year_Y%0.4d" %(year)]
+    dfTemp["total_volume_availableSupply_year_Y%0.4d" %(year)] = (dfTemp["total_volume_supply_year_Y%0.4d" %(year)] -                                                      dfTemp["upstream_total_volume_TotWN_year_Y%0.4d" %(year)])
     
     dfTemp["ws_year_Y%0.4d" %(year)] = dfTemp["total_volume_TotWW_year_Y%0.4d" %(year)] /                                        dfTemp["total_volume_availableSupply_year_Y%0.4d" %(year)]
     

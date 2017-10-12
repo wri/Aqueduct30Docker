@@ -18,10 +18,10 @@ print(dateString,timeString)
 sys.version
 
 
-# In[38]:
+# In[2]:
 
 INPUT_VERSION = 18
-OUTPUT_VERSION = 9
+OUTPUT_VERSION = 7
 
 S3_INPUT_PATH_EE  = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
@@ -150,16 +150,15 @@ def addUpstream2(listje):
             df_upstream = df_upstream.add_prefix("upstream_")
             
             # added later (2017 10 11) to prevent negative runoff from upstream to propagate downstream. 
-            # Update: Setting the sum to zero instead of the input runoff parameters
+            # Setting upstream runoff to 0 when it is negative. Setting 0 before summation
             
             #df_right = df_upstream.filter(regex=("upstream_total_volume_reducedmeanrunoff*|upstream_total_volume_runoff*")).clip(lower=0)
             #df_left = df_upstream.drop(list(df_right.columns), 1)
-            #df_upstream_capped = df_left.merge(df_right,left_index=True,right_index=True,how="outer")         
-    
+            #df_upstream_capped = df_left.merge(df_right,left_index=True,right_index=True,how="outer")
             
-            #sumSeries = df_upstream.sum(0)
+            
+            sumSeries = df_upstream.sum(0)
             #sumSeries = df_upstream_capped.sum(0)
-            sumSeries = df_upstream.sum(0).filter(regex=("upstream_total_volume_reducedmeanrunoff*|upstream_total_volume_runoff*")).clip(lower=0)
             for key, value in sumSeries.iteritems():
                 df_out.loc[index, key] = value
             df_out.loc[index, "errorCode"] = 0
@@ -339,27 +338,27 @@ df_complete = df_complete.merge(df_downstream,how="left",left_index=True,right_i
 df_complete = df_complete.merge(df_basin,how="left",left_index=True,right_index=True)
 
 
-# In[39]:
+# In[33]:
 
 df_complete.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".pkl"))
 
 
-# In[40]:
+# In[34]:
 
 df_complete.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME+".csv"))
 
 
-# In[41]:
+# In[35]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
-# In[42]:
+# In[36]:
 
 df_complete.head()
 
 
-# In[43]:
+# In[37]:
 
 end = datetime.datetime.now()
 elapsed = end - start
