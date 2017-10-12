@@ -295,7 +295,7 @@ df_complete["numberUpstream_PFAF_IDs"] = df_complete["Upstream_PFAF_IDs"].apply(
 df_out = pd.DataFrame()
 
 
-# In[25]:
+# In[27]:
 
 #for numberUpstream in range(0,df_complete["numberUpstream_PFAF_IDs"].max()+1):
 for numberUpstream in range(0,1):
@@ -307,8 +307,8 @@ for numberUpstream in range(0,1):
         df_filtered.loc[df_filtered["numberUpstream_PFAF_IDs"]==numberUpstream,"total_volume_accumulatedRunoff_year_Y2014"] = df_filtered["total_volume_runoff_yearY2014M12"]
         df_filtered.loc[df_filtered["numberUpstream_PFAF_IDs"]==numberUpstream,"total_volume_accumulatedRunoffAvailable_year_Y2014"] = df_filtered["total_volume_runoff_yearY2014M12"] - df_filtered["total_volume_TotWN_year_Y2014"]
     
-        df_filtered["total_volume_accumulatedRunoff_year_Y2014"].clip(lower=0)
-        df_filtered["total_volume_accumulatedRunoffAvailable_year_Y2014"].clip(lower=0)
+        df_filtered["total_volume_accumulatedRunoff_year_Y2014"] = df_filtered["total_volume_accumulatedRunoff_year_Y2014"].clip(lower=0)
+        df_filtered["total_volume_accumulatedRunoffAvailable_year_Y2014"] = df_filtered["total_volume_accumulatedRunoffAvailable_year_Y2014"].clip(lower=0)
         
         print(df_filtered["total_volume_accumulatedRunoffAvailable_year_Y2014"].clip(lower=0).min())
     
@@ -334,7 +334,7 @@ for numberUpstream in range(0,1):
         
 
 
-# In[26]:
+# In[28]:
 
 df_filtered.head()
 
