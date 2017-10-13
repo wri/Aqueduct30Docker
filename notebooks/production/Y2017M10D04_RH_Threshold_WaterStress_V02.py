@@ -22,19 +22,20 @@ sys.version
 
 # In[2]:
 
-INPUT_VERSION = 9
-OUTPUT_VERSION = 4
+INPUT_VERSION = 2
+OUTPUT_VERSION = 5
 
+SCRIPT_NAME = "Y2017M10D04_RH_Threshold_WaterStress_V02"
 
 S3_INPUT_PATH =  "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D04_RH_Threshold_WaterStress_V02/output/"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/%s/output/" %(SCRIPT_NAME)
 
 
 INPUT_FILE_NAME = "Y2017M10D02_RH_Calculate_Water_Stress_V%0.2d" %(INPUT_VERSION)
 OUTPUT_FILE_NAME = "Y2017M10D04_RH_Threshold_WaterStress_"
 
-EC2_INPUT_PATH = "/volumes/data/Y2017M10D04_RH_Threshold_WaterStress_V02/input"
-EC2_OUTPUT_PATH = "/volumes/data/Y2017M10D04_RH_Threshold_WaterStress_V02/output"
+EC2_INPUT_PATH = "/volumes/data/%s/input" %(SCRIPT_NAME)
+EC2_OUTPUT_PATH = "/volumes/data/%s/output" %(SCRIPT_NAME)
 
 YEAR = 2014
 

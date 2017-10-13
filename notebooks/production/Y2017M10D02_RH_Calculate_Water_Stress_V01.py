@@ -19,14 +19,16 @@ print(dateString,timeString)
 
 # In[2]:
 
-INPUT_VERSION = 3
-OUTPUT_VERSION = 9
+INPUT_VERSION = 5
+OUTPUT_VERSION = 2
+
+SCRIPT_NAME = "Y2017M10D02_RH_Calculate_Water_Stress_V01"
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M10D02_RH_Calculate_Water_Stress_V01/output/"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/%s/output/" %(SCRIPT_NAME)
 
-EC2_INPUT_PATH = "/volumes/data/Y2017M10D02_RH_Calculate_Water_Stress_V01/input"
-EC2_OUTPUT_PATH = "/volumes/data/Y2017M10D02_RH_Calculate_Water_Stress_V01/output"
+EC2_INPUT_PATH = "/volumes/data/%s/input" %(SCRIPT_NAME)
+EC2_OUTPUT_PATH = "/volumes/data/%s/output" %(SCRIPT_NAME)
 
 INPUT_FILENAME = "Y2017M09D15_RH_Add_Basin_Data_V%0.2d" %(INPUT_VERSION)
 OUTPUT_FILENAME = "Y2017M10D02_RH_Calculate_Water_Stress_V%0.2d" %(OUTPUT_VERSION)
