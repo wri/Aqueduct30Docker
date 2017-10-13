@@ -20,16 +20,18 @@ sys.version
 
 # In[2]:
 
-INPUT_VERSION = 16
-OUTPUT_VERSION = 4
+INPUT_VERSION = 18
+OUTPUT_VERSION = 5
+
+SCRIPT_NAME = "Y2017M09D15_RH_Add_Basin_Data_V01"
 
 S3_INPUT_PATH_EE  = "s3://wri-projects/Aqueduct30/processData/Y2017M09D14_RH_merge_EE_results_V01/output/"
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M09D15_RH_Add_Basin_Data_V01/output/"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/%s/output/" %(SCRIPT_NAME)
 
 S3_INPUT_PATH_HYDROBASINS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output/"
 
-EC2_INPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/input"
-EC2_OUTPUT_PATH = "/volumes/data/Y2017M09D15_RH_Add_Basin_Data_V01/output"
+EC2_INPUT_PATH = "/volumes/data/%s/input" %(SCRIPT_NAME)
+EC2_OUTPUT_PATH = "/volumes/data/%s/output" %(SCRIPT_NAME)
 
 INPUT_FILENAME_EE =  "mergedZonalStatsEE_V%0.2d.pkl" %(INPUT_VERSION)
 INPUT_FILENAME_HYDROBASINS =  "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V01.pkl"
