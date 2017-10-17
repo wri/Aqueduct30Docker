@@ -47,7 +47,7 @@ DIMENSION5MIN = "4320x2160"
 DIMENSION30S = "43200x21600"
 CRS = "EPSG:4326"
 
-VERSION = 17
+VERSION = 19
 
 GCS_BUCKET= "aqueduct30_v01"
 GCS_OUTPUT_PATH = "Y2017M09D11_RH_zonal_stats_EE_V%0.2d/" %(VERSION)
@@ -249,12 +249,12 @@ for regex in regexList:
                 d[regex] = readAsset(assetId)
 
 
-# In[19]:
+# In[ ]:
 
 zonesImage = d["zones"]["asset"]
 
 
-# In[20]:
+# In[ ]:
 
 a = []
 
@@ -277,7 +277,7 @@ for key, nestedDict in d.iteritems():
                 image = volumeToFlux(image) 
 
 
-            fcOut = zonalStats(nestedDict["asset"],weightsImage,zonesImage)
+            fcOut = zonalStats(ee.Image(image),weightsImage,zonesImage)
             export(fcOut)
         elif nestedDict["assetType"] == "imageCollection": 
             imagesList = ee.data.getList({"id":"%s" %(nestedDict["assetId"])} )
@@ -300,7 +300,7 @@ for key, nestedDict in d.iteritems():
         
 
 
-# In[21]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
