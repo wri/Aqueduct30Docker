@@ -249,12 +249,12 @@ for regex in regexList:
                 d[regex] = readAsset(assetId)
 
 
-# In[ ]:
+# In[19]:
 
 zonesImage = d["zones"]["asset"]
 
 
-# In[ ]:
+# In[20]:
 
 a = []
 
@@ -300,7 +300,7 @@ for key, nestedDict in d.iteritems():
         
 
 
-# In[ ]:
+# In[21]:
 
 end = datetime.datetime.now()
 elapsed = end - start
