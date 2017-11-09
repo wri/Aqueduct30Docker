@@ -19,8 +19,8 @@ print(dateString,timeString)
 
 # In[2]:
 
-GCS_VERSION = 17
-OUTPUT_VERSION = 16
+GCS_VERSION = 19
+OUTPUT_VERSION = 17
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2017M09D11_RH_zonal_stats_EE_V%0.2d/" %(GCS_VERSION)
 EC2_INPUT_PATH = "/volumes/data/Y2017M09D14_RH_merge_EE_results_V01/input"
@@ -186,27 +186,27 @@ for key, value in d.items():
 dfMerge.head()
 
 
-# In[25]:
+# In[19]:
 
 dfMerge.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUTFILENAME+".csv"))
 
 
-# In[26]:
+# In[20]:
 
 dfMerge.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUTFILENAME+".pkl"))
 
 
-# In[27]:
+# In[21]:
 
 outputLocation = os.path.join(S3_OUTPUT_PATH,OUTPUTFILENAME)
 
 
-# In[28]:
+# In[22]:
 
 get_ipython().system('aws s3 cp --recursive {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH}')
 
 
-# In[29]:
+# In[23]:
 
 end = datetime.datetime.now()
 elapsed = end - start

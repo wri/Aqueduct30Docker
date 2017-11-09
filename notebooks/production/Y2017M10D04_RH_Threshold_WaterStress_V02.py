@@ -22,8 +22,8 @@ sys.version
 
 # In[2]:
 
-INPUT_VERSION = 2
-OUTPUT_VERSION = 5
+INPUT_VERSION = 3
+OUTPUT_VERSION = 6
 
 SCRIPT_NAME = "Y2017M10D04_RH_Threshold_WaterStress_V02"
 

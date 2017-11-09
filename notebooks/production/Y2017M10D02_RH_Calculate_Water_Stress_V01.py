@@ -19,8 +19,8 @@ print(dateString,timeString)
 
 # In[2]:
 
-INPUT_VERSION = 5
-OUTPUT_VERSION = 2
+INPUT_VERSION = 6
+OUTPUT_VERSION = 3
 
 SCRIPT_NAME = "Y2017M10D02_RH_Calculate_Water_Stress_V01"
 
