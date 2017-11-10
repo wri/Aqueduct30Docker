@@ -16,35 +16,46 @@ import geopandas as gpd
 get_ipython().magic('matplotlib inline')
 
 
-# In[3]:
-
-fname = "/volumes/repos/Aqueduct30Docker/notebooks/testing/samplefiles/testShape.shp"
-
-
 # In[ ]:
 
-def categorize(attributes):
-    type(attributes)
 
 
-# In[85]:
+
+# In[99]:
+
+fname = "/volumes/repos/Aqueduct30Docker/notebooks/testing/samplefiles/testShape.shp"
+column = "PFAF_ID"
+
+
+# In[100]:
+
+def categorizeBWS_s(attributes,column):
+    print(attributes[column])
+    
+    
+    
+
+
+# In[101]:
 
 def addFeatures(fname):
     f = Reader(fname)
     for item in test.records():
         attributes = item.attributes
         geometry = item.geometry
+        categorizeBWS_s(attributes,column)
+        
         feature = ShapelyFeature(geometry,ccrs.PlateCarree(),facecolor='blue',edgecolor="black",alpha=0.5)
         ax.add_feature(feature)
 
 
-# In[86]:
+# In[102]:
 
 fig = plt.figure(figsize=(20, 100))
 ax = plt.axes(projection=ccrs.Robinson())
 extents = [-20,20,30,40]
 ax.set_extent(extents, crs=None)
-ax.coastlines(resolution='50m')
+ax.coastlines(resolution='50m',alpha=0.5)
 
 addFeatures(fname)
 
