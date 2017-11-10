@@ -4,6 +4,10 @@
 # Testing if I can upload shapefile to a postGIS server
 
 # https://gis.stackexchange.com/questions/239198/geopandas-dataframe-to-postgis-table-help
+# 
+# http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ConnectToPostgreSQLInstance.html
+# 
+# http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.html#Appendix.PostgreSQL.CommonDBATasks.PostGIS
 
 # In[8]:
 
@@ -18,19 +22,25 @@ import geopandas as gpd
 engine = create_engine('postgresql://rutgerhofste:nopassword@aqueduct30v02.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com:5432/database01')
 
 
-# In[14]:
+# In[16]:
 
-engine.connect()
-
-
-# In[11]:
+connection = engine.connect()
 
 
+# In[22]:
+
+cmd = 'select * from table01'
 
 
-# In[13]:
+# In[29]:
 
-print(engine.table_names())
+employees = connection.execute(text(cmd))
+
+
+# In[30]:
+
+for item in employees:
+    print(item)
 
 
 # In[ ]:
