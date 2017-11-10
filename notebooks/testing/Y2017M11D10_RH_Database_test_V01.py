@@ -99,29 +99,44 @@ gdf2.to_sql("table03", engine, if_exists='replace', index=False,
 connection = engine.connect()
 
 
-# In[93]:
+# In[112]:
 
 sql = "select * from table03"
 
 
-# In[94]:
+# In[113]:
 
 gdfAWS=gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' )
 
 
-# In[103]:
+# In[114]:
 
 get_ipython().magic('matplotlib inline')
 
 
-# In[100]:
+# In[115]:
 
-test = gdfAWS.head()
+gdfAWS.plot()
 
 
-# In[104]:
+# In[116]:
 
-test.plot()
+gdfAWS["valid"] = gdfAWS.geom.is_valid
+
+
+# In[ ]:
+
+gdfAWS
+
+
+# In[106]:
+
+test["valid"] = test.geom.is_valid
+
+
+# In[107]:
+
+test
 
 
 # In[ ]:
