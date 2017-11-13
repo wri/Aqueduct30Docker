@@ -28,7 +28,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[23]:
+# In[2]:
 
 SCRIPT_NAME = "Y2017M11D10_RH_Make_Geometry_Valid_V01"
 
@@ -45,15 +45,13 @@ EC2_OUTPUT_PATH = "/volumes/data/%s/output" %(SCRIPT_NAME)
 
 OUTPUT_FILE_NAME = "Y2017M11D10_RH_Make_Geometry_Valid_V%0.2d" %(OUTPUT_VERSION)
 
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output/"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/%s/output/" %(SCRIPT_NAME)
 
 # Database settings
-TABLE_NAME = "hybasvalid03"
+TABLE_NAME = "hybasvalid05"
 
 
-
-
-# In[3]:
+# In[ ]:
 
 get_ipython().system('rm -r {EC2_INPUT_PATH}')
 get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
@@ -62,12 +60,12 @@ get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[4]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive ')
 
 
-# In[5]:
+# In[3]:
 
 from geoalchemy2 import Geometry, WKTElement
 from sqlalchemy import *
@@ -75,121 +73,192 @@ import pandas as pd
 import geopandas as gpd
 import os
 from shapely.geometry.multipolygon import MultiPolygon
+from shapely.geometry.polygon import Polygon
 
 
-# In[6]:
+# In[4]:
 
 get_ipython().magic('matplotlib inline')
 
 
-# In[7]:
+# In[5]:
 
 gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".shp"))
 
 
-# In[8]:
+# In[6]:
 
 gdf = gdf.set_index("PFAF_ID", drop=False)
 
 
-# In[9]:
+# In[7]:
 
 gdf.head()
 
 
-# In[10]:
+# In[8]:
 
 gdf.shape
 
 
-# In[11]:
+# In[9]:
 
 gdf2 = gdf.copy()
 
 
-# In[12]:
+# In[ ]:
 
-gdf2.geometry = gdf['geometry'].apply(lambda x: MultiPolygon([x]))
-
-
-# In[13]:
-
-gdf3 = gdf2.copy()
-
-
-# In[14]:
-
-gdf3['geom'] = gdf2['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
-
-
-# In[15]:
-
-gdf3.drop("geometry",1, inplace=True)
-
-
-# In[20]:
-
-gdf3.shape
+"""
+def explode(indf):
+    outdf = gpd.GeoDataFrame(columns=indf.columns)
+    for idx, row in indf.iterrows():
+        if type(row.geometry) == Polygon:
+            outdf = outdf.append(row,ignore_index=True)
+        if type(row.geometry) == MultiPolygon:
+            multdf = gpd.GeoDataFrame(columns=indf.columns)
+            recs = len(row.geometry)
+            multdf = multdf.append([row]*recs,ignore_index=True)
+            for geom in range(recs):
+                multdf.loc[geom,'geometry'] = row.geometry[geom]
+            outdf = outdf.append(multdf,ignore_index=True)
+    return outdf
+"""
 
 
-# The following command will connect to a temporary free tier AWS RDS instance
-
-# In[21]:
-
-engine = create_engine('postgresql://rutgerhofste:nopassword@aqueduct30v02.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com:5432/database01')
+# In[ ]:
 
 
-# In[26]:
-
-gdf3.to_sql(TABLE_NAME, engine, if_exists='replace', index=False, 
-                         dtype={'geom': Geometry('MULTIPOLYGON', srid= 4326)})
 
 
 # In[27]:
 
-connection = engine.connect()
+gdf2["type"] = gdf2.geometry.geom_type
 
 
 # In[28]:
 
-sql = "update %s set geom = st_makevalid(geom)" %(TABLE_NAME)
+gdfPolygon = gdf2.loc[gdf2["type"]=="Polygon"]
+gdfMultiPolygon = gdf2.loc[gdf2["type"]=="MultiPolygon"]
 
 
 # In[29]:
+
+gdfPolygon2 = gdfPolygon.copy()
+gdfMultiPolygon2 = gdfMultiPolygon.copy()
+
+
+# In[30]:
+
+gdfPolygon2['geom'] = gdfPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
+
+
+# In[31]:
+
+gdfMultiPolygon2['geom'] = gdfMultiPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
+
+
+# In[32]:
+
+gdfPolygon2.drop("geometry",1, inplace=True)
+gdfMultiPolygon2.drop("geometry",1, inplace=True)
+
+
+# The following command will connect to a temporary free tier AWS RDS instance
+
+# In[34]:
+
+engine = create_engine('postgresql://rutgerhofste:nopassword@aqueduct30v02.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com:5432/database01')
+
+
+# In[43]:
+
+tableNamePolygon = TABLE_NAME+"polygon"
+tableNameMultiPolygon = TABLE_NAME+"multipolygon"
+
+
+# In[44]:
+
+gdfPolygon2.to_sql(tableNamePolygon, engine, if_exists='replace', index=False, 
+                         dtype={'geom': Geometry('POLYGON', srid= 4326)})
+
+
+# In[45]:
+
+gdfMultiPolygon2.to_sql(tableNameMultiPolygon, engine, if_exists='replace', index=False, 
+                         dtype={'geom': Geometry('MULTIPOLYGON', srid= 4326)})
+
+
+# In[46]:
+
+connection = engine.connect()
+
+
+# In[47]:
+
+sql = "update %s set geom = st_makevalid(geom)" %(tableNamePolygon)
+
+
+# In[48]:
+
+result = connection.execute(sql)
+
+
+# In[49]:
+
+sql = "update %s set geom = st_makevalid(geom)" %(tableNameMultiPolygon)
+
+
+# In[50]:
 
 result = connection.execute(sql)
 
 
 # Check if operation succesful 
 
-# In[30]:
+# In[51]:
 
-sql = "select * from %s" %(TABLE_NAME)
-
-
-# In[31]:
-
-gdfAWS=gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' ).set_index("PFAF_ID", drop=False)
+sql = "select * from %s" %(tableNamePolygon)
 
 
-# In[32]:
+# In[52]:
 
-connection.close()
-
-
-# In[33]:
-
-gdfAWS.head()
+gdfAWSPolygon=gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' ).set_index("PFAF_ID", drop=False)
 
 
-# In[ ]:
+# In[53]:
+
+sql = "select * from %s" %(tableNameMultiPolygon)
+
+
+# In[54]:
+
+gdfAWSMultiPolygon=gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' ).set_index("PFAF_ID", drop=False)
+
+
+# In[61]:
+
+gdfAWSPolygon.crs = {'init' :'epsg:4326'}
+gdfAWSMultiPolygon.crs = {'init' :'epsg:4326'}
+
+
+# In[68]:
+
+gdfAWS = gdfAWSPolygon.append(gdfAWSMultiPolygon)
+
+
+# In[70]:
 
 gdfAWS.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
 
 
-# In[ ]:
+# In[71]:
+
+get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
+# In[72]:
+
+connection.close()
 
 
 # In[ ]:
