@@ -4,6 +4,16 @@
 # this script was created per Rich's request. Goal is to calculate total volume of water withdrawal in 2014
 # 
 
+# In[16]:
+
+import time, datetime, sys
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
+print(dateString,timeString)
+sys.version
+
+
 # In[1]:
 
 import ee
@@ -62,12 +72,12 @@ geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90]
 scale = ee.Image(ee.ImageCollection("projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PDomWN_year_millionm3_5min_1960_2014").first()).projection().nominalScale().getInfo()
 
 
-# In[ ]:
+# In[10]:
 
 print(scale)
 
 
-# In[ ]:
+# In[11]:
 
 df = pd.DataFrame()
 fc = ee.FeatureCollection(ee.Feature(None,{}))
@@ -93,19 +103,26 @@ for year in range(1960,2015):
     
 
 
-# In[ ]:
+# In[12]:
 
 df
 
 
-# In[ ]:
+# In[14]:
 
-df.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME))
+df.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
 
 
-# In[ ]:
+# In[15]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
+
+
+# In[17]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
 
 # In[ ]:
