@@ -38,7 +38,7 @@ INPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V%0.2d" %
 # Database settings
 DATABASE_IDENTIFIER = "aqueduct30v01"
 DATABASE_NAME = "database01"
-TABLE_NAME = "hybasvalid02"
+TABLE_NAME = "hybasvalid03"
 
 
 # In[3]:
@@ -100,7 +100,7 @@ engine = create_engine('postgresql://rutgerhofste:%s@%s:5432/%s' %(password,endp
 connection = engine.connect()
 
 
-# In[13]:
+# In[ ]:
 
 get_ipython().system('rm -r {EC2_INPUT_PATH}')
 get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
@@ -109,32 +109,39 @@ get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[14]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
 
 
-# In[15]:
+# In[13]:
 
 gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".shp"))
 
 
-# In[16]:
+# In[14]:
 
 gdf = gdf.set_index("PFAF_ID", drop=False)
 
 
-# In[17]:
+# In[15]:
 
 gdf.columns = map(str.lower, gdf.columns)
 
 
+# for PostgreSQL its better to have non-duplicate tables whereas for Pandas having duplicate column names is better. Renaming.  
+
 # In[18]:
+
+gdf.columns = ['pfaf_id2', 'geometry']
+
+
+# In[19]:
 
 gdf.head()
 
 
-# In[19]:
+# In[20]:
 
 gdf2 = gdf.copy()
 gdf2["type"] = gdf2.geometry.geom_type
@@ -144,76 +151,81 @@ gdfPolygon2 = gdfPolygon.copy()
 gdfMultiPolygon2 = gdfMultiPolygon.copy()
 
 
-# In[20]:
+# In[21]:
 
 gdfPolygon2['geom'] = gdfPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
 gdfMultiPolygon2['geom'] = gdfMultiPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
 
 
-# In[21]:
+# In[22]:
 
 gdfPolygon2.drop("geometry",1, inplace=True)
 gdfMultiPolygon2.drop("geometry",1, inplace=True)
 
 
-# In[22]:
+# In[23]:
 
 gdfPolygon2.drop("type",1, inplace=True)
 gdfMultiPolygon2.drop("type",1, inplace=True)
 
 
-# In[23]:
+# In[24]:
+
+gdfPolygon2.head()
+
+
+# In[25]:
 
 tableNamePolygon = TABLE_NAME+"polygon"
 tableNameMultiPolygon = TABLE_NAME+"multipolygon"
 tableNameAttributes = TABLE_NAME+"attributes"
 
 
-# In[24]:
+# In[26]:
 
 gdfPolygon2.to_sql(tableNamePolygon, engine, if_exists='replace', index=False, 
                          dtype={'geom': Geometry('POLYGON', srid= 4326)})
 
 
-# In[25]:
+# In[27]:
 
 sql = "create table %s as select * from %s" %(tableNamePolygon+"_pristine",tableNamePolygon)
 result = connection.execute(sql)
 
 
-# In[26]:
+# In[28]:
 
 gdfMultiPolygon2.to_sql(tableNameMultiPolygon, engine, if_exists='replace', index=False, 
                          dtype={'geom': Geometry('MULTIPOLYGON', srid= 4326)})
 
 
-# In[27]:
+# In[29]:
 
 sql = "create table %s as select * from %s" %(tableNameMultiPolygon+"_pristine",tableNameMultiPolygon)
 result = connection.execute(sql)
 
 
-# In[28]:
+# In[30]:
 
 df = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".csv"))
 
 
-# In[29]:
+# In[31]:
 
 df = df.set_index("PFAF_ID", drop=False)
 
 
-# In[30]:
+# In[32]:
 
 df.columns = map(str.lower, df.columns)
 
 
-# In[31]:
+# In[33]:
 
 df.to_sql(tableNameAttributes,engine,if_exists='replace', index=False)
 
 
-# In[32]:
+# In[34]:
 
 sql = "create table %s as select * from %s" %(tableNameAttributes+"_pristine",tableNameAttributes)
 result = connection.execute(sql)
@@ -221,15 +233,15 @@ result = connection.execute(sql)
 
 # We now have three tables: Polygons, Multipolygons and Attributes. We will perform some operations and perform a join. 
 
-# In[33]:
+# In[35]:
 
 sql = "ALTER TABLE %s ALTER COLUMN geom type geometry(MultiPolygon, 4326) using ST_Multi(geom);" %(tableNamePolygon)
 result = connection.execute(sql)
 
 
-# In[ ]:
+# In[39]:
 
-sql = "CREATE TABLE test01 AS SELECT * FROM hybasvalid01polygon INNER JOIN hybasvalid01attributes ON (hybasvalid01polygon.PFAF_ID = hybasvalid01attributes.PFAF_ID);" 
+sql = "CREATE TABLE test02 AS SELECT * FROM hybasvalid03polygon, hybasvalid03attributes WHERE hybasvalid03attributes.pfaf_id = hybasvalid03polygon.pfaf_id2;" 
 result = connection.execute(sql)
 
 
