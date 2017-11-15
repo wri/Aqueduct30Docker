@@ -11,7 +11,7 @@
 # This script requires you to set a password for your database. The script will search for the file .password in the current working directory. You can use your terminal window to create the password. 
 # 
 
-# In[2]:
+# In[1]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -21,36 +21,36 @@ print(dateString,timeString)
 sys.version
 
 
-# In[15]:
+# In[2]:
 
 SCRIPT_NAME = "Y2017M11D15_RH_Create_PostGIS_Database_V01"
 
 # Database settings
-DATABASE_IDENTIFIER = "aqueduct30v08"
+DATABASE_IDENTIFIER = "aqueduct30v01"
 DATABASE_NAME = "database01"
 TABLE_NAME = "hybasvalid01"
 
 
-# In[69]:
+# In[3]:
 
 import boto3
 import botocore
 from sqlalchemy import *
 
 
-# In[5]:
+# In[4]:
 
 rds = boto3.client('rds')
 
 
-# In[58]:
+# In[5]:
 
 F = open(".password","r")
 password = F.read().splitlines()[0]
 F.close()
 
 
-# In[60]:
+# In[6]:
 
 def createDB(password):
     db_identifier = DATABASE_IDENTIFIER
@@ -71,22 +71,22 @@ def createDB(password):
                        Tags=[{'Key': 'test', 'Value': 'test'}])
 
 
-# In[61]:
+# In[7]:
 
 createDB(password)
 
 
-# In[62]:
+# In[8]:
 
 response = rds.describe_db_instances(DBInstanceIdentifier="%s"%(DATABASE_IDENTIFIER))
 
 
-# In[63]:
+# In[9]:
 
 status = response["DBInstances"][0]["DBInstanceStatus"]
 
 
-# In[65]:
+# In[10]:
 
 # Pause the script while the database is being created
 while status != "available":
@@ -99,29 +99,29 @@ while status != "available":
     
 
 
-# In[66]:
+# In[11]:
 
 endpoint = response["DBInstances"][0]["Endpoint"]["Address"]
 
 
-# In[67]:
+# In[12]:
 
 print(endpoint)
 
 
-# In[70]:
+# In[13]:
 
 engine = create_engine('postgresql://rutgerhofste:%s@%s:5432/%s' %(password,endpoint,DATABASE_NAME))
 
 
-# In[71]:
+# In[14]:
 
 connection = engine.connect()
 
 
 # [Setting up PostGIS on RDS](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.html#Appendix.PostgreSQL.CommonDBATasks.PostGIS)
 
-# In[72]:
+# In[15]:
 
 sqlList = []
 sqlList.append("select current_user;")
@@ -138,7 +138,7 @@ sqlList.append("SET search_path=public,tiger;")
 sqlList.append("select na.address, na.streetname, na.streettypeabbrev, na.zip from normalize_address('1 Devonshire Place, Boston, MA 02109') as na;")
 
 
-# In[73]:
+# In[16]:
 
 resultList = []
 for sql in sqlList:
@@ -146,12 +146,12 @@ for sql in sqlList:
     resultList.append(connection.execute(sql))
 
 
-# In[75]:
+# In[17]:
 
 connection.close()
 
 
-# In[74]:
+# In[18]:
 
 end = datetime.datetime.now()
 elapsed = end - start

@@ -6,7 +6,7 @@
 # This document will keep track of what scripts to run to get to the results. 
 # 
 # 
-# ## HydroBasins and FAO names
+# ### HydroBasins and FAO names
 #     
 # 1. **Y2017M08D02_RH_Merge_HydroBasins_V01**  
 #     copy hydrobasin files from S3 and merge in pyhton using Fiona. It ingests the data into ee 
@@ -22,9 +22,7 @@
 #     Add the FAO Names to the HydroBasins shapefile
 # 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01**  
 #     join the tables with the FAO names and the upstream / downstream relations  
-# 1. **Y2017M11D15_RH_Create_PostGIS_Database_V01**
-#     create postgis database using AWS RDS
-# 1. **Y2017M11D10_RH_Make_Geometry_Valid_V01**  
+# 1. **Y2017M11D10_RH_Make_Geometry_Valid_V01** !NOT USED!  
 #     Use PostGIS to make the geometry valid
 # 
 #     
@@ -74,6 +72,13 @@
 # 
 # 1. **Y2017M10D09_RH_create_Line_Shape_File_V01**
 #     Create a shapefile to visualize the flow network
+#     
+# 
+# ### Create Final Databases
+# 1. **Y2017M11D15_RH_Create_PostGIS_Database_V01**  
+#     create postgis database using AWS RDS
+# 1. **Y2017M11D15_RH_Add_HydroBasins_postGIS_V01**  
+#     Add hdyrobasins geometry and table to postGIS database
 #     
 # 
 
