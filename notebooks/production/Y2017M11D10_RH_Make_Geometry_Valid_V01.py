@@ -1,12 +1,12 @@
 
 # coding: utf-8
 
-# ### Merge Upstream Downstream with FAO names 
+# ### Make geometry valid
 # 
-# * Purpose of script: Create a shapefile and csv file with both the upstream / downstream relation and the FAO basin names
+# * Purpose of script: Ingest Data and perform geometric operations on the SQL database to make geometry valid
 # * Author: Rutger Hofste
 # * Kernel used: python35
-# * Date created: 20170829
+# * Date created: 20171110
 
 # This script requires some additional steps that are not automated yet. The objective is to set up a PosGIS enabled PostgreSQL AWS RDS instance. 
 # 
@@ -35,12 +35,12 @@ print(dateString,timeString)
 sys.version
 
 
-# In[2]:
+# In[49]:
 
 SCRIPT_NAME = "Y2017M11D10_RH_Make_Geometry_Valid_V01"
 
 INPUT_VERSION = 1
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/%s/output/" %(SCRIPT_NAME)
@@ -55,12 +55,12 @@ OUTPUT_FILE_NAME = "Y2017M11D10_RH_Make_Geometry_Valid_V%0.2d" %(OUTPUT_VERSION)
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/%s/output/" %(SCRIPT_NAME)
 
 # Database settings
-DATABASE_IDENTIFIER = "aqueduct30v07"
+DATABASE_IDENTIFIER = "aqueduct30v08"
 DATABASE_NAME = "database01"
 TABLE_NAME = "hybasvalid01"
 
 
-# In[3]:
+# In[14]:
 
 from geoalchemy2 import Geometry, WKTElement
 from sqlalchemy import *
@@ -74,118 +74,56 @@ import botocore
 import time
 
 
-# Setup of PostGIS Database
+# In[15]:
 
-# In[4]:
-
-get_ipython().system('aws configure set default.region eu-central-1')
-
-
-# In[5]:
-
-rds = boto3.client('rds')
-
-
-# In[6]:
-
-def createDB():
-    db_identifier = DATABASE_IDENTIFIER
-    rds.create_db_instance(DBInstanceIdentifier=db_identifier,
-                       AllocatedStorage=20,
-                       DBName=DATABASE_NAME,
-                       Engine='postgres',
-                       # General purpose SSD
-                       StorageType='gp2',
-                       StorageEncrypted=False,
-                       AutoMinorVersionUpgrade=True,
-                       # Set this to true later?
-                       MultiAZ=False,
-                       MasterUsername='rutgerhofste',
-                       MasterUserPassword='nopassword',
-                       VpcSecurityGroupIds=['sg-1da15e77'], #You will need to create a security group in the console. 
-                       DBInstanceClass='db.t2.micro',
-                       Tags=[{'Key': 'test', 'Value': 'test'}])
-
-
-# In[7]:
-
-createDB()
-
-
-# In[8]:
-
-# Alternative using Jupyter Magic
-#!aws rds create-db-instance --db-name {DATABASE_NAME} --db-instance-identifier {DATABASE_IDENTIFIER} --allocated-storage 20 --db-instance-class "db.t2.micro" --engine "postgres" --master-username "rutgerhofste" --master-user-password "nopassword" --publicly-accessible --vpc-security-group-ids vpc-f6312f9e 
+get_ipython().magic('matplotlib inline')
 
 
 # In[9]:
 
+F = open(".password","r")
+password = F.read().splitlines()[0]
+F.close()
+
+
+# In[4]:
+
+rds = boto3.client('rds')
+
+
+# In[5]:
+
 response = rds.describe_db_instances(DBInstanceIdentifier="%s"%(DATABASE_IDENTIFIER)) 
 
 
-# In[10]:
+# In[6]:
 
 status = response["DBInstances"][0]["DBInstanceStatus"]
 
 
-# In[11]:
-
-# Pause the script while the database is being created
-while status != "available":
-    response = rds.describe_db_instances(DBInstanceIdentifier="%s"%(DATABASE_IDENTIFIER)) 
-    status = response["DBInstances"][0]["DBInstanceStatus"]
-    time.sleep(20)
-    print(status)
-
-
-# In[12]:
+# In[7]:
 
 endpoint = response["DBInstances"][0]["Endpoint"]["Address"]
 
 
-# In[14]:
+# In[8]:
 
 print(endpoint)
 
 
-# Connect to database and setup PostGIS
+# Ingest Data in PostGIS
 
-# In[15]:
+# In[10]:
 
 engine = create_engine('postgresql://rutgerhofste:nopassword@%s:5432/%s' %(endpoint,DATABASE_NAME))
 
 
-# In[16]:
+# In[11]:
 
 connection = engine.connect()
 
 
-# In[17]:
-
-sqlList = []
-sqlList.append("select current_user;")
-sqlList.append("create extension postgis;")
-sqlList.append("create extension fuzzystrmatch;")
-sqlList.append("create extension postgis_tiger_geocoder;")
-sqlList.append("create extension postgis_topology;")
-sqlList.append("alter schema tiger owner to rds_superuser;")
-sqlList.append("alter schema tiger_data owner to rds_superuser;")
-sqlList.append("alter schema topology owner to rds_superuser;")
-sqlList.append("CREATE FUNCTION exec(text) returns text language plpgsql volatile AS $f$ BEGIN EXECUTE $1; RETURN $1; END; $f$;")      
-sqlList.append("SELECT exec('ALTER TABLE ' || quote_ident(s.nspname) || '.' || quote_ident(s.relname) || ' OWNER TO rds_superuser;') FROM ( SELECT nspname, relname FROM pg_class c JOIN pg_namespace n ON (c.relnamespace = n.oid) WHERE nspname in ('tiger','topology') AND relkind IN ('r','S','v') ORDER BY relkind = 'S')s;")
-sqlList.append("SET search_path=public,tiger;")
-sqlList.append("select na.address, na.streetname, na.streettypeabbrev, na.zip from normalize_address('1 Devonshire Place, Boston, MA 02109') as na;")
-
-
 # In[18]:
-
-resultList = []
-for sql in sqlList:
-    #print(sql)
-    resultList.append(connection.execute(sql))
-
-
-# In[19]:
 
 get_ipython().system('rm -r {EC2_INPUT_PATH}')
 get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
@@ -194,88 +132,64 @@ get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
+# In[19]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
+
+
 # In[20]:
-
-get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive ')
-
-
-# In[21]:
-
-get_ipython().magic('matplotlib inline')
-
-
-# In[22]:
 
 gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".shp"))
 
 
-# In[23]:
+# In[21]:
 
 gdf = gdf.set_index("PFAF_ID", drop=False)
 
 
-# In[24]:
+# In[22]:
 
 gdf.head()
 
 
-# In[25]:
+# In[23]:
 
 gdf.shape
 
 
-# In[26]:
+# In[24]:
 
 gdf2 = gdf.copy()
 
 
-# In[27]:
-
-"""
-def explode(indf):
-    outdf = gpd.GeoDataFrame(columns=indf.columns)
-    for idx, row in indf.iterrows():
-        if type(row.geometry) == Polygon:
-            outdf = outdf.append(row,ignore_index=True)
-        if type(row.geometry) == MultiPolygon:
-            multdf = gpd.GeoDataFrame(columns=indf.columns)
-            recs = len(row.geometry)
-            multdf = multdf.append([row]*recs,ignore_index=True)
-            for geom in range(recs):
-                multdf.loc[geom,'geometry'] = row.geometry[geom]
-            outdf = outdf.append(multdf,ignore_index=True)
-    return outdf
-"""
-
-
-# In[28]:
+# In[25]:
 
 gdf2["type"] = gdf2.geometry.geom_type
 
 
-# In[29]:
+# In[26]:
 
 gdfPolygon = gdf2.loc[gdf2["type"]=="Polygon"]
 gdfMultiPolygon = gdf2.loc[gdf2["type"]=="MultiPolygon"]
 
 
-# In[30]:
+# In[27]:
 
 gdfPolygon2 = gdfPolygon.copy()
 gdfMultiPolygon2 = gdfMultiPolygon.copy()
 
 
-# In[31]:
+# In[28]:
 
 gdfPolygon2['geom'] = gdfPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
 
 
-# In[32]:
+# In[29]:
 
 gdfMultiPolygon2['geom'] = gdfMultiPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
 
 
-# In[33]:
+# In[30]:
 
 gdfPolygon2.drop("geometry",1, inplace=True)
 gdfMultiPolygon2.drop("geometry",1, inplace=True)
@@ -283,113 +197,97 @@ gdfMultiPolygon2.drop("geometry",1, inplace=True)
 
 # The following command will connect to a temporary free tier AWS RDS instance
 
-# In[34]:
+# In[31]:
 
 tableNamePolygon = TABLE_NAME+"polygon"
 tableNameMultiPolygon = TABLE_NAME+"multipolygon"
 
 
-# In[35]:
+# In[32]:
 
 gdfPolygon2.to_sql(tableNamePolygon, engine, if_exists='replace', index=False, 
                          dtype={'geom': Geometry('POLYGON', srid= 4326)})
 
 
-# In[36]:
+# In[33]:
 
 gdfMultiPolygon2.to_sql(tableNameMultiPolygon, engine, if_exists='replace', index=False, 
                          dtype={'geom': Geometry('MULTIPOLYGON', srid= 4326)})
 
 
-# In[37]:
+# In[34]:
 
 sql = "update %s set geom = st_makevalid(geom)" %(tableNamePolygon)
-
-
-# In[38]:
-
 result = connection.execute(sql)
 
 
-# In[39]:
+# In[35]:
 
 sql = "update %s set geom = st_makevalid(geom)" %(tableNameMultiPolygon)
-
-
-# In[40]:
-
 result = connection.execute(sql)
 
 
-# In[51]:
+# In[36]:
 
 sql = "update %s set geom = st_removerepeatedpoints(geom)" %(tableNamePolygon)
-
-
-# In[ ]:
-
 result = connection.execute(sql)
 
 
-# In[ ]:
+# In[37]:
 
 sql = "update %s set geom = st_removerepeatedpoints(geom)" %(tableNameMultiPolygon)
-
-
-# In[ ]:
-
 result = connection.execute(sql)
 
 
 # Check if operation succesful 
 
-# In[41]:
+# In[38]:
 
 sql = "select * from %s" %(tableNamePolygon)
 
 
-# In[42]:
+# In[39]:
 
 gdfAWSPolygon=gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' ).set_index("PFAF_ID", drop=False)
 
 
-# In[43]:
+# In[40]:
 
 sql = "select * from %s" %(tableNameMultiPolygon)
 
 
-# In[44]:
+# In[41]:
 
 gdfAWSMultiPolygon=gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' ).set_index("PFAF_ID", drop=False)
 
 
-# In[45]:
+# In[42]:
 
 gdfAWSPolygon.crs = {'init' :'epsg:4326'}
 gdfAWSMultiPolygon.crs = {'init' :'epsg:4326'}
 
 
-# In[46]:
+# In[43]:
 
 gdfAWS = gdfAWSPolygon.append(gdfAWSMultiPolygon)
 
 
-# In[47]:
+# In[50]:
 
 gdfAWS.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
 
 
-# In[48]:
+# In[51]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
-# In[49]:
+# In[52]:
 
 connection.close()
 
 
-# In[50]:
+# In[53]:
 
 end = datetime.datetime.now()
 elapsed = end - start

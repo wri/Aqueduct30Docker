@@ -22,6 +22,8 @@
 #     Add the FAO Names to the HydroBasins shapefile
 # 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01**  
 #     join the tables with the FAO names and the upstream / downstream relations  
+# 1. **Y2017M11D15_RH_Create_PostGIS_Database_V01**
+#     create postgis database using AWS RDS
 # 1. **Y2017M11D10_RH_Make_Geometry_Valid_V01**  
 #     Use PostGIS to make the geometry valid
 # 
