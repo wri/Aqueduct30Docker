@@ -321,6 +321,26 @@ sql = "update %s set geom = st_makevalid(geom)" %(tableNameMultiPolygon)
 result = connection.execute(sql)
 
 
+# In[51]:
+
+sql = "update %s set geom = st_removerepeatedpoints(geom)" %(tableNamePolygon)
+
+
+# In[ ]:
+
+result = connection.execute(sql)
+
+
+# In[ ]:
+
+sql = "update %s set geom = st_removerepeatedpoints(geom)" %(tableNameMultiPolygon)
+
+
+# In[ ]:
+
+result = connection.execute(sql)
+
+
 # Check if operation succesful 
 
 # In[41]:

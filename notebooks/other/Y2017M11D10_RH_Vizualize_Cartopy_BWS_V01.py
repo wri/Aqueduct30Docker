@@ -26,7 +26,7 @@ get_ipython().magic('matplotlib inline')
 
 # ## Settings
 
-# In[198]:
+# In[46]:
 
 SCRIPT_NAME = "Y2017M11D10_RH_Vizualize_Cartopy_BWS_V01"
 
@@ -45,38 +45,42 @@ EC2_OUTPUT_PATH = "/volumes/data/%s/output" %(SCRIPT_NAME)
 INPUT_FILE_NAME_TABLE = "Y2017M10D04_RH_Threshold_WaterStress_V%0.2d" %(INPUT_VERSION_TABLE)
 INPUT_FILE_NAME_SHAPE = "Y2017M11D10_RH_Make_Geometry_Valid_V%0.2d" %(INPUT_VERSION_SHAPE)
 
-# Extent
-x0 = -15
-x1 = 10
-y0 = 35
-y1 = 45
+# Extent Spain
+#x0 = -15
+#x1 = 10
+#y0 = 35
+#y1 = 45
 
-COLUMN = "ws_s_year_Y2014"
+#Extent Ethiopia
+x0 = 30
+x1 = 50
+y0 = 0
+y1 = 20
 
 
-# In[58]:
+# In[4]:
 
 get_ipython().system('rm -r {EC2_INPUT_PATH} ')
 get_ipython().system('rm -r {EC2_OUTPUT_PATH} ')
 
 
-# In[59]:
+# In[5]:
 
 get_ipython().system('mkdir -p {EC2_INPUT_PATH} ')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH} ')
 
 
-# In[60]:
+# In[6]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_TABLE} {EC2_INPUT_PATH} --recursive')
 
 
-# In[61]:
+# In[7]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_SHAPE} {EC2_INPUT_PATH} --recursive')
 
 
-# In[238]:
+# In[30]:
 
 import pandas as pd
 import geopandas as gpd
@@ -89,9 +93,10 @@ import numpy as np
 from cartopy.io.shapereader import Reader
 from cartopy.feature import ShapelyFeature, Feature
 from cartopy.io.img_tiles import StamenTerrain
+import folium
 
 
-# In[234]:
+# In[9]:
 
 categories = {0:{"Min":-9999,"Max":0,"Name":"Cat0","facecolor":"blue","edgecolor":"red","alpha":0.5},
               1:{"Min":0,"Max":1,"Name":"1) Low","facecolor":"#FFFF99","edgecolor":"black","alpha":0.5},
@@ -102,7 +107,7 @@ categories = {0:{"Min":-9999,"Max":0,"Name":"Cat0","facecolor":"blue","edgecolor
               6:{"Min":5.01,"Max":9999,"Name":"Cat6","facecolor":"blue","edgecolor":"red","alpha":0.5}}
 
 
-# In[185]:
+# In[10]:
 
 def createExtent(x0,x1,y0,y1):
     coords = [(x0,y0), (x1,y0), (x1, y1), (x0, y1)]
@@ -140,69 +145,93 @@ def addFeatures(features):
     
 
 
-# In[64]:
-
-df = pd.read_pickle(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_TABLE+".pkl"))
-
-
-# In[69]:
-
-gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_SHAPE+".shp"))
-
-
-# In[70]:
-
-gdf = gdf.set_index("PFAF_ID", drop=False)
-
-
-# In[71]:
-
-gdf2 = gdf.copy()
-
-
-# In[72]:
-
-gdf3 = gdf2.loc[gdf2['PFAF_ID'].between(210000,220000)]
-
-
-# In[73]:
-
-gdf4 = gdf2.loc[gdf2['PFAF_ID'].between(230000,240000)]
-
-
-# In[74]:
-
-gdfRegion = gdf3.append(gdf4)
-
-
-# In[75]:
-
-gdfRegionValid = removeInvalid(gdfRegion)
-
-
-# In[82]:
+# In[47]:
 
 extentGdf = createExtent(x0,x1,y0,y1)
 
 
-# In[83]:
+# In[48]:
+
+gjson = extentGdf.to_json()
+
+
+# In[49]:
+
+polygon = folium.features.GeoJson(gjson)
+
+
+# In[50]:
+
+mapa = folium.Map([y0+(y1-y0)/2, x0+(x1-x0)/2],
+                  zoom_start=4,
+                  tiles='cartodbpositron')
+mapa.add_child(polygon)
+
+
+# In[51]:
+
+df = pd.read_pickle(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_TABLE+".pkl"))
+
+
+# In[52]:
+
+gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_SHAPE+".shp"))
+
+
+# In[53]:
+
+gdf = gdf.set_index("PFAF_ID", drop=False)
+
+
+# In[54]:
+
+gdf2 = gdf.copy()
+
+
+# In[55]:
+
+#gdf3 = gdf2.loc[gdf2['PFAF_ID'].between(210000,220000)]
+
+
+# In[56]:
+
+#gdf4 = gdf2.loc[gdf2['PFAF_ID'].between(230000,240000)]
+
+
+# In[57]:
+
+gdf3 = gdf2.loc[gdf2['PFAF_ID'].between(110000,120000)]
+gdf4 = gdf2.loc[gdf2['PFAF_ID'].between(170000,180000)]
+
+
+# In[58]:
+
+gdfRegion = gdf3.append(gdf4)
+
+
+# In[59]:
+
+gdfRegionValid = removeInvalid(gdfRegion)
+
+
+# In[60]:
 
 gdfRegionValid.plot()
 
 
-# In[95]:
+# In[61]:
 
 gdf01 = gdfRegionValid.merge(df)
 
 
-# In[159]:
+# In[62]:
 
 gdf01.dtypes
 
 
 # Public read only key
 
-# In[245]:
+# In[64]:
 
 for month in range(1,13):
     print(month)
@@ -237,7 +266,7 @@ for month in range(1,13):
     
 
 
-# In[246]:
+# In[65]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
