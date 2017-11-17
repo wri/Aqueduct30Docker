@@ -79,8 +79,8 @@
 #     create postgis database using AWS RDS
 # 1. **Y2017M11D15_RH_Add_HydroBasins_postGIS_V01**  
 #     Add hdyrobasins geometry and table to postGIS database
-# 1. **Y2017M11D15_RH_Add_Water_Stress_postGIS_V01**  
-#     add pcr
+# 1. **Y2017M11D16_RH_Add_Water_Stress_postGIS_V01**  
+#     add pcrGlob water demand, supply and stress data to database
 #     
 # 
 

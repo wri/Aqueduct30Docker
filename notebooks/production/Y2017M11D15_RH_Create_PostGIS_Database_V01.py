@@ -28,7 +28,6 @@ SCRIPT_NAME = "Y2017M11D15_RH_Create_PostGIS_Database_V01"
 # Database settings
 DATABASE_IDENTIFIER = "aqueduct30v01"
 DATABASE_NAME = "database01"
-TABLE_NAME = "hybasvalid01"
 
 
 # In[3]:

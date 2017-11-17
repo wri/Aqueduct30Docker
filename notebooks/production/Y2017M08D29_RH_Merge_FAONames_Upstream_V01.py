@@ -134,32 +134,32 @@ dfOut = dfOut.set_index("PFAF_ID",drop=False)
 gdfHybas.dtypes
 
 
-# In[ ]:
+# In[18]:
 
 gdfHybasSimple = gpd.GeoDataFrame(dfHybas, geometry=gdfHybas.geometry)
 
 
-# In[ ]:
+# In[19]:
 
 gdfHybasSimple.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
 
 
-# In[ ]:
+# In[20]:
 
 dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
 
 
-# In[ ]:
+# In[21]:
 
 dfOut.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".pkl"))
 
 
-# In[ ]:
+# In[22]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
-# In[ ]:
+# In[23]:
 
 end = datetime.datetime.now()
 elapsed = end - start
