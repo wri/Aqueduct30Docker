@@ -325,6 +325,12 @@ Add on github
 git clone ssh://git@github.com:rutgerhofste/Aqueduct30Docker.git
 
 
+# Aqueduct Database Schema  
+
+![ERD](/other/ERD.png)
+
+
+
 
 
 
