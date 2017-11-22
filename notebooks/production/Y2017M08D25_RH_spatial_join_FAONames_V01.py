@@ -17,7 +17,7 @@ EC2_INPUT_PATH = "/volumes/data/Y2017M08D25_RH_spatial_join_FAONames_V01/input/"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D25_RH_spatial_join_FAONames_V01/output/"
 INPUT_FILE_NAME_FAO = "hydrobasins_fao_fiona_merged_buffered_v01.shp"
 INPUT_FILE_NAME_HYBAS = "hybas_lev06_v1c_merged_fiona_V01.shp"
-OUTPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_withFAO_V01.csv"
+OUTPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_withFAO_V02.csv"
 
 
 # In[2]:
@@ -29,7 +29,7 @@ get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[7]:
+# In[3]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_FAO} {EC2_INPUT_PATH} --recursive ')
 
@@ -39,7 +39,7 @@ get_ipython().system('aws s3 cp {S3_INPUT_PATH_FAO} {EC2_INPUT_PATH} --recursive
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYBAS} {EC2_INPUT_PATH} --recursive --exclude *.tif')
 
 
-# In[5]:
+# In[ ]:
 
 import os
 if 'GDAL_DATA' not in os.environ:
@@ -54,89 +54,89 @@ import time
 get_ipython().magic('matplotlib notebook')
 
 
-# In[8]:
+# In[ ]:
 
 gdfFAO = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_FAO))
 
 
-# In[9]:
+# In[ ]:
 
 list(gdfFAO)
 
 
-# In[10]:
+# In[ ]:
 
 gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
 
 
-# In[11]:
+# In[ ]:
 
 list(gdfHybas)
 
 
-# In[12]:
+# In[ ]:
 
 gdfHybas.dtypes
 
 
-# In[13]:
+# In[ ]:
 
 gdfFAO.dtypes
 
 
-# In[14]:
+# In[ ]:
 
 gdfFAO['index1_copy'] = gdfFAO['index1']
 
 
-# In[15]:
+# In[ ]:
 
 gdfFAO = gdfFAO.set_index('index1')
 
 
-# In[16]:
+# In[ ]:
 
 gdfFAO.index.name
 
 
 # A spatial join was performed on the data. However the FAO polygons were stored as polygons and not as multi-polygons. The data also lacked a unique Identifier. The identifier consists of a combination of MAJ_BAS and SUB_BASE. The maximum length of MAJ_BAS is 4 and 6 for SUB_BAS (279252). We will store the identifier as a string with the format: MAJ_BASxxxxSUB_BASExxxxxx
 
-# In[17]:
+# In[ ]:
 
-gdfFAO['FAOid'] = gdfFAO.apply(lambda x:'MAJ_BAS_%0.4d_SUB_BASE_%0.7d' % (x['MAJ_BAS'],x['SUB_BAS']),axis=1)
+gdfFAO['FAOid'] = gdfFAO.apply(lambda x:'MAJ_BAS_%0.4d_SUB_BAS_%0.7d' % (x['MAJ_BAS'],x['SUB_BAS']),axis=1)
 
 
-# In[18]:
+# In[ ]:
 
 gdfFAO.index.name
 
 
-# In[20]:
+# In[ ]:
 
 dfFAO = gdfFAO.drop('geometry',1)
 
 
-# In[21]:
+# In[ ]:
 
 dfFAO.head()
 
 
-# In[22]:
+# In[ ]:
 
 gdfFAO['FAOid_copy'] = gdfFAO['FAOid']
 
 
-# In[25]:
+# In[ ]:
 
 gdfFAO.index.name
 
 
-# In[23]:
+# In[ ]:
 
 list(gdfFAO)
 
 
-# In[24]:
+# In[ ]:
 
 gdfFAO = gdfFAO.dissolve(by='FAOid')
 
@@ -166,71 +166,71 @@ gdfFAOTest = gdfFAO.loc[100:200]
 validGeom = gdfFAO.geometry.is_valid
 
 
-# In[27]:
+# In[ ]:
 
 gdfFAO.crs = {'init': u'epsg:4326'}
 
 
-# In[29]:
+# In[ ]:
 
 gdfFAO = gdfFAO.set_index('index1_copy')
 
 
-# In[30]:
+# In[ ]:
 
 gdfJoined = gpd.sjoin(gdfHybas, gdfFAO ,how="left", op='intersects')
 
 
-# In[31]:
+# In[ ]:
 
 list(gdfJoined)
 
 
-# In[33]:
+# In[ ]:
 
 gdfJoined.shape
 
 
-# In[37]:
+# In[ ]:
 
 series = gdfJoined.groupby('PFAF_ID')['SUB_NAME'].apply(list)
 series2 = gdfJoined.groupby('PFAF_ID')['MAJ_NAME'].apply(list)
 series3 = gdfJoined.groupby('PFAF_ID')['FAOid_copy'].apply(list)
 
 
-# In[38]:
+# In[ ]:
 
 df_new1 = series.to_frame()
 df_new2 = series2.to_frame()
 df_new3 = series3.to_frame()
 
 
-# In[36]:
+# In[ ]:
 
 df_new1.head()
 
 
-# In[45]:
+# In[ ]:
 
 df_out = df_new1.merge(right = df_new2, how = "outer", left_index = True, right_index = True )
 
 
-# In[46]:
+# In[ ]:
 
 df_out = df_out.merge(right = df_new3, how = "outer", left_index = True, right_index = True )
 
 
-# In[47]:
+# In[ ]:
 
 df_out.dtypes
 
 
-# In[48]:
+# In[ ]:
 
 df_out.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME),encoding="UTF-8")
 
 
-# In[49]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
