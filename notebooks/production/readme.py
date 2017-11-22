@@ -5,6 +5,10 @@
 # 
 # This document will keep track of what scripts to run to get to the results. 
 # 
+# ### PostGIS PostgreSQL database
+# 1. **Y2017M11D15_RH_Create_PostGIS_Database_V01**  
+#     create postgis database using AWS RDS  
+# 
 # 
 # ### HydroBasins and FAO names
 #     
@@ -24,6 +28,9 @@
 #     join the tables with the FAO names and the upstream / downstream relations  
 # 1. **Y2017M11D10_RH_Make_Geometry_Valid_V01** !NOT USED!  
 #     Use PostGIS to make the geometry valid
+# 1. **Y2017M11D22_RH_To_Database_V01**
+#     Store data in AWS RDS database
+#     
 # 
 #     
 # ### PCRGlobWB 2.0
@@ -75,8 +82,6 @@
 #     
 # 
 # ### Create Final Databases
-# 1. **Y2017M11D15_RH_Create_PostGIS_Database_V01**  
-#     create postgis database using AWS RDS
 # 1. **Y2017M11D15_RH_Add_HydroBasins_postGIS_V01**  
 #     Add hdyrobasins geometry and table to postGIS database
 # 1. **Y2017M11D16_RH_Add_Water_Stress_postGIS_V01**  

@@ -38,7 +38,7 @@ INPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V%0.2d" %
 # Database settings
 DATABASE_IDENTIFIER = "aqueduct30v01"
 DATABASE_NAME = "database01"
-TABLE_NAME = "hybasvalid02"
+TABLE_NAME = str.lower(SCRIPT_NAME)
 
 
 # In[3]:

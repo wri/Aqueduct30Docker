@@ -7,6 +7,18 @@
 # * Author: Rutger Hofste
 # * Kernel used: python27
 # * Date created: 20170822
+# 
+# Revisited to apply normalization to database structure. 
+
+# In[6]:
+
+import time, datetime, sys
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
+print(dateString,timeString)
+sys.version
+
 
 # In[1]:
 
@@ -16,7 +28,9 @@ import os
 from datetime import datetime, timedelta
 
 
-# In[2]:
+# In[7]:
+
+SCRIPT_NAME = "Y2017M08D22_RH_Upstream_V01"
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D22_RH_Upstream_V01/output/"
@@ -28,40 +42,43 @@ OUTPUT_FILENAME_AUGMENTED = "hybas_lev06_v1c_merged_fiona_upstream_V01.csv"
 OUTPUT_FILENAME_AUGMENTED2 = "hybas_lev06_v1c_merged_fiona_upstream_downstream_V01.csv"
 
 
-# In[3]:
+# In[4]:
 
-get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
-get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
+get_ipython().system('rm -r {EC2_INPUT_PATH} ')
+get_ipython().system('rm -r {EC2_OUTPUT_PATH} ')
+
+get_ipython().system('mkdir -p {EC2_INPUT_PATH} ')
+get_ipython().system('mkdir -p {EC2_OUTPUT_PATH} ')
 
 
 # Copying the files from S3 to EC2 since Shapefiles consist of multiple files
 
-# In[4]:
+# In[5]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --exclude *.tif')
 
 
-# In[5]:
+# In[8]:
 
 ec2InputFile = os.path.join(EC2_INPUT_PATH,INPUT_FILENAME)
 ec2OutputFile = os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME)
 
 
-# In[6]:
+# In[9]:
 
 get_ipython().system('ogr2ogr -f CSV {ec2OutputFile} {ec2InputFile}')
 
 
 # Test if the CSV is correct (without geometry)
 
-# In[7]:
+# In[10]:
 
 get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
 
 
 # ## Functions
 
-# In[8]:
+# In[11]:
 
 def find_upstream_catchments(basin_ids, df):
     all_up_catchments =[]
@@ -102,12 +119,12 @@ def generate_dictionary(df, outputLocation):
     print("DONE!")
 
 
-# In[9]:
+# In[12]:
 
 df = pd.read_csv(ec2OutputFile)
 
 
-# In[10]:
+# In[13]:
 
 df.head()
 
