@@ -39,7 +39,7 @@ get_ipython().system('aws s3 cp {S3_INPUT_PATH_FAO} {EC2_INPUT_PATH} --recursive
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYBAS} {EC2_INPUT_PATH} --recursive --exclude *.tif')
 
 
-# In[ ]:
+# In[5]:
 
 import os
 if 'GDAL_DATA' not in os.environ:
@@ -54,109 +54,109 @@ import time
 get_ipython().magic('matplotlib notebook')
 
 
-# In[ ]:
+# In[6]:
 
 gdfFAO = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_FAO))
 
 
-# In[ ]:
+# In[7]:
 
 list(gdfFAO)
 
 
-# In[ ]:
+# In[8]:
 
 gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
 
 
-# In[ ]:
+# In[9]:
 
 list(gdfHybas)
 
 
-# In[ ]:
+# In[10]:
 
 gdfHybas.dtypes
 
 
-# In[ ]:
+# In[11]:
 
 gdfFAO.dtypes
 
 
-# In[ ]:
+# In[12]:
 
 gdfFAO['index1_copy'] = gdfFAO['index1']
 
 
-# In[ ]:
+# In[13]:
 
 gdfFAO = gdfFAO.set_index('index1')
 
 
-# In[ ]:
+# In[14]:
 
 gdfFAO.index.name
 
 
 # A spatial join was performed on the data. However the FAO polygons were stored as polygons and not as multi-polygons. The data also lacked a unique Identifier. The identifier consists of a combination of MAJ_BAS and SUB_BASE. The maximum length of MAJ_BAS is 4 and 6 for SUB_BAS (279252). We will store the identifier as a string with the format: MAJ_BASxxxxSUB_BASExxxxxx
 
-# In[ ]:
+# In[15]:
 
 gdfFAO['FAOid'] = gdfFAO.apply(lambda x:'MAJ_BAS_%0.4d_SUB_BAS_%0.7d' % (x['MAJ_BAS'],x['SUB_BAS']),axis=1)
 
 
-# In[ ]:
+# In[16]:
 
 gdfFAO.index.name
 
 
-# In[ ]:
+# In[17]:
 
 dfFAO = gdfFAO.drop('geometry',1)
 
 
-# In[ ]:
+# In[18]:
 
 dfFAO.head()
 
 
-# In[ ]:
+# In[19]:
 
 gdfFAO['FAOid_copy'] = gdfFAO['FAOid']
 
 
-# In[ ]:
+# In[20]:
 
 gdfFAO.index.name
 
 
-# In[ ]:
+# In[21]:
 
 list(gdfFAO)
 
 
-# In[ ]:
+# In[22]:
 
 gdfFAO = gdfFAO.dissolve(by='FAOid')
 
 
-# In[ ]:
+# In[23]:
 
 list(gdfFAO)
 
 
-# In[ ]:
+# In[24]:
 
 dfFAO = gdfFAO.drop('geometry',1)
 
 
-# In[ ]:
+# In[25]:
 
 dfFAO.head()
 
 
-# In[ ]:
+# In[26]:
 
 gdfFAOTest = gdfFAO.loc[100:200]
 

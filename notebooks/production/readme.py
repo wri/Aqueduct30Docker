@@ -28,8 +28,8 @@
 #     join the tables with the FAO names and the upstream / downstream relations  
 # 1. **Y2017M11D10_RH_Make_Geometry_Valid_V01** !NOT USED!  
 #     Use PostGIS to make the geometry valid
-# 1. **Y2017M11D22_RH_To_Database_V01**
-#     Store data in AWS RDS database
+# 1. **Y2017M11D22_RH_FAO_To_Database_V01**  
+#     Store FAO data in AWS RDS database
 #     
 # 
 #     

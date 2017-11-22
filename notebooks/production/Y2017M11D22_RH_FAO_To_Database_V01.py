@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# # Store Hydrobasin related files on PostgreSQL RDS database
+# # Store FAO related files on PostgreSQL RDS database
 # 
 # * Purpose of script: This script will process the hydrobasin related data into multiple tables according to the database ERD
 # * Author: Rutger Hofste
@@ -23,10 +23,10 @@ sys.version
 
 # In[49]:
 
-SCRIPT_NAME = "Y2017M11D22_RH_To_Database_V01"
+SCRIPT_NAME = "Y2017M11D22_RH_FAO_To_Database_V01"
 
 INPUT_VERSION = 1
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 INPUT_FILE_NAME = "hydrobasins_fao_fiona_merged_v%0.2d" %(INPUT_VERSION)
 
@@ -87,6 +87,38 @@ def rdsConnect(database_identifier,database_name):
     engine = create_engine('postgresql://rutgerhofste:%s@%s:5432/%s' %(password,endpoint,database_name))
     connection = engine.connect()
     return engine, connection
+
+def uploadGDFtoPostGIS(gdf,tableName):
+    # this function uploads a shapefile to table in AWS RDS. 
+    # It handles combined polygon/multipolygon geometry and stores it in multipolygon
+    gdf2 = gdf.copy()
+    gdf2["type"] = gdf2.geometry.geom_type
+    gdfPolygon = gdf2.loc[gdf2["type"]=="Polygon"]
+    gdfMultiPolygon = gdf2.loc[gdf2["type"]=="MultiPolygon"]
+    gdfPolygon2 = gdfPolygon.copy()
+    gdfMultiPolygon2 = gdfMultiPolygon.copy()
+    gdfPolygon2['geom'] = gdfPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
+    gdfMultiPolygon2['geom'] = gdfMultiPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
+    gdfPolygon2.drop("geometry",1, inplace=True)
+    gdfMultiPolygon2.drop("geometry",1, inplace=True)
+    gdfPolygon2.drop("type",1, inplace=True)
+    gdfMultiPolygon2.drop("type",1, inplace=True)
+    
+    gdfPolygon2.to_sql("temppolygon", engine, if_exists='replace', index=False, 
+                         dtype={'geom': Geometry('POLYGON', srid= 4326)})
+    
+    gdfMultiPolygon2.to_sql("tempmultipolygon", engine, if_exists='replace', index=False, 
+                         dtype={'geom': Geometry('MULTIPOLYGON', srid= 4326)})
+    
+    sql = "ALTER TABLE temppolygon ALTER COLUMN geom type geometry(MultiPolygon, 4326) using ST_Multi(geom);" 
+    result = connection.execute(sql)
+    sql = "CREATE TABLE %s AS (SELECT * FROM temppolygon UNION SELECT * FROM tempmultipolygon);" %(tableName)
+    result = connection.execute(sql)
+    sql = "DROP TABLE temppolygon,tempmultipolygon"
+    result = connection.execute(sql)
+    sql = "select * from %s" %(tableName)
+    gdfFromSQL =gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' )
+    return gdfFromSQL
 
 
 # In[7]:
@@ -173,41 +205,6 @@ gdfMinor.head()
 
 # Geometry consists of polygon and multipolygon type. Upload both to postGIS and set polygon to multipolygon and join. 
 
-# In[43]:
-
-def uploadGDFtoPostGIS(gdf,tableName):
-    # this function uploads a shapefile to table in AWS RDS. 
-    # It handles combined polygon/multipolygon geometry and stores it in multipolygon
-    gdf2 = gdf.copy()
-    gdf2["type"] = gdf2.geometry.geom_type
-    gdfPolygon = gdf2.loc[gdf2["type"]=="Polygon"]
-    gdfMultiPolygon = gdf2.loc[gdf2["type"]=="MultiPolygon"]
-    gdfPolygon2 = gdfPolygon.copy()
-    gdfMultiPolygon2 = gdfMultiPolygon.copy()
-    gdfPolygon2['geom'] = gdfPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
-    gdfMultiPolygon2['geom'] = gdfMultiPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
-    gdfPolygon2.drop("geometry",1, inplace=True)
-    gdfMultiPolygon2.drop("geometry",1, inplace=True)
-    gdfPolygon2.drop("type",1, inplace=True)
-    gdfMultiPolygon2.drop("type",1, inplace=True)
-    
-    gdfPolygon2.to_sql("temppolygon", engine, if_exists='replace', index=False, 
-                         dtype={'geom': Geometry('POLYGON', srid= 4326)})
-    
-    gdfMultiPolygon2.to_sql("tempmultipolygon", engine, if_exists='replace', index=False, 
-                         dtype={'geom': Geometry('MULTIPOLYGON', srid= 4326)})
-    
-    sql = "ALTER TABLE temppolygon ALTER COLUMN geom type geometry(MultiPolygon, 4326) using ST_Multi(geom);" 
-    result = connection.execute(sql)
-    sql = "CREATE TABLE %s AS (SELECT * FROM temppolygon UNION SELECT * FROM tempmultipolygon);" %(tableName)
-    result = connection.execute(sql)
-    sql = "DROP TABLE temppolygon,tempmultipolygon"
-    result = connection.execute(sql)
-    sql = "select * from %s" %(tableName)
-    gdfFromSQL =gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' )
-    return gdfFromSQL
-
-
 # In[48]:
 
 gdfMinor.head()
@@ -220,5 +217,5 @@ gdfFromSQL = uploadGDFtoPostGIS(gdfMinor,TABLE_NAME_FAO_MINOR)
 
 # In[ ]:
 
-
+gdfFromSQL.head()
 
