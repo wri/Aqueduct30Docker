@@ -326,6 +326,8 @@ git clone ssh://git@github.com:rutgerhofste/Aqueduct30Docker.git
 
 
 # Aqueduct Database Schema  
+This schema was created using draw.io. File Location: other/ERD.xml
+
 
 ![ERD](/other/ERD.png)
 
