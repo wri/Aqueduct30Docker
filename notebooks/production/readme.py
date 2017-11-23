@@ -25,19 +25,21 @@
 # 1. **Y2017M08D25_RH_spatial_join_FAONames_V01**  
 #     Add the FAO Names to the HydroBasins shapefile
 # 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01**  
-#     join the tables with the FAO names and the upstream / downstream relations  
-# 1. **Y2017M11D10_RH_Make_Geometry_Valid_V01** !NOT USED!  
-#     Use PostGIS to make the geometry valid
-# 1. **Y2017M11D22_RH_FAO_To_Database_V01**  
+#     join the tables with the FAO names and the upstream / downstream relations
+# 1. **Y2017M11D15_RH_Add_HydroBasins_postGIS_V01**  
+#     Add hdyrobasins geometry and table to postGIS database    
+# 1. **Y2017M11D22_RH_FAO_To_Database_V01**    
 #     Store FAO data in AWS RDS database
-#     
+# 1. **Y2017M11D23_RH_Upstream_Downstream_Basin_To_Database_V01**  
+#     add upstream pfaf ID to postgis database  
+# 
 # 
 #     
 # ### PCRGlobWB 2.0
 # 
-# 1.  **Y2017M07D31_RH_copy_S3raw_s3process_V01.ipynb**  
+# 1.  **Y2017M07D31_RH_copy_S3raw_s3process_V01**  
 #     Copy files from raw data folder to process data folder, all within S3. 
-# 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V01.ipynb**  
+# 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V01**  
 #     Download the data to your machine, unzip files
 # 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01**  
 #     convert netCDF4 to Geotiff
@@ -82,9 +84,8 @@
 #     
 # 
 # ### Create Final Databases
-# 1. **Y2017M11D15_RH_Add_HydroBasins_postGIS_V01**  
-#     Add hdyrobasins geometry and table to postGIS database
-# 1. **Y2017M11D16_RH_Add_Water_Stress_postGIS_V01**  
+# 
+# 1. **Y2017M11D16_RH_Add_Water_Stress_postGIS_V01 #NOT USED**    
 #     add pcrGlob water demand, supply and stress data to database
 #     
 # 

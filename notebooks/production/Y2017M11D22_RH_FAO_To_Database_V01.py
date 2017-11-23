@@ -43,7 +43,6 @@ S3_INPUT_PATH_LINK = "s3://wri-projects/Aqueduct30/processData/Y2017M08D25_RH_sp
 # Database settings
 DATABASE_IDENTIFIER = "aqueduct30v02"
 DATABASE_NAME = "database01"
-TABLE_NAME = str.lower(SCRIPT_NAME)
 
 TABLE_NAME_FAO_MAJOR = "fao_major_v%0.2d" %(OUTPUT_VERSION)
 TABLE_NAME_FAO_MINOR = "fao_minor_v%0.2d" %(OUTPUT_VERSION)

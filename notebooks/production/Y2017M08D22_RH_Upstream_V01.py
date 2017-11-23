@@ -12,6 +12,7 @@
 
 # In[6]:
 
+get_ipython().magic('matplotlib inline')
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
@@ -152,5 +153,7 @@ df.head()
 
 # In[ ]:
 
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 

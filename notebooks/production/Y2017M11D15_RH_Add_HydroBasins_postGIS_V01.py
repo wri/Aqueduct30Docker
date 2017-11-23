@@ -3,7 +3,7 @@
 
 # ### Add HydroBasin data to Postgis Database server
 # 
-# * Purpose of script: Ingest Data from HydroBasins last step into a postGIS database
+# * Purpose of script: Ingest Data from HydroBasins to postgis. Data includes geometries and attribute data
 # * Author: Rutger Hofste
 # * Kernel used: python35
 # * Date created: 20171110
@@ -14,6 +14,7 @@
 
 # In[1]:
 
+get_ipython().magic('matplotlib inline')
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
@@ -27,6 +28,7 @@ sys.version
 SCRIPT_NAME = "Y2017M11D15_RH_Add_HydroBasins_postGIS_V01"
 
 INPUT_VERSION = 3
+OUTPUT_VERSION= 1
 
 EC2_INPUT_PATH = "/volumes/data/%s/input" %(SCRIPT_NAME)
 EC2_OUTPUT_PATH = "/volumes/data/%s/output" %(SCRIPT_NAME)
@@ -36,12 +38,26 @@ S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D29_RH_Merge_F
 INPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V%0.2d" %(INPUT_VERSION)
 
 # Database settings
-DATABASE_IDENTIFIER = "aqueduct30v01"
+DATABASE_IDENTIFIER = "aqueduct30v02"
 DATABASE_NAME = "database01"
-TABLE_NAME = str.lower(SCRIPT_NAME)
+TABLE_NAME = "hydrobasin6_v%0.2d" %(OUTPUT_VERSION)
 
 
 # In[3]:
+
+get_ipython().system('rm -r {EC2_INPUT_PATH}')
+get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
+
+get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
+get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
+
+
+# In[4]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
+
+
+# In[5]:
 
 import os
 import boto3
@@ -53,271 +69,185 @@ from shapely.geometry.multipolygon import MultiPolygon
 from geoalchemy2 import Geometry, WKTElement
 
 
-# In[4]:
-
-get_ipython().magic('matplotlib inline')
-
-
-# In[5]:
-
-rds = boto3.client('rds')
-
-
 # In[6]:
 
-F = open(".password","r")
-password = F.read().splitlines()[0]
-F.close()
+def rdsConnect(database_identifier,database_name):
+    rds = boto3.client('rds')
+    F = open(".password","r")
+    password = F.read().splitlines()[0]
+    F.close()
+    response = rds.describe_db_instances(DBInstanceIdentifier="%s"%(database_identifier))
+    status = response["DBInstances"][0]["DBInstanceStatus"]
+    print("Status:",status)
+    endpoint = response["DBInstances"][0]["Endpoint"]["Address"]
+    print("Endpoint:",endpoint)
+    engine = create_engine('postgresql://rutgerhofste:%s@%s:5432/%s' %(password,endpoint,database_name))
+    connection = engine.connect()
+    return engine, connection
+
+def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
+    # this function uploads a polygon shapefile to table in AWS RDS. 
+    # It handles combined polygon/multipolygon geometry and stores it in valid multipolygon in epsg 4326.
+    
+    # gdf = input geoDataframe
+    # tableName = postGIS table name (string)
+    # saveIndex = save index column in separate column in postgresql, otherwise discarded. (Boolean)
+    
+    
+    gdf["type"] = gdf.geometry.geom_type    
+    geomTypes = ["Polygon","MultiPolygon"]
+    
+    for geomType in geomTypes:
+        gdfType = gdf.loc[gdf["type"]== geomType]
+        geomTypeLower = str.lower(geomType)
+        gdfType['geom'] = gdfType['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
+        gdfType.drop(["geometry","type"],1, inplace=True)      
+        print("Create table temp%s" %(geomTypeLower)) 
+        gdfType.to_sql(
+            name = "temp%s" %(geomTypeLower),
+            con = engine,
+            if_exists='replace',
+            index= saveIndex, 
+            dtype={'geom': Geometry(str.upper(geomType), srid= 4326)}
+        )
+        
+    # Merge both tables and make valid
+    sql = []
+    sql.append("DROP TABLE IF EXISTS %s"  %(tableName))
+    sql.append("ALTER TABLE temppolygon ALTER COLUMN geom type geometry(MultiPolygon, 4326) using ST_Multi(geom);")
+    sql.append("CREATE TABLE %s AS (SELECT * FROM temppolygon UNION SELECT * FROM tempmultipolygon);" %(tableName))
+    sql.append("UPDATE %s SET geom = st_makevalid(geom);" %(tableName))
+    sql.append("DROP TABLE temppolygon,tempmultipolygon")
+
+    for statement in sql:
+        print(statement)
+        result = connection.execute(statement)    
+    gdfFromSQL =gpd.GeoDataFrame.from_postgis("select * from %s" %(tableName),connection,geom_col='geom' )
+    return gdfFromSQL
 
 
 # In[7]:
 
-response = rds.describe_db_instances(DBInstanceIdentifier="%s"%(DATABASE_IDENTIFIER))
+engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
 
 
 # In[8]:
 
-status = response["DBInstances"][0]["DBInstanceStatus"]
+gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".shp"))
 
 
 # In[9]:
 
-print(status)
+gdf.shape
 
 
 # In[10]:
 
-endpoint = response["DBInstances"][0]["Endpoint"]["Address"]
+gdf.columns = map(str.lower, gdf.columns)
 
 
 # In[11]:
 
-print(endpoint)
-
-
-# In[12]:
-
-engine = create_engine('postgresql://rutgerhofste:%s@%s:5432/%s' %(password,endpoint,DATABASE_NAME))
-
-
-# In[13]:
-
-connection = engine.connect()
-
-
-# In[14]:
-
-get_ipython().system('rm -r {EC2_INPUT_PATH}')
-get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
-
-get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
-get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
-
-
-# In[15]:
-
-get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
-
-
-# In[16]:
-
-gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".shp"))
-
-
-# In[17]:
-
-gdf.columns = map(str.lower, gdf.columns)
-
-
-# In[18]:
-
 gdf = gdf.set_index("pfaf_id", drop=False)
 
 
-# for PostgreSQL its better to have non-duplicate tables whereas for Pandas having duplicate column names is better. Renaming.  
-
-# In[19]:
-
-gdf.columns = ['pfaf_id2', 'geometry']
-
-
-# In[20]:
+# In[ ]:
 
 gdf.head()
 
 
 # Dissolve polygon in Siberia with pfaf_id 353020
 
-# In[21]:
+# In[ ]:
 
-gdf = gdf.dissolve(by=gdf.index)
-
-
-# In[22]:
-
-gdf2 = gdf.copy()
-gdf2["type"] = gdf2.geometry.geom_type
-gdfPolygon = gdf2.loc[gdf2["type"]=="Polygon"]
-gdfMultiPolygon = gdf2.loc[gdf2["type"]=="MultiPolygon"]
-gdfPolygon2 = gdfPolygon.copy()
-gdfMultiPolygon2 = gdfMultiPolygon.copy()
+gdf = gdf.dissolve(by="pfaf_id")
 
 
-# In[23]:
+# In[ ]:
 
-gdfPolygon2['geom'] = gdfPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
-gdfMultiPolygon2['geom'] = gdfMultiPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
-
-
-# In[24]:
-
-gdfPolygon2.drop("geometry",1, inplace=True)
-gdfMultiPolygon2.drop("geometry",1, inplace=True)
+gdf["pfaf_id"] = gdf.index
 
 
-# In[25]:
+# In[ ]:
 
-gdfPolygon2.drop("type",1, inplace=True)
-gdfMultiPolygon2.drop("type",1, inplace=True)
-
-
-# In[26]:
-
-gdfPolygon2.head()
+gdf.shape
 
 
-# In[27]:
+# In[ ]:
 
-tableNamePolygon = TABLE_NAME+"polygon"
-tableNameMultiPolygon = TABLE_NAME+"multipolygon"
-tableNameGeometries = TABLE_NAME+"geometries"
-tableNameAttributes = TABLE_NAME+"attributes"
-tableNameOut = TABLE_NAME
+#gdf = gdf.drop_duplicates(subset="pfaf_id",keep='first')
 
 
-# In[28]:
-
-gdfPolygon2.to_sql(tableNamePolygon, engine, if_exists='replace', index=False, 
-                         dtype={'geom': Geometry('POLYGON', srid= 4326)})
-
-
-# In[29]:
-
-gdfMultiPolygon2.to_sql(tableNameMultiPolygon, engine, if_exists='replace', index=False, 
-                         dtype={'geom': Geometry('MULTIPOLYGON', srid= 4326)})
-
-
-# In[30]:
+# In[ ]:
 
 df = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".csv"))
 
 
-# In[31]:
+# In[ ]:
 
 df.columns = map(str.lower, df.columns)
 
 
-# In[32]:
+# In[ ]:
 
-df = df.set_index("pfaf_id", drop=False)
-
-
-# In[33]:
-
-df.head()
+df = df.drop_duplicates(subset="pfaf_id",keep='first')
 
 
-# In[34]:
+# In[ ]:
 
-df.shape
-
-
-# Dissolve polygon in Siberia with pfaf_id 353020
-
-# In[35]:
-
-df.drop_duplicates(subset="pfaf_id",keep='first', inplace=True)
+df.dtypes
 
 
-# In[36]:
+# Select attributes that are NF 1-3 compliant
 
-df.shape
+# In[ ]:
 
-
-# In[37]:
-
-df.to_sql(tableNameAttributes,engine,if_exists='replace', index=False)
+df2 = df[["pfaf_id","hybas_id","next_down","next_sink","main_bas","dist_sink","dist_main","sub_area","up_area","endo","coast","order","sort"]]
 
 
-# ### Outer Join
-# 
-# We now have three tables: Polygons, Multipolygons and Attributes. We will perform some operations and perform an outer join.   
-# Convert polygons to multipolygon and make valid
+# In[ ]:
 
-# In[38]:
-
-sql = "ALTER TABLE %s ALTER COLUMN geom type geometry(MultiPolygon, 4326) using ST_Multi(geom);" %(tableNamePolygon)
-result = connection.execute(sql)
+gdf2 = gdf.merge(df2,on="pfaf_id")
 
 
-# In[39]:
+# In[ ]:
 
-sql = "CREATE TABLE %s AS (SELECT * FROM %s UNION SELECT * FROM %s);" %(tableNameGeometries, tableNamePolygon,tableNameMultiPolygon)
-result = connection.execute(sql)
-
-
-# In[40]:
-
-sql = "update %s set geom = st_makevalid(geom);" %(tableNameGeometries)
-result = connection.execute(sql)
+gdf2 = gdf2.set_index("pfaf_id",drop=False)
 
 
-# In[41]:
+# In[ ]:
 
-sql = "CREATE TABLE %s AS SELECT * FROM %s l LEFT JOIN %s r ON l.pfaf_id2 = r.pfaf_id;" %(tableNameOut,tableNameGeometries,tableNameAttributes)
-result = connection.execute(sql)
-
-
-# In[42]:
-
-sql = 'ALTER TABLE %s DROP COLUMN IF EXISTS pfaf_id2, DROP COLUMN IF EXISTS "pfaf_id.1", DROP COLUMN IF EXISTS hybas_id2' %(tableNameOut)
-result = connection.execute(sql)
+gdf2.head()
 
 
-# In[43]:
+# In[ ]:
 
-sql = "DROP TABLE %s,%s,%s,%s" %(tableNamePolygon,tableNameMultiPolygon,tableNameAttributes,tableNameGeometries)
-result = connection.execute(sql)
+gdf2.shape
+
+
+# In[ ]:
+
+gdfFromSQL = uploadGDFtoPostGIS(gdf2,TABLE_NAME,False)
 
 
 # ### Testing
 
-# In[44]:
-
-sql = "select * from %s" %(tableNameOut)
-
-
-# In[45]:
-
-gdfFromSQL =gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' ).set_index("pfaf_id", drop=False)
-
-
-# In[46]:
+# In[ ]:
 
 gdfFromSQL.head()
 
 
-# In[47]:
+# In[ ]:
 
 gdfFromSQL.shape
 
 
-# In[48]:
+# In[ ]:
 
 connection.close()
 
 
-# In[49]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
