@@ -26,7 +26,7 @@ sys.version
 SCRIPT_NAME = "Y2017M11D15_RH_Create_PostGIS_Database_V01"
 
 # Database settings
-DATABASE_IDENTIFIER = "aqueduct30v01"
+DATABASE_IDENTIFIER = "aqueduct30v02"
 DATABASE_NAME = "database01"
 
 
@@ -66,8 +66,8 @@ def createDB(password):
                        MasterUsername='rutgerhofste',
                        MasterUserPassword=password,
                        VpcSecurityGroupIds=['sg-1da15e77'], #You will need to create a security group in the console. 
-                       DBInstanceClass='db.t2.micro',
-                       Tags=[{'Key': 'test', 'Value': 'test'}])
+                       DBInstanceClass='db.t2.large',
+                       Tags=[{'Key': 'author', 'Value': 'rutger'}])
 
 
 # In[7]:

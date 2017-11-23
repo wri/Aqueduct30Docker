@@ -8,7 +8,9 @@
 # * Kernel used: python35
 # * Date created: 20171122 
 # 
-# The script requires a file called .password to be stored in the current working directory with the password to the database.
+# The script requires a file called .password to be stored in the current working directory with the password to the database. Basic functionality
+# 
+# 
 
 # In[1]:
 
@@ -21,13 +23,13 @@ print(dateString,timeString)
 sys.version
 
 
-# In[84]:
+# In[2]:
 
 SCRIPT_NAME = "Y2017M11D22_RH_FAO_To_Database_V01"
 
 INPUT_VERSION = 1
 INPUT_VERSION_LINK = 4
-OUTPUT_VERSION = 5
+OUTPUT_VERSION = 6
 
 INPUT_FILE_NAME = "hydrobasins_fao_fiona_merged_v%0.2d" %(INPUT_VERSION)
 INPUT_FILE_NAME_LINK = "hybas_lev06_v1c_merged_fiona_withFAO_V%0.2d_link" %(INPUT_VERSION_LINK)
@@ -39,7 +41,7 @@ S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_F
 S3_INPUT_PATH_LINK = "s3://wri-projects/Aqueduct30/processData/Y2017M08D25_RH_spatial_join_FAONames_V01/output/"
 
 # Database settings
-DATABASE_IDENTIFIER = "aqueduct30v01"
+DATABASE_IDENTIFIER = "aqueduct30v02"
 DATABASE_NAME = "database01"
 TABLE_NAME = str.lower(SCRIPT_NAME)
 
@@ -81,7 +83,7 @@ from geoalchemy2 import Geometry, WKTElement
 from shapely.geometry.multipolygon import MultiPolygon
 
 
-# In[83]:
+# In[7]:
 
 # RDS Connection
 def rdsConnect(database_identifier,database_name):
@@ -162,11 +164,6 @@ def postGISDissolveFirst(sourceTableName,targetTableName,by):
 engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
 
 
-# In[ ]:
-
-
-
-
 # In[9]:
 
 gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME+".shp"))
@@ -202,35 +199,50 @@ gdf["fao_id"]= gdf.apply(lambda x: compositeKey(x["maj_bas"],x["sub_bas"]),1)
 gdf.head()
 
 
-# In[16]:
+# In[15]:
 
 gdf = gdf.set_index("fao_id",drop=False)
 
 
+# In[38]:
+
+df = gdf.drop("geometry",1)
+
+
+# In[49]:
+
+dfGrouped = df.groupby(df["fao_id"]).first()
+
+
+# In[51]:
+
+dfGrouped.shape
+
+
 # ## Major River Basins
 
-# In[17]:
+# In[16]:
 
 dfMajorFull = gdf[["maj_bas","maj_name","maj_area","legend"]]
 gdfMinor = gdf[["sub_bas","to_bas","maj_bas","sub_name","sub_area","geometry","fao_id"]]
 
 
-# In[18]:
+# In[17]:
 
 dfMajorFull.head()
 
 
-# In[19]:
+# In[18]:
 
 dfMajor = dfMajorFull.groupby("maj_bas").first()
 
 
-# In[20]:
+# In[19]:
 
 dfMajor.head()
 
 
-# In[21]:
+# In[20]:
 
 dfMajor.to_sql(
     name = TABLE_NAME_FAO_MAJOR,
@@ -241,36 +253,60 @@ dfMajor.to_sql(
 
 # ## Minor River Basins
 
-# In[22]:
+# In[21]:
 
 gdfMinor.head()
 
 
 # Geometry consists of polygon and multipolygon type. Upload both to postGIS and set polygon to multipolygon and join. 
 
-# In[88]:
+# In[22]:
 
 gdfFromSQL = uploadGDFtoPostGIS(gdfMinor,TABLE_NAME_FAO_MINOR_TEMP,False)
 
 
-# In[89]:
+# In[23]:
 
 gdfFromSQL.head()
 
 
-# In[90]:
+# In[24]:
 
 test = gdfFromSQL.duplicated(subset="fao_id")
 
 
-# In[91]:
+# In[25]:
 
 test.head()
 
 
-# In[92]:
+# In[26]:
 
 gdfFromSQL2 = postGISDissolveFirst(TABLE_NAME_FAO_MINOR_TEMP,TABLE_NAME_FAO_MINOR,"fao_id")
+
+
+# Drop temporary table
+
+# In[27]:
+
+sql = "DROP TABLE IF EXISTS %s" %(TABLE_NAME_FAO_MINOR_TEMP)
+
+
+# In[28]:
+
+connection.execute(sql)
+
+
+# Check dimensions :
+
+# In[54]:
+
+gdfFromSQL2.shape[0]
+
+
+# In[55]:
+
+dfGrouped.shape[0]
 
 
 # ### Link Table
@@ -279,37 +315,37 @@ gdfFromSQL2 = postGISDissolveFirst(TABLE_NAME_FAO_MINOR_TEMP,TABLE_NAME_FAO_MINO
 # 
 # 
 
-# In[26]:
+# In[29]:
 
 df_link = pd.read_pickle(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_LINK+".pkl"))
 
 
-# In[27]:
+# In[30]:
 
 df_link = df_link.reset_index()
 
 
-# In[28]:
+# In[31]:
 
 df_link.drop("index",1,inplace=True)
 
 
-# In[29]:
+# In[32]:
 
 df_link.index.names = ['id']
 
 
-# In[30]:
+# In[33]:
 
 #df_link.columns = map(str.lower, df_link.columns)
 
 
-# In[31]:
+# In[34]:
 
 df_link.columns = ["pfaf_id","fao_id"]
 
 
-# In[32]:
+# In[35]:
 
 df_link.to_sql(
     name = TABLE_NAME_FAO_LINK,
@@ -318,12 +354,12 @@ df_link.to_sql(
     index= True)
 
 
-# In[114]:
+# In[36]:
 
 connection.close()
 
 
-# In[ ]:
+# In[37]:
 
 end = datetime.datetime.now()
 elapsed = end - start
