@@ -21,7 +21,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[2]:
+# In[84]:
 
 SCRIPT_NAME = "Y2017M11D22_RH_FAO_To_Database_V01"
 
@@ -45,6 +45,7 @@ TABLE_NAME = str.lower(SCRIPT_NAME)
 
 TABLE_NAME_FAO_MAJOR = "fao_major_v%0.2d" %(OUTPUT_VERSION)
 TABLE_NAME_FAO_MINOR = "fao_minor_v%0.2d" %(OUTPUT_VERSION)
+TABLE_NAME_FAO_MINOR_TEMP = "fao_minor_temp_v%0.2d" %(OUTPUT_VERSION)
 TABLE_NAME_FAO_LINK = "fao_link_v%0.2d" %(OUTPUT_VERSION)
 
 
@@ -80,7 +81,7 @@ from geoalchemy2 import Geometry, WKTElement
 from shapely.geometry.multipolygon import MultiPolygon
 
 
-# In[42]:
+# In[83]:
 
 # RDS Connection
 def rdsConnect(database_identifier,database_name):
@@ -97,46 +98,63 @@ def rdsConnect(database_identifier,database_name):
     connection = engine.connect()
     return engine, connection
 
-def uploadGDFtoPostGIS(gdf,tableName):
-    # this function uploads a shapefile to table in AWS RDS. 
-    # It handles combined polygon/multipolygon geometry and stores it in multipolygon
-    gdf2 = gdf.copy()
-    gdf2["type"] = gdf2.geometry.geom_type
-    gdfPolygon = gdf2.loc[gdf2["type"]=="Polygon"]         
-    gdfMultiPolygon = gdf2.loc[gdf2["type"]=="MultiPolygon"]
-    gdfPolygon2 = gdfPolygon.copy()
-    gdfMultiPolygon2 = gdfMultiPolygon.copy()
-    gdfPolygon2['geom'] = gdfPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
-    gdfMultiPolygon2['geom'] = gdfMultiPolygon['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
-    gdfPolygon2.drop("geometry",1, inplace=True)
-    gdfMultiPolygon2.drop("geometry",1, inplace=True)
-    gdfPolygon2.drop("type",1, inplace=True)
-    gdfMultiPolygon2.drop("type",1, inplace=True)
+def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
+    # this function uploads a polygon shapefile to table in AWS RDS. 
+    # It handles combined polygon/multipolygon geometry and stores it in valid multipolygon in epsg 4326.
     
-    gdfPolygon2.to_sql("temppolygon", engine, if_exists='replace', index=False, 
-                         dtype={'geom': Geometry('POLYGON', srid= 4326)})
-    
-    gdfMultiPolygon2.to_sql("tempmultipolygon", engine, if_exists='replace', index=False, 
-                         dtype={'geom': Geometry('MULTIPOLYGON', srid= 4326)})
-    
-    sql = "ALTER TABLE temppolygon ALTER COLUMN geom type geometry(MultiPolygon, 4326) using ST_Multi(geom);" 
-    result = connection.execute(sql)
-    sql = "CREATE TABLE temp_minor AS (SELECT * FROM temppolygon UNION SELECT * FROM tempmultipolygon);" 
-    result = connection.execute(sql)
-    
-    # dissolve based on fao_id and left join results
-    sql = "CREATE TABLE %s AS SELECT fao_id, ST_Multi(ST_Union(f.geom)) as geom FROM temp_minor As f GROUP BY fao_id"
+    # gdf = input geoDataframe
+    # tableName = postGIS table name (string)
+    # saveIndex = save index column in separate column in postgresql, otherwise discarded. (Boolean)
     
     
+    gdf["type"] = gdf.geometry.geom_type    
+    geomTypes = ["Polygon","MultiPolygon"]
     
+    for geomType in geomTypes:
+        gdfType = gdf.loc[gdf["type"]== geomType]
+        geomTypeLower = str.lower(geomType)
+        gdfType['geom'] = gdfType['geometry'].apply(lambda x: WKTElement(x.wkt, srid=4326))
+        gdfType.drop(["geometry","type"],1, inplace=True)      
+        print("Create table temp%s" %(geomTypeLower)) 
+        gdfType.to_sql(
+            name = "temp%s" %(geomTypeLower),
+            con = engine,
+            if_exists='replace',
+            index= saveIndex, 
+            dtype={'geom': Geometry(str.upper(geomType), srid= 4326)}
+        )
+        
+    # Merge both tables and make valid
+    sql = []
+    sql.append("DROP TABLE IF EXISTS %s"  %(tableName))
+    sql.append("ALTER TABLE temppolygon ALTER COLUMN geom type geometry(MultiPolygon, 4326) using ST_Multi(geom);")
+    sql.append("CREATE TABLE %s AS (SELECT * FROM temppolygon UNION SELECT * FROM tempmultipolygon);" %(tableName))
+    sql.append("UPDATE %s SET geom = st_makevalid(geom);" %(tableName))
+    sql.append("DROP TABLE temppolygon,tempmultipolygon")
+
+    for statement in sql:
+        print(statement)
+        result = connection.execute(statement)    
+    gdfFromSQL =gpd.GeoDataFrame.from_postgis("select * from %s" %(tableName),connection,geom_col='geom' )
+    return gdfFromSQL
+
+
+def postGISDissolveFirst(sourceTableName,targetTableName,by):
+    #dissolve polygons and polygon related attributes (area)
+    #take first attribute of other
     
-    
-    sql = "DROP TABLE temppolygon,tempmultipolygon"
-    result = connection.execute(sql)
-    sql = "select * from %s" %(tableName)
-    gdfFromSQL =gpd.GeoDataFrame.from_postgis(sql,connection,geom_col='geom' )   
-    """
-    return gdfMultiPolygon#gdfFromSQL
+    sql =   ("CREATE TABLE %s AS SELECT MIN(%s) as %s,MIN(sub_bas) as sub_bas, " 
+            "MIN(to_bas) as to_bas, "
+            "MIN(maj_bas) as maj_bas, "
+            "MIN(sub_name) as sub_name, "
+            "MIN(sub_area) as sub_area, "
+            "ST_Multi(ST_Union(t.geom)) as geom "
+            "FROM %s As t GROUP BY %s") %(targetTableName,by, by, sourceTableName,by)
+    connection.execute(sql)
+    gdfFromSQL =gpd.GeoDataFrame.from_postgis("select * from %s" %(targetTableName),connection,geom_col='geom' )
+    print(sql)
+    return gdfFromSQL
+
 
 
 # In[8]:
@@ -230,19 +248,29 @@ gdfMinor.head()
 
 # Geometry consists of polygon and multipolygon type. Upload both to postGIS and set polygon to multipolygon and join. 
 
-# In[ ]:
+# In[88]:
+
+gdfFromSQL = uploadGDFtoPostGIS(gdfMinor,TABLE_NAME_FAO_MINOR_TEMP,False)
 
 
-
-
-# In[45]:
-
-gdfFromSQL = uploadGDFtoPostGIS(gdfMinor,TABLE_NAME_FAO_MINOR)
-
-
-# In[44]:
+# In[89]:
 
 gdfFromSQL.head()
+
+
+# In[90]:
+
+test = gdfFromSQL.duplicated(subset="fao_id")
+
+
+# In[91]:
+
+test.head()
+
+
+# In[92]:
+
+gdfFromSQL2 = postGISDissolveFirst(TABLE_NAME_FAO_MINOR_TEMP,TABLE_NAME_FAO_MINOR,"fao_id")
 
 
 # ### Link Table
@@ -290,12 +318,14 @@ df_link.to_sql(
     index= True)
 
 
+# In[114]:
+
+connection.close()
+
+
 # In[ ]:
 
-
-
-
-# In[ ]:
-
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
