@@ -51,6 +51,17 @@
 #     A couple of indicators are shared in ASCII format. Converting to geotiff
 # 1. **Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01**  
 #     This script ingests some auxiliary datafile onto earth engine included DEM, StreamFlow Network etc. 
+#     
+#     November 24th 2017, restructure data for better processing in postGIS vertical table. Absolute values, Short term Trend, Short term average, Long term Trend and Long term average for all demand indicators, runoff and discharge and water stress uncapped. 
+#     
+# 1. **Y2017M11D24_RH_Prepare_Image_Collections_EE_V01**  
+#     put all earth engine imagecollections in the same format (millionm^3  and dimensionless)
+#     
+#     
+#     
+#     
+#     Older scripts:  
+#     
 # 1. **Y2017M08D30_RH_Average_Supply_EE_V01**  
 #     This script will canculate the average PCRGlobWB2.0 supply (local runoff) using the ee python API
 # 1. **Y2017M09D01_RH_linear_trend_Ag_Demand_EE_V01**  
