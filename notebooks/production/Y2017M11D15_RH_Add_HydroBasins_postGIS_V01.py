@@ -151,103 +151,103 @@ gdf.columns = map(str.lower, gdf.columns)
 gdf = gdf.set_index("pfaf_id", drop=False)
 
 
-# In[ ]:
+# In[12]:
 
 gdf.head()
 
 
 # Dissolve polygon in Siberia with pfaf_id 353020
 
-# In[ ]:
+# In[13]:
 
 gdf = gdf.dissolve(by="pfaf_id")
 
 
-# In[ ]:
+# In[14]:
 
 gdf["pfaf_id"] = gdf.index
 
 
-# In[ ]:
+# In[15]:
 
 gdf.shape
 
 
-# In[ ]:
+# In[16]:
 
 #gdf = gdf.drop_duplicates(subset="pfaf_id",keep='first')
 
 
-# In[ ]:
+# In[17]:
 
 df = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".csv"))
 
 
-# In[ ]:
+# In[18]:
 
 df.columns = map(str.lower, df.columns)
 
 
-# In[ ]:
+# In[19]:
 
 df = df.drop_duplicates(subset="pfaf_id",keep='first')
 
 
-# In[ ]:
+# In[20]:
 
 df.dtypes
 
 
 # Select attributes that are NF 1-3 compliant
 
-# In[ ]:
+# In[21]:
 
 df2 = df[["pfaf_id","hybas_id","next_down","next_sink","main_bas","dist_sink","dist_main","sub_area","up_area","endo","coast","order","sort"]]
 
 
-# In[ ]:
+# In[22]:
 
 gdf2 = gdf.merge(df2,on="pfaf_id")
 
 
-# In[ ]:
+# In[23]:
 
 gdf2 = gdf2.set_index("pfaf_id",drop=False)
 
 
-# In[ ]:
+# In[24]:
 
 gdf2.head()
 
 
-# In[ ]:
+# In[25]:
 
 gdf2.shape
 
 
-# In[ ]:
+# In[26]:
 
 gdfFromSQL = uploadGDFtoPostGIS(gdf2,TABLE_NAME,False)
 
 
 # ### Testing
 
-# In[ ]:
+# In[27]:
 
 gdfFromSQL.head()
 
 
-# In[ ]:
+# In[28]:
 
 gdfFromSQL.shape
 
 
-# In[ ]:
+# In[29]:
 
 connection.close()
 
 
-# In[ ]:
+# In[30]:
 
 end = datetime.datetime.now()
 elapsed = end - start
