@@ -75,7 +75,7 @@ crsTransform = [
               ]
 
 
-# In[39]:
+# In[46]:
 
 def readAsset(assetId):
     # this function will read both images and imageCollections 
@@ -100,8 +100,9 @@ def fluxToVolume(image):
     newImage = newImage.set("units","millionm3")    
     return newImage
 
+#def exportToAsset(image,description,assetId,dimensions,region,maxPixels):
 
-def exportToAsset(image,description,assetId,dimensions,region,maxPixels):
+def exportToAsset(image):
     #print(image.propertyNames().getInfo())
     task = ee.batch.Export.image.toAsset(
         image =  image,
@@ -169,6 +170,22 @@ response = subprocess.check_output(command,shell=True)
 # In[44]:
 
 createImageCollections(imageCollectionName)
+
+
+# In[ ]:
+
+description= "test"
+assetId = "%sdimensions,region,maxPixels)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
 
 # In[ ]:
