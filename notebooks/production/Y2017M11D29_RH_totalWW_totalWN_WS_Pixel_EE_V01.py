@@ -32,6 +32,9 @@ CRS = "EPSG:4326"
 
 MAXPIXELS =1e10
 
+YEARMIN = 1960
+YEARMAX = 2014
+
 
 # In[3]:
 
@@ -68,7 +71,7 @@ crsTransform = [
               ]
 
 
-# In[9]:
+# In[18]:
 
 def createCollections(demandType,temporalResolution):
     icId = "global_historical_PTot%s_%s_millionm3_5min_1960_2014" %(demandType,temporalResolution)
@@ -76,9 +79,16 @@ def createCollections(demandType,temporalResolution):
     result = subprocess.check_output(command,shell=True)
     print(command,result)
 
+def createCollectionsWS(temporalResolution):
+    icId = "global_historical_WS5min_%s_millionm3_5min_1960_2014" %(temporalResolution)
+    command = "earthengine create collection %s/%s" %(EE_PATH,icId) 
+    result = subprocess.check_output(command,shell=True)
+    print(command,result)    
 
 def totalDemand(year,month,demandType,temporalResolution):
-    print(year,temporalResolution,demandType)
+    elapsed = datetime.datetime.now() - startLoop
+    print(year,month,demandType,temporalResolution)
+    print(elapsed)
     d = {}
     keys = []
     properties = {"indicator":"PTot%s" %(demandType) ,
@@ -89,6 +99,8 @@ def totalDemand(year,month,demandType,temporalResolution):
                   "exportdescription":"PTot%s_%sY%0.4dM%0.2d" %(demandType,temporalResolution,year,month),
                   "temporal_range_min":1960,
                   "month": month,
+                  "year": year,
+                  "demandType":demandType,
                   "script_used": SCRIPT_NAME,
                   "version": OUTPUT_VERSION
                  }
@@ -114,8 +126,6 @@ def totalDemand(year,month,demandType,temporalResolution):
     
     description = "PTot%s_%sY%0.4dM%0.2dV%0.2d" %(demandType,temporalResolution,year,month,OUTPUT_VERSION)
     assetID = "%s/global_historical_PTot%s_%s_millionm3_5min_1960_2014/global_historical_PTot%s_%s_millionm3_5min_1960_2014Y%0.4dM%0.2d" %(EE_PATH,demandType,temporalResolution,demandType,temporalResolution,year,month)
-
-    print(assetID)
     
     task = ee.batch.Export.image.toAsset(
         image =  ee.Image(totalImage),
@@ -126,38 +136,127 @@ def totalDemand(year,month,demandType,temporalResolution):
         crsTransform = crsTransform,
         maxPixels = MAXPIXELS     
     )
-    #task.start() 
+    task.start() 
     
     
-    return d, totalImage
+def waterStressUncapped(year,month,temporalResolution):
+    elapsed = datetime.datetime.now() - startLoop
+    print(year,month,temporalResolution)
+    print(elapsed)
+    d = {}
+    keys = []
+    properties = {"indicator":"WS5min" ,
+                  "temporal_range_max": 2014,
+                  "ingested_by":"RutgerHofste",
+                  "units":"dimensionless",
+                  "temporal_resolution":temporalResolution,
+                  "exportdescription":"WS5min_%sY%0.4dM%0.2d" %(temporalResolution,year,month),
+                  "temporal_range_min":1960,
+                  "month": month,
+                  "year": year,
+                  "script_used": SCRIPT_NAME,
+                  "version": OUTPUT_VERSION
+                 }
     
-    
+    icWW = ee.ImageCollection("%s/global_historical_PTotWW_%s_millionm3_5min_1960_2014" %(EE_PATH,temporalResolution))
+    icDischarge = ee.ImageCollection("%s/global_historical_riverdischarge_%s_millionm3_5min_1960_2014" %(EE_PATH,temporalResolution))
+
+    if temporalResolution == "year":
+        imageWW = ee.Image(icWW.filter(ee.Filter.eq("year",year)).first())
+        imageDischarge = ee.Image(icDischarge.filter(ee.Filter.eq("year",year)).first())
+        image = imageWW.divide(imageDischarge)
+    elif temporalResolution == "month":
+        imageWW = ee.Image(icWW.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first())
+        imageDischarge = ee.Image(icDischarge.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first())
+        imageWW.divide(imageDischarge)
+    else:
+        image = -9999
+        
+    image = image.set(properties)
+    description = "WS5min_%sY%0.4dM%0.2dV%0.2d" %(temporalResolution,year,month,OUTPUT_VERSION)
+    assetID = "%s/global_historical_WS5min_%s_millionm3_5min_1960_2014/global_historical_WS5min_%s_millionm3_5min_1960_2014Y%0.4dM%0.2d" %(EE_PATH,temporalResolution,temporalResolution,year,month)
+
+    task = ee.batch.Export.image.toAsset(
+        image =  ee.Image(image),
+        description = description,
+        assetId = assetID,
+        dimensions = dimensions,
+        crs = CRS,
+        crsTransform = crsTransform,
+        maxPixels = MAXPIXELS     
+    )
+    task.start()
+
+
+# In[9]:
+
+for demandType in demandTypes:
+    for temporalResolution in temporalResolutions:
+        createCollections(demandType,temporalResolution)
 
 
 # In[10]:
 
-demandType = "WW"
-temporalResolution = "month"
-year = 2014
-month = 3
+startLoop = datetime.datetime.now()
+for demandType in demandTypes:
+    for temporalResolution in temporalResolutions:
+        try:            
+            if temporalResolution == "year":
+                month = 12
+                for year in range(YEARMIN,YEARMAX+1):
+                    totalDemand(year,month,demandType,temporalResolution)
+            elif temporalResolution == "month":
+                for year in range(YEARMIN,YEARMAX+1): 
+                    for month in range(1,13):
+                        totalDemand(year,month,demandType,temporalResolution)
+        except:
+            print "error"
+
+
+# In[14]:
+
+for temporalResolution in temporalResolutions:
+    createCollectionsWS(temporalResolution)
+
+
+# ## RUN THIS CELL! 29/11/2017
+
+# In[19]:
+
+startLoop = datetime.datetime.now()
+
+for temporalResolution in temporalResolutions:
+    try:            
+        if temporalResolution == "year":
+            month = 12
+            for year in range(YEARMIN,YEARMAX+1):
+                waterStressUncapped(year,month,temporalResolution)
+        elif temporalResolution == "month":
+            for year in range(YEARMIN,YEARMAX+1): 
+                for month in range(1,13):
+                    waterStressUncapped(year,month,temporalResolution)
+    except:
+        print "error"
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
 
 # In[11]:
 
-createCollections(demandType,temporalResolution)
-
-
-# In[ ]:
-
-d, totalImage = totalDemand(year,month,demandType,temporalResolution)
-
-
-# In[ ]:
-
-print(totalImage.getInfo())
-
-
-# In[ ]:
-
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 

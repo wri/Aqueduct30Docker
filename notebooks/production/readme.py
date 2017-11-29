@@ -59,6 +59,12 @@
 # 1. **Y2017M11D29_RH_totalWW_totalWN_WS_Pixel_EE_V01**  
 #     calculate total demand WW WN and water stress at pixel level
 #     
+#     placeholder for new zonal stats script
+#     
+#     
+# 1. **Y2017M11D29_RH_Zonal_Results_To_Databas_V01**  
+#     combine the results from zonal stats on GCS into a table on AWS RDS
+#     
 #     
 #     
 #     

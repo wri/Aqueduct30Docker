@@ -20,16 +20,17 @@ print(dateString,timeString)
 
 # In[2]:
 
-MAXTASKS = 1500
-CANCELTASKS = 0
+MAXTASKS = 100
+CANCELTASKS = 1
 
 
-# In[3]:
+# In[10]:
 
 import pandas as pd
 import ee
 from retrying import retry
 import datetime
+import random
 
 
 # In[4]:
@@ -75,17 +76,17 @@ def get_details(taskList,MAXTASKS):
     
 
 
-# In[ ]:
+# In[6]:
 
 taskList = get_tasks()
 
 
-# In[ ]:
+# In[7]:
 
 detailedTasks = get_details(taskList,MAXTASKS)
 
 
-# In[ ]:
+# In[8]:
 
 detailedTasks
 
@@ -97,10 +98,15 @@ detailedTasks
 
 # # DANGER ZONE
 
-# In[ ]:
+# In[11]:
 
 if CANCELTASKS == 1:
     pendingTasks = [task for task in taskList if task.config['state'] in (u'RUNNING',u'UNSUBMITTED',u'READY')]
     for task in pendingTasks:
         cancel_task(task)
+
+
+# In[ ]:
+
+
 
