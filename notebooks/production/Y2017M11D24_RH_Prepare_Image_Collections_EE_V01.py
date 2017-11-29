@@ -199,12 +199,12 @@ dfImages2["image"] = dfImages2["imageId"].apply(lambda x: ee.Image(x))
 dfImages2 = dfImages2.set_index("imageId",drop=False)
 
 
-# In[ ]:
+# In[15]:
 
 dfOut = dfImages2.copy()
 
 
-# In[ ]:
+# In[16]:
 
 i = 0
 errorlog = []
@@ -222,7 +222,7 @@ for index, row in dfImages2.iterrows():
     
 
 
-# In[ ]:
+# In[17]:
 
 end = datetime.datetime.now()
 elapsed = end - start
