@@ -24,7 +24,7 @@ MAXTASKS = 100
 CANCELTASKS = 1
 
 
-# In[10]:
+# In[3]:
 
 import pandas as pd
 import ee
@@ -98,7 +98,7 @@ detailedTasks
 
 # # DANGER ZONE
 
-# In[11]:
+# In[9]:
 
 if CANCELTASKS == 1:
     pendingTasks = [task for task in taskList if task.config['state'] in (u'RUNNING',u'UNSUBMITTED',u'READY')]

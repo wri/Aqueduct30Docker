@@ -7,7 +7,7 @@
 # * Kernel used: python27
 # * Date created: 20171129 
 
-# In[1]:
+# In[3]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -17,7 +17,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[2]:
+# In[4]:
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
@@ -36,30 +36,42 @@ YEARMIN = 1960
 YEARMAX = 2014
 
 
-# In[3]:
+# In[5]:
 
 import ee
 import subprocess
+import pandas as pd
+import logging
 
 
-# In[4]:
+# In[6]:
 
 ee.Initialize()
 
 
-# In[5]:
+# In[7]:
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+file_handler = logging.FileHandler("./logs/%sV%0.2d.log" %(SCRIPT_NAME,OUTPUT_VERSION))
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+
+# In[8]:
 
 sectors = ["PDom","PInd","PIrr","PLiv"]
 demandTypes = ["WW","WN"]
 temporalResolutions = ["year","month"]
 
 
-# In[6]:
+# In[9]:
 
 dimensions = "%sx%s" %(DIMENSION5MIN["x"],DIMENSION5MIN["y"])
 
 
-# In[7]:
+# In[10]:
 
 crsTransform = [
                 0.0833333309780367,
@@ -71,7 +83,7 @@ crsTransform = [
               ]
 
 
-# In[18]:
+# In[23]:
 
 def createCollections(demandType,temporalResolution):
     icId = "global_historical_PTot%s_%s_millionm3_5min_1960_2014" %(demandType,temporalResolution)
@@ -85,6 +97,33 @@ def createCollectionsWS(temporalResolution):
     result = subprocess.check_output(command,shell=True)
     print(command,result)    
 
+def existing(year,month,temporalResolution,demandType):
+    icID = "%s/global_historical_PTot%s_%s_millionm3_5min_1960_2014" %(EE_PATH,demandType,temporalResolution)
+    
+    assetID = "%s/global_historical_PTot%s_%s_millionm3_5min_1960_2014/global_historical_PTot%s_%s_millionm3_5min_1960_2014Y%0.4dM%0.2d" %(EE_PATH,demandType,temporalResolution,demandType,temporalResolution,year,month)
+    image = ee.Image(assetID)
+    try:
+        if image.id().getInfo():
+            exists = True
+    except:
+        exists = False
+    return exists
+
+
+def existingWS(year,month,temporalResolution):
+    icID = "%s/global_historical_WS5min_%s_millionm3_5min_1960_2014" %(EE_PATH,temporalResolution)
+    
+    assetID = "%s/global_historical_WS5min_%s_millionm3_5min_1960_2014/global_historical_WS5min_%s_millionm3_5min_1960_2014Y%0.4dM%0.2d" %(EE_PATH,temporalResolution,temporalResolution,year,month)
+    image = ee.Image(assetID)
+    try:
+        if image.id().getInfo():
+            exists = True
+    except:
+        exists = False
+    return exists
+
+
+    
 def totalDemand(year,month,demandType,temporalResolution):
     elapsed = datetime.datetime.now() - startLoop
     print(year,month,demandType,temporalResolution)
@@ -140,9 +179,6 @@ def totalDemand(year,month,demandType,temporalResolution):
     
     
 def waterStressUncapped(year,month,temporalResolution):
-    elapsed = datetime.datetime.now() - startLoop
-    print(year,month,temporalResolution)
-    print(elapsed)
     d = {}
     keys = []
     properties = {"indicator":"WS5min" ,
@@ -168,7 +204,7 @@ def waterStressUncapped(year,month,temporalResolution):
     elif temporalResolution == "month":
         imageWW = ee.Image(icWW.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first())
         imageDischarge = ee.Image(icDischarge.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first())
-        imageWW.divide(imageDischarge)
+        image = imageWW.divide(imageDischarge)
     else:
         image = -9999
         
@@ -188,14 +224,16 @@ def waterStressUncapped(year,month,temporalResolution):
     task.start()
 
 
-# In[9]:
+# In[ ]:
 
 for demandType in demandTypes:
     for temporalResolution in temporalResolutions:
         createCollections(demandType,temporalResolution)
 
 
-# In[10]:
+# Earth Engine sometimes encounters internal server issues. Running this loop 2-3 times until the size of the imageCollections is the same as the input. 
+
+# In[ ]:
 
 startLoop = datetime.datetime.now()
 for demandType in demandTypes:
@@ -204,39 +242,55 @@ for demandType in demandTypes:
             if temporalResolution == "year":
                 month = 12
                 for year in range(YEARMIN,YEARMAX+1):
-                    totalDemand(year,month,demandType,temporalResolution)
+                    if existing(year,month,temporalResolution,demandType):
+                        logger.debug("exists %0.4d %0.2d %s %s" %(year,month,temporalResolution,demandType))
+                    else: 
+                        logger.debug("exists %0.4d %0.2d %s %s" %(year,month,temporalResolution,demandType))
+                        totalDemand(year,month,demandType,temporalResolution)
             elif temporalResolution == "month":
                 for year in range(YEARMIN,YEARMAX+1): 
                     for month in range(1,13):
-                        totalDemand(year,month,demandType,temporalResolution)
+                        if existing(year,month,temporalResolution,demandType):
+                            pass
+                            logger.debug("exists %0.4d %0.2d %s %s" %(year,month,temporalResolution,demandType))
+                        else:
+                            logger.debug("exists %0.4d %0.2d %s %s" %(year,month,temporalResolution,demandType))
+                            totalDemand(year,month,demandType,temporalResolution)
         except:
-            print "error"
+            logger.error("error")
 
 
-# In[14]:
+# In[ ]:
 
 for temporalResolution in temporalResolutions:
     createCollectionsWS(temporalResolution)
 
 
-# ## RUN THIS CELL! 29/11/2017
-
-# In[19]:
+# In[24]:
 
 startLoop = datetime.datetime.now()
-
 for temporalResolution in temporalResolutions:
-    try:            
+    try:
         if temporalResolution == "year":
             month = 12
             for year in range(YEARMIN,YEARMAX+1):
-                waterStressUncapped(year,month,temporalResolution)
+                if existingWS(year,month,temporalResolution):
+                    logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
+
+                else:
+                    waterStressUncapped(year,month,temporalResolution)
+                    logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
         elif temporalResolution == "month":
             for year in range(YEARMIN,YEARMAX+1): 
                 for month in range(1,13):
-                    waterStressUncapped(year,month,temporalResolution)
+                    if existingWS(year,month,temporalResolution):
+                        logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
+
+                    else:
+                        waterStressUncapped(year,month,temporalResolution)
+                        logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
     except:
-        print "error"
+        logger.exception("error  %0.4d %0.2d %s" %(year,month,temporalResolution))
 
 
 # In[ ]:
@@ -254,7 +308,7 @@ for temporalResolution in temporalResolutions:
 
 
 
-# In[11]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
