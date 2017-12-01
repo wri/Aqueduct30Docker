@@ -222,3 +222,11 @@
 2017-12-01 16:57:31,611:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_riverdischarge_year_m_pfaf06_1960_2014/global_historical_riverdischarge_year_m_pfaf06_1960_2014Y2013M12
 2017-12-01 16:57:33,375:DEBUG:1 2014
 2017-12-01 16:57:33,378:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_riverdischarge_year_m_pfaf06_1960_2014/global_historical_riverdischarge_year_m_pfaf06_1960_2014Y2014M12
+2017-12-01 17:26:36,760:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_year_m_pfaf06_1960_2014 already exists
+
+2017-12-01 17:26:36,761:DEBUG:0 1960
+2017-12-01 17:26:36,764:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_year_m_pfaf06_1960_2014/global_historical_PTotWW_year_m_pfaf06_1960_2014Y1960M12
+2017-12-01 17:27:39,354:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_riverdischarge_year_m_pfaf06_1960_2014 already exists
+
+2017-12-01 17:27:39,354:DEBUG:1 1960
+2017-12-01 17:27:39,357:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_riverdischarge_year_m_pfaf06_1960_2014/global_historical_riverdischarge_year_m_pfaf06_1960_2014Y1960M12

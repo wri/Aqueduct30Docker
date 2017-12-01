@@ -23,7 +23,7 @@ EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 SCRIPT_NAME = "Y2017M12D01_RH_ZonalStats_PCRGlobWB_toImage_EE_V01"
 
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 PFAF_LEVEL = 6
 
@@ -123,7 +123,7 @@ temporalResolutions = ["year","month"]
 supplySectors = ["runoff","riverdischarge"]
 
 
-# In[20]:
+# In[13]:
 
 #Let's do the essentials first
 
@@ -188,6 +188,7 @@ def mapList(results, key):
 
 def createCollections(sector,demandType,temporalResolution):
     icId = "%s/global_historical_%s%s_%s_m_pfaf%0.2d_1960_2014" %(EE_PATH,sector,demandType,temporalResolution,PFAF_LEVEL)
+        
     command = "earthengine create collection %s" %(icId) 
     result = subprocess.check_output(command,shell=True)
     if result:
@@ -208,13 +209,14 @@ def zonalStatsToImage(image):
     )
     resultsList = resultsList.map(ensure_default_properties)
     zoneList = mapList(resultsList, 'zones')
+    
     meanList = mapList(resultsList,"mean")
     meanImage = hydroBasin.remap(zoneList, meanList)
     meanImage = ee.Image(meanImage).select(["remapped"],["mean"])
     
     countList = mapList(resultsList,"count")
     countImage = hydroBasin.remap(zoneList, countList)
-    meanImage = ee.Image(countImage).select(["remapped"],["count"])
+    countImage = ee.Image(countImage).select(["remapped"],["count"])
     
     resultImage = meanImage.addBands(countImage)    
     resultImage = resultImage.copyProperties(image)    
@@ -248,7 +250,7 @@ def zonalStatsToImage(image):
     return ee.Image(resultImage)
 
 
-# In[21]:
+# In[15]:
 
 indicatorDf = createIndicatorDataFrame()
 
@@ -258,23 +260,17 @@ indicatorDf = createIndicatorDataFrame()
 hydroBasin, hybasScale = createBasinsImage(PFAF_LEVEL)
 
 
-# In[22]:
+# In[17]:
 
 indicatorDf
 
 
-# In[23]:
-
-# Old Reducer
-#reducer = ee.Reducer.mean().group(groupField=1, groupName= "zones")
-
-
-# In[24]:
+# In[19]:
 
 reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
 
 
-# In[25]:
+# In[21]:
 
 for index, row in indicatorDf.iterrows():
     print(row["icID"])
@@ -285,24 +281,31 @@ for index, row in indicatorDf.iterrows():
 
     newIcID = createCollections(row["sector"],row["demandType"],row["temporalResolution"])
     ic = ee.ImageCollection(row["icID"])
-
+    
     if row["temporalResolution"] == "year":
-        for year in range(YEARMIN,YEARMAX+1):
+        for year in range(YEARMIN,YEARMAX+1):        
             logger.debug("%s %0.4d" %(index,year))
             month = 12
             image = ee.Image(ic.filter(ee.Filter.eq("year",year)).first())
             resultImage = zonalStatsToImage(image)
+            
     if row["temporalResolution"] == "month":
         for year in range(YEARMIN,YEARMAX+1):
             for month in range(1,13):
                 logger.debug("%s Year %0.4d Month %0.4d" %(index,year,month))
                 image = ee.Image(ic.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first())
                 resultImage = zonalStatsToImage(image)   
+    
 
 
-# In[ ]:
+# In[22]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+
 
