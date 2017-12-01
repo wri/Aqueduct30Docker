@@ -294,16 +294,6 @@ for temporalResolution in temporalResolutions:
 
 # In[ ]:
 
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)

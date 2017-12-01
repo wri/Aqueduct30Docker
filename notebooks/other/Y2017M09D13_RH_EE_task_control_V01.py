@@ -20,7 +20,7 @@ print(dateString,timeString)
 
 # In[2]:
 
-MAXTASKS = 100
+MAXTASKS = 1000
 CANCELTASKS = 1
 
 
@@ -89,11 +89,6 @@ detailedTasks = get_details(taskList,MAXTASKS)
 # In[8]:
 
 detailedTasks
-
-
-# In[ ]:
-
-
 
 
 # # DANGER ZONE

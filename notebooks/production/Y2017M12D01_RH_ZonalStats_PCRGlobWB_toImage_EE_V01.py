@@ -17,13 +17,13 @@ print(dateString,timeString)
 sys.version
 
 
-# In[40]:
+# In[2]:
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 SCRIPT_NAME = "Y2017M12D01_RH_ZonalStats_PCRGlobWB_toImage_EE_V01"
 
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 PFAF_LEVEL = 6
 
@@ -38,8 +38,6 @@ DIMENSION30S["x"] = 43200
 DIMENSION30S["y"] = 21600
 
 CRS = "EPSG:4326"
-
-REDUCER_NAME = "mean"
 
 YEARMIN = 1960
 YEARMAX = 2014
@@ -125,7 +123,18 @@ temporalResolutions = ["year","month"]
 supplySectors = ["runoff","riverdischarge"]
 
 
-# In[41]:
+# In[20]:
+
+#Let's do the essentials first
+
+demandSectors = ["PTot"]
+demandTypes = ["WW"]
+temporalResolutions = ["year"]
+
+supplySectors = ["riverdischarge"]
+
+
+# In[14]:
 
 def createIndicatorDataFrame():
     indicatorDf = pd.DataFrame()
@@ -168,10 +177,9 @@ def volumeToFlux5min(image):
     return ee.Image(fluxImage)
 
 
-
 def ensure_default_properties(obj): 
     obj = ee.Dictionary(obj)
-    default_properties = ee.Dictionary({REDUCER_NAME: -9999})
+    default_properties = ee.Dictionary({"mean": -9999,"count": -9999})
     return default_properties.combine(obj)
 
 def mapList(results, key):
@@ -179,195 +187,117 @@ def mapList(results, key):
     return newResult
 
 def createCollections(sector,demandType,temporalResolution):
-    icId = "global_historical_%s%s_%s_m_pfaf%0.2d_1960_2014" %(sector,demandType,temporalResolution,PFAF_LEVEL)
-    command = "earthengine create collection %s/%s" %(EE_PATH,icId) 
+    icId = "%s/global_historical_%s%s_%s_m_pfaf%0.2d_1960_2014" %(EE_PATH,sector,demandType,temporalResolution,PFAF_LEVEL)
+    command = "earthengine create collection %s" %(icId) 
     result = subprocess.check_output(command,shell=True)
     if result:
         logger.error(result)
+    return icId
+        
+def zonalStatsToImage(image):     
+    imageFlux = volumeToFlux5min(image)
+    totalImage = imageFlux.addBands(hydroBasin)
+    totalImage = totalImage.select(totalImage.bandNames(),["flux","zones"])
+    resultsList = ee.List(
+      totalImage.reduceRegion(
+        geometry= geometry,
+        reducer= reducer,
+        scale= hybasScale,
+        maxPixels=1e10
+      ).get("groups")
+    )
+    resultsList = resultsList.map(ensure_default_properties)
+    zoneList = mapList(resultsList, 'zones')
+    meanList = mapList(resultsList,"mean")
+    meanImage = hydroBasin.remap(zoneList, meanList)
+    meanImage = ee.Image(meanImage).select(["remapped"],["mean"])
+    
+    countList = mapList(resultsList,"count")
+    countImage = hydroBasin.remap(zoneList, countList)
+    meanImage = ee.Image(countImage).select(["remapped"],["count"])
+    
+    resultImage = meanImage.addBands(countImage)    
+    resultImage = resultImage.copyProperties(image)    
+        
+    exportdescription = "%s%s_%sY%0.4dM%0.2d" %(row["sector"],row["demandType"],row["temporalResolution"],year,month)
+    properties = {"units":"m",
+                  "script_used":SCRIPT_NAME,
+                  "output_version":OUTPUT_VERSION,
+                  "reducer":"mean_and_count",
+                  "Pfaf_Level":PFAF_LEVEL,
+                  "exportdescription":exportdescription
+                  }
+    
+    resultImage = resultImage.set(properties)
+    
+    newAssetID = "%s/global_historical_%s%s_%s_m_pfaf%0.2d_1960_2014Y%0.4dM%0.2d" %(newIcID,row["sector"],row["demandType"],row["temporalResolution"],PFAF_LEVEL,year,month)
+    logger.debug(newAssetID)
+    description = "%sV%0.2d" %(exportdescription, OUTPUT_VERSION)
+    
+    task = ee.batch.Export.image.toAsset(
+        image =  ee.Image(resultImage),
+        description = description,
+        assetId = newAssetID,
+        dimensions = dimensions30s,
+        crs = CRS,    
+        crsTransform = crsTransform30s,
+        maxPixels = 1e10    
+    )
+    task.start()     
+    
+    return ee.Image(resultImage)
 
 
-# In[23]:
+# In[21]:
 
 indicatorDf = createIndicatorDataFrame()
 
 
-# In[42]:
+# In[16]:
 
 hydroBasin, hybasScale = createBasinsImage(PFAF_LEVEL)
 
 
-# In[24]:
+# In[22]:
 
 indicatorDf
 
 
-# Test for one image
+# In[23]:
 
-# In[38]:
-
-indicatorDf = indicatorDf[0:2]
-
-
-# In[46]:
-
-reducer = ee.Reducer.mean().group(groupField=1, groupName= "zones")
+# Old Reducer
+#reducer = ee.Reducer.mean().group(groupField=1, groupName= "zones")
 
 
-# In[47]:
+# In[24]:
+
+reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
+
+
+# In[25]:
 
 for index, row in indicatorDf.iterrows():
+    print(row["icID"])
     #command = "earthengine ls %s" %(row["icID"])
     #assetList = subprocess.check_output(command,shell=True).splitlines()
     # get properties from first image 
     firstImage = ee.Image(ee.ImageCollection(row["icID"]).first())
 
-    #createCollections(row["sector"],row["demandType"],row["temporalResolution"])
+    newIcID = createCollections(row["sector"],row["demandType"],row["temporalResolution"])
     ic = ee.ImageCollection(row["icID"])
 
     if row["temporalResolution"] == "year":
-        #for year in range(YEARMIN,YEARMAX+1):
-        for year in range(YEARMIN,1961):
+        for year in range(YEARMIN,YEARMAX+1):
+            logger.debug("%s %0.4d" %(index,year))
+            month = 12
             image = ee.Image(ic.filter(ee.Filter.eq("year",year)).first())
-            # function ? 
-            imageFlux = volumeToFlux5min(image)
-            totalImage = imageFlux.addBands(hydroBasin)
-            totalImage = totalImage.select(totalImage.bandNames(),["flux","zones"])
-            resultsList = ee.List(
-              totalImage.reduceRegion(
-                geometry= geometry,
-                reducer= reducer,
-                scale= hybasScale,
-                maxPixels=1e10
-              ).get("groups")
-            )
-            resultsList = resultsList.map(ensure_default_properties)
-            zoneList = mapList(resultsList, 'zones')
-            reducedList = mapList(resultsList,REDUCER_NAME)
-            resultImage = hydroBasin.remap(zoneList, reducedList)
-            resultImage = ee.Image(resultImage).select(["remapped"],["b1"])
-            resultImage = resultImage.copyProperties(image)
-            properties = {"units":"meanflux","script_used":SCRIPT_NAME,"output_version":OUTPUT_VERSION}
-            resultImage = resultImage.set(properties)
-            print()
-
-
-# In[ ]:
-
-indicatorDftest
-
-
-# In[ ]:
-
-icID = indicatorDftest.loc[0]["icID"]
-
-
-# In[ ]:
-
-ic = ee.ImageCollection(icID)
-
-
-# In[ ]:
-
-year = 2014
-
-
-# In[ ]:
-
-imageFlux = volumeToFlux5min(image)
-
-
-# In[ ]:
-
-totalImage = imageFlux.addBands(hydroBasin)
-totalImage = totalImage.select(totalImage.bandNames(),["flux","zones"])
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-resultsList = ee.List(
-  totalImage.reduceRegion(
-    geometry= geometry,
-    reducer= reducer,
-    scale= 1000,
-    maxPixels=1e10
-  ).get("groups")
-)
-
-
-# In[ ]:
-
-resultsList = resultsList.map(ensure_default_properties)
-
-
-# In[ ]:
-
-zoneList = mapList(resultsList, 'zones')
-
-
-# In[ ]:
-
-reducedList = mapList(resultsList,REDUCER_NAME)
-
-
-# In[ ]:
-
-resultImage = hydroBasin.remap(zoneList, reducedList)
-
-
-# In[ ]:
-
-resultImage = resultImage.copyProperties(image)
-
-
-# In[ ]:
-
-properties = {"units":"meanflux","script_used":SCRIPT_NAME,"output_version":OUTPUT_VERSION}
-
-
-# In[ ]:
-
-resultImage = resultImage.set(properties)
-
-
-# In[ ]:
-
-resultImage = ee.Image(resultImage).select(["remapped"],["b1"])
-
-
-# In[ ]:
-
-assetID = "users/rutgerhofste/testZones03"
-
-
-# In[ ]:
-
-task = ee.batch.Export.image.toAsset(
-    image =  ee.Image(resultImage),
-    description = "test",
-    assetId = assetID,
-    dimensions = dimensions30s,
-    #dimensions = DIMENSION30S,
-    crs = CRS,    
-    crsTransform = crsTransform30s,
-    
-    # for testing purposes -----
-    #scale = 10000, 
-    #region = geometry,
-    # end testing  --------
-    
-    maxPixels = 1e10    
-)
-task.start() 
-
-
-# In[ ]:
-
-
+            resultImage = zonalStatsToImage(image)
+    if row["temporalResolution"] == "month":
+        for year in range(YEARMIN,YEARMAX+1):
+            for month in range(1,13):
+                logger.debug("%s Year %0.4d Month %0.4d" %(index,year,month))
+                image = ee.Image(ic.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first())
+                resultImage = zonalStatsToImage(image)   
 
 
 # In[ ]:
