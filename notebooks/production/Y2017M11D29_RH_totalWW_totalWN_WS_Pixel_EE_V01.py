@@ -25,9 +25,8 @@ SCRIPT_NAME = "Y2017M11D29_RH_totalWW_totalWN_WS_Pixel_EE_V01"
 
 OUTPUT_VERSION = 1
 
-DIMENSION5MIN = {}
-DIMENSION5MIN["x"] = 4320
-DIMENSION5MIN["y"] = 2160
+DIMENSION5MIN = "4320x2160"
+DIMENSION30S = "43200x21600"
 CRS = "EPSG:4326"
 
 MAXPIXELS =1e10
@@ -64,11 +63,6 @@ logger.addHandler(file_handler)
 sectors = ["PDom","PInd","PIrr","PLiv"]
 demandTypes = ["WW","WN"]
 temporalResolutions = ["year","month"]
-
-
-# In[9]:
-
-dimensions = "%sx%s" %(DIMENSION5MIN["x"],DIMENSION5MIN["y"])
 
 
 # In[10]:

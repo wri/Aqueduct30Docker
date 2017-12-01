@@ -58,12 +58,9 @@
 #     put all earth engine imagecollections in the same format (millionm^3  and dimensionless)
 # 1. **Y2017M11D29_RH_totalWW_totalWN_WS_Pixel_EE_V01**  
 #     calculate total demand WW WN and water stress at pixel level
-#     
-#     placeholder for new zonal stats script
-#     
-#     
-# 1. **Y2017M11D29_RH_Zonal_Results_To_Databas_V01**  
-#     combine the results from zonal stats on GCS into a table on AWS RDS
+# 1. **Y2017M12D01_RH_ZonalStats_PCRGlobWB_toImage_EE_V01**  
+#     calculate sectoral demand, total demand, runoff and discharge per Hydrobasin level 6, export to imageCollections
+# 
 #     
 #     
 #     
