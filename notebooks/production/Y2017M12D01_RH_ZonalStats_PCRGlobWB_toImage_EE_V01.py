@@ -67,18 +67,10 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-# In[6]:
-
-area5min = ee.Image("%s/area_5min_m2V11" %(EE_PATH))
-
-
 # In[7]:
 
+area5min = ee.Image("%s/area_5min_m2V11" %(EE_PATH))
 dimensions5min = "%sx%s" %(DIMENSION5MIN["x"],DIMENSION5MIN["y"])
-
-
-# In[8]:
-
 dimensions30s = "%sx%s" %(DIMENSION30S["x"],DIMENSION30S["y"])
 
 
@@ -123,9 +115,9 @@ temporalResolutions = ["year","month"]
 supplySectors = ["runoff","riverdischarge"]
 
 
-# In[13]:
+# Because running takes so long I will run the most important datasets first
 
-#Let's do the essentials first
+# In[23]:
 
 demandSectors = ["PTot"]
 demandTypes = ["WW"]
@@ -134,7 +126,7 @@ temporalResolutions = ["year"]
 supplySectors = ["riverdischarge"]
 
 
-# In[14]:
+# In[24]:
 
 def createIndicatorDataFrame():
     indicatorDf = pd.DataFrame()
@@ -250,22 +242,22 @@ def zonalStatsToImage(image):
     return ee.Image(resultImage)
 
 
-# In[15]:
+# In[25]:
 
 indicatorDf = createIndicatorDataFrame()
 
 
-# In[16]:
+# In[26]:
 
 hydroBasin, hybasScale = createBasinsImage(PFAF_LEVEL)
 
 
-# In[17]:
+# In[27]:
 
 indicatorDf
 
 
-# In[19]:
+# In[28]:
 
 reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
 
@@ -274,11 +266,6 @@ reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= 
 
 for index, row in indicatorDf.iterrows():
     print(row["icID"])
-    #command = "earthengine ls %s" %(row["icID"])
-    #assetList = subprocess.check_output(command,shell=True).splitlines()
-    # get properties from first image 
-    firstImage = ee.Image(ee.ImageCollection(row["icID"]).first())
-
     newIcID = createCollections(row["sector"],row["demandType"],row["temporalResolution"])
     ic = ee.ImageCollection(row["icID"])
     
@@ -303,9 +290,4 @@ for index, row in indicatorDf.iterrows():
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
-
-
-# In[ ]:
-
-
 
