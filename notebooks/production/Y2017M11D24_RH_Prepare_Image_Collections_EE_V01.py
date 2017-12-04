@@ -30,7 +30,7 @@ AREA_IMAGE_FILE_NAME = "area_5min_m2V11"
 
 SCRIPT_NAME = "Y2017M11D24_RH_Prepare_Image_Collections_EE_V01"
 
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 # Unfortunately specifying the dimensions caused the script to crash (internal error on Google's side) Specify scale instead.
 
@@ -47,7 +47,14 @@ icIds = ["projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_riverdischarge_
         "projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_runoff_year_myear_5min_1958_2014"]
 
 
+# Remove later: Leap year settings incorrect. Rerunning yearly runoff and discharge scripts. 
+
 # In[3]:
+
+icIds = ["projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_riverdischarge_year_m3second_5min_1960_2014"]
+
+
+# In[4]:
 
 import ee
 import re
@@ -56,29 +63,29 @@ import pandas as pd
 from calendar import monthrange, isleap
 
 
-# In[4]:
+# In[5]:
 
 ee.Initialize()
 
 
 # ICs not in right format: discharge (m^3 / s) and runoff (m/month or m/year)
 
-# In[5]:
+# In[6]:
 
 sPerD = 86400 #seconds per day
 
 
-# In[6]:
+# In[7]:
 
 areaImage = ee.Image("%s/%s"%(EE_PATH,AREA_IMAGE_FILE_NAME))
 
 
-# In[7]:
+# In[8]:
 
 dimensions = "%sx%s" %(DIMENSION5MIN["x"],DIMENSION5MIN["y"])
 
 
-# In[8]:
+# In[9]:
 
 crsTransform = [
                 0.0833333309780367,
@@ -90,7 +97,7 @@ crsTransform = [
               ]
 
 
-# In[9]:
+# In[10]:
 
 def newImageId(imageId):
     return re.sub('m3second|mmonth|myear',"millionm3",imageId)
@@ -122,7 +129,7 @@ def toVolumeAndExport(row):
             
              
         elif temporalResolution == "year":
-            daysPerYear = 365 if isleap(2005) else 366
+            daysPerYear = 366 if isleap(year) else 365
             sPerYear = daysPerYear*(86400)
             newImage = row["image"].multiply(sPerYear).divide(1e6)
             
@@ -156,7 +163,7 @@ def toVolumeAndExport(row):
     
 
 
-# In[10]:
+# In[11]:
 
 dfIcs = pd.DataFrame()
 dfIcs["icId"] = icIds
@@ -164,12 +171,12 @@ dfIcs["icId"] = icIds
 
 # ### Creating new ImageCollections
 
-# In[11]:
+# In[12]:
 
 dfIcs["newIcId"] = dfIcs["icId"].apply(newImageId)
 
 
-# In[12]:
+# In[13]:
 
 for index, row in dfIcs.iterrows():
     command = "earthengine create collection %s" %row["newIcId"]
@@ -177,7 +184,7 @@ for index, row in dfIcs.iterrows():
     print(command,result)
 
 
-# In[13]:
+# In[14]:
 
 dfImages2 = pd.DataFrame()
 
@@ -190,7 +197,7 @@ for index, row in dfIcs.iterrows():
     dfImages2= dfImages2.append(dfImages)
 
 
-# In[14]:
+# In[15]:
 
 dfImages2["newImageId"] = dfImages2["imageId"].apply(newImageId)
 dfImages2["newIcId"] = dfImages2["icId"].apply(newImageId)
@@ -199,12 +206,12 @@ dfImages2["image"] = dfImages2["imageId"].apply(lambda x: ee.Image(x))
 dfImages2 = dfImages2.set_index("imageId",drop=False)
 
 
-# In[15]:
+# In[16]:
 
 dfOut = dfImages2.copy()
 
 
-# In[16]:
+# In[17]:
 
 i = 0
 errorlog = []
@@ -222,7 +229,7 @@ for index, row in dfImages2.iterrows():
     
 
 
-# In[17]:
+# In[18]:
 
 end = datetime.datetime.now()
 elapsed = end - start

@@ -7,7 +7,7 @@
 # * Kernel used: python27
 # * Date created: 20171129 
 
-# In[3]:
+# In[1]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -17,13 +17,13 @@ print(dateString,timeString)
 sys.version
 
 
-# In[4]:
+# In[2]:
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 SCRIPT_NAME = "Y2017M11D29_RH_totalWW_totalWN_WS_Pixel_EE_V01"
 
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DIMENSION5MIN = "4320x2160"
 DIMENSION30S = "43200x21600"
@@ -35,7 +35,7 @@ YEARMIN = 1960
 YEARMAX = 2014
 
 
-# In[5]:
+# In[3]:
 
 import ee
 import subprocess
@@ -43,12 +43,12 @@ import pandas as pd
 import logging
 
 
-# In[6]:
+# In[4]:
 
 ee.Initialize()
 
 
-# In[7]:
+# In[5]:
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -58,14 +58,14 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-# In[8]:
+# In[6]:
 
 sectors = ["PDom","PInd","PIrr","PLiv"]
 demandTypes = ["WW","WN"]
 temporalResolutions = ["year","month"]
 
 
-# In[10]:
+# In[7]:
 
 crsTransform = [
                 0.0833333309780367,
@@ -77,7 +77,7 @@ crsTransform = [
               ]
 
 
-# In[23]:
+# In[13]:
 
 def createCollections(demandType,temporalResolution):
     icId = "global_historical_PTot%s_%s_millionm3_5min_1960_2014" %(demandType,temporalResolution)
@@ -86,7 +86,7 @@ def createCollections(demandType,temporalResolution):
     print(command,result)
 
 def createCollectionsWS(temporalResolution):
-    icId = "global_historical_WS5min_%s_millionm3_5min_1960_2014" %(temporalResolution)
+    icId = "global_historical_WS_%s_dimensionless_5min_1960_2014" %(temporalResolution)
     command = "earthengine create collection %s/%s" %(EE_PATH,icId) 
     result = subprocess.check_output(command,shell=True)
     print(command,result)    
@@ -105,9 +105,9 @@ def existing(year,month,temporalResolution,demandType):
 
 
 def existingWS(year,month,temporalResolution):
-    icID = "%s/global_historical_WS5min_%s_millionm3_5min_1960_2014" %(EE_PATH,temporalResolution)
+    icID = "%s/global_historical_WS_%s_dimensionless_5min_1960_2014" %(EE_PATH,temporalResolution)
     
-    assetID = "%s/global_historical_WS5min_%s_millionm3_5min_1960_2014/global_historical_WS5min_%s_millionm3_5min_1960_2014Y%0.4dM%0.2d" %(EE_PATH,temporalResolution,temporalResolution,year,month)
+    assetID = "%s/global_historical_WS_%s_dimensionless_5min_1960_2014/global_historical_WS_%s_dimensionless_5min_1960_2014Y%0.4dM%0.2d" %(EE_PATH,temporalResolution,temporalResolution,year,month)
     image = ee.Image(assetID)
     try:
         if image.id().getInfo():
@@ -164,7 +164,7 @@ def totalDemand(year,month,demandType,temporalResolution):
         image =  ee.Image(totalImage),
         description = description,
         assetId = assetID,
-        dimensions = dimensions,
+        dimensions = DIMENSION5MIN,
         crs = CRS,
         crsTransform = crsTransform,
         maxPixels = MAXPIXELS     
@@ -203,14 +203,14 @@ def waterStressUncapped(year,month,temporalResolution):
         image = -9999
         
     image = image.set(properties)
-    description = "WS5min_%sY%0.4dM%0.2dV%0.2d" %(temporalResolution,year,month,OUTPUT_VERSION)
-    assetID = "%s/global_historical_WS5min_%s_millionm3_5min_1960_2014/global_historical_WS5min_%s_millionm3_5min_1960_2014Y%0.4dM%0.2d" %(EE_PATH,temporalResolution,temporalResolution,year,month)
+    description = "WS_%sY%0.4dM%0.2dV%0.2d" %(temporalResolution,year,month,OUTPUT_VERSION)
+    assetID = "%s/global_historical_WS_%s_dimensionless_5min_1960_2014/global_historical_WS_%s_dimensionless_5min_1960_2014Y%0.4dM%0.2d" %(EE_PATH,temporalResolution,temporalResolution,year,month)
 
     task = ee.batch.Export.image.toAsset(
         image =  ee.Image(image),
         description = description,
         assetId = assetID,
-        dimensions = dimensions,
+        dimensions = DIMENSION5MIN,
         crs = CRS,
         crsTransform = crsTransform,
         maxPixels = MAXPIXELS     
@@ -254,13 +254,15 @@ for demandType in demandTypes:
             logger.error("error")
 
 
-# In[ ]:
+# ### Water Stress at Pixel level
+
+# In[14]:
 
 for temporalResolution in temporalResolutions:
     createCollectionsWS(temporalResolution)
 
 
-# In[24]:
+# In[16]:
 
 startLoop = datetime.datetime.now()
 for temporalResolution in temporalResolutions:

@@ -67,14 +67,14 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-# In[7]:
+# In[6]:
 
 area5min = ee.Image("%s/area_5min_m2V11" %(EE_PATH))
 dimensions5min = "%sx%s" %(DIMENSION5MIN["x"],DIMENSION5MIN["y"])
 dimensions30s = "%sx%s" %(DIMENSION30S["x"],DIMENSION30S["y"])
 
 
-# In[9]:
+# In[7]:
 
 crsTransform5min = [
                 0.0833333309780367,
@@ -86,7 +86,7 @@ crsTransform5min = [
               ]
 
 
-# In[10]:
+# In[8]:
 
 crsTransform30s = [
                 0.008333333333333333,
@@ -98,7 +98,7 @@ crsTransform30s = [
               ]
 
 
-# In[11]:
+# In[9]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
@@ -106,7 +106,7 @@ if TESTING ==1:
     geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
-# In[12]:
+# In[10]:
 
 demandSectors = ["PDom","PInd","PIrr","PLiv","PTot"]
 demandTypes = ["WW","WN"]
@@ -117,16 +117,16 @@ supplySectors = ["runoff","riverdischarge"]
 
 # Because running takes so long I will run the most important datasets first
 
-# In[23]:
+# In[11]:
 
 demandSectors = ["PTot"]
 demandTypes = ["WW"]
-temporalResolutions = ["year"]
+temporalResolutions = ["month"]
 
 supplySectors = ["riverdischarge"]
 
 
-# In[24]:
+# In[12]:
 
 def createIndicatorDataFrame():
     indicatorDf = pd.DataFrame()
@@ -242,27 +242,27 @@ def zonalStatsToImage(image):
     return ee.Image(resultImage)
 
 
-# In[25]:
+# In[13]:
 
 indicatorDf = createIndicatorDataFrame()
 
 
-# In[26]:
+# In[14]:
 
 hydroBasin, hybasScale = createBasinsImage(PFAF_LEVEL)
 
 
-# In[27]:
+# In[15]:
 
 indicatorDf
 
 
-# In[28]:
+# In[ ]:
 
 reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
 
 
-# In[21]:
+# In[ ]:
 
 for index, row in indicatorDf.iterrows():
     print(row["icID"])
@@ -285,7 +285,7 @@ for index, row in indicatorDf.iterrows():
     
 
 
-# In[22]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
