@@ -279,7 +279,7 @@ for index, row in indicatorDf.iterrows():
     if row["temporalResolution"] == "month":
         for year in range(YEARMIN,YEARMAX+1):
             for month in range(1,13):
-                logger.debug("%s Year %0.4d Month %0.4d" %(index,year,month))
+                logger.debug("%s Year %0.4d Month %0.2d" %(index,year,month))
                 image = ee.Image(ic.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first())
                 resultImage = zonalStatsToImage(image)   
     

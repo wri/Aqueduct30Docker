@@ -1,0 +1,71 @@
+2017-12-07 13:46:29,239:ERROR:error  2014 03 year
+Traceback (most recent call last):
+  File "<ipython-input-24-a0e0a38661b3>", line 5, in <module>
+    for year in range(YEARMIN,YEARMAX+1):
+NameError: name 'YEARMIN' is not defined
+2017-12-07 13:55:14,637:ERROR:error  1960 01 month
+Traceback (most recent call last):
+  File "<ipython-input-16-741b53c4cefa>", line 14, in <module>
+    image = ee.Image(ic.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first())
+NameError: name 'ic' is not defined
+2017-12-07 14:22:25,980:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_year_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:23:09,223:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_year_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:23:12,555:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_month_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:23:33,033:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_year_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:23:36,395:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_month_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:24:08,840:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_year_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:24:09,459:DEBUG:0 Year 1960 Month 0012
+2017-12-07 14:24:10,095:DEBUG:0 Year 1961 Month 0012
+2017-12-07 14:24:12,113:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_month_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:24:12,829:DEBUG:1 Year 1960 Month 0001
+2017-12-07 14:24:13,460:DEBUG:1 Year 1960 Month 0002
+2017-12-07 14:24:14,089:DEBUG:1 Year 1960 Month 0003
+2017-12-07 14:24:14,707:DEBUG:1 Year 1960 Month 0004
+2017-12-07 14:24:15,321:DEBUG:1 Year 1960 Month 0005
+2017-12-07 14:24:15,943:DEBUG:1 Year 1960 Month 0006
+2017-12-07 14:24:16,587:DEBUG:1 Year 1960 Month 0007
+2017-12-07 14:24:17,208:DEBUG:1 Year 1960 Month 0008
+2017-12-07 14:24:17,837:DEBUG:1 Year 1960 Month 0009
+2017-12-07 14:24:18,459:DEBUG:1 Year 1960 Month 0010
+2017-12-07 14:24:19,093:DEBUG:1 Year 1960 Month 0011
+2017-12-07 14:24:19,737:DEBUG:1 Year 1960 Month 0012
+2017-12-07 14:24:20,355:DEBUG:1 Year 1961 Month 0001
+2017-12-07 14:24:20,990:DEBUG:1 Year 1961 Month 0002
+2017-12-07 14:24:21,613:DEBUG:1 Year 1961 Month 0003
+2017-12-07 14:24:22,233:DEBUG:1 Year 1961 Month 0004
+2017-12-07 14:24:22,852:DEBUG:1 Year 1961 Month 0005
+2017-12-07 14:24:22,998:DEBUG:1 Year 1961 Month 0006
+2017-12-07 14:24:23,618:DEBUG:1 Year 1961 Month 0007
+2017-12-07 14:24:24,255:DEBUG:1 Year 1961 Month 0008
+2017-12-07 14:24:24,883:DEBUG:1 Year 1961 Month 0009
+2017-12-07 14:24:25,501:DEBUG:1 Year 1961 Month 0010
+2017-12-07 14:24:26,125:DEBUG:1 Year 1961 Month 0011
+2017-12-07 14:24:26,741:DEBUG:1 Year 1961 Month 0012
+2017-12-07 14:25:55,057:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_year_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:26:26,678:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_year_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:27:14,319:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_year_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:27:16,133:DEBUG:0 Year 1960 Month 0012
+2017-12-07 14:27:18,175:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_availableriverdischarge_month_millionm3_5minPfaf6_1960_2014 already exists
+
+2017-12-07 14:27:19,988:DEBUG:1 Year 1960 Month 0001
+2017-12-07 14:27:21,944:DEBUG:1 Year 1960 Month 0002
+2017-12-07 14:39:08,344:DEBUG:0 Year 1960 Month 0012
+2017-12-07 14:39:10,206:DEBUG:0 Year 1961 Month 0012
+2017-12-07 14:39:12,136:DEBUG:0 Year 1962 Month 0012
+2017-12-07 14:39:13,987:DEBUG:0 Year 1963 Month 0012
+2017-12-07 14:39:15,779:DEBUG:0 Year 1964 Month 0012
+2017-12-07 14:39:17,595:DEBUG:0 Year 1965 Month 0012
+2017-12-07 14:39:19,324:DEBUG:0 Year 1966 Month 0012
+2017-12-07 14:39:21,121:DEBUG:0 Year 1967 Month 0012
+2017-12-07 14:39:23,017:DEBUG:0 Year 1968 Month 0012
+2017-12-07 14:39:24,911:DEBUG:0 Year 1969 Month 0012

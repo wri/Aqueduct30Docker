@@ -64,8 +64,8 @@
 #     find conservative discharge point    
 # 1. **Y2017M12D01_RH_ZonalStats_PCRGlobWB_toImage_EE_V01**  
 #     calculate sectoral demand, total demand, runoff and discharge per Hydrobasin level 6, export to imageCollections
-# 1. **Y2017M12D07_RH_ZonalStats_MaxQ_EE_V01**  
-#     find conservative and global max discharge value per hydrobasin and export to imageCollection. 
+# 1. **Y2017M12D07_RH_ZonalStats_MaxQ_toImage_EE_V01**  
+#     find conservative and global max discharge value per Hydrobasin level 6 and export to imageCollection. 
 #     
 #     
 #     

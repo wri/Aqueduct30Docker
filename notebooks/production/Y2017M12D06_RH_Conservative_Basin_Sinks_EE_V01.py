@@ -23,7 +23,7 @@ EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 SCRIPT_NAME = "Y2017M12D06_RH_Conservative_Basin_Sinks_EE_V01"
 
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 TESTING =0
 
@@ -107,6 +107,7 @@ zones_5min_mode = zones.reduceResolution(
       crs =   FA5min.projection()
     );
     
+zones_5min_mode = zones_5min_mode.toInt64()    
 
 
 # In[11]:
