@@ -50,17 +50,22 @@
 # 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01**  
 #     A couple of indicators are shared in ASCII format. Converting to geotiff
 # 1. **Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01**  
-#     This script ingests some auxiliary datafile onto earth engine included DEM, StreamFlow Network etc. 
+#     This script ingests some auxiliary datafile onto earth engine included DEM, StreamFlow Network etc.      
+# 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
+#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa
 #     
 #     November 24th 2017, restructure data for better processing in postGIS vertical table. Absolute values, Short term Trend, Short term average, Long term Trend and Long term average for all demand indicators, runoff and discharge and water stress uncapped. 
 #     
 # 1. **Y2017M11D24_RH_Prepare_Image_Collections_EE_V01**  
 #     put all earth engine imagecollections in the same format (millionm^3  and dimensionless)
 # 1. **Y2017M11D29_RH_totalWW_totalWN_WS_Pixel_EE_V01**  
-#     calculate total demand WW WN and water stress at pixel level
+#     calculate total demand WW WN and water stress at pixel level    
+# 1. **Y2017M12D06_RH_Conservative_Basin_Sinks_EE_V01**  
+#     find conservative discharge point    
 # 1. **Y2017M12D01_RH_ZonalStats_PCRGlobWB_toImage_EE_V01**  
 #     calculate sectoral demand, total demand, runoff and discharge per Hydrobasin level 6, export to imageCollections
-# 
+# 1. **Y2017M12D07_RH_ZonalStats_MaxQ_EE_V01**  
+#     find conservative and global max discharge value per hydrobasin and export to imageCollection. 
 #     
 #     
 #     
@@ -71,8 +76,7 @@
 #     This script will canculate the average PCRGlobWB2.0 supply (local runoff) using the ee python API
 # 1. **Y2017M09D01_RH_linear_trend_Ag_Demand_EE_V01**  
 #     Due to the sensitivity of the model to irrigation demand we take the linear trend of 2004 - 2014 for ag demand
-# 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
-#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa
+# 
 # 1. **Y2017M09D11_RH_zonal_stats_EE_V01**  
 #     Calculate zonal statistics for EE images and HydroBasin level 6 zones. Export to GCS 
 # 1. **Y2017M09D14_RH_merge_EE_results_V01**  

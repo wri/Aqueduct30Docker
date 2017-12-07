@@ -77,7 +77,7 @@ crsTransform = [
               ]
 
 
-# In[13]:
+# In[8]:
 
 def createCollections(demandType,temporalResolution):
     icId = "global_historical_PTot%s_%s_millionm3_5min_1960_2014" %(demandType,temporalResolution)
@@ -218,7 +218,7 @@ def waterStressUncapped(year,month,temporalResolution):
     task.start()
 
 
-# In[ ]:
+# In[9]:
 
 for demandType in demandTypes:
     for temporalResolution in temporalResolutions:
@@ -227,8 +227,9 @@ for demandType in demandTypes:
 
 # Earth Engine sometimes encounters internal server issues. Running this loop 2-3 times until the size of the imageCollections is the same as the input. 
 
-# In[ ]:
+# In[10]:
 
+"""
 startLoop = datetime.datetime.now()
 for demandType in demandTypes:
     for temporalResolution in temporalResolutions:
@@ -252,17 +253,18 @@ for demandType in demandTypes:
                             totalDemand(year,month,demandType,temporalResolution)
         except:
             logger.error("error")
+"""
 
 
 # ### Water Stress at Pixel level
 
-# In[14]:
+# In[11]:
 
 for temporalResolution in temporalResolutions:
     createCollectionsWS(temporalResolution)
 
 
-# In[16]:
+# In[12]:
 
 startLoop = datetime.datetime.now()
 for temporalResolution in temporalResolutions:
@@ -289,12 +291,7 @@ for temporalResolution in temporalResolutions:
         logger.exception("error  %0.4d %0.2d %s" %(year,month,temporalResolution))
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start
