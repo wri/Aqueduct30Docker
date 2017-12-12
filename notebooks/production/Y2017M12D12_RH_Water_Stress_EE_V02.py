@@ -21,7 +21,7 @@ sys.version
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
-SCRIPT_NAME = "Y2017M12D12_RH_Water_Stress_V02"
+SCRIPT_NAME = "Y2017M12D12_RH_Water_Stress_EE_V02"
 
 OUTPUT_VERSION = 1
 
