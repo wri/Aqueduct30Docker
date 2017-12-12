@@ -7,7 +7,7 @@
 # * Kernel used: python27
 # * Date created: 20171212
 
-# In[2]:
+# In[1]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -17,7 +17,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[31]:
+# In[2]:
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
@@ -31,7 +31,7 @@ YEARMIN = 1960
 YEARMAX = 1960
 
 
-# In[4]:
+# In[3]:
 
 import ee
 import subprocess
@@ -40,12 +40,12 @@ import logging
 import subprocess
 
 
-# In[5]:
+# In[4]:
 
 ee.Initialize()
 
 
-# In[8]:
+# In[5]:
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -55,17 +55,17 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-# In[67]:
+# In[6]:
 
 geometrySmall = ee.Geometry.Polygon(coords=[[-180.0, -81.0], [180,  -81.0], [180, 81], [-180,81]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
-# In[ ]:
+# In[21]:
+
+geometrySmall = ee.Geometry.Polygon(coords=[[-10, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
-
-
-# In[89]:
+# In[9]:
 
 def createIndicatorDataFrame():
     df = pd.DataFrame()
@@ -132,10 +132,19 @@ def zonalStatsToRaster(image,zonesImage,geometry,maxPixels,reducerType):
 
 
 
+def fluxToVolume(image):
+    newImage = ee.Image(image).multiply(area_30sPfaf06).divide(1e6)
+    newImage = newImage.copyProperties(image)
+    newImage = newImage.set({"units":"millionm3","script_used":SCRIPT_NAME})
+    return newImage
+    
+    
+    
+
     
 
 
-# In[98]:
+# In[10]:
 
 area30s = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/area_30s_m2V11")
 zones30s = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01")
@@ -144,48 +153,40 @@ zones30s = zones30s.divide(ee.Number(10).pow(ee.Number(12).subtract(PFAF_LEVEL))
 crs30s = area30s.projection()
 
 
-# In[99]:
-
-crs30s.getInfo()
-
-
-# In[87]:
+# In[12]:
 
 area30sPfaf6,zoneList,valueList,countList = zonalStatsToRaster(area30s,zones30s,geometrySmall,1e10,"sum")
 
 
-# In[79]:
-
-dictionary = dict(zip(zoneList.getInfo(), valueList.getInfo()))
-
-
-# In[88]:
+# In[13]:
 
 area30sPfaf6_m2 = area30sPfaf6.select(["sum"]) # image at 30s with area in m^2 per basin
 
 
-# In[90]:
+# In[14]:
 
 temporalResolutions = ["year","month"]
 
 
-# In[91]:
+# In[15]:
 
 df = createIndicatorDataFrame()
 
 
-# In[92]:
+# In[16]:
 
 df.head()
 
 
-# In[101]:
+# In[22]:
 
 for index, row in df.iterrows():
     if row["temporalResolution"] == "year":
         createCollections(row["newIcId"])        
         icQ = ee.ImageCollection(row["icQ"])
-        icWW = ee.ImageCollection(row["icWW"])
+        icWW_flux = ee.ImageCollection(row["icWW"])
+        
+        #icWW_volume =icWW_flux.map(fluxToVolume)
             
         month =12
         for year in range(YEARMIN,YEARMAX+1):
@@ -193,23 +194,36 @@ for index, row in df.iterrows():
             iQmax = iQ.select(["max"])  # maximum discharge per basin in million m^3
             iQsum = iQ.select(["sum"])  # sum discharge per basin in million m^3 of all sinks as identied. 
             
-            iQsum30s = iQsum.reduceResolution(
-              reducer = ee.Reducer.mode(),
-              maxPixels =  1024
-                ).reproject(
-              crs =   crs30s
-            )
+            iQsum30s,zoneList,valueList,countList = zonalStatsToRaster(iQsum,zones30s,geometrySmall,1e10,"mode")
+            iQmax30s,zoneList2,valueList2,countList2 = zonalStatsToRaster(iQmax,zones30s,geometrySmall,1e10,"mode")
             
-        
+            
+            # WS = WW/BA
+            
+            WS = iQsum30s.divide(icWW_flux)
+            
+            
         
     elif row["temporalResolution"] == "month":      
         createCollections(row["newIcId"])
         icQ = ee.ImageCollection(row["icQ"])
-        icWW = ee.ImageCollection(row["icWW"])
+        icWW_flux = ee.ImageCollection(row["icWW"])
+        
+        #icWW_volume =icWW_flux.map(fluxToVolume)
         
         for year in range(YEARMIN,YEARMAX+1): 
             for month in range(1,13):
                 print(year,month)
+
+
+# In[23]:
+
+dictionary = dict(zip(zoneList.getInfo(), zoneList.getInfo()))
+
+
+# In[24]:
+
+
 
 
 # In[ ]:
