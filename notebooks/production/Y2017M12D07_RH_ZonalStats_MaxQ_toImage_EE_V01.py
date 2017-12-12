@@ -104,7 +104,7 @@ def createIndicatorDataFrame():
     for temporalResolution in temporalResolutions:
         newRow = {}
         newRow["temporalResolution"] = temporalResolution
-        newRow["icID"] = "%s/global_historical_availableriverdischarge_%s_millionm3_5minPfaf6_1960_2014" %(EE_PATH,temporalResolution)
+        newRow["icID"] = "%s/global_historical_availableriverdischarge_%s_millionm3_5minPfaf06_1960_2014" %(EE_PATH,temporalResolution)
         newRow["units"] = "millionm3"
         
         indicatorDf = indicatorDf.append(newRow,ignore_index=True)

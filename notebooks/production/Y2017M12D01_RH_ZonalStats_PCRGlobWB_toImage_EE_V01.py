@@ -23,7 +23,7 @@ EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 SCRIPT_NAME = "Y2017M12D01_RH_ZonalStats_PCRGlobWB_toImage_EE_V01"
 
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 5
 
 PFAF_LEVEL = 6
 
@@ -73,6 +73,9 @@ area5min = ee.Image("%s/area_5min_m2V11" %(EE_PATH))
 dimensions5min = "%sx%s" %(DIMENSION5MIN["x"],DIMENSION5MIN["y"])
 dimensions30s = "%sx%s" %(DIMENSION30S["x"],DIMENSION30S["y"])
 
+dimensions5minSmall = "%sx%s" %(DIMENSION5MIN["x"],int(0.9*DIMENSION5MIN["y"]))
+dimensions30sSmall = "%sx%s" %(DIMENSION30S["x"],int(0.9*DIMENSION30S["y"]))
+
 
 # In[7]:
 
@@ -100,33 +103,65 @@ crsTransform30s = [
 
 # In[9]:
 
-geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
-
-if TESTING ==1:
-    geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+crsTransform5minSmall = [
+    360.0 / DIMENSION5MIN["x"], 
+    0,
+    -180,
+    0,
+    -162.0 / (0.9* DIMENSION5MIN["y"]),
+    81   
+]
 
 
 # In[10]:
+
+crsTransform30sSmall = [
+    360.0 / DIMENSION30S["x"], 
+    0,
+    -180,
+    0,
+    -162.0 / (0.9* DIMENSION30S["y"]),
+    81   
+]
+
+
+# In[11]:
+
+crsTransform30sSmall
+
+
+# In[12]:
+
+geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+geometrySmall = ee.Geometry.Polygon(coords=[[-180.0, -81.0], [180,  -81.0], [180, 81], [-180,81]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+
+if TESTING ==1:
+    geometrySmall = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+
+
+# In[13]:
 
 demandSectors = ["PDom","PInd","PIrr","PLiv","PTot"]
 demandTypes = ["WW","WN"]
 temporalResolutions = ["year","month"]
 
-supplySectors = ["runoff","riverdischarge"]
+#supplySectors = ["runoff","riverdischarge"].
+supplySectors =[]
 
 
 # Because running takes so long I will run the most important datasets first
 
-# In[11]:
+# In[14]:
 
 demandSectors = ["PTot"]
 demandTypes = ["WW"]
 temporalResolutions = ["month"]
 
-supplySectors = ["riverdischarge"]
+#supplySectors = ["riverdischarge"]
+supplySectors =[]
 
 
-# In[12]:
+# In[15]:
 
 def createIndicatorDataFrame():
     indicatorDf = pd.DataFrame()
@@ -193,7 +228,7 @@ def zonalStatsToImage(image):
     totalImage = totalImage.select(totalImage.bandNames(),["flux","zones"])
     resultsList = ee.List(
       totalImage.reduceRegion(
-        geometry= geometry,
+        geometry= geometrySmall,
         reducer= reducer,
         scale= hybasScale,
         maxPixels=1e10
@@ -224,6 +259,7 @@ def zonalStatsToImage(image):
     
     resultImage = resultImage.set(properties)
     
+    
     newAssetID = "%s/global_historical_%s%s_%s_m_pfaf%0.2d_1960_2014Y%0.4dM%0.2d" %(newIcID,row["sector"],row["demandType"],row["temporalResolution"],PFAF_LEVEL,year,month)
     logger.debug(newAssetID)
     description = "%sV%0.2d" %(exportdescription, OUTPUT_VERSION)
@@ -232,9 +268,11 @@ def zonalStatsToImage(image):
         image =  ee.Image(resultImage),
         description = description,
         assetId = newAssetID,
-        dimensions = dimensions30s,
+        #region = geometrySmall.bounds().getInfo()['coordinates'][0],
+        dimensions = dimensions30sSmall,
+        #scale = scale30s,
         crs = CRS,    
-        crsTransform = crsTransform30s,
+        crsTransform = crsTransform30sSmall,
         maxPixels = 1e10    
     )
     task.start()     
@@ -242,31 +280,31 @@ def zonalStatsToImage(image):
     return ee.Image(resultImage)
 
 
-# In[13]:
+# In[16]:
 
 indicatorDf = createIndicatorDataFrame()
 
 
-# In[14]:
+# In[17]:
 
 hydroBasin, hybasScale = createBasinsImage(PFAF_LEVEL)
 
 
-# In[15]:
+# In[18]:
 
 indicatorDf
 
 
-# In[ ]:
+# In[19]:
 
 reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
 
 
-# In[ ]:
+# In[20]:
 
-for index, row in indicatorDf.iterrows():
-    print(row["icID"])
+for index, row in indicatorDf.iterrows():    
     newIcID = createCollections(row["sector"],row["demandType"],row["temporalResolution"])
+    print(newIcID)
     ic = ee.ImageCollection(row["icID"])
     
     if row["temporalResolution"] == "year":
@@ -285,9 +323,14 @@ for index, row in indicatorDf.iterrows():
     
 
 
-# In[ ]:
+# In[21]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+
 
