@@ -175,5 +175,7 @@ exportAsset(area5minBasinMode,"area_5minpfaf%0.2dMode_m2_V%0.2d" %(PFAF_LEVEL,OU
 
 # In[ ]:
 
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
