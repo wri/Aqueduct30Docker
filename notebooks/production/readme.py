@@ -67,10 +67,11 @@
 # 1. **Y2017M12D07_RH_ZonalStats_MaxQ_toImage_EE_V01**  
 #     find conservative and global max discharge value per Hydrobasin level 6 and export to imageCollection. 
 # 1. **Y2017M12D12_RH_Zonal_Areas_EE_V01**  
-#     create raster images with the area per basin at 5min and 30s resolution
-#     
+#     create raster images with the area per basin at 5min and 30s resolution    
 # 1. **Y2017M12D12_RH_Water_Stress_EE_V02**  
 #     Calculate water stress using maximum discharge and total withdrawals  
+# 1. **Y2017M12D15_RH_Statistics_Trend_EE_V01**  
+#     Calculate short term and long term average and 2014_trend for Q, WW and WN per basin
 #     
 #     
 #     

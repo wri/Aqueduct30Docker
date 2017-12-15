@@ -154,7 +154,7 @@ supplySectors =[]
 # In[14]:
 
 demandSectors = ["PTot"]
-demandTypes = ["WW"]
+demandTypes = ["WN"]
 temporalResolutions = ["month"]
 
 #supplySectors = ["riverdischarge"]

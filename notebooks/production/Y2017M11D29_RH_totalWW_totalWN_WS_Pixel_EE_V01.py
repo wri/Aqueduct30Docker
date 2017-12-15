@@ -34,6 +34,9 @@ MAXPIXELS =1e10
 YEARMIN = 1960
 YEARMAX = 2014
 
+YEARMIN = 1960
+YEARMAX = 1960
+
 
 # In[3]:
 
@@ -229,7 +232,7 @@ for demandType in demandTypes:
 
 # In[10]:
 
-"""
+
 startLoop = datetime.datetime.now()
 for demandType in demandTypes:
     for temporalResolution in temporalResolutions:
@@ -244,7 +247,7 @@ for demandType in demandTypes:
                         totalDemand(year,month,demandType,temporalResolution)
             elif temporalResolution == "month":
                 for year in range(YEARMIN,YEARMAX+1): 
-                    for month in range(1,13):
+                    for month in range(1,2):
                         if existing(year,month,temporalResolution,demandType):
                             pass
                             logger.debug("exists %0.4d %0.2d %s %s" %(year,month,temporalResolution,demandType))
@@ -253,45 +256,41 @@ for demandType in demandTypes:
                             totalDemand(year,month,demandType,temporalResolution)
         except:
             logger.error("error")
-"""
 
 
-# ### Water Stress at Pixel level
+# ### Water Stress at Pixel level, NOT USED
 
-# In[11]:
+# In[ ]:
 
-for temporalResolution in temporalResolutions:
-    createCollectionsWS(temporalResolution)
-
-
-# In[12]:
-
-startLoop = datetime.datetime.now()
-for temporalResolution in temporalResolutions:
-    try:
-        if temporalResolution == "year":
-            month = 12
-            for year in range(YEARMIN,YEARMAX+1):
-                if existingWS(year,month,temporalResolution):
-                    logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
-
-                else:
-                    waterStressUncapped(year,month,temporalResolution)
-                    logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
-        elif temporalResolution == "month":
-            for year in range(YEARMIN,YEARMAX+1): 
-                for month in range(1,13):
-                    if existingWS(year,month,temporalResolution):
-                        logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
-
-                    else:
-                        waterStressUncapped(year,month,temporalResolution)
-                        logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
-    except:
-        logger.exception("error  %0.4d %0.2d %s" %(year,month,temporalResolution))
+#for temporalResolution in temporalResolutions:
+#    createCollectionsWS(temporalResolution)
 
 
-# In[13]:
+# startLoop = datetime.datetime.now()
+# for temporalResolution in temporalResolutions:
+#     try:
+#         if temporalResolution == "year":
+#             month = 12
+#             for year in range(YEARMIN,YEARMAX+1):
+#                 if existingWS(year,month,temporalResolution):
+#                     logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
+# 
+#                 else:
+#                     waterStressUncapped(year,month,temporalResolution)
+#                     logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
+#         elif temporalResolution == "month":
+#             for year in range(YEARMIN,YEARMAX+1): 
+#                 for month in range(1,13):
+#                     if existingWS(year,month,temporalResolution):
+#                         logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
+# 
+#                     else:
+#                         waterStressUncapped(year,month,temporalResolution)
+#                         logger.debug("exists %0.4d %0.2d %s" %(year,month,temporalResolution))
+#     except:
+#         logger.exception("error  %0.4d %0.2d %s" %(year,month,temporalResolution))
+
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start

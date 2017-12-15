@@ -23,7 +23,7 @@ EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 SCRIPT_NAME = "Y2017M12D12_RH_Water_Stress_EE_V02"
 
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 4
 
 PFAF_LEVEL = 6
 
@@ -77,6 +77,7 @@ def createIndicatorDataFrame():
         newRow["temporalResolution"] = temporalResolution
         newRow["icWW"] = "%s/global_historical_PTotWW_%s_m_pfaf%0.2d_1960_2014" %(EE_PATH,temporalResolution,PFAF_LEVEL)
         newRow["icQ"] = "%s/global_historical_availableriverdischarge_%s_millionm3_5minPfaf%0.1d_1960_2014" %(EE_PATH,temporalResolution,PFAF_LEVEL)
+        newRow["icWN"] = "%s/global_historical_PTotWN_%s_m_pfaf%0.2d_1960_2014" %(EE_PATH,temporalResolution,PFAF_LEVEL)
         newRow["newIcId"] = "%s/global_historical_WS_%s_dimensionless_30sPfaf%0.2d_1960_2014" %(EE_PATH,temporalResolution,PFAF_LEVEL)
         df = df.append(newRow,ignore_index=True)
     return df
@@ -143,7 +144,7 @@ def fluxToVolume(image):
     return newImage
   
     
-def calculateWS(iQ,iWW,scale30s):            
+def calculateWS(iQ,iWW,iWN,scale30s):            
     iQmax = iQ.select(["max"])  # maximum discharge per basin in million m^3
     iQsum = iQ.select(["sum"])  # sum discharge per basin in million m^3 of all sinks as identied. 
 
@@ -154,14 +155,20 @@ def calculateWS(iQ,iWW,scale30s):
     useLargest = dif.lte(THRESHOLD)  # use largest of max(sum,max) when difference below threshold
     useSum = dif.gt(THRESHOLD) # use sum when above threshold. If max is much larger than sum, this is an indication of a confluence at the edge of a basin. 
 
-    totalImage =  useLargest.multiply(iQmax30s.max(iQsum30s))
-    totalImage = totalImage.add(useSum.multiply(iQsum30s))
-
-    iWS = iWW.divide(totalImage)
-
-    iWS = iWS.select(["mean"],["b1"])
-
-    return iWS
+    iQ =  useLargest.multiply(iQmax30s.max(iQsum30s))
+    iQ = iQ.add(useSum.multiply(iQsum30s))
+    
+    iQ  = iQ .select(iQ.bandNames(),["Q_millionm3"])    
+    iWN = iWN.select(iWN.bandNames(),["WN_millionm3"])
+    iWW = iWW.select(iWW.bandNames(),["WW_millionm3"])
+    
+    # add local consumption to available supply. No threshold is used so WN can be larger than Q per cell. 
+    iBA = iQ.add(iWN)            
+    iWS = iWW.divide(iBA)
+    iWS = iWS.select(iWS.bandNames(),["WS_dimensionless"])
+    
+    imageOut = iWS.addBands(iQ).addBands(iWW).addBands(iWN)
+    return imageOut
     
 
 
@@ -245,15 +252,18 @@ for index, row in df.iterrows():
         createCollections(row["newIcId"])        
         icQ = ee.ImageCollection(row["icQ"])
         icWW_flux = ee.ImageCollection(row["icWW"])
+        icWN_flux = ee.ImageCollection(row["icWN"])
         
         icWW_volume =icWW_flux.map(fluxToVolume) # units millionm3
+        icWN_volume =icWN_flux.map(fluxToVolume) # units millionm3
         
         month =12
         for year in range(YEARMIN,YEARMAX+1):
             iQ = ee.Image(icQ.filter(ee.Filter.eq("year",year)).first()) 
             iWW = ee.Image(icWW_volume.filter(ee.Filter.eq("year",year)).first()).select(["mean"])
+            iWN = ee.Image(icWN_volume.filter(ee.Filter.eq("year",year)).first()).select(["mean"])
             
-            iWS = calculateWS(iQ,iWW,scale30s)
+            iWS = calculateWS(iQ,iWW,iWN,scale30s)
                                   
             properties = {"script_used":SCRIPT_NAME,
                           "ingested_by":"RutgerHofste",
@@ -272,15 +282,18 @@ for index, row in df.iterrows():
         createCollections(row["newIcId"])
         icQ = ee.ImageCollection(row["icQ"])
         icWW_flux = ee.ImageCollection(row["icWW"])
+        icWN_flux = ee.ImageCollection(row["icWN"])
         
         icWW_volume =icWW_flux.map(fluxToVolume) # units millionm3
+        icWN_volume =icWN_flux.map(fluxToVolume) # units millionm3
                 
         for year in range(YEARMIN,YEARMAX+1): 
             for month in range(1,13):
                 iQ = ee.Image(icQ.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first()) 
                 iWW = ee.Image(icWW_volume.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first()).select(["mean"])
-                                
-                iWS = calculateWS(iQ,iWW,scale30s)
+                iWN = ee.Image(icWN_volume.filter(ee.Filter.eq("year",year)).filter(ee.Filter.eq("month",month)).first()).select(["mean"])
+                    
+                iWS = calculateWS(iQ,iWW,iWN,scale30s)
 
                 properties = {"script_used":SCRIPT_NAME,
                               "ingested_by":"RutgerHofste",

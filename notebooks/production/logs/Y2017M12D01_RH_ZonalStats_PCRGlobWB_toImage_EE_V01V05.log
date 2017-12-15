@@ -1438,3 +1438,1435 @@
 2017-12-12 14:23:10,457:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014/global_historical_PTotWW_month_m_pfaf06_1960_2014Y2014M11
 2017-12-12 14:23:12,506:DEBUG:0 Year 2014 Month 12
 2017-12-12 14:23:12,508:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014/global_historical_PTotWW_month_m_pfaf06_1960_2014Y2014M12
+2017-12-14 15:49:42,360:DEBUG:0 1960
+2017-12-14 15:49:42,365:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1960M12
+2017-12-14 15:49:44,072:DEBUG:0 1961
+2017-12-14 15:49:44,075:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1961M12
+2017-12-14 15:49:45,878:DEBUG:0 1962
+2017-12-14 15:49:45,881:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1962M12
+2017-12-14 15:49:47,642:DEBUG:0 1963
+2017-12-14 15:49:47,645:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1963M12
+2017-12-14 15:49:49,447:DEBUG:0 1964
+2017-12-14 15:49:49,449:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1964M12
+2017-12-14 15:49:51,265:DEBUG:0 1965
+2017-12-14 15:49:51,267:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1965M12
+2017-12-14 15:49:53,073:DEBUG:0 1966
+2017-12-14 15:49:53,076:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1966M12
+2017-12-14 15:49:54,908:DEBUG:0 1967
+2017-12-14 15:49:54,910:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1967M12
+2017-12-14 15:49:56,660:DEBUG:0 1968
+2017-12-14 15:49:56,662:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1968M12
+2017-12-14 15:49:58,377:DEBUG:0 1969
+2017-12-14 15:49:58,379:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1969M12
+2017-12-14 15:50:00,142:DEBUG:0 1970
+2017-12-14 15:50:00,145:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1970M12
+2017-12-14 15:50:01,795:DEBUG:0 1971
+2017-12-14 15:50:01,797:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1971M12
+2017-12-14 15:50:03,694:DEBUG:0 1972
+2017-12-14 15:50:03,697:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1972M12
+2017-12-14 15:50:05,427:DEBUG:0 1973
+2017-12-14 15:50:05,430:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1973M12
+2017-12-14 15:50:07,165:DEBUG:0 1974
+2017-12-14 15:50:07,168:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1974M12
+2017-12-14 15:50:08,899:DEBUG:0 1975
+2017-12-14 15:50:08,901:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1975M12
+2017-12-14 15:50:10,645:DEBUG:0 1976
+2017-12-14 15:50:10,647:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1976M12
+2017-12-14 15:50:12,411:DEBUG:0 1977
+2017-12-14 15:50:12,414:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1977M12
+2017-12-14 15:50:14,251:DEBUG:0 1978
+2017-12-14 15:50:14,253:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1978M12
+2017-12-14 15:50:15,926:DEBUG:0 1979
+2017-12-14 15:50:15,928:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1979M12
+2017-12-14 15:50:17,681:DEBUG:0 1980
+2017-12-14 15:50:17,684:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1980M12
+2017-12-14 15:50:19,450:DEBUG:0 1981
+2017-12-14 15:50:19,453:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1981M12
+2017-12-14 15:50:21,231:DEBUG:0 1982
+2017-12-14 15:50:21,233:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1982M12
+2017-12-14 15:50:22,991:DEBUG:0 1983
+2017-12-14 15:50:22,994:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1983M12
+2017-12-14 15:50:24,832:DEBUG:0 1984
+2017-12-14 15:50:24,835:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1984M12
+2017-12-14 15:50:26,551:DEBUG:0 1985
+2017-12-14 15:50:26,553:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1985M12
+2017-12-14 15:50:28,461:DEBUG:0 1986
+2017-12-14 15:50:28,464:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1986M12
+2017-12-14 15:50:30,244:DEBUG:0 1987
+2017-12-14 15:50:30,247:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1987M12
+2017-12-14 15:50:31,975:DEBUG:0 1988
+2017-12-14 15:50:31,977:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1988M12
+2017-12-14 15:50:33,184:DEBUG:0 1989
+2017-12-14 15:50:33,187:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1989M12
+2017-12-14 15:50:35,022:DEBUG:0 1990
+2017-12-14 15:50:35,025:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1990M12
+2017-12-14 15:50:36,703:DEBUG:0 1991
+2017-12-14 15:50:36,706:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1991M12
+2017-12-14 15:50:38,480:DEBUG:0 1992
+2017-12-14 15:50:38,482:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1992M12
+2017-12-14 15:50:39,764:DEBUG:0 1993
+2017-12-14 15:50:39,766:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1993M12
+2017-12-14 15:50:41,404:DEBUG:0 1994
+2017-12-14 15:50:41,407:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1994M12
+2017-12-14 15:50:43,219:DEBUG:0 1995
+2017-12-14 15:50:43,222:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1995M12
+2017-12-14 15:50:45,227:DEBUG:0 1996
+2017-12-14 15:50:45,229:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1996M12
+2017-12-14 15:50:47,115:DEBUG:0 1997
+2017-12-14 15:50:47,117:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1997M12
+2017-12-14 15:50:48,904:DEBUG:0 1998
+2017-12-14 15:50:48,907:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1998M12
+2017-12-14 15:50:50,568:DEBUG:0 1999
+2017-12-14 15:50:50,571:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y1999M12
+2017-12-14 15:50:52,368:DEBUG:0 2000
+2017-12-14 15:50:52,370:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2000M12
+2017-12-14 15:50:53,710:DEBUG:0 2001
+2017-12-14 15:50:53,713:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2001M12
+2017-12-14 15:50:55,049:DEBUG:0 2002
+2017-12-14 15:50:55,052:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2002M12
+2017-12-14 15:50:56,782:DEBUG:0 2003
+2017-12-14 15:50:56,784:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2003M12
+2017-12-14 15:50:58,488:DEBUG:0 2004
+2017-12-14 15:50:58,490:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2004M12
+2017-12-14 15:51:00,227:DEBUG:0 2005
+2017-12-14 15:51:00,230:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2005M12
+2017-12-14 15:51:01,973:DEBUG:0 2006
+2017-12-14 15:51:01,975:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2006M12
+2017-12-14 15:51:03,753:DEBUG:0 2007
+2017-12-14 15:51:03,756:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2007M12
+2017-12-14 15:51:05,578:DEBUG:0 2008
+2017-12-14 15:51:05,580:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2008M12
+2017-12-14 15:51:07,288:DEBUG:0 2009
+2017-12-14 15:51:07,290:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2009M12
+2017-12-14 15:51:09,053:DEBUG:0 2010
+2017-12-14 15:51:09,056:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2010M12
+2017-12-14 15:51:10,827:DEBUG:0 2011
+2017-12-14 15:51:10,829:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2011M12
+2017-12-14 15:51:12,518:DEBUG:0 2012
+2017-12-14 15:51:12,520:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2012M12
+2017-12-14 15:51:14,300:DEBUG:0 2013
+2017-12-14 15:51:14,303:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2013M12
+2017-12-14 15:51:16,115:DEBUG:0 2014
+2017-12-14 15:51:16,118:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_year_m_pfaf06_1960_2014/global_historical_PTotWN_year_m_pfaf06_1960_2014Y2014M12
+2017-12-14 16:46:36,396:ERROR:Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014 already exists
+
+2017-12-14 16:46:36,397:DEBUG:0 Year 1960 Month 01
+2017-12-14 16:46:36,401:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M01
+2017-12-14 16:46:38,222:DEBUG:0 Year 1960 Month 02
+2017-12-14 16:46:38,225:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M02
+2017-12-14 16:46:40,035:DEBUG:0 Year 1960 Month 03
+2017-12-14 16:46:40,037:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M03
+2017-12-14 16:46:41,847:DEBUG:0 Year 1960 Month 04
+2017-12-14 16:46:41,849:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M04
+2017-12-14 16:46:43,582:DEBUG:0 Year 1960 Month 05
+2017-12-14 16:46:43,584:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M05
+2017-12-14 16:46:45,393:DEBUG:0 Year 1960 Month 06
+2017-12-14 16:46:45,396:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M06
+2017-12-14 16:46:47,091:DEBUG:0 Year 1960 Month 07
+2017-12-14 16:46:47,094:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M07
+2017-12-14 16:46:48,843:DEBUG:0 Year 1960 Month 08
+2017-12-14 16:46:48,845:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M08
+2017-12-14 16:46:50,587:DEBUG:0 Year 1960 Month 09
+2017-12-14 16:46:50,590:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M09
+2017-12-14 16:46:52,363:DEBUG:0 Year 1960 Month 10
+2017-12-14 16:46:52,366:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M10
+2017-12-14 16:46:54,216:DEBUG:0 Year 1960 Month 11
+2017-12-14 16:46:54,219:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M11
+2017-12-14 16:46:56,020:DEBUG:0 Year 1960 Month 12
+2017-12-14 16:46:56,023:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1960M12
+2017-12-14 16:46:57,809:DEBUG:0 Year 1961 Month 01
+2017-12-14 16:46:57,812:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M01
+2017-12-14 16:46:59,619:DEBUG:0 Year 1961 Month 02
+2017-12-14 16:46:59,622:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M02
+2017-12-14 16:47:01,461:DEBUG:0 Year 1961 Month 03
+2017-12-14 16:47:01,463:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M03
+2017-12-14 16:47:03,170:DEBUG:0 Year 1961 Month 04
+2017-12-14 16:47:03,173:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M04
+2017-12-14 16:47:04,884:DEBUG:0 Year 1961 Month 05
+2017-12-14 16:47:04,887:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M05
+2017-12-14 16:47:06,600:DEBUG:0 Year 1961 Month 06
+2017-12-14 16:47:06,602:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M06
+2017-12-14 16:47:08,298:DEBUG:0 Year 1961 Month 07
+2017-12-14 16:47:08,301:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M07
+2017-12-14 16:47:10,061:DEBUG:0 Year 1961 Month 08
+2017-12-14 16:47:10,064:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M08
+2017-12-14 16:47:11,810:DEBUG:0 Year 1961 Month 09
+2017-12-14 16:47:11,813:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M09
+2017-12-14 16:47:13,541:DEBUG:0 Year 1961 Month 10
+2017-12-14 16:47:13,544:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M10
+2017-12-14 16:47:15,280:DEBUG:0 Year 1961 Month 11
+2017-12-14 16:47:15,283:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M11
+2017-12-14 16:47:17,081:DEBUG:0 Year 1961 Month 12
+2017-12-14 16:47:17,084:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1961M12
+2017-12-14 16:47:18,848:DEBUG:0 Year 1962 Month 01
+2017-12-14 16:47:18,851:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M01
+2017-12-14 16:47:20,596:DEBUG:0 Year 1962 Month 02
+2017-12-14 16:47:20,598:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M02
+2017-12-14 16:47:22,399:DEBUG:0 Year 1962 Month 03
+2017-12-14 16:47:22,402:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M03
+2017-12-14 16:47:24,155:DEBUG:0 Year 1962 Month 04
+2017-12-14 16:47:24,157:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M04
+2017-12-14 16:47:25,850:DEBUG:0 Year 1962 Month 05
+2017-12-14 16:47:25,853:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M05
+2017-12-14 16:47:27,580:DEBUG:0 Year 1962 Month 06
+2017-12-14 16:47:27,583:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M06
+2017-12-14 16:47:29,409:DEBUG:0 Year 1962 Month 07
+2017-12-14 16:47:29,412:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M07
+2017-12-14 16:47:31,194:DEBUG:0 Year 1962 Month 08
+2017-12-14 16:47:31,197:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M08
+2017-12-14 16:47:33,368:DEBUG:0 Year 1962 Month 09
+2017-12-14 16:47:33,371:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M09
+2017-12-14 16:47:35,212:DEBUG:0 Year 1962 Month 10
+2017-12-14 16:47:35,214:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M10
+2017-12-14 16:47:37,004:DEBUG:0 Year 1962 Month 11
+2017-12-14 16:47:37,007:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M11
+2017-12-14 16:47:39,212:DEBUG:0 Year 1962 Month 12
+2017-12-14 16:47:39,215:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1962M12
+2017-12-14 16:47:40,944:DEBUG:0 Year 1963 Month 01
+2017-12-14 16:47:40,947:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M01
+2017-12-14 16:47:42,685:DEBUG:0 Year 1963 Month 02
+2017-12-14 16:47:42,688:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M02
+2017-12-14 16:47:44,598:DEBUG:0 Year 1963 Month 03
+2017-12-14 16:47:44,601:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M03
+2017-12-14 16:47:46,356:DEBUG:0 Year 1963 Month 04
+2017-12-14 16:47:46,359:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M04
+2017-12-14 16:47:48,141:DEBUG:0 Year 1963 Month 05
+2017-12-14 16:47:48,144:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M05
+2017-12-14 16:47:50,288:DEBUG:0 Year 1963 Month 06
+2017-12-14 16:47:50,291:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M06
+2017-12-14 16:47:51,976:DEBUG:0 Year 1963 Month 07
+2017-12-14 16:47:51,979:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M07
+2017-12-14 16:47:53,784:DEBUG:0 Year 1963 Month 08
+2017-12-14 16:47:53,787:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M08
+2017-12-14 16:47:55,598:DEBUG:0 Year 1963 Month 09
+2017-12-14 16:47:55,601:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M09
+2017-12-14 16:47:57,417:DEBUG:0 Year 1963 Month 10
+2017-12-14 16:47:57,420:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M10
+2017-12-14 16:47:59,797:DEBUG:0 Year 1963 Month 11
+2017-12-14 16:47:59,800:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M11
+2017-12-14 16:48:01,559:DEBUG:0 Year 1963 Month 12
+2017-12-14 16:48:01,561:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1963M12
+2017-12-14 16:48:03,352:DEBUG:0 Year 1964 Month 01
+2017-12-14 16:48:03,355:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M01
+2017-12-14 16:48:05,099:DEBUG:0 Year 1964 Month 02
+2017-12-14 16:48:05,102:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M02
+2017-12-14 16:48:06,818:DEBUG:0 Year 1964 Month 03
+2017-12-14 16:48:06,820:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M03
+2017-12-14 16:48:08,539:DEBUG:0 Year 1964 Month 04
+2017-12-14 16:48:08,541:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M04
+2017-12-14 16:48:10,353:DEBUG:0 Year 1964 Month 05
+2017-12-14 16:48:10,355:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M05
+2017-12-14 16:48:12,202:DEBUG:0 Year 1964 Month 06
+2017-12-14 16:48:12,205:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M06
+2017-12-14 16:48:14,055:DEBUG:0 Year 1964 Month 07
+2017-12-14 16:48:14,058:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M07
+2017-12-14 16:48:15,994:DEBUG:0 Year 1964 Month 08
+2017-12-14 16:48:15,997:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M08
+2017-12-14 16:48:17,720:DEBUG:0 Year 1964 Month 09
+2017-12-14 16:48:17,723:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M09
+2017-12-14 16:48:19,423:DEBUG:0 Year 1964 Month 10
+2017-12-14 16:48:19,426:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M10
+2017-12-14 16:48:21,235:DEBUG:0 Year 1964 Month 11
+2017-12-14 16:48:21,238:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M11
+2017-12-14 16:48:22,985:DEBUG:0 Year 1964 Month 12
+2017-12-14 16:48:22,988:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1964M12
+2017-12-14 16:48:24,720:DEBUG:0 Year 1965 Month 01
+2017-12-14 16:48:24,723:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M01
+2017-12-14 16:48:26,466:DEBUG:0 Year 1965 Month 02
+2017-12-14 16:48:26,468:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M02
+2017-12-14 16:48:28,240:DEBUG:0 Year 1965 Month 03
+2017-12-14 16:48:28,243:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M03
+2017-12-14 16:48:30,090:DEBUG:0 Year 1965 Month 04
+2017-12-14 16:48:30,092:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M04
+2017-12-14 16:48:31,861:DEBUG:0 Year 1965 Month 05
+2017-12-14 16:48:31,863:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M05
+2017-12-14 16:48:33,825:DEBUG:0 Year 1965 Month 06
+2017-12-14 16:48:33,828:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M06
+2017-12-14 16:48:35,703:DEBUG:0 Year 1965 Month 07
+2017-12-14 16:48:35,706:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M07
+2017-12-14 16:48:37,805:DEBUG:0 Year 1965 Month 08
+2017-12-14 16:48:37,808:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M08
+2017-12-14 16:48:39,555:DEBUG:0 Year 1965 Month 09
+2017-12-14 16:48:39,557:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M09
+2017-12-14 16:48:41,305:DEBUG:0 Year 1965 Month 10
+2017-12-14 16:48:41,308:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M10
+2017-12-14 16:48:43,098:DEBUG:0 Year 1965 Month 11
+2017-12-14 16:48:43,101:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M11
+2017-12-14 16:48:45,066:DEBUG:0 Year 1965 Month 12
+2017-12-14 16:48:45,068:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1965M12
+2017-12-14 16:48:46,777:DEBUG:0 Year 1966 Month 01
+2017-12-14 16:48:46,780:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M01
+2017-12-14 16:48:48,475:DEBUG:0 Year 1966 Month 02
+2017-12-14 16:48:48,478:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M02
+2017-12-14 16:48:50,177:DEBUG:0 Year 1966 Month 03
+2017-12-14 16:48:50,180:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M03
+2017-12-14 16:48:52,096:DEBUG:0 Year 1966 Month 04
+2017-12-14 16:48:52,099:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M04
+2017-12-14 16:48:53,926:DEBUG:0 Year 1966 Month 05
+2017-12-14 16:48:53,928:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M05
+2017-12-14 16:48:55,720:DEBUG:0 Year 1966 Month 06
+2017-12-14 16:48:55,722:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M06
+2017-12-14 16:48:57,526:DEBUG:0 Year 1966 Month 07
+2017-12-14 16:48:57,529:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M07
+2017-12-14 16:48:59,287:DEBUG:0 Year 1966 Month 08
+2017-12-14 16:48:59,290:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M08
+2017-12-14 16:49:01,003:DEBUG:0 Year 1966 Month 09
+2017-12-14 16:49:01,006:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M09
+2017-12-14 16:49:03,097:DEBUG:0 Year 1966 Month 10
+2017-12-14 16:49:03,100:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M10
+2017-12-14 16:49:04,845:DEBUG:0 Year 1966 Month 11
+2017-12-14 16:49:04,848:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M11
+2017-12-14 16:49:06,570:DEBUG:0 Year 1966 Month 12
+2017-12-14 16:49:06,572:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1966M12
+2017-12-14 16:49:08,319:DEBUG:0 Year 1967 Month 01
+2017-12-14 16:49:08,322:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M01
+2017-12-14 16:49:10,064:DEBUG:0 Year 1967 Month 02
+2017-12-14 16:49:10,067:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M02
+2017-12-14 16:49:11,848:DEBUG:0 Year 1967 Month 03
+2017-12-14 16:49:11,851:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M03
+2017-12-14 16:49:13,599:DEBUG:0 Year 1967 Month 04
+2017-12-14 16:49:13,602:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M04
+2017-12-14 16:49:15,386:DEBUG:0 Year 1967 Month 05
+2017-12-14 16:49:15,389:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M05
+2017-12-14 16:49:17,203:DEBUG:0 Year 1967 Month 06
+2017-12-14 16:49:17,206:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M06
+2017-12-14 16:49:18,973:DEBUG:0 Year 1967 Month 07
+2017-12-14 16:49:18,976:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M07
+2017-12-14 16:49:20,736:DEBUG:0 Year 1967 Month 08
+2017-12-14 16:49:20,738:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M08
+2017-12-14 16:49:22,526:DEBUG:0 Year 1967 Month 09
+2017-12-14 16:49:22,529:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M09
+2017-12-14 16:49:24,226:DEBUG:0 Year 1967 Month 10
+2017-12-14 16:49:24,228:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M10
+2017-12-14 16:49:25,929:DEBUG:0 Year 1967 Month 11
+2017-12-14 16:49:25,932:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M11
+2017-12-14 16:49:27,709:DEBUG:0 Year 1967 Month 12
+2017-12-14 16:49:27,711:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1967M12
+2017-12-14 16:49:29,559:DEBUG:0 Year 1968 Month 01
+2017-12-14 16:49:29,562:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M01
+2017-12-14 16:49:31,248:DEBUG:0 Year 1968 Month 02
+2017-12-14 16:49:31,251:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M02
+2017-12-14 16:49:33,023:DEBUG:0 Year 1968 Month 03
+2017-12-14 16:49:33,026:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M03
+2017-12-14 16:49:34,837:DEBUG:0 Year 1968 Month 04
+2017-12-14 16:49:34,840:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M04
+2017-12-14 16:49:36,566:DEBUG:0 Year 1968 Month 05
+2017-12-14 16:49:36,569:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M05
+2017-12-14 16:49:38,365:DEBUG:0 Year 1968 Month 06
+2017-12-14 16:49:38,368:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M06
+2017-12-14 16:49:42,012:DEBUG:0 Year 1968 Month 07
+2017-12-14 16:49:42,015:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M07
+2017-12-14 16:49:43,874:DEBUG:0 Year 1968 Month 08
+2017-12-14 16:49:43,876:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M08
+2017-12-14 16:49:45,705:DEBUG:0 Year 1968 Month 09
+2017-12-14 16:49:45,708:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M09
+2017-12-14 16:49:47,501:DEBUG:0 Year 1968 Month 10
+2017-12-14 16:49:47,504:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M10
+2017-12-14 16:49:49,218:DEBUG:0 Year 1968 Month 11
+2017-12-14 16:49:49,221:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M11
+2017-12-14 16:49:50,992:DEBUG:0 Year 1968 Month 12
+2017-12-14 16:49:50,995:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1968M12
+2017-12-14 16:49:52,743:DEBUG:0 Year 1969 Month 01
+2017-12-14 16:49:52,746:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M01
+2017-12-14 16:49:54,495:DEBUG:0 Year 1969 Month 02
+2017-12-14 16:49:54,497:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M02
+2017-12-14 16:49:56,330:DEBUG:0 Year 1969 Month 03
+2017-12-14 16:49:56,333:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M03
+2017-12-14 16:49:58,184:DEBUG:0 Year 1969 Month 04
+2017-12-14 16:49:58,187:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M04
+2017-12-14 16:49:59,919:DEBUG:0 Year 1969 Month 05
+2017-12-14 16:49:59,921:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M05
+2017-12-14 16:50:01,726:DEBUG:0 Year 1969 Month 06
+2017-12-14 16:50:01,729:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M06
+2017-12-14 16:50:03,078:DEBUG:0 Year 1969 Month 07
+2017-12-14 16:50:03,081:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M07
+2017-12-14 16:50:04,771:DEBUG:0 Year 1969 Month 08
+2017-12-14 16:50:04,774:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M08
+2017-12-14 16:50:06,507:DEBUG:0 Year 1969 Month 09
+2017-12-14 16:50:06,509:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M09
+2017-12-14 16:50:08,316:DEBUG:0 Year 1969 Month 10
+2017-12-14 16:50:08,318:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M10
+2017-12-14 16:50:10,014:DEBUG:0 Year 1969 Month 11
+2017-12-14 16:50:10,016:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M11
+2017-12-14 16:50:11,807:DEBUG:0 Year 1969 Month 12
+2017-12-14 16:50:11,810:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1969M12
+2017-12-14 16:50:13,549:DEBUG:0 Year 1970 Month 01
+2017-12-14 16:50:13,552:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M01
+2017-12-14 16:50:15,271:DEBUG:0 Year 1970 Month 02
+2017-12-14 16:50:15,274:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M02
+2017-12-14 16:50:17,182:DEBUG:0 Year 1970 Month 03
+2017-12-14 16:50:17,185:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M03
+2017-12-14 16:50:18,989:DEBUG:0 Year 1970 Month 04
+2017-12-14 16:50:18,992:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M04
+2017-12-14 16:50:20,766:DEBUG:0 Year 1970 Month 05
+2017-12-14 16:50:20,769:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M05
+2017-12-14 16:50:22,599:DEBUG:0 Year 1970 Month 06
+2017-12-14 16:50:22,602:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M06
+2017-12-14 16:50:24,385:DEBUG:0 Year 1970 Month 07
+2017-12-14 16:50:24,388:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M07
+2017-12-14 16:50:26,195:DEBUG:0 Year 1970 Month 08
+2017-12-14 16:50:26,197:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M08
+2017-12-14 16:50:27,992:DEBUG:0 Year 1970 Month 09
+2017-12-14 16:50:27,995:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M09
+2017-12-14 16:50:29,783:DEBUG:0 Year 1970 Month 10
+2017-12-14 16:50:29,786:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M10
+2017-12-14 16:50:31,533:DEBUG:0 Year 1970 Month 11
+2017-12-14 16:50:31,535:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M11
+2017-12-14 16:50:33,312:DEBUG:0 Year 1970 Month 12
+2017-12-14 16:50:33,315:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1970M12
+2017-12-14 16:50:35,139:DEBUG:0 Year 1971 Month 01
+2017-12-14 16:50:35,141:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M01
+2017-12-14 16:50:36,383:DEBUG:0 Year 1971 Month 02
+2017-12-14 16:50:36,385:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M02
+2017-12-14 16:50:38,161:DEBUG:0 Year 1971 Month 03
+2017-12-14 16:50:38,164:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M03
+2017-12-14 16:50:39,948:DEBUG:0 Year 1971 Month 04
+2017-12-14 16:50:39,951:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M04
+2017-12-14 16:50:41,675:DEBUG:0 Year 1971 Month 05
+2017-12-14 16:50:41,678:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M05
+2017-12-14 16:50:43,519:DEBUG:0 Year 1971 Month 06
+2017-12-14 16:50:43,522:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M06
+2017-12-14 16:50:45,257:DEBUG:0 Year 1971 Month 07
+2017-12-14 16:50:45,260:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M07
+2017-12-14 16:50:47,002:DEBUG:0 Year 1971 Month 08
+2017-12-14 16:50:47,004:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M08
+2017-12-14 16:50:48,872:DEBUG:0 Year 1971 Month 09
+2017-12-14 16:50:48,875:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M09
+2017-12-14 16:50:50,570:DEBUG:0 Year 1971 Month 10
+2017-12-14 16:50:50,573:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M10
+2017-12-14 16:50:52,311:DEBUG:0 Year 1971 Month 11
+2017-12-14 16:50:52,314:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M11
+2017-12-14 16:50:54,128:DEBUG:0 Year 1971 Month 12
+2017-12-14 16:50:54,131:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1971M12
+2017-12-14 16:50:55,858:DEBUG:0 Year 1972 Month 01
+2017-12-14 16:50:55,861:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M01
+2017-12-14 16:50:57,535:DEBUG:0 Year 1972 Month 02
+2017-12-14 16:50:57,537:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M02
+2017-12-14 16:50:59,288:DEBUG:0 Year 1972 Month 03
+2017-12-14 16:50:59,291:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M03
+2017-12-14 16:51:01,122:DEBUG:0 Year 1972 Month 04
+2017-12-14 16:51:01,125:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M04
+2017-12-14 16:51:02,862:DEBUG:0 Year 1972 Month 05
+2017-12-14 16:51:02,865:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M05
+2017-12-14 16:51:04,660:DEBUG:0 Year 1972 Month 06
+2017-12-14 16:51:04,662:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M06
+2017-12-14 16:51:06,393:DEBUG:0 Year 1972 Month 07
+2017-12-14 16:51:06,396:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M07
+2017-12-14 16:51:08,220:DEBUG:0 Year 1972 Month 08
+2017-12-14 16:51:08,223:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M08
+2017-12-14 16:51:10,033:DEBUG:0 Year 1972 Month 09
+2017-12-14 16:51:10,036:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M09
+2017-12-14 16:51:11,817:DEBUG:0 Year 1972 Month 10
+2017-12-14 16:51:11,820:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M10
+2017-12-14 16:51:13,688:DEBUG:0 Year 1972 Month 11
+2017-12-14 16:51:13,691:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M11
+2017-12-14 16:51:15,492:DEBUG:0 Year 1972 Month 12
+2017-12-14 16:51:15,495:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1972M12
+2017-12-14 16:51:17,282:DEBUG:0 Year 1973 Month 01
+2017-12-14 16:51:17,285:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M01
+2017-12-14 16:51:18,603:DEBUG:0 Year 1973 Month 02
+2017-12-14 16:51:18,606:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M02
+2017-12-14 16:51:20,348:DEBUG:0 Year 1973 Month 03
+2017-12-14 16:51:20,351:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M03
+2017-12-14 16:51:22,081:DEBUG:0 Year 1973 Month 04
+2017-12-14 16:51:22,084:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M04
+2017-12-14 16:51:23,811:DEBUG:0 Year 1973 Month 05
+2017-12-14 16:51:23,814:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M05
+2017-12-14 16:51:25,549:DEBUG:0 Year 1973 Month 06
+2017-12-14 16:51:25,552:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M06
+2017-12-14 16:51:27,287:DEBUG:0 Year 1973 Month 07
+2017-12-14 16:51:27,290:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M07
+2017-12-14 16:51:28,972:DEBUG:0 Year 1973 Month 08
+2017-12-14 16:51:28,975:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M08
+2017-12-14 16:51:30,661:DEBUG:0 Year 1973 Month 09
+2017-12-14 16:51:30,664:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M09
+2017-12-14 16:51:32,208:DEBUG:0 Year 1973 Month 10
+2017-12-14 16:51:32,211:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M10
+2017-12-14 16:51:34,025:DEBUG:0 Year 1973 Month 11
+2017-12-14 16:51:34,028:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M11
+2017-12-14 16:51:35,855:DEBUG:0 Year 1973 Month 12
+2017-12-14 16:51:35,858:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1973M12
+2017-12-14 16:51:37,615:DEBUG:0 Year 1974 Month 01
+2017-12-14 16:51:37,617:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M01
+2017-12-14 16:51:39,350:DEBUG:0 Year 1974 Month 02
+2017-12-14 16:51:39,353:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M02
+2017-12-14 16:51:41,052:DEBUG:0 Year 1974 Month 03
+2017-12-14 16:51:41,054:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M03
+2017-12-14 16:51:42,846:DEBUG:0 Year 1974 Month 04
+2017-12-14 16:51:42,849:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M04
+2017-12-14 16:51:44,653:DEBUG:0 Year 1974 Month 05
+2017-12-14 16:51:44,655:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M05
+2017-12-14 16:51:46,507:DEBUG:0 Year 1974 Month 06
+2017-12-14 16:51:46,510:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M06
+2017-12-14 16:51:48,252:DEBUG:0 Year 1974 Month 07
+2017-12-14 16:51:48,255:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M07
+2017-12-14 16:51:50,044:DEBUG:0 Year 1974 Month 08
+2017-12-14 16:51:50,046:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M08
+2017-12-14 16:51:51,774:DEBUG:0 Year 1974 Month 09
+2017-12-14 16:51:51,777:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M09
+2017-12-14 16:51:53,502:DEBUG:0 Year 1974 Month 10
+2017-12-14 16:51:53,504:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M10
+2017-12-14 16:51:55,255:DEBUG:0 Year 1974 Month 11
+2017-12-14 16:51:55,258:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M11
+2017-12-14 16:51:57,017:DEBUG:0 Year 1974 Month 12
+2017-12-14 16:51:57,020:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1974M12
+2017-12-14 16:51:58,755:DEBUG:0 Year 1975 Month 01
+2017-12-14 16:51:58,758:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M01
+2017-12-14 16:52:00,593:DEBUG:0 Year 1975 Month 02
+2017-12-14 16:52:00,596:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M02
+2017-12-14 16:52:02,504:DEBUG:0 Year 1975 Month 03
+2017-12-14 16:52:02,507:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M03
+2017-12-14 16:52:04,275:DEBUG:0 Year 1975 Month 04
+2017-12-14 16:52:04,278:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M04
+2017-12-14 16:52:06,112:DEBUG:0 Year 1975 Month 05
+2017-12-14 16:52:06,115:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M05
+2017-12-14 16:52:07,848:DEBUG:0 Year 1975 Month 06
+2017-12-14 16:52:07,851:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M06
+2017-12-14 16:52:09,602:DEBUG:0 Year 1975 Month 07
+2017-12-14 16:52:09,605:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M07
+2017-12-14 16:52:11,318:DEBUG:0 Year 1975 Month 08
+2017-12-14 16:52:11,320:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M08
+2017-12-14 16:52:13,127:DEBUG:0 Year 1975 Month 09
+2017-12-14 16:52:13,130:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M09
+2017-12-14 16:52:14,839:DEBUG:0 Year 1975 Month 10
+2017-12-14 16:52:14,842:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M10
+2017-12-14 16:52:16,667:DEBUG:0 Year 1975 Month 11
+2017-12-14 16:52:16,670:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M11
+2017-12-14 16:52:18,523:DEBUG:0 Year 1975 Month 12
+2017-12-14 16:52:18,526:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1975M12
+2017-12-14 16:52:20,522:DEBUG:0 Year 1976 Month 01
+2017-12-14 16:52:20,525:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M01
+2017-12-14 16:52:22,333:DEBUG:0 Year 1976 Month 02
+2017-12-14 16:52:22,336:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M02
+2017-12-14 16:52:24,054:DEBUG:0 Year 1976 Month 03
+2017-12-14 16:52:24,057:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M03
+2017-12-14 16:52:25,810:DEBUG:0 Year 1976 Month 04
+2017-12-14 16:52:25,813:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M04
+2017-12-14 16:52:27,621:DEBUG:0 Year 1976 Month 05
+2017-12-14 16:52:27,624:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M05
+2017-12-14 16:52:29,379:DEBUG:0 Year 1976 Month 06
+2017-12-14 16:52:29,382:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M06
+2017-12-14 16:52:31,199:DEBUG:0 Year 1976 Month 07
+2017-12-14 16:52:31,202:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M07
+2017-12-14 16:52:33,023:DEBUG:0 Year 1976 Month 08
+2017-12-14 16:52:33,026:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M08
+2017-12-14 16:52:34,315:DEBUG:0 Year 1976 Month 09
+2017-12-14 16:52:34,318:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M09
+2017-12-14 16:52:36,063:DEBUG:0 Year 1976 Month 10
+2017-12-14 16:52:36,066:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M10
+2017-12-14 16:52:38,198:DEBUG:0 Year 1976 Month 11
+2017-12-14 16:52:38,201:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M11
+2017-12-14 16:52:39,937:DEBUG:0 Year 1976 Month 12
+2017-12-14 16:52:39,939:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1976M12
+2017-12-14 16:52:41,723:DEBUG:0 Year 1977 Month 01
+2017-12-14 16:52:41,725:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M01
+2017-12-14 16:52:43,515:DEBUG:0 Year 1977 Month 02
+2017-12-14 16:52:43,518:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M02
+2017-12-14 16:52:45,306:DEBUG:0 Year 1977 Month 03
+2017-12-14 16:52:45,309:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M03
+2017-12-14 16:52:47,052:DEBUG:0 Year 1977 Month 04
+2017-12-14 16:52:47,055:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M04
+2017-12-14 16:52:48,894:DEBUG:0 Year 1977 Month 05
+2017-12-14 16:52:48,897:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M05
+2017-12-14 16:52:50,655:DEBUG:0 Year 1977 Month 06
+2017-12-14 16:52:50,658:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M06
+2017-12-14 16:52:52,374:DEBUG:0 Year 1977 Month 07
+2017-12-14 16:52:52,377:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M07
+2017-12-14 16:52:54,272:DEBUG:0 Year 1977 Month 08
+2017-12-14 16:52:54,274:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M08
+2017-12-14 16:52:55,984:DEBUG:0 Year 1977 Month 09
+2017-12-14 16:52:55,986:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M09
+2017-12-14 16:52:57,802:DEBUG:0 Year 1977 Month 10
+2017-12-14 16:52:57,805:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M10
+2017-12-14 16:52:59,117:DEBUG:0 Year 1977 Month 11
+2017-12-14 16:52:59,119:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M11
+2017-12-14 16:53:00,903:DEBUG:0 Year 1977 Month 12
+2017-12-14 16:53:00,906:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1977M12
+2017-12-14 16:53:02,719:DEBUG:0 Year 1978 Month 01
+2017-12-14 16:53:02,722:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M01
+2017-12-14 16:53:04,473:DEBUG:0 Year 1978 Month 02
+2017-12-14 16:53:04,476:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M02
+2017-12-14 16:53:06,191:DEBUG:0 Year 1978 Month 03
+2017-12-14 16:53:06,194:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M03
+2017-12-14 16:53:07,999:DEBUG:0 Year 1978 Month 04
+2017-12-14 16:53:08,002:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M04
+2017-12-14 16:53:09,306:DEBUG:0 Year 1978 Month 05
+2017-12-14 16:53:09,309:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M05
+2017-12-14 16:53:11,054:DEBUG:0 Year 1978 Month 06
+2017-12-14 16:53:11,057:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M06
+2017-12-14 16:53:12,801:DEBUG:0 Year 1978 Month 07
+2017-12-14 16:53:12,804:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M07
+2017-12-14 16:53:14,633:DEBUG:0 Year 1978 Month 08
+2017-12-14 16:53:14,636:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M08
+2017-12-14 16:53:16,406:DEBUG:0 Year 1978 Month 09
+2017-12-14 16:53:16,408:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M09
+2017-12-14 16:53:18,208:DEBUG:0 Year 1978 Month 10
+2017-12-14 16:53:18,211:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M10
+2017-12-14 16:53:20,097:DEBUG:0 Year 1978 Month 11
+2017-12-14 16:53:20,100:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M11
+2017-12-14 16:53:21,948:DEBUG:0 Year 1978 Month 12
+2017-12-14 16:53:21,951:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1978M12
+2017-12-14 16:53:23,213:DEBUG:0 Year 1979 Month 01
+2017-12-14 16:53:23,216:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M01
+2017-12-14 16:53:25,061:DEBUG:0 Year 1979 Month 02
+2017-12-14 16:53:25,064:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M02
+2017-12-14 16:53:26,810:DEBUG:0 Year 1979 Month 03
+2017-12-14 16:53:26,813:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M03
+2017-12-14 16:53:28,657:DEBUG:0 Year 1979 Month 04
+2017-12-14 16:53:28,660:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M04
+2017-12-14 16:53:30,398:DEBUG:0 Year 1979 Month 05
+2017-12-14 16:53:30,400:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M05
+2017-12-14 16:53:32,113:DEBUG:0 Year 1979 Month 06
+2017-12-14 16:53:32,115:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M06
+2017-12-14 16:53:33,885:DEBUG:0 Year 1979 Month 07
+2017-12-14 16:53:33,888:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M07
+2017-12-14 16:53:35,671:DEBUG:0 Year 1979 Month 08
+2017-12-14 16:53:35,674:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M08
+2017-12-14 16:53:37,395:DEBUG:0 Year 1979 Month 09
+2017-12-14 16:53:37,397:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M09
+2017-12-14 16:53:39,181:DEBUG:0 Year 1979 Month 10
+2017-12-14 16:53:39,184:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M10
+2017-12-14 16:53:40,941:DEBUG:0 Year 1979 Month 11
+2017-12-14 16:53:40,944:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M11
+2017-12-14 16:53:42,739:DEBUG:0 Year 1979 Month 12
+2017-12-14 16:53:42,742:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1979M12
+2017-12-14 16:53:44,402:DEBUG:0 Year 1980 Month 01
+2017-12-14 16:53:44,405:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M01
+2017-12-14 16:53:46,082:DEBUG:0 Year 1980 Month 02
+2017-12-14 16:53:46,085:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M02
+2017-12-14 16:53:47,877:DEBUG:0 Year 1980 Month 03
+2017-12-14 16:53:47,880:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M03
+2017-12-14 16:53:49,199:DEBUG:0 Year 1980 Month 04
+2017-12-14 16:53:49,202:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M04
+2017-12-14 16:53:50,969:DEBUG:0 Year 1980 Month 05
+2017-12-14 16:53:50,972:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M05
+2017-12-14 16:53:52,740:DEBUG:0 Year 1980 Month 06
+2017-12-14 16:53:52,743:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M06
+2017-12-14 16:53:54,528:DEBUG:0 Year 1980 Month 07
+2017-12-14 16:53:54,531:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M07
+2017-12-14 16:53:56,297:DEBUG:0 Year 1980 Month 08
+2017-12-14 16:53:56,299:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M08
+2017-12-14 16:53:58,060:DEBUG:0 Year 1980 Month 09
+2017-12-14 16:53:58,063:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M09
+2017-12-14 16:53:59,897:DEBUG:0 Year 1980 Month 10
+2017-12-14 16:53:59,899:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M10
+2017-12-14 16:54:01,629:DEBUG:0 Year 1980 Month 11
+2017-12-14 16:54:01,631:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M11
+2017-12-14 16:54:03,329:DEBUG:0 Year 1980 Month 12
+2017-12-14 16:54:03,332:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1980M12
+2017-12-14 16:54:05,169:DEBUG:0 Year 1981 Month 01
+2017-12-14 16:54:05,171:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M01
+2017-12-14 16:54:06,901:DEBUG:0 Year 1981 Month 02
+2017-12-14 16:54:06,904:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M02
+2017-12-14 16:54:08,731:DEBUG:0 Year 1981 Month 03
+2017-12-14 16:54:08,734:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M03
+2017-12-14 16:54:10,512:DEBUG:0 Year 1981 Month 04
+2017-12-14 16:54:10,515:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M04
+2017-12-14 16:54:12,216:DEBUG:0 Year 1981 Month 05
+2017-12-14 16:54:12,219:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M05
+2017-12-14 16:54:13,986:DEBUG:0 Year 1981 Month 06
+2017-12-14 16:54:13,989:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M06
+2017-12-14 16:54:15,735:DEBUG:0 Year 1981 Month 07
+2017-12-14 16:54:15,738:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M07
+2017-12-14 16:54:17,454:DEBUG:0 Year 1981 Month 08
+2017-12-14 16:54:17,457:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M08
+2017-12-14 16:54:19,195:DEBUG:0 Year 1981 Month 09
+2017-12-14 16:54:19,198:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M09
+2017-12-14 16:54:20,929:DEBUG:0 Year 1981 Month 10
+2017-12-14 16:54:20,931:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M10
+2017-12-14 16:54:22,690:DEBUG:0 Year 1981 Month 11
+2017-12-14 16:54:22,693:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M11
+2017-12-14 16:54:24,478:DEBUG:0 Year 1981 Month 12
+2017-12-14 16:54:24,481:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1981M12
+2017-12-14 16:54:26,219:DEBUG:0 Year 1982 Month 01
+2017-12-14 16:54:26,222:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M01
+2017-12-14 16:54:28,041:DEBUG:0 Year 1982 Month 02
+2017-12-14 16:54:28,044:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M02
+2017-12-14 16:54:29,786:DEBUG:0 Year 1982 Month 03
+2017-12-14 16:54:29,788:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M03
+2017-12-14 16:54:31,531:DEBUG:0 Year 1982 Month 04
+2017-12-14 16:54:31,534:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M04
+2017-12-14 16:54:33,258:DEBUG:0 Year 1982 Month 05
+2017-12-14 16:54:33,261:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M05
+2017-12-14 16:54:34,982:DEBUG:0 Year 1982 Month 06
+2017-12-14 16:54:34,985:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M06
+2017-12-14 16:54:36,780:DEBUG:0 Year 1982 Month 07
+2017-12-14 16:54:36,782:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M07
+2017-12-14 16:54:37,986:DEBUG:0 Year 1982 Month 08
+2017-12-14 16:54:37,989:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M08
+2017-12-14 16:54:39,715:DEBUG:0 Year 1982 Month 09
+2017-12-14 16:54:39,718:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M09
+2017-12-14 16:54:41,487:DEBUG:0 Year 1982 Month 10
+2017-12-14 16:54:41,489:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M10
+2017-12-14 16:54:43,279:DEBUG:0 Year 1982 Month 11
+2017-12-14 16:54:43,282:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M11
+2017-12-14 16:54:44,984:DEBUG:0 Year 1982 Month 12
+2017-12-14 16:54:44,987:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1982M12
+2017-12-14 16:54:46,721:DEBUG:0 Year 1983 Month 01
+2017-12-14 16:54:46,724:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M01
+2017-12-14 16:54:48,570:DEBUG:0 Year 1983 Month 02
+2017-12-14 16:54:48,573:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M02
+2017-12-14 16:54:50,328:DEBUG:0 Year 1983 Month 03
+2017-12-14 16:54:50,330:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M03
+2017-12-14 16:54:52,065:DEBUG:0 Year 1983 Month 04
+2017-12-14 16:54:52,068:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M04
+2017-12-14 16:54:53,875:DEBUG:0 Year 1983 Month 05
+2017-12-14 16:54:53,878:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M05
+2017-12-14 16:54:55,646:DEBUG:0 Year 1983 Month 06
+2017-12-14 16:54:55,649:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M06
+2017-12-14 16:54:57,395:DEBUG:0 Year 1983 Month 07
+2017-12-14 16:54:57,397:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M07
+2017-12-14 16:54:59,163:DEBUG:0 Year 1983 Month 08
+2017-12-14 16:54:59,166:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M08
+2017-12-14 16:55:00,932:DEBUG:0 Year 1983 Month 09
+2017-12-14 16:55:00,934:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M09
+2017-12-14 16:55:02,746:DEBUG:0 Year 1983 Month 10
+2017-12-14 16:55:02,749:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M10
+2017-12-14 16:55:04,515:DEBUG:0 Year 1983 Month 11
+2017-12-14 16:55:04,518:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M11
+2017-12-14 16:55:06,307:DEBUG:0 Year 1983 Month 12
+2017-12-14 16:55:06,310:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1983M12
+2017-12-14 16:55:08,160:DEBUG:0 Year 1984 Month 01
+2017-12-14 16:55:08,163:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M01
+2017-12-14 16:55:10,183:DEBUG:0 Year 1984 Month 02
+2017-12-14 16:55:10,186:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M02
+2017-12-14 16:55:12,303:DEBUG:0 Year 1984 Month 03
+2017-12-14 16:55:12,305:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M03
+2017-12-14 16:55:14,029:DEBUG:0 Year 1984 Month 04
+2017-12-14 16:55:14,031:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M04
+2017-12-14 16:55:15,743:DEBUG:0 Year 1984 Month 05
+2017-12-14 16:55:15,746:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M05
+2017-12-14 16:55:18,144:DEBUG:0 Year 1984 Month 06
+2017-12-14 16:55:18,147:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M06
+2017-12-14 16:55:19,903:DEBUG:0 Year 1984 Month 07
+2017-12-14 16:55:19,906:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M07
+2017-12-14 16:55:21,590:DEBUG:0 Year 1984 Month 08
+2017-12-14 16:55:21,593:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M08
+2017-12-14 16:55:23,344:DEBUG:0 Year 1984 Month 09
+2017-12-14 16:55:23,346:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M09
+2017-12-14 16:55:25,163:DEBUG:0 Year 1984 Month 10
+2017-12-14 16:55:25,166:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M10
+2017-12-14 16:55:26,951:DEBUG:0 Year 1984 Month 11
+2017-12-14 16:55:26,953:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M11
+2017-12-14 16:55:28,768:DEBUG:0 Year 1984 Month 12
+2017-12-14 16:55:28,771:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1984M12
+2017-12-14 16:55:30,580:DEBUG:0 Year 1985 Month 01
+2017-12-14 16:55:30,583:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M01
+2017-12-14 16:55:32,442:DEBUG:0 Year 1985 Month 02
+2017-12-14 16:55:32,445:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M02
+2017-12-14 16:55:34,298:DEBUG:0 Year 1985 Month 03
+2017-12-14 16:55:34,300:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M03
+2017-12-14 16:55:36,088:DEBUG:0 Year 1985 Month 04
+2017-12-14 16:55:36,091:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M04
+2017-12-14 16:55:37,874:DEBUG:0 Year 1985 Month 05
+2017-12-14 16:55:37,877:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M05
+2017-12-14 16:55:39,623:DEBUG:0 Year 1985 Month 06
+2017-12-14 16:55:39,626:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M06
+2017-12-14 16:55:41,418:DEBUG:0 Year 1985 Month 07
+2017-12-14 16:55:41,421:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M07
+2017-12-14 16:55:43,068:DEBUG:0 Year 1985 Month 08
+2017-12-14 16:55:43,071:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M08
+2017-12-14 16:55:44,787:DEBUG:0 Year 1985 Month 09
+2017-12-14 16:55:44,790:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M09
+2017-12-14 16:55:46,728:DEBUG:0 Year 1985 Month 10
+2017-12-14 16:55:46,730:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M10
+2017-12-14 16:55:48,396:DEBUG:0 Year 1985 Month 11
+2017-12-14 16:55:48,398:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M11
+2017-12-14 16:55:50,121:DEBUG:0 Year 1985 Month 12
+2017-12-14 16:55:50,123:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1985M12
+2017-12-14 16:55:51,849:DEBUG:0 Year 1986 Month 01
+2017-12-14 16:55:51,851:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M01
+2017-12-14 16:55:53,633:DEBUG:0 Year 1986 Month 02
+2017-12-14 16:55:53,635:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M02
+2017-12-14 16:55:55,508:DEBUG:0 Year 1986 Month 03
+2017-12-14 16:55:55,511:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M03
+2017-12-14 16:55:57,296:DEBUG:0 Year 1986 Month 04
+2017-12-14 16:55:57,299:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M04
+2017-12-14 16:55:59,119:DEBUG:0 Year 1986 Month 05
+2017-12-14 16:55:59,122:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M05
+2017-12-14 16:56:00,905:DEBUG:0 Year 1986 Month 06
+2017-12-14 16:56:00,908:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M06
+2017-12-14 16:56:03,200:DEBUG:0 Year 1986 Month 07
+2017-12-14 16:56:03,203:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M07
+2017-12-14 16:56:04,947:DEBUG:0 Year 1986 Month 08
+2017-12-14 16:56:04,949:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M08
+2017-12-14 16:56:06,210:DEBUG:0 Year 1986 Month 09
+2017-12-14 16:56:06,212:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M09
+2017-12-14 16:56:08,106:DEBUG:0 Year 1986 Month 10
+2017-12-14 16:56:08,108:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M10
+2017-12-14 16:56:09,369:DEBUG:0 Year 1986 Month 11
+2017-12-14 16:56:09,371:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M11
+2017-12-14 16:56:11,092:DEBUG:0 Year 1986 Month 12
+2017-12-14 16:56:11,095:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1986M12
+2017-12-14 16:56:12,832:DEBUG:0 Year 1987 Month 01
+2017-12-14 16:56:12,834:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M01
+2017-12-14 16:56:14,594:DEBUG:0 Year 1987 Month 02
+2017-12-14 16:56:14,597:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M02
+2017-12-14 16:56:16,325:DEBUG:0 Year 1987 Month 03
+2017-12-14 16:56:16,328:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M03
+2017-12-14 16:56:18,285:DEBUG:0 Year 1987 Month 04
+2017-12-14 16:56:18,288:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M04
+2017-12-14 16:56:20,885:DEBUG:0 Year 1987 Month 05
+2017-12-14 16:56:20,888:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M05
+2017-12-14 16:56:22,676:DEBUG:0 Year 1987 Month 06
+2017-12-14 16:56:22,678:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M06
+2017-12-14 16:56:23,998:DEBUG:0 Year 1987 Month 07
+2017-12-14 16:56:24,001:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M07
+2017-12-14 16:56:25,768:DEBUG:0 Year 1987 Month 08
+2017-12-14 16:56:25,770:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M08
+2017-12-14 16:56:27,030:DEBUG:0 Year 1987 Month 09
+2017-12-14 16:56:27,033:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M09
+2017-12-14 16:56:29,065:DEBUG:0 Year 1987 Month 10
+2017-12-14 16:56:29,068:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M10
+2017-12-14 16:56:30,815:DEBUG:0 Year 1987 Month 11
+2017-12-14 16:56:30,817:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M11
+2017-12-14 16:56:32,789:DEBUG:0 Year 1987 Month 12
+2017-12-14 16:56:32,792:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1987M12
+2017-12-14 16:56:34,518:DEBUG:0 Year 1988 Month 01
+2017-12-14 16:56:34,521:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M01
+2017-12-14 16:56:36,302:DEBUG:0 Year 1988 Month 02
+2017-12-14 16:56:36,305:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M02
+2017-12-14 16:56:38,147:DEBUG:0 Year 1988 Month 03
+2017-12-14 16:56:38,150:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M03
+2017-12-14 16:56:39,949:DEBUG:0 Year 1988 Month 04
+2017-12-14 16:56:39,952:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M04
+2017-12-14 16:56:41,688:DEBUG:0 Year 1988 Month 05
+2017-12-14 16:56:41,691:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M05
+2017-12-14 16:56:43,472:DEBUG:0 Year 1988 Month 06
+2017-12-14 16:56:43,475:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M06
+2017-12-14 16:56:45,232:DEBUG:0 Year 1988 Month 07
+2017-12-14 16:56:45,234:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M07
+2017-12-14 16:56:47,031:DEBUG:0 Year 1988 Month 08
+2017-12-14 16:56:47,034:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M08
+2017-12-14 16:56:48,817:DEBUG:0 Year 1988 Month 09
+2017-12-14 16:56:48,819:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M09
+2017-12-14 16:56:50,619:DEBUG:0 Year 1988 Month 10
+2017-12-14 16:56:50,622:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M10
+2017-12-14 16:56:52,372:DEBUG:0 Year 1988 Month 11
+2017-12-14 16:56:52,375:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M11
+2017-12-14 16:56:54,189:DEBUG:0 Year 1988 Month 12
+2017-12-14 16:56:54,191:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1988M12
+2017-12-14 16:56:55,933:DEBUG:0 Year 1989 Month 01
+2017-12-14 16:56:55,935:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M01
+2017-12-14 16:56:57,690:DEBUG:0 Year 1989 Month 02
+2017-12-14 16:56:57,692:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M02
+2017-12-14 16:56:59,390:DEBUG:0 Year 1989 Month 03
+2017-12-14 16:56:59,393:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M03
+2017-12-14 16:57:01,201:DEBUG:0 Year 1989 Month 04
+2017-12-14 16:57:01,203:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M04
+2017-12-14 16:57:03,191:DEBUG:0 Year 1989 Month 05
+2017-12-14 16:57:03,194:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M05
+2017-12-14 16:57:04,898:DEBUG:0 Year 1989 Month 06
+2017-12-14 16:57:04,901:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M06
+2017-12-14 16:57:06,706:DEBUG:0 Year 1989 Month 07
+2017-12-14 16:57:06,709:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M07
+2017-12-14 16:57:08,712:DEBUG:0 Year 1989 Month 08
+2017-12-14 16:57:08,715:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M08
+2017-12-14 16:57:10,409:DEBUG:0 Year 1989 Month 09
+2017-12-14 16:57:10,411:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M09
+2017-12-14 16:57:12,430:DEBUG:0 Year 1989 Month 10
+2017-12-14 16:57:12,433:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M10
+2017-12-14 16:57:14,237:DEBUG:0 Year 1989 Month 11
+2017-12-14 16:57:14,240:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M11
+2017-12-14 16:57:16,065:DEBUG:0 Year 1989 Month 12
+2017-12-14 16:57:16,068:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1989M12
+2017-12-14 16:57:17,812:DEBUG:0 Year 1990 Month 01
+2017-12-14 16:57:17,815:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M01
+2017-12-14 16:57:19,549:DEBUG:0 Year 1990 Month 02
+2017-12-14 16:57:19,552:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M02
+2017-12-14 16:57:21,301:DEBUG:0 Year 1990 Month 03
+2017-12-14 16:57:21,304:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M03
+2017-12-14 16:57:23,154:DEBUG:0 Year 1990 Month 04
+2017-12-14 16:57:23,157:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M04
+2017-12-14 16:57:25,167:DEBUG:0 Year 1990 Month 05
+2017-12-14 16:57:25,170:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M05
+2017-12-14 16:57:26,956:DEBUG:0 Year 1990 Month 06
+2017-12-14 16:57:26,959:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M06
+2017-12-14 16:57:28,758:DEBUG:0 Year 1990 Month 07
+2017-12-14 16:57:28,761:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M07
+2017-12-14 16:57:30,560:DEBUG:0 Year 1990 Month 08
+2017-12-14 16:57:30,563:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M08
+2017-12-14 16:57:32,809:DEBUG:0 Year 1990 Month 09
+2017-12-14 16:57:32,812:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M09
+2017-12-14 16:57:34,513:DEBUG:0 Year 1990 Month 10
+2017-12-14 16:57:34,516:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M10
+2017-12-14 16:57:36,250:DEBUG:0 Year 1990 Month 11
+2017-12-14 16:57:36,252:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M11
+2017-12-14 16:57:38,180:DEBUG:0 Year 1990 Month 12
+2017-12-14 16:57:38,183:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1990M12
+2017-12-14 16:57:39,945:DEBUG:0 Year 1991 Month 01
+2017-12-14 16:57:39,948:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M01
+2017-12-14 16:57:41,712:DEBUG:0 Year 1991 Month 02
+2017-12-14 16:57:41,715:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M02
+2017-12-14 16:57:43,522:DEBUG:0 Year 1991 Month 03
+2017-12-14 16:57:43,525:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M03
+2017-12-14 16:57:45,353:DEBUG:0 Year 1991 Month 04
+2017-12-14 16:57:45,356:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M04
+2017-12-14 16:57:47,119:DEBUG:0 Year 1991 Month 05
+2017-12-14 16:57:47,122:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M05
+2017-12-14 16:57:48,885:DEBUG:0 Year 1991 Month 06
+2017-12-14 16:57:48,887:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M06
+2017-12-14 16:57:50,624:DEBUG:0 Year 1991 Month 07
+2017-12-14 16:57:50,627:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M07
+2017-12-14 16:57:52,369:DEBUG:0 Year 1991 Month 08
+2017-12-14 16:57:52,372:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M08
+2017-12-14 16:57:54,115:DEBUG:0 Year 1991 Month 09
+2017-12-14 16:57:54,118:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M09
+2017-12-14 16:57:55,807:DEBUG:0 Year 1991 Month 10
+2017-12-14 16:57:55,810:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M10
+2017-12-14 16:57:57,554:DEBUG:0 Year 1991 Month 11
+2017-12-14 16:57:57,557:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M11
+2017-12-14 16:57:59,341:DEBUG:0 Year 1991 Month 12
+2017-12-14 16:57:59,343:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1991M12
+2017-12-14 16:58:01,115:DEBUG:0 Year 1992 Month 01
+2017-12-14 16:58:01,118:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M01
+2017-12-14 16:58:02,917:DEBUG:0 Year 1992 Month 02
+2017-12-14 16:58:02,920:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M02
+2017-12-14 16:58:04,746:DEBUG:0 Year 1992 Month 03
+2017-12-14 16:58:04,749:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M03
+2017-12-14 16:58:06,602:DEBUG:0 Year 1992 Month 04
+2017-12-14 16:58:06,604:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M04
+2017-12-14 16:58:08,434:DEBUG:0 Year 1992 Month 05
+2017-12-14 16:58:08,436:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M05
+2017-12-14 16:58:10,267:DEBUG:0 Year 1992 Month 06
+2017-12-14 16:58:10,270:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M06
+2017-12-14 16:58:12,075:DEBUG:0 Year 1992 Month 07
+2017-12-14 16:58:12,078:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M07
+2017-12-14 16:58:13,846:DEBUG:0 Year 1992 Month 08
+2017-12-14 16:58:13,849:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M08
+2017-12-14 16:58:15,156:DEBUG:0 Year 1992 Month 09
+2017-12-14 16:58:15,159:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M09
+2017-12-14 16:58:17,061:DEBUG:0 Year 1992 Month 10
+2017-12-14 16:58:17,064:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M10
+2017-12-14 16:58:18,884:DEBUG:0 Year 1992 Month 11
+2017-12-14 16:58:18,886:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M11
+2017-12-14 16:58:21,057:DEBUG:0 Year 1992 Month 12
+2017-12-14 16:58:21,059:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1992M12
+2017-12-14 16:58:23,203:DEBUG:0 Year 1993 Month 01
+2017-12-14 16:58:23,206:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M01
+2017-12-14 16:58:24,503:DEBUG:0 Year 1993 Month 02
+2017-12-14 16:58:24,506:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M02
+2017-12-14 16:58:26,426:DEBUG:0 Year 1993 Month 03
+2017-12-14 16:58:26,429:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M03
+2017-12-14 16:58:28,218:DEBUG:0 Year 1993 Month 04
+2017-12-14 16:58:28,221:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M04
+2017-12-14 16:58:30,281:DEBUG:0 Year 1993 Month 05
+2017-12-14 16:58:30,283:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M05
+2017-12-14 16:58:32,084:DEBUG:0 Year 1993 Month 06
+2017-12-14 16:58:32,086:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M06
+2017-12-14 16:58:33,880:DEBUG:0 Year 1993 Month 07
+2017-12-14 16:58:33,882:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M07
+2017-12-14 16:58:36,556:DEBUG:0 Year 1993 Month 08
+2017-12-14 16:58:36,559:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M08
+2017-12-14 16:58:38,395:DEBUG:0 Year 1993 Month 09
+2017-12-14 16:58:38,398:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M09
+2017-12-14 16:58:40,086:DEBUG:0 Year 1993 Month 10
+2017-12-14 16:58:40,088:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M10
+2017-12-14 16:58:42,382:DEBUG:0 Year 1993 Month 11
+2017-12-14 16:58:42,385:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M11
+2017-12-14 16:58:44,133:DEBUG:0 Year 1993 Month 12
+2017-12-14 16:58:44,136:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1993M12
+2017-12-14 16:58:45,883:DEBUG:0 Year 1994 Month 01
+2017-12-14 16:58:45,885:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M01
+2017-12-14 16:58:47,199:DEBUG:0 Year 1994 Month 02
+2017-12-14 16:58:47,201:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M02
+2017-12-14 16:58:49,050:DEBUG:0 Year 1994 Month 03
+2017-12-14 16:58:49,053:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M03
+2017-12-14 16:58:51,311:DEBUG:0 Year 1994 Month 04
+2017-12-14 16:58:51,314:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M04
+2017-12-14 16:58:53,040:DEBUG:0 Year 1994 Month 05
+2017-12-14 16:58:53,042:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M05
+2017-12-14 16:58:54,297:DEBUG:0 Year 1994 Month 06
+2017-12-14 16:58:54,299:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M06
+2017-12-14 16:58:56,069:DEBUG:0 Year 1994 Month 07
+2017-12-14 16:58:56,071:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M07
+2017-12-14 16:58:57,792:DEBUG:0 Year 1994 Month 08
+2017-12-14 16:58:57,795:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M08
+2017-12-14 16:58:59,518:DEBUG:0 Year 1994 Month 09
+2017-12-14 16:58:59,521:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M09
+2017-12-14 16:59:01,290:DEBUG:0 Year 1994 Month 10
+2017-12-14 16:59:01,292:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M10
+2017-12-14 16:59:03,386:DEBUG:0 Year 1994 Month 11
+2017-12-14 16:59:03,389:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M11
+2017-12-14 16:59:05,239:DEBUG:0 Year 1994 Month 12
+2017-12-14 16:59:05,241:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1994M12
+2017-12-14 16:59:06,962:DEBUG:0 Year 1995 Month 01
+2017-12-14 16:59:06,965:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M01
+2017-12-14 16:59:08,805:DEBUG:0 Year 1995 Month 02
+2017-12-14 16:59:08,807:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M02
+2017-12-14 16:59:10,563:DEBUG:0 Year 1995 Month 03
+2017-12-14 16:59:10,566:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M03
+2017-12-14 16:59:11,826:DEBUG:0 Year 1995 Month 04
+2017-12-14 16:59:11,828:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M04
+2017-12-14 16:59:13,612:DEBUG:0 Year 1995 Month 05
+2017-12-14 16:59:13,615:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M05
+2017-12-14 16:59:14,972:DEBUG:0 Year 1995 Month 06
+2017-12-14 16:59:14,975:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M06
+2017-12-14 16:59:16,738:DEBUG:0 Year 1995 Month 07
+2017-12-14 16:59:16,741:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M07
+2017-12-14 16:59:19,201:DEBUG:0 Year 1995 Month 08
+2017-12-14 16:59:19,204:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M08
+2017-12-14 16:59:22,008:DEBUG:0 Year 1995 Month 09
+2017-12-14 16:59:22,011:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M09
+2017-12-14 16:59:23,356:DEBUG:0 Year 1995 Month 10
+2017-12-14 16:59:23,358:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M10
+2017-12-14 16:59:25,033:DEBUG:0 Year 1995 Month 11
+2017-12-14 16:59:25,036:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M11
+2017-12-14 16:59:26,863:DEBUG:0 Year 1995 Month 12
+2017-12-14 16:59:26,866:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1995M12
+2017-12-14 16:59:28,130:DEBUG:0 Year 1996 Month 01
+2017-12-14 16:59:28,133:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M01
+2017-12-14 16:59:29,895:DEBUG:0 Year 1996 Month 02
+2017-12-14 16:59:29,897:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M02
+2017-12-14 16:59:31,683:DEBUG:0 Year 1996 Month 03
+2017-12-14 16:59:31,686:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M03
+2017-12-14 16:59:32,957:DEBUG:0 Year 1996 Month 04
+2017-12-14 16:59:32,960:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M04
+2017-12-14 16:59:34,960:DEBUG:0 Year 1996 Month 05
+2017-12-14 16:59:34,962:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M05
+2017-12-14 16:59:37,019:DEBUG:0 Year 1996 Month 06
+2017-12-14 16:59:37,021:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M06
+2017-12-14 16:59:38,897:DEBUG:0 Year 1996 Month 07
+2017-12-14 16:59:38,899:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M07
+2017-12-14 16:59:42,427:DEBUG:0 Year 1996 Month 08
+2017-12-14 16:59:42,430:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M08
+2017-12-14 16:59:44,801:DEBUG:0 Year 1996 Month 09
+2017-12-14 16:59:44,803:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M09
+2017-12-14 16:59:46,702:DEBUG:0 Year 1996 Month 10
+2017-12-14 16:59:46,704:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M10
+2017-12-14 16:59:48,181:DEBUG:0 Year 1996 Month 11
+2017-12-14 16:59:48,183:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M11
+2017-12-14 16:59:50,061:DEBUG:0 Year 1996 Month 12
+2017-12-14 16:59:50,064:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1996M12
+2017-12-14 16:59:51,952:DEBUG:0 Year 1997 Month 01
+2017-12-14 16:59:51,954:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M01
+2017-12-14 16:59:53,745:DEBUG:0 Year 1997 Month 02
+2017-12-14 16:59:53,748:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M02
+2017-12-14 16:59:55,789:DEBUG:0 Year 1997 Month 03
+2017-12-14 16:59:55,792:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M03
+2017-12-14 16:59:57,711:DEBUG:0 Year 1997 Month 04
+2017-12-14 16:59:57,714:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M04
+2017-12-14 17:00:01,185:DEBUG:0 Year 1997 Month 05
+2017-12-14 17:00:01,187:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M05
+2017-12-14 17:00:03,131:DEBUG:0 Year 1997 Month 06
+2017-12-14 17:00:03,134:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M06
+2017-12-14 17:00:05,017:DEBUG:0 Year 1997 Month 07
+2017-12-14 17:00:05,020:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M07
+2017-12-14 17:00:07,172:DEBUG:0 Year 1997 Month 08
+2017-12-14 17:00:07,175:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M08
+2017-12-14 17:00:08,597:DEBUG:0 Year 1997 Month 09
+2017-12-14 17:00:08,600:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M09
+2017-12-14 17:00:10,479:DEBUG:0 Year 1997 Month 10
+2017-12-14 17:00:10,482:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M10
+2017-12-14 17:00:12,341:DEBUG:0 Year 1997 Month 11
+2017-12-14 17:00:12,344:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M11
+2017-12-14 17:00:14,290:DEBUG:0 Year 1997 Month 12
+2017-12-14 17:00:14,293:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1997M12
+2017-12-14 17:00:16,196:DEBUG:0 Year 1998 Month 01
+2017-12-14 17:00:16,199:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M01
+2017-12-14 17:00:18,110:DEBUG:0 Year 1998 Month 02
+2017-12-14 17:00:18,113:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M02
+2017-12-14 17:00:20,551:DEBUG:0 Year 1998 Month 03
+2017-12-14 17:00:20,553:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M03
+2017-12-14 17:00:22,523:DEBUG:0 Year 1998 Month 04
+2017-12-14 17:00:22,526:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M04
+2017-12-14 17:00:24,442:DEBUG:0 Year 1998 Month 05
+2017-12-14 17:00:24,445:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M05
+2017-12-14 17:00:26,486:DEBUG:0 Year 1998 Month 06
+2017-12-14 17:00:26,489:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M06
+2017-12-14 17:00:28,485:DEBUG:0 Year 1998 Month 07
+2017-12-14 17:00:28,488:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M07
+2017-12-14 17:00:30,345:DEBUG:0 Year 1998 Month 08
+2017-12-14 17:00:30,348:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M08
+2017-12-14 17:00:32,254:DEBUG:0 Year 1998 Month 09
+2017-12-14 17:00:32,256:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M09
+2017-12-14 17:00:34,734:DEBUG:0 Year 1998 Month 10
+2017-12-14 17:00:34,736:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M10
+2017-12-14 17:00:36,559:DEBUG:0 Year 1998 Month 11
+2017-12-14 17:00:36,562:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M11
+2017-12-14 17:00:38,387:DEBUG:0 Year 1998 Month 12
+2017-12-14 17:00:38,390:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1998M12
+2017-12-14 17:00:39,653:DEBUG:0 Year 1999 Month 01
+2017-12-14 17:00:39,655:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M01
+2017-12-14 17:00:41,437:DEBUG:0 Year 1999 Month 02
+2017-12-14 17:00:41,439:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M02
+2017-12-14 17:00:43,235:DEBUG:0 Year 1999 Month 03
+2017-12-14 17:00:43,238:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M03
+2017-12-14 17:00:45,039:DEBUG:0 Year 1999 Month 04
+2017-12-14 17:00:45,042:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M04
+2017-12-14 17:00:46,866:DEBUG:0 Year 1999 Month 05
+2017-12-14 17:00:46,869:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M05
+2017-12-14 17:00:48,671:DEBUG:0 Year 1999 Month 06
+2017-12-14 17:00:48,674:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M06
+2017-12-14 17:00:50,439:DEBUG:0 Year 1999 Month 07
+2017-12-14 17:00:50,442:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M07
+2017-12-14 17:00:52,183:DEBUG:0 Year 1999 Month 08
+2017-12-14 17:00:52,186:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M08
+2017-12-14 17:00:53,930:DEBUG:0 Year 1999 Month 09
+2017-12-14 17:00:53,932:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M09
+2017-12-14 17:00:55,250:DEBUG:0 Year 1999 Month 10
+2017-12-14 17:00:55,252:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M10
+2017-12-14 17:00:57,058:DEBUG:0 Year 1999 Month 11
+2017-12-14 17:00:57,061:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M11
+2017-12-14 17:00:58,832:DEBUG:0 Year 1999 Month 12
+2017-12-14 17:00:58,834:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y1999M12
+2017-12-14 17:01:00,647:DEBUG:0 Year 2000 Month 01
+2017-12-14 17:01:00,650:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M01
+2017-12-14 17:01:02,400:DEBUG:0 Year 2000 Month 02
+2017-12-14 17:01:02,403:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M02
+2017-12-14 17:01:04,249:DEBUG:0 Year 2000 Month 03
+2017-12-14 17:01:04,252:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M03
+2017-12-14 17:01:06,043:DEBUG:0 Year 2000 Month 04
+2017-12-14 17:01:06,045:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M04
+2017-12-14 17:01:07,845:DEBUG:0 Year 2000 Month 05
+2017-12-14 17:01:07,848:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M05
+2017-12-14 17:01:09,844:DEBUG:0 Year 2000 Month 06
+2017-12-14 17:01:09,847:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M06
+2017-12-14 17:01:11,691:DEBUG:0 Year 2000 Month 07
+2017-12-14 17:01:11,694:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M07
+2017-12-14 17:01:13,438:DEBUG:0 Year 2000 Month 08
+2017-12-14 17:01:13,441:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M08
+2017-12-14 17:01:15,303:DEBUG:0 Year 2000 Month 09
+2017-12-14 17:01:15,306:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M09
+2017-12-14 17:01:17,070:DEBUG:0 Year 2000 Month 10
+2017-12-14 17:01:17,073:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M10
+2017-12-14 17:01:18,873:DEBUG:0 Year 2000 Month 11
+2017-12-14 17:01:18,875:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M11
+2017-12-14 17:01:20,658:DEBUG:0 Year 2000 Month 12
+2017-12-14 17:01:20,661:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2000M12
+2017-12-14 17:01:22,341:DEBUG:0 Year 2001 Month 01
+2017-12-14 17:01:22,344:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M01
+2017-12-14 17:01:24,095:DEBUG:0 Year 2001 Month 02
+2017-12-14 17:01:24,097:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M02
+2017-12-14 17:01:25,947:DEBUG:0 Year 2001 Month 03
+2017-12-14 17:01:25,950:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M03
+2017-12-14 17:01:27,759:DEBUG:0 Year 2001 Month 04
+2017-12-14 17:01:27,761:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M04
+2017-12-14 17:01:29,606:DEBUG:0 Year 2001 Month 05
+2017-12-14 17:01:29,609:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M05
+2017-12-14 17:01:31,413:DEBUG:0 Year 2001 Month 06
+2017-12-14 17:01:31,415:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M06
+2017-12-14 17:01:33,279:DEBUG:0 Year 2001 Month 07
+2017-12-14 17:01:33,282:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M07
+2017-12-14 17:01:34,998:DEBUG:0 Year 2001 Month 08
+2017-12-14 17:01:35,000:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M08
+2017-12-14 17:01:36,800:DEBUG:0 Year 2001 Month 09
+2017-12-14 17:01:36,803:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M09
+2017-12-14 17:01:38,628:DEBUG:0 Year 2001 Month 10
+2017-12-14 17:01:38,630:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M10
+2017-12-14 17:01:40,438:DEBUG:0 Year 2001 Month 11
+2017-12-14 17:01:40,441:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M11
+2017-12-14 17:01:41,734:DEBUG:0 Year 2001 Month 12
+2017-12-14 17:01:41,737:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2001M12
+2017-12-14 17:01:43,599:DEBUG:0 Year 2002 Month 01
+2017-12-14 17:01:43,602:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M01
+2017-12-14 17:01:45,547:DEBUG:0 Year 2002 Month 02
+2017-12-14 17:01:45,549:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M02
+2017-12-14 17:01:47,323:DEBUG:0 Year 2002 Month 03
+2017-12-14 17:01:47,325:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M03
+2017-12-14 17:01:49,112:DEBUG:0 Year 2002 Month 04
+2017-12-14 17:01:49,115:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M04
+2017-12-14 17:01:50,922:DEBUG:0 Year 2002 Month 05
+2017-12-14 17:01:50,924:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M05
+2017-12-14 17:01:52,750:DEBUG:0 Year 2002 Month 06
+2017-12-14 17:01:52,753:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M06
+2017-12-14 17:01:54,529:DEBUG:0 Year 2002 Month 07
+2017-12-14 17:01:54,532:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M07
+2017-12-14 17:01:55,838:DEBUG:0 Year 2002 Month 08
+2017-12-14 17:01:55,840:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M08
+2017-12-14 17:01:57,524:DEBUG:0 Year 2002 Month 09
+2017-12-14 17:01:57,527:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M09
+2017-12-14 17:01:59,267:DEBUG:0 Year 2002 Month 10
+2017-12-14 17:01:59,270:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M10
+2017-12-14 17:02:00,994:DEBUG:0 Year 2002 Month 11
+2017-12-14 17:02:00,997:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M11
+2017-12-14 17:02:02,715:DEBUG:0 Year 2002 Month 12
+2017-12-14 17:02:02,718:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2002M12
+2017-12-14 17:02:03,692:DEBUG:0 Year 2003 Month 01
+2017-12-14 17:02:03,695:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M01
+2017-12-14 17:02:05,472:DEBUG:0 Year 2003 Month 02
+2017-12-14 17:02:05,474:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M02
+2017-12-14 17:02:07,270:DEBUG:0 Year 2003 Month 03
+2017-12-14 17:02:07,273:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M03
+2017-12-14 17:02:09,097:DEBUG:0 Year 2003 Month 04
+2017-12-14 17:02:09,100:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M04
+2017-12-14 17:02:10,950:DEBUG:0 Year 2003 Month 05
+2017-12-14 17:02:10,953:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M05
+2017-12-14 17:02:12,790:DEBUG:0 Year 2003 Month 06
+2017-12-14 17:02:12,793:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M06
+2017-12-14 17:02:14,524:DEBUG:0 Year 2003 Month 07
+2017-12-14 17:02:14,526:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M07
+2017-12-14 17:02:16,213:DEBUG:0 Year 2003 Month 08
+2017-12-14 17:02:16,215:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M08
+2017-12-14 17:02:18,068:DEBUG:0 Year 2003 Month 09
+2017-12-14 17:02:18,071:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M09
+2017-12-14 17:02:19,835:DEBUG:0 Year 2003 Month 10
+2017-12-14 17:02:19,838:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M10
+2017-12-14 17:02:21,611:DEBUG:0 Year 2003 Month 11
+2017-12-14 17:02:21,614:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M11
+2017-12-14 17:02:23,495:DEBUG:0 Year 2003 Month 12
+2017-12-14 17:02:23,498:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2003M12
+2017-12-14 17:02:25,247:DEBUG:0 Year 2004 Month 01
+2017-12-14 17:02:25,249:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M01
+2017-12-14 17:02:26,972:DEBUG:0 Year 2004 Month 02
+2017-12-14 17:02:26,975:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M02
+2017-12-14 17:02:28,729:DEBUG:0 Year 2004 Month 03
+2017-12-14 17:02:28,732:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M03
+2017-12-14 17:02:30,468:DEBUG:0 Year 2004 Month 04
+2017-12-14 17:02:30,471:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M04
+2017-12-14 17:02:31,786:DEBUG:0 Year 2004 Month 05
+2017-12-14 17:02:31,789:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M05
+2017-12-14 17:02:33,595:DEBUG:0 Year 2004 Month 06
+2017-12-14 17:02:33,598:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M06
+2017-12-14 17:02:35,285:DEBUG:0 Year 2004 Month 07
+2017-12-14 17:02:35,287:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M07
+2017-12-14 17:02:37,108:DEBUG:0 Year 2004 Month 08
+2017-12-14 17:02:37,110:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M08
+2017-12-14 17:02:38,827:DEBUG:0 Year 2004 Month 09
+2017-12-14 17:02:38,830:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M09
+2017-12-14 17:02:40,569:DEBUG:0 Year 2004 Month 10
+2017-12-14 17:02:40,571:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M10
+2017-12-14 17:02:42,500:DEBUG:0 Year 2004 Month 11
+2017-12-14 17:02:42,503:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M11
+2017-12-14 17:02:44,296:DEBUG:0 Year 2004 Month 12
+2017-12-14 17:02:44,299:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2004M12
+2017-12-14 17:02:46,034:DEBUG:0 Year 2005 Month 01
+2017-12-14 17:02:46,036:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M01
+2017-12-14 17:02:47,706:DEBUG:0 Year 2005 Month 02
+2017-12-14 17:02:47,709:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M02
+2017-12-14 17:02:49,496:DEBUG:0 Year 2005 Month 03
+2017-12-14 17:02:49,499:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M03
+2017-12-14 17:02:51,234:DEBUG:0 Year 2005 Month 04
+2017-12-14 17:02:51,237:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M04
+2017-12-14 17:02:52,954:DEBUG:0 Year 2005 Month 05
+2017-12-14 17:02:52,957:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M05
+2017-12-14 17:02:54,707:DEBUG:0 Year 2005 Month 06
+2017-12-14 17:02:54,710:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M06
+2017-12-14 17:02:56,047:DEBUG:0 Year 2005 Month 07
+2017-12-14 17:02:56,050:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M07
+2017-12-14 17:02:57,831:DEBUG:0 Year 2005 Month 08
+2017-12-14 17:02:57,834:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M08
+2017-12-14 17:02:59,583:DEBUG:0 Year 2005 Month 09
+2017-12-14 17:02:59,586:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M09
+2017-12-14 17:03:01,389:DEBUG:0 Year 2005 Month 10
+2017-12-14 17:03:01,392:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M10
+2017-12-14 17:03:03,166:DEBUG:0 Year 2005 Month 11
+2017-12-14 17:03:03,169:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M11
+2017-12-14 17:03:04,938:DEBUG:0 Year 2005 Month 12
+2017-12-14 17:03:04,940:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2005M12
+2017-12-14 17:03:06,731:DEBUG:0 Year 2006 Month 01
+2017-12-14 17:03:06,734:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M01
+2017-12-14 17:03:08,536:DEBUG:0 Year 2006 Month 02
+2017-12-14 17:03:08,539:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M02
+2017-12-14 17:03:10,372:DEBUG:0 Year 2006 Month 03
+2017-12-14 17:03:10,375:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M03
+2017-12-14 17:03:12,099:DEBUG:0 Year 2006 Month 04
+2017-12-14 17:03:12,102:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M04
+2017-12-14 17:03:13,909:DEBUG:0 Year 2006 Month 05
+2017-12-14 17:03:13,912:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M05
+2017-12-14 17:03:15,718:DEBUG:0 Year 2006 Month 06
+2017-12-14 17:03:15,720:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M06
+2017-12-14 17:03:17,468:DEBUG:0 Year 2006 Month 07
+2017-12-14 17:03:17,471:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M07
+2017-12-14 17:03:19,215:DEBUG:0 Year 2006 Month 08
+2017-12-14 17:03:19,217:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M08
+2017-12-14 17:03:20,971:DEBUG:0 Year 2006 Month 09
+2017-12-14 17:03:20,973:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M09
+2017-12-14 17:03:22,758:DEBUG:0 Year 2006 Month 10
+2017-12-14 17:03:22,760:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M10
+2017-12-14 17:03:24,446:DEBUG:0 Year 2006 Month 11
+2017-12-14 17:03:24,449:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M11
+2017-12-14 17:03:26,221:DEBUG:0 Year 2006 Month 12
+2017-12-14 17:03:26,224:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2006M12
+2017-12-14 17:03:28,081:DEBUG:0 Year 2007 Month 01
+2017-12-14 17:03:28,083:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M01
+2017-12-14 17:03:29,899:DEBUG:0 Year 2007 Month 02
+2017-12-14 17:03:29,902:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M02
+2017-12-14 17:03:31,708:DEBUG:0 Year 2007 Month 03
+2017-12-14 17:03:31,711:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M03
+2017-12-14 17:03:33,567:DEBUG:0 Year 2007 Month 04
+2017-12-14 17:03:33,570:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M04
+2017-12-14 17:03:35,385:DEBUG:0 Year 2007 Month 05
+2017-12-14 17:03:35,388:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M05
+2017-12-14 17:03:37,279:DEBUG:0 Year 2007 Month 06
+2017-12-14 17:03:37,282:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M06
+2017-12-14 17:03:39,050:DEBUG:0 Year 2007 Month 07
+2017-12-14 17:03:39,053:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M07
+2017-12-14 17:03:40,855:DEBUG:0 Year 2007 Month 08
+2017-12-14 17:03:40,857:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M08
+2017-12-14 17:03:42,703:DEBUG:0 Year 2007 Month 09
+2017-12-14 17:03:42,705:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M09
+2017-12-14 17:03:44,449:DEBUG:0 Year 2007 Month 10
+2017-12-14 17:03:44,451:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M10
+2017-12-14 17:03:46,212:DEBUG:0 Year 2007 Month 11
+2017-12-14 17:03:46,215:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M11
+2017-12-14 17:03:47,509:DEBUG:0 Year 2007 Month 12
+2017-12-14 17:03:47,512:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2007M12
+2017-12-14 17:03:49,233:DEBUG:0 Year 2008 Month 01
+2017-12-14 17:03:49,235:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M01
+2017-12-14 17:03:50,925:DEBUG:0 Year 2008 Month 02
+2017-12-14 17:03:50,927:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M02
+2017-12-14 17:03:52,661:DEBUG:0 Year 2008 Month 03
+2017-12-14 17:03:52,663:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M03
+2017-12-14 17:03:54,441:DEBUG:0 Year 2008 Month 04
+2017-12-14 17:03:54,443:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M04
+2017-12-14 17:03:56,274:DEBUG:0 Year 2008 Month 05
+2017-12-14 17:03:56,277:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M05
+2017-12-14 17:03:58,059:DEBUG:0 Year 2008 Month 06
+2017-12-14 17:03:58,062:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M06
+2017-12-14 17:03:59,826:DEBUG:0 Year 2008 Month 07
+2017-12-14 17:03:59,829:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M07
+2017-12-14 17:04:01,630:DEBUG:0 Year 2008 Month 08
+2017-12-14 17:04:01,632:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M08
+2017-12-14 17:04:03,479:DEBUG:0 Year 2008 Month 09
+2017-12-14 17:04:03,481:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M09
+2017-12-14 17:04:05,403:DEBUG:0 Year 2008 Month 10
+2017-12-14 17:04:05,406:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M10
+2017-12-14 17:04:07,184:DEBUG:0 Year 2008 Month 11
+2017-12-14 17:04:07,187:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M11
+2017-12-14 17:04:08,894:DEBUG:0 Year 2008 Month 12
+2017-12-14 17:04:08,896:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2008M12
+2017-12-14 17:04:10,679:DEBUG:0 Year 2009 Month 01
+2017-12-14 17:04:10,682:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M01
+2017-12-14 17:04:12,427:DEBUG:0 Year 2009 Month 02
+2017-12-14 17:04:12,429:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M02
+2017-12-14 17:04:14,180:DEBUG:0 Year 2009 Month 03
+2017-12-14 17:04:14,183:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M03
+2017-12-14 17:04:15,935:DEBUG:0 Year 2009 Month 04
+2017-12-14 17:04:15,938:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M04
+2017-12-14 17:04:17,757:DEBUG:0 Year 2009 Month 05
+2017-12-14 17:04:17,759:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M05
+2017-12-14 17:04:19,504:DEBUG:0 Year 2009 Month 06
+2017-12-14 17:04:19,506:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M06
+2017-12-14 17:04:21,259:DEBUG:0 Year 2009 Month 07
+2017-12-14 17:04:21,262:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M07
+2017-12-14 17:04:23,003:DEBUG:0 Year 2009 Month 08
+2017-12-14 17:04:23,006:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M08
+2017-12-14 17:04:24,747:DEBUG:0 Year 2009 Month 09
+2017-12-14 17:04:24,749:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M09
+2017-12-14 17:04:26,515:DEBUG:0 Year 2009 Month 10
+2017-12-14 17:04:26,518:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M10
+2017-12-14 17:04:28,288:DEBUG:0 Year 2009 Month 11
+2017-12-14 17:04:28,291:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M11
+2017-12-14 17:04:30,026:DEBUG:0 Year 2009 Month 12
+2017-12-14 17:04:30,028:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2009M12
+2017-12-14 17:04:31,872:DEBUG:0 Year 2010 Month 01
+2017-12-14 17:04:31,875:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M01
+2017-12-14 17:04:33,178:DEBUG:0 Year 2010 Month 02
+2017-12-14 17:04:33,180:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M02
+2017-12-14 17:04:34,568:DEBUG:0 Year 2010 Month 03
+2017-12-14 17:04:34,570:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M03
+2017-12-14 17:04:36,462:DEBUG:0 Year 2010 Month 04
+2017-12-14 17:04:36,465:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M04
+2017-12-14 17:04:38,261:DEBUG:0 Year 2010 Month 05
+2017-12-14 17:04:38,263:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M05
+2017-12-14 17:04:40,028:DEBUG:0 Year 2010 Month 06
+2017-12-14 17:04:40,031:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M06
+2017-12-14 17:04:41,741:DEBUG:0 Year 2010 Month 07
+2017-12-14 17:04:41,744:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M07
+2017-12-14 17:04:43,479:DEBUG:0 Year 2010 Month 08
+2017-12-14 17:04:43,482:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M08
+2017-12-14 17:04:44,653:DEBUG:0 Year 2010 Month 09
+2017-12-14 17:04:44,656:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M09
+2017-12-14 17:04:46,390:DEBUG:0 Year 2010 Month 10
+2017-12-14 17:04:46,393:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M10
+2017-12-14 17:04:48,085:DEBUG:0 Year 2010 Month 11
+2017-12-14 17:04:48,087:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M11
+2017-12-14 17:04:49,815:DEBUG:0 Year 2010 Month 12
+2017-12-14 17:04:49,817:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2010M12
+2017-12-14 17:04:51,700:DEBUG:0 Year 2011 Month 01
+2017-12-14 17:04:51,703:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M01
+2017-12-14 17:04:53,427:DEBUG:0 Year 2011 Month 02
+2017-12-14 17:04:53,430:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M02
+2017-12-14 17:04:55,210:DEBUG:0 Year 2011 Month 03
+2017-12-14 17:04:55,213:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M03
+2017-12-14 17:04:56,968:DEBUG:0 Year 2011 Month 04
+2017-12-14 17:04:56,970:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M04
+2017-12-14 17:04:58,731:DEBUG:0 Year 2011 Month 05
+2017-12-14 17:04:58,734:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M05
+2017-12-14 17:05:00,540:DEBUG:0 Year 2011 Month 06
+2017-12-14 17:05:00,543:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M06
+2017-12-14 17:05:02,289:DEBUG:0 Year 2011 Month 07
+2017-12-14 17:05:02,292:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M07
+2017-12-14 17:05:04,056:DEBUG:0 Year 2011 Month 08
+2017-12-14 17:05:04,059:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M08
+2017-12-14 17:05:05,857:DEBUG:0 Year 2011 Month 09
+2017-12-14 17:05:05,860:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M09
+2017-12-14 17:05:07,074:DEBUG:0 Year 2011 Month 10
+2017-12-14 17:05:07,077:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M10
+2017-12-14 17:05:09,220:DEBUG:0 Year 2011 Month 11
+2017-12-14 17:05:09,223:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M11
+2017-12-14 17:05:10,528:DEBUG:0 Year 2011 Month 12
+2017-12-14 17:05:10,531:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2011M12
+2017-12-14 17:05:12,286:DEBUG:0 Year 2012 Month 01
+2017-12-14 17:05:12,289:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M01
+2017-12-14 17:05:14,032:DEBUG:0 Year 2012 Month 02
+2017-12-14 17:05:14,035:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M02
+2017-12-14 17:05:15,768:DEBUG:0 Year 2012 Month 03
+2017-12-14 17:05:15,771:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M03
+2017-12-14 17:05:17,468:DEBUG:0 Year 2012 Month 04
+2017-12-14 17:05:17,471:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M04
+2017-12-14 17:05:19,207:DEBUG:0 Year 2012 Month 05
+2017-12-14 17:05:19,210:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M05
+2017-12-14 17:05:21,082:DEBUG:0 Year 2012 Month 06
+2017-12-14 17:05:21,084:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M06
+2017-12-14 17:05:22,884:DEBUG:0 Year 2012 Month 07
+2017-12-14 17:05:22,887:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M07
+2017-12-14 17:05:24,607:DEBUG:0 Year 2012 Month 08
+2017-12-14 17:05:24,610:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M08
+2017-12-14 17:05:26,709:DEBUG:0 Year 2012 Month 09
+2017-12-14 17:05:26,711:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M09
+2017-12-14 17:05:28,458:DEBUG:0 Year 2012 Month 10
+2017-12-14 17:05:28,461:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M10
+2017-12-14 17:05:30,180:DEBUG:0 Year 2012 Month 11
+2017-12-14 17:05:30,182:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M11
+2017-12-14 17:05:31,972:DEBUG:0 Year 2012 Month 12
+2017-12-14 17:05:31,975:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2012M12
+2017-12-14 17:05:33,715:DEBUG:0 Year 2013 Month 01
+2017-12-14 17:05:33,718:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M01
+2017-12-14 17:05:35,545:DEBUG:0 Year 2013 Month 02
+2017-12-14 17:05:35,548:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M02
+2017-12-14 17:05:37,426:DEBUG:0 Year 2013 Month 03
+2017-12-14 17:05:37,429:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M03
+2017-12-14 17:05:39,160:DEBUG:0 Year 2013 Month 04
+2017-12-14 17:05:39,162:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M04
+2017-12-14 17:05:40,890:DEBUG:0 Year 2013 Month 05
+2017-12-14 17:05:40,893:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M05
+2017-12-14 17:05:42,724:DEBUG:0 Year 2013 Month 06
+2017-12-14 17:05:42,727:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M06
+2017-12-14 17:05:44,469:DEBUG:0 Year 2013 Month 07
+2017-12-14 17:05:44,472:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M07
+2017-12-14 17:05:46,434:DEBUG:0 Year 2013 Month 08
+2017-12-14 17:05:46,437:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M08
+2017-12-14 17:05:47,736:DEBUG:0 Year 2013 Month 09
+2017-12-14 17:05:47,738:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M09
+2017-12-14 17:05:49,991:DEBUG:0 Year 2013 Month 10
+2017-12-14 17:05:49,994:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M10
+2017-12-14 17:05:51,708:DEBUG:0 Year 2013 Month 11
+2017-12-14 17:05:51,711:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M11
+2017-12-14 17:05:53,903:DEBUG:0 Year 2013 Month 12
+2017-12-14 17:05:53,906:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2013M12
+2017-12-14 17:05:55,674:DEBUG:0 Year 2014 Month 01
+2017-12-14 17:05:55,677:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M01
+2017-12-14 17:06:00,598:DEBUG:0 Year 2014 Month 02
+2017-12-14 17:06:00,601:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M02
+2017-12-14 17:06:02,404:DEBUG:0 Year 2014 Month 03
+2017-12-14 17:06:02,407:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M03
+2017-12-14 17:06:04,573:DEBUG:0 Year 2014 Month 04
+2017-12-14 17:06:04,576:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M04
+2017-12-14 17:06:06,398:DEBUG:0 Year 2014 Month 05
+2017-12-14 17:06:06,400:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M05
+2017-12-14 17:06:08,196:DEBUG:0 Year 2014 Month 06
+2017-12-14 17:06:08,198:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M06
+2017-12-14 17:06:09,912:DEBUG:0 Year 2014 Month 07
+2017-12-14 17:06:09,914:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M07
+2017-12-14 17:06:11,406:DEBUG:0 Year 2014 Month 08
+2017-12-14 17:06:11,409:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M08
+2017-12-14 17:06:13,098:DEBUG:0 Year 2014 Month 09
+2017-12-14 17:06:13,101:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M09
+2017-12-14 17:06:14,907:DEBUG:0 Year 2014 Month 10
+2017-12-14 17:06:14,909:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M10
+2017-12-14 17:06:16,929:DEBUG:0 Year 2014 Month 11
+2017-12-14 17:06:16,931:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M11
+2017-12-14 17:06:18,710:DEBUG:0 Year 2014 Month 12
+2017-12-14 17:06:18,713:DEBUG:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014/global_historical_PTotWN_month_m_pfaf06_1960_2014Y2014M12
