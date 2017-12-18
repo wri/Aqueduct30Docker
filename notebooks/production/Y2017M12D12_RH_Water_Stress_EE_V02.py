@@ -238,12 +238,12 @@ temporalResolutions = ["month"]
 df = createIndicatorDataFrame()
 
 
-# In[ ]:
+# In[14]:
 
 df.head()
 
 
-# In[ ]:
+# In[15]:
 
 
 
@@ -313,7 +313,7 @@ for index, row in df.iterrows():
                 
 
 
-# In[ ]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
