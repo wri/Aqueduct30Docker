@@ -86,10 +86,11 @@ temporalRange["long"] = [LONG_TERM_MIN,LONG_TERM_MAX]
 
 # Calculate mean 
 
-# In[51]:
+# In[9]:
 
 def createRow():
-    newRow = {} 
+    newRow = {}
+    newRow["indicatorLong"]= indicator
     newRow["indicator"] = shortIndicator
     newRow["temporalResolution"] = temporalResolution
     newRow["reducerType"] =  reducerType
@@ -101,6 +102,7 @@ def createRow():
     newRow["month"] = month
     newRow["properties"] = {"rangeMin":yearMin,
                              "rangeMax":yearMax,
+                             "interval":interval,
                              "month":month,
                              "script_used":SCRIPT_NAME,
                              "units":"millionm3",
@@ -109,7 +111,7 @@ def createRow():
                              "reducer":reducerType}
     newRow["newIcId"]= "%s/reduced_global_historical_combined" %(EE_PATH)
     newRow["newImageId"] = "%s/global_historical_%s_%s_%s_30sPfaf06_%s_%0.4d_%0.4dM%0.2d" %(newRow["newIcId"],shortIndicator,temporalResolution,"millionm3",reducerType,yearMin,yearMax,month)
-    newRow["description"] = "reduced_global_historical_combined_%s_%s_%s_%0.2d" %(interval,reducerType,shortIndicator,OUTPUT_VERSION)
+    newRow["description"] = "reduced_global_historical_combined_%s_%s_%s_V%0.2d" %(interval,reducerType,shortIndicator,OUTPUT_VERSION)
     
     return newRow
     
@@ -124,6 +126,34 @@ def createCollections(newIcId):
     logger.error(result)
     
     
+    
+def createTimeBand(image):
+    # Adds a timeband to the single band image. band is "b1" 
+    year = ee.Number(ee.Image(image).get("year"))
+    newImage = ee.Image.constant(year).toDouble().select(["constant"],["independent"])
+    image = image.toDouble().select([row["indicatorLong"]],["dependent"])
+    return image.addBands(newImage)   
+
+
+def linearTrend(ic,yearmin,yearmax):    
+    icTimeband = ee.ImageCollection(ic).map(createTimeBand)  
+       
+    imageFinalYear = ee.Image(ic.filter(ee.Filter.eq("year",yearmax)))
+                          
+    fit = icTimeband.select(["independent","dependent"]).reduce(ee.Reducer.linearFit())
+    offset = fit.select(["offset"])
+    scale = fit.select(["scale"]) #Note that this definition of scale is a as in y = ax+b
+    newImageYearMax = scale.multiply(yearmax).add(offset).select(["scale"],["newValue"])
+    
+    # These lines were added after sharing GDBD results with Sam. Masking out negative values
+    PositiveMask = ee.Image(newImageYearMax.gte(0))
+    newImageYearMax = ee.Image(newImageYearMax.multiply(PositiveMask))
+    
+    
+    newImageYearMax = newImageYearMax.addBands(offset).addBands(scale)
+    return ee.Image(newImageYearMax)
+
+    
 def exportAsset(imageOut,assetID,dimensions,description,properties,CRS_TRANSFORM30S_SMALL):
     try:
         ee.Image(assetID).id().getInfo()
@@ -133,7 +163,6 @@ def exportAsset(imageOut,assetID,dimensions,description,properties,CRS_TRANSFORM
     
     if  nonExisting:  
         imageOut = imageOut.set(properties)
-        description = "global_historical_WS_%s_dimensionless_30sPfaf%0.2d_1960_2014Y%0.4dM%0.2dV%0.2d" %(row["temporalResolution"],PFAF_LEVEL,year,month,OUTPUT_VERSION)
 
         task = ee.batch.Export.image.toAsset(
             image =  ee.Image(imageOut),
@@ -146,55 +175,30 @@ def exportAsset(imageOut,assetID,dimensions,description,properties,CRS_TRANSFORM
         )
         print(assetID)
         logger.debug(assetID)
-        #task.start()
-    
- 
-    
-    
+        task.start()
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[40]:
+# In[10]:
 
 temporalResolutions = ["month","year"]
 
 
-# In[41]:
+# In[11]:
 
 indicators = ["Q_millionm3","WW_millionm3","WN_millionm3"]
 
 
-# In[42]:
+# In[12]:
 
 reducerTypes = ["mean","trend"]
 
 
-# In[43]:
+# In[13]:
 
 intervals = ["long","short"]
 
 
-# In[ ]:
-
-
-
-
-
-# In[44]:
+# In[14]:
 
 df = pd.DataFrame()
 for indicator in indicators:
@@ -221,23 +225,26 @@ for indicator in indicators:
                         df = df.append(newRow,ignore_index=True)
 
 
-# In[45]:
+# In[15]:
 
 df
 
 
-# In[46]:
+# In[16]:
 
 createCollections(df["newIcId"].unique()[0])
 
 
-# In[50]:
+# In[17]:
 
 for index, row in df.iterrows():
     if row["reducerType"] == "mean":
         iReduced = ee.Image(ee.ImageCollection(row["ic"]).reduce(ee.Reducer.mean()))
         exportAsset(iReduced,row["newImageId"],DIMENSIONS30SSMALL,row["description"],row["properties"],CRS_TRANSFORM30S_SMALL)
     elif row["reducerType"] == "trend":
+        newImageYearMax = linearTrend(ee.ImageCollection(row["ic"]),row["yearMin"],row["yearMax"])
+        exportAsset(newImageYearMax,row["newImageId"],DIMENSIONS30SSMALL,row["description"],row["properties"],CRS_TRANSFORM30S_SMALL)
+
         
         
 
