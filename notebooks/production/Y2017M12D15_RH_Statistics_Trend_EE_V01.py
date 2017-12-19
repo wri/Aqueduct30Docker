@@ -23,7 +23,7 @@ EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 SCRIPT_NAME = "Y2017M12D15_RH_Statistics_Trend_EE_V01"
 
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 5
 
 PFAF_LEVEL = 6
 
@@ -103,13 +103,15 @@ def createRow():
     newRow["properties"] = {"rangeMin":yearMin,
                              "rangeMax":yearMax,
                              "interval":interval,
+                             "indicator":shortIndicator,
+                             "temporalResolution": temporalResolution,
                              "month":month,
                              "script_used":SCRIPT_NAME,
                              "units":"millionm3",
                              "version":OUTPUT_VERSION,
                              "pfaf_level":PFAF_LEVEL,
                              "reducer":reducerType}
-    newRow["newIcId"]= "%s/reduced_global_historical_combined" %(EE_PATH)
+    newRow["newIcId"]= "%s/reduced_global_historical_combined_V%0.2d" %(EE_PATH,OUTPUT_VERSION)
     newRow["newImageId"] = "%s/global_historical_%s_%s_%s_30sPfaf06_%s_%0.4d_%0.4dM%0.2d" %(newRow["newIcId"],shortIndicator,temporalResolution,"millionm3",reducerType,yearMin,yearMax,month)
     newRow["description"] = "reduced_global_historical_combined_%s_%s_%s_V%0.2d" %(interval,reducerType,shortIndicator,OUTPUT_VERSION)
     
