@@ -74,6 +74,8 @@
 #     Calculate short term and long term average and 2014_trend for Q, WW and WN per basin
 # 1. **Y2017M12D19_RH_Water_Stress_Reduced_EE_V01**  
 #     Calculate water stress using reduced (Long/Short Mean/Trend) maximum discharge and total withdrawals. 
+# 1. **Y2017M12D20_RH_Water_Stress_Year_From_Month_EE_V01**  
+#     Calculate annual water stress based on average of all months
 #     
 #     
 #     

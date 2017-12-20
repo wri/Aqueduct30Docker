@@ -19,6 +19,12 @@ sys.version
 
 # In[2]:
 
+
+# --- Danger Zone ---
+OVERWRITE = 0
+# -------------------
+
+
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 SCRIPT_NAME = "Y2017M12D19_RH_Water_Stress_Reduced_EE_V01"
@@ -140,6 +146,13 @@ def createRow():
     return newRow
 
 
+def deleteImage(imageId):        
+    command = "earthengine rm %s" %(imageId) 
+    result = subprocess.check_output(command,shell=True)
+    if result:
+        pass
+    logger.error(result)
+
 def calculateWS(Q,WW,WN):
     BA = Q.add(WN)            
     WS = WW.divide(BA)
@@ -189,9 +202,9 @@ for temporalResolution in temporalResolutions:
                 WN = ee.Image(icTemp.filter(ee.Filter.eq("indicator","WN")).first())
                 
                 if reducerType == "trend":
-                    Q = Q.select(["newValue"])
-                    WW = WW.select(["newValue"])
-                    WN = WN.select(["newValue"])
+                    Q = Q.select(["newValue"],["Q_millionm3_trend"])
+                    WW = WW.select(["newValue"],["WW_millionm3_trend"])
+                    WN = WN.select(["newValue"],["WN_millionm3_trend"])
                 
                 newRow = createRow()
                 df = df.append(newRow,ignore_index=True)
@@ -202,9 +215,9 @@ for temporalResolution in temporalResolutions:
                     WW = ee.Image(icTemp.filter(ee.Filter.eq("indicator","WW")).first())
                     WN = ee.Image(icTemp.filter(ee.Filter.eq("indicator","WN")).first())
                     if reducerType == "trend":
-                        Q = Q.select(["newValue"])
-                        WW = WW.select(["newValue"])
-                        WN = WN.select(["newValue"])
+                        Q = Q.select(["newValue"],["Q_millionm3_trend"])
+                        WW = WW.select(["newValue"],["WW_millionm3_trend"])
+                        WN = WN.select(["newValue"],["WN_millionm3_trend"])
 
                     newRow = createRow()
                     df = df.append(newRow,ignore_index=True)
@@ -219,7 +232,11 @@ df
 
 for index, row in df.iterrows():
     WS = calculateWS(row["Q"],row["WW"],row["WN"])
+    if OVERWRITE:
+        deleteImage(row["newImageId"])
     exportAsset(WS,row["newImageId"],DIMENSIONS30SSMALL,row["description"],row["properties"],CRS_TRANSFORM30S_SMALL)
+    
+    
 
 
 # In[16]:
