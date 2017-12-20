@@ -20,7 +20,7 @@ print(dateString,timeString)
 
 # In[2]:
 
-MAXTASKS = 100
+MAXTASKS = 10
 CANCELTASKS = 0
 
 

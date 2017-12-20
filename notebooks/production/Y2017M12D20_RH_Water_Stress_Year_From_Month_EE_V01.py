@@ -143,7 +143,7 @@ def exportAsset(imageOut,assetID,dimensions,description,properties,CRS_TRANSFORM
         )
         print(assetID)
         logger.debug(assetID)
-        #task.start()
+        task.start()
 
 
 # In[9]:
@@ -181,14 +181,4 @@ for index, row in df.iterrows():
     if ee.ImageCollection(row["ic"]).size().getInfo() == 12 :
         iWSreducedTemp = reduceTemp(row["ic"])
         exportAsset(iWSreducedTemp,row["newImageId"],DIMENSIONS30SSMALL,row["description"],row["properties"],CRS_TRANSFORM30S_SMALL)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
 
