@@ -26,7 +26,7 @@ sys.version
 SCRIPT_NAME = "Y2017M11D15_RH_Create_PostGIS_Database_V01"
 
 # Database settings
-DATABASE_IDENTIFIER = "aqueduct30v02"
+DATABASE_IDENTIFIER = "aqueduct30v03"
 DATABASE_NAME = "database01"
 
 
@@ -35,6 +35,7 @@ DATABASE_NAME = "database01"
 import boto3
 import botocore
 from sqlalchemy import *
+from geoalchemy2 import Geometry, WKTElement
 
 
 # In[4]:

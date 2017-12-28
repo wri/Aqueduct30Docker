@@ -76,6 +76,11 @@
 #     Calculate water stress using reduced (Long/Short Mean/Trend) maximum discharge and total withdrawals. 
 # 1. **Y2017M12D20_RH_Water_Stress_Year_From_Month_EE_V01**  
 #     Calculate annual water stress based on average of all months
+# 1. **Y2017M12D28_RH_zonal_stats_EE_toGCS_V02**  
+#     Calculate zonal statistics for EE images and HydroBasin level 6 zones. Export to GCS 
+#     
+# 1. **Y2917M12D28_RH_EE_Results_To_PostGIS_V01**  
+#     Store earth engine raster results in postgis 
 #     
 #     
 #     
