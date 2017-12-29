@@ -57,7 +57,7 @@ DATABASE_NAME = "database01"
 TABLE_NAME = "hydrobasin6_v%0.2d" %(OUTPUT_VERSION)
 
 
-# In[98]:
+# In[139]:
 
 def rdsConnect(database_identifier,database_name):
     """open a connection to AWS RDS
@@ -114,19 +114,6 @@ def fcToGdf(fc, crs = {'init' :'epsg:4326'}):
     gdf['geometry'] = map(lambda s: shapely.geometry.shape(s), gdf.geometry)
     gdf.crs = crs
     return gdf
-
-def gdfToFc(gdf):
-    """converts a geodataframe  to a featurecollection
-    
-    Args:
-        gdf (geoPandas.GeoDataFrame) : the input geodataframe
-        crs (dictionary, optional) : the coordinate reference system in geopandas format. Defaults to {'init' :'epsg:4326'}
-        
-    Returns:
-        fc (ee.FeatureCollection) : feature 
-
-    
-    """
 
 
 def GdfToPostGIS(connection, gdf,tableName,saveIndex = True):
@@ -200,10 +187,117 @@ def PostGisToGdf(connection,tableName):
     gdf.crs =  {'init' :'epsg:4326'}
     return gdf
 
+def RowAddFeature(row):
+    """Adds a column with ee features to a geodataframe row
+    
+    Args:
+        gdf row (geoDataFrame row) : the input row
+        
+    Returns:
+        gdf row (geoDataFrame row) : the input row with an added feature
+    
+    """
+    geom = row["geom"]
+    geomType = row["geom"].geom_type
+    
+    if geomType == "MultiPolygon":
+        geometry = ee.Geometry.MultiPolygon(geom)
+    row["feature"] = geomType
+    row["geometry"]  = geometry
+    return row
+    
+    
 
-# In[71]:
+def gdfToFc(gdf):
+    """converts a geodataframe  to a featurecollection
+    
+    Args:
+        gdf (geoPandas.GeoDataFrame) : the input geodataframe
+        
+    Returns:
+        fc (ee.FeatureCollection) : feature collection (server  side)  
+    
+    
+    """
+    gdfCopy = gdf.copy()
+    gdfCopy["geomJSON"] = gdf["geom"].to_json
+    
+    featureList = []
+    
+    gdf.apply()
+    
+    
+    geometry = ee.Geometry.Multipolygon([[-121.68, 39.91], [-97.38, 40.34]]);
+    properties = {"rutger":42,"freek":26}
+    feature = ee.Feature(geometry,properties)
+    
+    featureList.append(feature)
+    
+    fc = ee.FeatureCollection(featureList)
+    
+    return fc
 
-help(fcToGdf)
+
+# In[123]:
+
+geom = gdfToFc(gdf)
+
+
+# In[148]:
+
+gdfCopy = gdf.copy()
+gdfCopy["geomJSON"] = gdf["geom"].to_json()
+
+
+# In[149]:
+
+gdfCopy.head()
+
+
+# In[150]:
+
+row  = gdfCopy.loc[1]
+
+
+# In[151]:
+
+geom = row["geomJSON"]
+
+
+# In[158]:
+
+len(geom)
+
+
+# In[157]:
+
+ee.Feature(geom,{"rutger":42})
+
+
+# In[154]:
+
+
+
+
+# In[140]:
+
+gdf2 = gdf.apply(RowAddFeature, axis=1)
+
+
+# In[138]:
+
+gdf2.head()
+
+
+# In[109]:
+
+task = ee.batch.Export.table.toDrive(    
+    collection =  fcEu ,
+    description = "description" ,
+    fileNamePrefix = "test01",
+    fileFormat = "KML"
+)
+task.start()
 
 
 # In[53]:
