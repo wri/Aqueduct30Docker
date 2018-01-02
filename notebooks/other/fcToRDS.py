@@ -9,13 +9,20 @@
 # fc -> Geopandas -> postGIS  
 # PostGIS -> GeoPandas -> fc
 # 
+# 
+# TODO:
+# 
+# laatste stap: Geopandas - > Fc heeft probelemen met Geometry in GeoJSON
+# 
+# 
+# 
 
 # In[1]:
 
 get_ipython().magic('matplotlib inline')
 
 
-# In[89]:
+# In[2]:
 
 import ee
 import geopandas as gpd
@@ -27,27 +34,28 @@ import boto3
 import botocore
 import sqlalchemy
 import geoalchemy2
+import geojson
 
 #from shapely.geometry.multipolygon import MultiPolygon
 #from shapely.geometry import shape
 
 
-# In[3]:
+# In[7]:
 
 ee.Initialize()
 
 
-# In[4]:
+# In[8]:
 
 fc = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017");       
 
 
-# In[5]:
+# In[9]:
 
 fcEu = fc.filter(ee.Filter.eq("wld_rgn","Europe"))
 
 
-# In[76]:
+# In[10]:
 
 # Database settings
 OUTPUT_VERSION= 1
@@ -57,7 +65,7 @@ DATABASE_NAME = "database01"
 TABLE_NAME = "hydrobasin6_v%0.2d" %(OUTPUT_VERSION)
 
 
-# In[139]:
+# In[11]:
 
 def rdsConnect(database_identifier,database_name):
     """open a connection to AWS RDS
@@ -220,76 +228,113 @@ def gdfToFc(gdf):
     
     """
     gdfCopy = gdf.copy()
-    gdfCopy["geomJSON"] = gdf["geom"].to_json
+    gdfCopy["geomJSON"]
     
     featureList = []
     
-    gdf.apply()
     
+    #geometry = ee.Geometry.Multipolygon([[-121.68, 39.91], [-97.38, 40.34]]);
+    #properties = {"rutger":42,"freek":26}
+    #feature = ee.Feature(geometry,properties)
     
-    geometry = ee.Geometry.Multipolygon([[-121.68, 39.91], [-97.38, 40.34]]);
-    properties = {"rutger":42,"freek":26}
-    feature = ee.Feature(geometry,properties)
+    #featureList.append(feature)
     
-    featureList.append(feature)
+    #fc = ee.FeatureCollection(featureList)
     
-    fc = ee.FeatureCollection(featureList)
-    
-    return fc
+    return gdfCopy
 
 
-# In[123]:
+# In[12]:
 
-geom = gdfToFc(gdf)
-
-
-# In[148]:
-
-gdfCopy = gdf.copy()
-gdfCopy["geomJSON"] = gdf["geom"].to_json()
+gdf2 = gdf.copy()
 
 
-# In[149]:
+# In[ ]:
 
-gdfCopy.head()
-
-
-# In[150]:
-
-row  = gdfCopy.loc[1]
+gdfCopy2 = gdfToFc(gdf)
 
 
-# In[151]:
+# In[ ]:
 
-geom = row["geomJSON"]
+gdfCopy2.head()
 
 
-# In[158]:
+# In[ ]:
+
+gdf.shape
+
+
+# In[ ]:
+
+gdfCopy2["JSON"]  = gdfCopy2["geom"].to_json()
+
+
+# In[ ]:
+
+gdfCopy2.head()
+
+
+# In[ ]:
+
+geom = row["JSON"]
+
+
+# In[ ]:
+
+test = geojson.loads(geom)
+
+
+# In[ ]:
+
+print(len(test['features']))
+
+
+# In[ ]:
+
+type(test)
+
+
+# In[ ]:
+
+test2 = ee.Feature(test,{})
+
+
+# In[ ]:
+
+geomJSON = geom.to_JSON()
+
+
+# In[ ]:
 
 len(geom)
 
 
-# In[157]:
+# In[ ]:
+
+type(geom)
+
+
+# In[ ]:
 
 ee.Feature(geom,{"rutger":42})
 
 
-# In[154]:
+# In[ ]:
 
 
 
 
-# In[140]:
+# In[ ]:
 
 gdf2 = gdf.apply(RowAddFeature, axis=1)
 
 
-# In[138]:
+# In[ ]:
 
 gdf2.head()
 
 
-# In[109]:
+# In[ ]:
 
 task = ee.batch.Export.table.toDrive(    
     collection =  fcEu ,
@@ -300,93 +345,93 @@ task = ee.batch.Export.table.toDrive(
 task.start()
 
 
-# In[53]:
+# In[ ]:
 
 test = fcEu.getInfo()
 
 
-# In[65]:
+# In[ ]:
 
 test.keys()
 
 
-# In[67]:
+# In[ ]:
 
 gdf = fcToGdf(fcEu)
 
 
-# In[90]:
+# In[ ]:
 
 gdfFromSQL = GdftoPostGIS(connection, gdf,"test01",True)
 
 
-# In[91]:
+# In[ ]:
 
 gdfFromSQL
 
 
-# In[54]:
+# In[ ]:
 
 from sys import getsizeof
 
 
-# In[62]:
+# In[ ]:
 
 features = test["features"]
 
 
-# In[82]:
+# In[ ]:
 
 engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
 
 
-# In[83]:
+# In[ ]:
 
 type(engine)
 
 
-# In[84]:
+# In[ ]:
 
 type(connection)
 
 
-# In[94]:
+# In[ ]:
 
 gdf = PostGisToGdf(connection,"test01")
 
 
-# In[97]:
+# In[ ]:
 
 
 
 
-# In[11]:
+# In[ ]:
 
 geoSeries = gpd.GeoSeries(geom2)
 geoSeries.crs = {'init' :'epsg:4326'}
 
 
-# In[12]:
+# In[ ]:
 
 geoSeries.plot()
 
 
-# In[27]:
+# In[ ]:
 
 gdf = gpd.GeoDataFrame(geometry=geoSeries)
 
 
-# In[19]:
+# In[ ]:
 
 world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 
 
-# In[21]:
+# In[ ]:
 
 world.head()
 
 
-# In[13]:
+# In[ ]:
 
 geoSeriesJSON = geoSeries.to_json
 
@@ -396,17 +441,17 @@ geoSeriesJSON = geoSeries.to_json
 
 
 
-# In[29]:
+# In[ ]:
 
 multiPolygon = folium.features.GeoJson(gdf)
 
 
-# In[30]:
+# In[ ]:
 
 m = folium.Map([0, 0], zoom_start=3)
 
 
-# In[31]:
+# In[ ]:
 
 m.add_child(multiPolygon)
 
