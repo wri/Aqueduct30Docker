@@ -10,6 +10,9 @@
 # PostGIS -> GeoPandas -> fc
 # 
 # 
+# fc to postGIS will just invoke fc -> geopandas 
+# 
+# 
 # TODO:
 # 
 # laatste stap: Geopandas - > Fc heeft probelemen met Geometry in GeoJSON
@@ -25,37 +28,49 @@ get_ipython().magic('matplotlib inline')
 # In[2]:
 
 import ee
+import pandas as pd
 import geopandas as gpd
+
+
 import folium
+import folium_gee
+import branca 
 
 import shapely
+import shapely.wkt
 
 import boto3
 import botocore
 import sqlalchemy
 import geoalchemy2
 import geojson
+import geojsonio
 
 #from shapely.geometry.multipolygon import MultiPolygon
 #from shapely.geometry import shape
 
 
-# In[7]:
+# In[3]:
 
 ee.Initialize()
 
 
-# In[8]:
-
-fc = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017");       
+# In[4]:
 
 
-# In[9]:
-
-fcEu = fc.filter(ee.Filter.eq("wld_rgn","Europe"))
 
 
-# In[10]:
+# In[5]:
+
+
+
+
+# In[6]:
+
+
+
+
+# In[7]:
 
 # Database settings
 OUTPUT_VERSION= 1
@@ -65,7 +80,7 @@ DATABASE_NAME = "database01"
 TABLE_NAME = "hydrobasin6_v%0.2d" %(OUTPUT_VERSION)
 
 
-# In[11]:
+# In[36]:
 
 def rdsConnect(database_identifier,database_name):
     """open a connection to AWS RDS
@@ -98,7 +113,7 @@ def rdsConnect(database_identifier,database_name):
 
 
 def fcToGdf(fc, crs = {'init' :'epsg:4326'}):
-    """converts a featurecollection to a geoPandas GeoDataFrame
+    """converts a featurecollection to a geoPandas GeoDataFrame. WARNING: Geometries are non-geodesic. Geodesic not yet supported
     
     Args:
         fc (ee.FeatureCollection) : the earth engine feature collection to convert. Size is limited to memory (geopandas limitation)
@@ -195,26 +210,12 @@ def PostGisToGdf(connection,tableName):
     gdf.crs =  {'init' :'epsg:4326'}
     return gdf
 
-def RowAddFeature(row):
-    """Adds a column with ee features to a geodataframe row
-    
-    Args:
-        gdf row (geoDataFrame row) : the input row
-        
-    Returns:
-        gdf row (geoDataFrame row) : the input row with an added feature
-    
-    """
-    geom = row["geom"]
-    geomType = row["geom"].geom_type
-    
-    if geomType == "MultiPolygon":
-        geometry = ee.Geometry.MultiPolygon(geom)
-    row["feature"] = geomType
-    row["geometry"]  = geometry
-    return row
-    
-    
+
+def shapelyToEEFeature(row):
+    properties = row.drop(["geometry"]).to_dict()
+    geoJSONfeature = geojson.Feature(geometry=row["geometry"], properties=properties)
+    return ee.Feature(geoJSONfeature)
+   
 
 def gdfToFc(gdf):
     """converts a geodataframe  to a featurecollection
@@ -223,245 +224,168 @@ def gdfToFc(gdf):
         gdf (geoPandas.GeoDataFrame) : the input geodataframe
         
     Returns:
-        fc (ee.FeatureCollection) : feature collection (server  side)  
+        fc (ee.FeatureCollection) : feature collection (server side)  
     
     
     """
     gdfCopy = gdf.copy()
-    gdfCopy["geomJSON"]
+    gdfCopy["eeFeature"] = gdfCopy.apply(shapelyToEEFeature,1)
+    featureList = gdfCopy["eeFeature"].tolist()
+    fc =  ee.FeatureCollection(featureList)
+    return fc
+
+def shapelyToFoliumFeature(row):
+    """converts a shapely feature to a folium (leaflet) feature. row needs to have a geometry column. CRS is 4326
     
-    featureList = []
+    Args:
+        row (geoPandas.GeoDataFrame row) : the input geodataframe row. Appy this function to a geodataframe gdf.appy(function, 1)
+        
+    Returns:
+        foliumFeature  (folium feature) : foliumFeature with popup child.
     
+    """    
+
+    width, height = 310,110
+    dfTemp = pd.DataFrame(row.drop("geometry"))
+    htmlTable = dfTemp.to_html()
+    iFrame = branca.element.IFrame(htmlTable, width=width, height=height)
+    geoJSONfeature = geojson.Feature(geometry=row["geometry"], properties={})
+    foliumFeature = folium.features.GeoJson(geoJSONfeature)
+    foliumFeature.add_child(folium.Popup(iFrame))
+    return foliumFeature 
     
-    #geometry = ee.Geometry.Multipolygon([[-121.68, 39.91], [-97.38, 40.34]]);
-    #properties = {"rutger":42,"freek":26}
-    #feature = ee.Feature(geometry,properties)
+
     
-    #featureList.append(feature)
+def defaultMap():
+    m = folium.Map(
+        location=[5, 52],
+        tiles='Mapbox Bright',
+        zoom_start=4
+    )
+    return m
+
+
+def gdfToFoliumGroup(gdf,name="noName",m=None):
+    """converts a geodataframe  to a folium featureGroup with the properties as a popup child
     
-    #fc = ee.FeatureCollection(featureList)
+    Args:
+        gdf (geoPandas.GeoDataFrame) : the input geodataframe
+        name (string) : output folium feature group name
+        
+    Returns:
+        fc (ee.FeatureCollection) : feature collection (server side)  
+    """
+     
+    featureGroup = folium.FeatureGroup(name=name)
+    if m:
+        pass
+    else:
+        m = defaultMap()
     
-    return gdfCopy
+    features = gdf.apply(shapelyToFoliumFeature,1)   
+    map(lambda x: x.add_to(featureGroup),features)
+        
+    return featureGroup
 
 
-# In[12]:
 
-gdf2 = gdf.copy()
+# # Testing
 
+# tests to perform  
+# fc -> Geopandas  
+# Geopandas -> postGIS  
+# PostGIS -> GeoPandas  
+# GeoPandas -> fc  
+# 
+# Geopandas -> folium  
 
-# In[ ]:
+# In[37]:
 
-gdfCopy2 = gdfToFc(gdf)
+fc = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017");
+fcEu = fc.filter(ee.Filter.eq("wld_rgn","Europe"))
+fcTest = fcEu.filter(ee.Filter.inList("country_co",["PO","NL"]))
 
 
-# In[ ]:
+# In[31]:
 
-gdfCopy2.head()
+gdf = fcToGdf(fcTest)
 
 
-# In[ ]:
+# In[32]:
 
-gdf.shape
+gdf
 
 
-# In[ ]:
+# In[40]:
 
-gdfCopy2["JSON"]  = gdfCopy2["geom"].to_json()
+fcTest.getInfo()
 
 
-# In[ ]:
+# In[41]:
 
-gdfCopy2.head()
+geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
-# In[ ]:
+# In[51]:
 
-geom = row["JSON"]
+geometry2 = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=True )
 
 
-# In[ ]:
+# In[52]:
 
-test = geojson.loads(geom)
+feature = ee.Feature(geometry,{"rutger":42})
+feature2  = ee.Feature(geometry2,{"rutger":42})
 
 
-# In[ ]:
+# In[55]:
 
-print(len(test['features']))
+fc1 = ee.FeatureCollection([feature])
+fc2 = ee.FeatureCollection([feature2])
 
 
-# In[ ]:
+# In[56]:
 
-type(test)
+gdf1 = fcToGdf(fc1)
+gdf2 = fcToGdf(fc2)
 
 
-# In[ ]:
+# In[59]:
 
-test2 = ee.Feature(test,{})
+group1 = gdfToFoliumGroup(gdf1)
 
 
-# In[ ]:
+# In[60]:
 
-geomJSON = geom.to_JSON()
+group2 = gdfToFoliumGroup(gdf2)
 
 
-# In[ ]:
+# In[62]:
 
-len(geom)
-
-
-# In[ ]:
-
-type(geom)
-
-
-# In[ ]:
-
-ee.Feature(geom,{"rutger":42})
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf2 = gdf.apply(RowAddFeature, axis=1)
-
-
-# In[ ]:
-
-gdf2.head()
-
-
-# In[ ]:
-
-task = ee.batch.Export.table.toDrive(    
-    collection =  fcEu ,
-    description = "description" ,
-    fileNamePrefix = "test01",
-    fileFormat = "KML"
-)
-task.start()
-
-
-# In[ ]:
-
-test = fcEu.getInfo()
-
-
-# In[ ]:
-
-test.keys()
-
-
-# In[ ]:
-
-gdf = fcToGdf(fcEu)
-
-
-# In[ ]:
-
-gdfFromSQL = GdftoPostGIS(connection, gdf,"test01",True)
-
-
-# In[ ]:
-
-gdfFromSQL
-
-
-# In[ ]:
-
-from sys import getsizeof
-
-
-# In[ ]:
-
-features = test["features"]
-
-
-# In[ ]:
-
-engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
-
-
-# In[ ]:
-
-type(engine)
-
-
-# In[ ]:
-
-type(connection)
-
-
-# In[ ]:
-
-gdf = PostGisToGdf(connection,"test01")
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-geoSeries = gpd.GeoSeries(geom2)
-geoSeries.crs = {'init' :'epsg:4326'}
-
-
-# In[ ]:
-
-geoSeries.plot()
-
-
-# In[ ]:
-
-gdf = gpd.GeoDataFrame(geometry=geoSeries)
-
-
-# In[ ]:
-
-world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-
-
-# In[ ]:
-
-world.head()
-
-
-# In[ ]:
-
-geoSeriesJSON = geoSeries.to_json
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-multiPolygon = folium.features.GeoJson(gdf)
-
-
-# In[ ]:
-
-m = folium.Map([0, 0], zoom_start=3)
-
-
-# In[ ]:
-
-m.add_child(multiPolygon)
-
-
-# In[ ]:
-
+m = defaultMap()
+group2.add_to(m)
 m
 
 
 # In[ ]:
 
 
+
+
+# In[ ]:
+
+
+
+
+# Plot GDF on folium map with popups
+
+# In[33]:
+
+test = gdfToFoliumGroup(gdf)
+
+
+# In[35]:
+
+m = defaultMap()
+featureGroup.add_to(m)
+m
 
