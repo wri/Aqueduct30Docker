@@ -6,11 +6,18 @@
 # 
 # This script contains the following options:
 # 
-# fc -> Geopandas -> postGIS  
-# PostGIS -> GeoPandas -> fc
+# * fc -> Geopandas 
+# * Geopandas -> postGIS
 # 
+# * PostGIS -> GeoPandas 
+# * GeoPandas -> fc
 # 
-# fc to postGIS will just invoke fc -> geopandas 
+# * fc -> pandas 
+# * pandas -> postgreSQL 
+# 
+# * postgresql -> Pandas
+# * Pandas -> fc
+# 
 # 
 # 
 # TODO:
@@ -30,7 +37,6 @@ get_ipython().magic('matplotlib inline')
 import ee
 import pandas as pd
 import geopandas as gpd
-
 
 import folium
 import folium_gee
@@ -57,21 +63,6 @@ ee.Initialize()
 
 # In[4]:
 
-
-
-
-# In[5]:
-
-
-
-
-# In[6]:
-
-
-
-
-# In[7]:
-
 # Database settings
 OUTPUT_VERSION= 1
 
@@ -80,7 +71,7 @@ DATABASE_NAME = "database01"
 TABLE_NAME = "hydrobasin6_v%0.2d" %(OUTPUT_VERSION)
 
 
-# In[36]:
+# In[19]:
 
 def rdsConnect(database_identifier,database_name):
     """open a connection to AWS RDS
@@ -112,23 +103,26 @@ def rdsConnect(database_identifier,database_name):
     return engine, connection
 
 
-def fcToGdf(fc, crs = {'init' :'epsg:4326'}):
-    """converts a featurecollection to a geoPandas GeoDataFrame. WARNING: Geometries are non-geodesic. Geodesic not yet supported
+def fcToGdf(fc):
+    """converts a featurecollection to a geoPandas GeoDataFrame. Use this function only if all features have a geometry.  WARNING: Geometries are non-geodesic. Geodesic not yet supported
     
     Args:
         fc (ee.FeatureCollection) : the earth engine feature collection to convert. Size is limited to memory (geopandas limitation)
         crs (dictionary, optional) : the coordinate reference system in geopandas format. Defaults to {'init' :'epsg:4326'}
         
     Returns:
-        gdf (geoPandas.GeoDataFrame) : the corresponding geodataframe
-    
+        gdf (geoPandas.GeoDataFrame or pandas.DataFrame) : the corresponding (geo)dataframe. 
+        
     """
+    crs = {'init' :'epsg:4326'}
     
     features = fc.getInfo()['features']
-
     dictarr = []
 
     for f in features:
+        geodesic = ee.Feature(f).geometry().edgesAreGeodesics()
+        if geodesic:
+            print("WARNING: Geodesic is True. Shapely cannot handle this, converting to planar")
         attr = f['properties']
         attr['geometry'] = f['geometry']  
         dictarr.append(attr)
@@ -139,7 +133,28 @@ def fcToGdf(fc, crs = {'init' :'epsg:4326'}):
     return gdf
 
 
-def GdfToPostGIS(connection, gdf,tableName,saveIndex = True):
+def fcToDf(fc):
+    """converts a featurecollection to a Pandas DataFrame. Use this function for featureCollections without geometries. For featureCollections with geometries, use fcToGdf()
+    
+    Args:
+        fc (ee.FeatureCollection) : the earth engine feature collection to convert. Size is limited to memory (geopandas limitation)
+        crs (dictionary, optional) : the coordinate reference system in geopandas format. Defaults to {'init' :'epsg:4326'}
+        
+    Returns:
+        df (pandas.DataFrame) : the corresponding dataframe. 
+        
+    """
+    
+    features = fc.getInfo()['features']
+    dictarr = []    
+    for f in features:
+        attr = f['properties']
+        dictarr.append(attr)
+    
+    df = pd.DataFrame(dictarr)
+    return df
+
+def gdfToPostGIS(connection, gdf,tableName,saveIndex = True):
     """this function uploads a geodataframe to table in AWS RDS.
     
     It handles combined polygon/multipolygon geometry and stores it in valid multipolygon in epsg 4326.
@@ -190,7 +205,34 @@ def GdfToPostGIS(connection, gdf,tableName,saveIndex = True):
     return gdfFromSQL
 
 
-def PostGisToGdf(connection,tableName):
+def dfToPostgreSQL(connection, df,tableName,saveIndex = True):
+    """this function uploads a dataframe to table in AWS RDS.
+       
+    Args:
+        connection (sqlalchemy.engine.base.Connection) :database connection 
+        df (pandas.GeoDataFrame) : input dataFrame
+        tableName (string) : table name (string)
+        saveIndex (boolean, optional) : save geoDataFrame index column in separate column in postgresql, otherwise discarded. Default is True
+        
+    Returns:
+        gdf (geoPandas.GeoDataFrame) : the geodataframe loaded from the database. Should match the input dataframe
+    
+    todo:
+        currently removes table if exists. Include option to break or append
+    
+    """  
+    df.to_sql(
+        name = tableName,
+        con = connection,
+        if_exists="replace",
+        index = saveIndex,
+        chunkSize = None
+    )
+
+    return 1
+
+
+def postGisToGdf(connection,tableName):
     """this function gets a geoDataFrame from a postGIS database instance
     
     
@@ -210,13 +252,35 @@ def PostGisToGdf(connection,tableName):
     gdf.crs =  {'init' :'epsg:4326'}
     return gdf
 
+def postgreSQLToDf(connection,tableName):
+    """this function gets a dataFrame from a postGIS database instance
+    
+    Args:
+        connection (sqlalchemy.engine.base.Connection) : postGIS enabled database connection 
+        tableName (string) : table name
+ 
+    Returns:
+        df (pandas.DataFrame) : the dataframe from PostGIS
+        
+    todo:
+        allow for SQL filtering
+    
+    
+    """   
+    df = pd.read_sql_query('select * from "%s"' %(tableName),con=engine )
+    return df
+
 
 def shapelyToEEFeature(row):
     properties = row.drop(["geometry"]).to_dict()
     geoJSONfeature = geojson.Feature(geometry=row["geometry"], properties=properties)
     return ee.Feature(geoJSONfeature)
-   
 
+def noGeometryEEFeature(row):
+    properties = row.to_dict()
+    return ee.Feature(None,properties)
+    
+    
 def gdfToFc(gdf):
     """converts a geodataframe  to a featurecollection
     
@@ -233,6 +297,25 @@ def gdfToFc(gdf):
     featureList = gdfCopy["eeFeature"].tolist()
     fc =  ee.FeatureCollection(featureList)
     return fc
+
+
+def dfToFc(df):
+    """converts a dataframe  to a featurecollection without geometry
+    
+    Args:
+        df (pandas.dataFrame) : the input dataframe
+        
+    Returns:
+        fc (ee.FeatureCollection) : feature collection with empty geometry
+    
+    
+    """
+    dfCopy = df.copy()
+    dfCopy["eeFeature"] = gdfCopy.apply(noGeometryEEFeature,1)
+    featureList = dfCopy["eeFeature"].tolist()
+    fc =  ee.FeatureCollection(featureList)
+    return fc
+    
 
 def shapelyToFoliumFeature(row):
     """converts a shapely feature to a folium (leaflet) feature. row needs to have a geometry column. CRS is 4326
@@ -291,75 +374,125 @@ def gdfToFoliumGroup(gdf,name="noName",m=None):
 
 # # Testing
 
-# tests to perform  
-# fc -> Geopandas  
-# Geopandas -> postGIS  
-# PostGIS -> GeoPandas  
-# GeoPandas -> fc  
+# * fc -> Geopandas   
+# * Geopandas -> postGIS
 # 
-# Geopandas -> folium  
+# * PostGIS -> GeoPandas 
+# * GeoPandas -> fc
+# 
+# * fc -> pandas  
+# * pandas -> postgreSQL 
+# 
+# * postgresql -> Pandas
+# * Pandas -> fc
+# 
 
-# In[37]:
+# In[27]:
+
+engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
+
+
+# In[20]:
 
 fc = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017");
 fcEu = fc.filter(ee.Filter.eq("wld_rgn","Europe"))
 fcTest = fcEu.filter(ee.Filter.inList("country_co",["PO","NL"]))
 
 
-# In[31]:
+# In[21]:
 
 gdf = fcToGdf(fcTest)
 
 
-# In[32]:
+# In[22]:
 
-gdf
+fcNoGeom = ee.FeatureCollection("ft:1LAkQiS-bB71VbzRG6jKPKCO6mQj3fKjLR2RD-68K")
 
 
-# In[40]:
+# In[25]:
+
+df =fcToDf(fcNoGeom)
+
+
+# In[26]:
+
+df
+
+
+# In[13]:
+
+print(feature.getInfo())
+
+
+# In[ ]:
 
 fcTest.getInfo()
 
 
-# In[41]:
+# In[16]:
+
+type(geom)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
-# In[51]:
+# In[ ]:
 
 geometry2 = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=True )
 
 
-# In[52]:
+# In[ ]:
 
 feature = ee.Feature(geometry,{"rutger":42})
 feature2  = ee.Feature(geometry2,{"rutger":42})
 
 
-# In[55]:
+# In[ ]:
 
 fc1 = ee.FeatureCollection([feature])
 fc2 = ee.FeatureCollection([feature2])
 
 
-# In[56]:
+# In[ ]:
 
 gdf1 = fcToGdf(fc1)
 gdf2 = fcToGdf(fc2)
 
 
-# In[59]:
+# In[ ]:
 
 group1 = gdfToFoliumGroup(gdf1)
 
 
-# In[60]:
+# In[ ]:
 
 group2 = gdfToFoliumGroup(gdf2)
 
 
-# In[62]:
+# In[ ]:
 
 m = defaultMap()
 group2.add_to(m)
@@ -378,12 +511,12 @@ m
 
 # Plot GDF on folium map with popups
 
-# In[33]:
+# In[ ]:
 
 test = gdfToFoliumGroup(gdf)
 
 
-# In[35]:
+# In[ ]:
 
 m = defaultMap()
 featureGroup.add_to(m)
