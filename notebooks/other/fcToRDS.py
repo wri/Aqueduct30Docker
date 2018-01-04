@@ -27,12 +27,12 @@
 # 
 # 
 
-# In[1]:
+# In[3]:
 
 get_ipython().magic('matplotlib inline')
 
 
-# In[2]:
+# In[4]:
 
 import ee
 import pandas as pd
@@ -56,12 +56,12 @@ import geojsonio
 #from shapely.geometry import shape
 
 
-# In[3]:
+# In[5]:
 
 ee.Initialize()
 
 
-# In[4]:
+# In[6]:
 
 # Database settings
 OUTPUT_VERSION= 1
@@ -71,7 +71,7 @@ DATABASE_NAME = "database01"
 TABLE_NAME = "hydrobasin6_v%0.2d" %(OUTPUT_VERSION)
 
 
-# In[19]:
+# In[81]:
 
 def rdsConnect(database_identifier,database_name):
     """open a connection to AWS RDS
@@ -103,11 +103,15 @@ def rdsConnect(database_identifier,database_name):
     return engine, connection
 
 
-def fcToGdf(fc):
-    """converts a featurecollection to a geoPandas GeoDataFrame. Use this function only if all features have a geometry.  WARNING: Geometries are non-geodesic. Geodesic not yet supported
+def fcToGdf(fc,crs = {'init' :'epsg:4326'}):
+    """converts a featurecollection to a geoPandas GeoDataFrame. Use this function only if all features have a geometry.  
+    
+    caveats:
+    Currently only supports non-geodesic (planar) geometries because of limitations in geoPandas and Leaflet. Geodesic geometries are simply interpreted as planar geometries. 
+    FeatureCollections larger than memory are currently not supported. Consider splitting data and merging (server side) afterwards. 
     
     Args:
-        fc (ee.FeatureCollection) : the earth engine feature collection to convert. Size is limited to memory (geopandas limitation)
+        fc (ee.FeatureCollection) : the earth engine feature collection to convert. 
         crs (dictionary, optional) : the coordinate reference system in geopandas format. Defaults to {'init' :'epsg:4326'}
         
     Returns:
@@ -120,18 +124,17 @@ def fcToGdf(fc):
     dictarr = []
 
     for f in features:
-        geodesic = ee.Feature(f).geometry().edgesAreGeodesics()
-        if geodesic:
-            print("WARNING: Geodesic is True. Shapely cannot handle this, converting to planar")
+        #geodesic = ee.Feature(f).geometry().edgesAreGeodesics()
+        #if geodesic:
         attr = f['properties']
-        attr['geometry'] = f['geometry']  
+        attr['geometry'] = f['geometry']
+        attr['geometry']
         dictarr.append(attr)
 
     gdf = gpd.GeoDataFrame(dictarr)
     gdf['geometry'] = map(lambda s: shapely.geometry.shape(s), gdf.geometry)
     gdf.crs = crs
     return gdf
-
 
 def fcToDf(fc):
     """converts a featurecollection to a Pandas DataFrame. Use this function for featureCollections without geometries. For featureCollections with geometries, use fcToGdf()
@@ -372,6 +375,34 @@ def gdfToFoliumGroup(gdf,name="noName",m=None):
 
 
 
+def eeImageToFoliumLayer(image,layerName="eeLayer",vis_params=None,folium_kwargs={}):
+    """
+    Function to add Google Earch Engine tile layer as a Folium layer.
+    based on https://github.com/mccarthyryanc/folium_gee/blob/master/folium_gee.py
+    
+    Args:
+        image (ee.Image) : Google Earth Engine Image.
+        layerName (string) : Layer name for in folium layerControl. Default : "eeLayer"
+        vis_params (dict) : Dict with visualization parameters as used in Google Earth Engine. Note that color palatte inputs in python needs to be structured like: "palette": "ff0000,ff0000,0013ff"
+        folium_kwargs (dict) : Keyword args for Folium Map.
+        
+    Returns:
+        layer () : folium Layer. Add to map by applying method .add(m)
+        
+    """
+    
+    # Get the MapID and Token after applying parameters
+    image_info = image.getMapId(vis_params)
+    mapid = image_info['mapid']
+    token = image_info['token']
+    folium_kwargs['attr'] = ('Map Data &copy; <a href="https://earthengine.google.com/">Google Earth Engine</a> ')
+    folium_kwargs['tiles'] = "https://earthengine.googleapis.com/map/%s/{z}/{x}/{y}?token=%s"%(mapid,token)
+    
+    layer = folium.TileLayer(**folium_kwargs)
+    layer.layer_name = "test"
+    return layer
+
+
 # # Testing
 
 # * fc -> Geopandas   
@@ -387,66 +418,95 @@ def gdfToFoliumGroup(gdf,name="noName",m=None):
 # * Pandas -> fc
 # 
 
+# In[82]:
+
+image = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/accumulateddrainagearea_05min_km2")
+
+
+# In[83]:
+
+visParam =  {"opacity":1,"min":-52190.75236876079,"max":67316.43600722033,"palette":'ff0000,0013ff'}
+
+
+# In[84]:
+
+print(visParam)
+
+
+# In[85]:
+
+test = image.getMapId(visParam)
+
+
+# In[ ]:
+
+
+
+
+# In[89]:
+
+visParam =  {"opacity":0.4,"min":-52190.75236876079,"max":67316.43600722033,"palette": "ff0000,ff0000,0013ff"}
+
+
+# In[90]:
+
+layer = eeImageToFoliumLayer(image,visParam,folium_kwargs={})
+
+
+# In[98]:
+
+FeatureGroup = gdfToFoliumGroup(gdf)
+
+
+# In[99]:
+
+m = defaultMap()
+layer.add_to(m)
+FeatureGroup.add_to(m)
+folium.LayerControl().add_to(m)
+m
+
+
+# In[ ]:
+
+
+
+
 # In[27]:
 
 engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
 
 
-# In[20]:
+# In[28]:
 
 fc = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017");
 fcEu = fc.filter(ee.Filter.eq("wld_rgn","Europe"))
 fcTest = fcEu.filter(ee.Filter.inList("country_co",["PO","NL"]))
 
 
-# In[21]:
+# In[97]:
 
 gdf = fcToGdf(fcTest)
 
 
-# In[22]:
+# In[30]:
+
+gdf
+
+
+# In[11]:
 
 fcNoGeom = ee.FeatureCollection("ft:1LAkQiS-bB71VbzRG6jKPKCO6mQj3fKjLR2RD-68K")
 
 
-# In[25]:
+# In[12]:
 
 df =fcToDf(fcNoGeom)
 
 
-# In[26]:
-
-df
-
-
 # In[13]:
 
-print(feature.getInfo())
-
-
-# In[ ]:
-
-fcTest.getInfo()
-
-
-# In[16]:
-
-type(geom)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
+df
 
 
 # In[ ]:
@@ -466,20 +526,127 @@ geometry2 = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90
 
 # In[ ]:
 
-feature = ee.Feature(geometry,{"rutger":42})
-feature2  = ee.Feature(geometry2,{"rutger":42})
+
+
+
+# In[22]:
+
+geometry3 = ee.Geometry.Polygon(coords=[[-170.0, -80.0], [170,  -80.0], [170, 80], [-170,80]], proj= ee.Projection('EPSG:4326'),geodesic=True )
+
+
+# In[23]:
+
+feature = ee.Feature(geometry3,{})
+
+
+# In[24]:
+
+geoJSON = feature.geometry().getInfo()
+
+
+# In[25]:
+
+print(geoJSON)
+
+
+# In[18]:
+
+geoJSON["geodesic"] = False
+
+
+# In[19]:
+
+print(geoJSON)
+
+
+# In[20]:
+
+feature = ee.Feature(geoJSON)
+
+
+# In[21]:
+
+print(feature.getInfo())
 
 
 # In[ ]:
 
-fc1 = ee.FeatureCollection([feature])
-fc2 = ee.FeatureCollection([feature2])
+fc = ee.FeatureCollection([feature])
+
+
+# In[ ]:
+
+gdf = fcToGdf(fc)
+
+
+# In[ ]:
+
+test = gdf.to_json()
+
+
+# In[ ]:
+
+print(test)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+featureGroup = gdfToFoliumGroup(gdf)
+
+
+# In[37]:
+
+m = defaultMap()
+#featureGroup.add_to(m)
+m
+
+
+# In[38]:
+
+type(m)
 
 
 # In[ ]:
 
 gdf1 = fcToGdf(fc1)
 gdf2 = fcToGdf(fc2)
+
+
+# In[ ]:
+
+geoJSONfeature = geojson.Feature(geoJSONstring, properties={})
+
+
+# In[ ]:
+
+type(geoJSONfeature)
+
+
+# In[ ]:
+
+foliumFeature = folium.features.GeoJson(geoJSONfeature)
+
+
+# In[ ]:
+
+m = defaultMap()
+foliumFeature.add_to(m)
+m
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
 
 # In[ ]:
@@ -494,9 +661,7 @@ group2 = gdfToFoliumGroup(gdf2)
 
 # In[ ]:
 
-m = defaultMap()
-group2.add_to(m)
-m
+
 
 
 # In[ ]:
