@@ -1,5 +1,7 @@
 ## Work in Progress!!
 
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/wri/Aqueduct30Docker/master)
+
 # WRI Aqueduct 3.0 Data Processing workflow
 
 Througout the readme, variables that you need to replace with your own variable are indicated in greater than and smaller than signs `<variableYouNeedToReplace>`
