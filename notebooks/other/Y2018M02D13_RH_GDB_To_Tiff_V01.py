@@ -209,10 +209,7 @@ for index, row in df.iterrows():
     print(command)
 
 
-# In[ ]:
-
-
-
+# Stupid ESRI geodatabase is not supported by GDAL. Doing Manual and Upload to S3
 
 # In[ ]:
 
