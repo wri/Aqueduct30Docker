@@ -21,6 +21,21 @@ start = datetime.datetime.now()
 print(dateString,timeString)
 
 
+# In[11]:
+
+x = 2
+
+
+# In[16]:
+
+"{:02.0f}".format(x)
+
+
+# In[ ]:
+
+
+
+
 # In[18]:
 
 GCS_VERSION = 19

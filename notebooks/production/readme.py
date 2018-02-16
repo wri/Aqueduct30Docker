@@ -122,6 +122,15 @@
 # 1. **Y2017M11D16_RH_Add_Water_Stress_postGIS_V01 #NOT USED**    
 #     add pcrGlob water demand, supply and stress data to database
 #     
+#     
+# 
+# ### Group Delta Region in HydroBasin level 6
+# 
+# 1. **Y2018M02D15_RH_GDBD_Merge_V01**  
+#     This script will reproject GDBD basins and streams and merge them.
+# 1. **Y2018M02D16_RH_Number_Streams_Per_Basin_V01**  
+#     determine the number of streams per GDBD basin 
+#     
 # 
 
 # In[ ]:
