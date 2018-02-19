@@ -8,14 +8,7 @@
 # * Kernel used: python35
 # * Date created: 20180216
 # 
-# Approach:  
-# 1. load line data  
-# 1. buffer lines with tiny value
-# 1. group lines based on overlap
-# 1. Add group numbers to basin polygons
-# 1. basins with more than 1 (>1) line groups are delta regions
-# 
-# Old approach:
+# Strategy along these lines:
 # [Strategy](https://gis.stackexchange.com/questions/132723/unsplit-dissolve-multiple-touching-lines-in-stream-network-using-arcgis-desktop)
 # 
 # 1. Explode multilines into single lines 
@@ -24,8 +17,7 @@
 # 1. Spatial join single line geodataframe and dissolved ID's 
 # 1. Aggregate using polyline ID from previous step
 # 
-# 
-# 
+# Geopandas is pa pretty inefficient implementation for this problem. Might move this script to postGIS or implement parallelization. 
 # 
 # 
 
@@ -51,12 +43,12 @@ S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/{}/output".format(SCR
 
 
 INPUT_VERSION = 6
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 8
 
-TESTING = 1
+TESTING = 0
 
 
-# In[ ]:
+# In[3]:
 
 get_ipython().system('rm -r {EC2_INPUT_PATH}')
 get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
@@ -65,57 +57,75 @@ get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
 get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
 
 
-# In[ ]:
+# In[4]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive')
 
 
-# In[3]:
+# In[5]:
 
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 import eeconvert
 import folium
+import multiprocessing
+from multiprocessing import Pool
 
 
 get_ipython().magic('matplotlib inline')
 
 
-# In[4]:
+# In[6]:
 
 file_name_streams = "{}GDBD_streams_EPSG4326_V{:02.0f}.shp".format(EC2_INPUT_PATH,INPUT_VERSION)
 file_name_basins = "{}GDBD_basins_EPSG4326_V{:02.0f}.shp".format(EC2_INPUT_PATH,INPUT_VERSION)
 
 
-# In[5]:
+# In[7]:
+
+print(file_name_streams)
+
+
+# In[8]:
 
 gdf_streams = gpd.GeoDataFrame.from_file(file_name_streams)
 gdf_basins = gpd.GeoDataFrame.from_file(file_name_basins)
 
 
-# In[6]:
+# In[9]:
 
 gdf_streams_backup = gdf_streams.copy()
-tiny_value = 0.00001
+tiny_value = 0.0001
 
 if TESTING:
-    gdf_streams = gdf_streams[0:200]
-    tiny_value = 0.1
+    gdf_streams = gdf_streams[0:(int(67225/10))]
+    tiny_value = 0.0001
 
 
-# In[7]:
+# In[10]:
+
+gdf_streams_backup.shape
+
+
+# In[11]:
+
+gdf_streams.shape
+
+
+# In[12]:
 
 gdf_streams['GDBD_ID'] = gdf_streams['GDBD_ID'].astype('int64')
 
 
-# In[8]:
+# In[13]:
 
 gdf_streams.dtypes
 
 
 # ## Functions 
 
-# In[9]:
+# In[14]:
 
 def explode(gdf):
     """
@@ -192,307 +202,152 @@ def group_geometry(gdf, buffer_value=0.01, out_column_name="geometry_group"):
     return gdf_exploded_out
 
 
-def stream_groups_per_basin():
-    pass
+def spatial_join(gdf_basins_subset):
+    gdf_joined = gpd.sjoin(gdf_basins_subset, gdf_streams_grouped_simple, how="left", op='intersects')
+    gdf_joined_simple = gpd.GeoDataFrame(gdf_joined[["geometry_group","GDBD_ID"]],
+                                   geometry=gdf_joined.geometry)
+    return gdf_joined_simple
+
+def post_process_results(results):
+    df_out = pd.DataFrame()
+    for result in results:
+        df_out = df_out.append(result)
+    return df_out
 
     
 
 
-# In[ ]:
+# In[15]:
+
+cpu_count = multiprocessing.cpu_count()
+print(cpu_count)
 
 
-
-
-# In[14]:
+# In[16]:
 
 get_ipython().run_cell_magic('time', '', 'gdf_stream_groups = group_geometry(gdf_streams)')
 
 
-# In[15]:
+# In[17]:
 
 gdf_streams_simple = gpd.GeoDataFrame(gdf_stream_groups["geometry_group"],
                                       geometry=gdf_stream_groups.geometry)
 
 
-# In[43]:
+# In[18]:
 
 gdf_streams_simple["geometry_group_copy"] = gdf_streams_simple["geometry_group"]
 
 
-# In[45]:
+# In[19]:
 
 gdf_streams_grouped_simple = gdf_streams_simple.dissolve(by="geometry_group_copy")
 
 
-# In[46]:
+# In[20]:
 
-gdf_streams_grouped_simple
-
-
-# In[47]:
-
-get_ipython().run_cell_magic('time', '', 'gdf_test = gpd.sjoin(gdf_basins, gdf_streams_grouped_simple, how="left", op=\'intersects\')')
+gdf_streams_grouped_simple.head()
 
 
-# In[48]:
+# ## Spatially join the hydrobasins with the grouped streamed geodataframes. 
 
-gdf_test.columns
+# This process take too long (probably appr. 2 hours). Multiprocessing
 
+# In[21]:
 
-# In[49]:
-
-gdf_test_simple = gpd.GeoDataFrame(gdf_test[["geometry_group","GDBD_ID"]],
-                                   geometry=gdf_test.geometry)
-
-
-# In[50]:
-
-gdf_match = gdf_test_simple.loc[gdf_test["geometry_group"]>=0]
-
-
-# In[51]:
-
-gdf_match.groupby(['GDBD_ID']).agg(['mean', 'count'])
-
-
-# In[52]:
-
-gdf_deltas = gdf_match.loc[gdf_match["geometry_group"]>=0]
-
-
-# In[53]:
-
-gdf_deltas
+gdf_split = np.array_split(gdf_basins, cpu_count*100)
 
 
 # In[ ]:
 
-gdf_test["stream_group"].unique()
 
 
-# In[ ]:
 
-a = gdf_test.loc[gdf_test['stream_group'] > 0]
+# In[22]:
 
-
-# In[ ]:
-
-a
+get_ipython().run_cell_magic('time', '', 'p= Pool()\nresults = p.map(spatial_join,gdf_split)\np.close()\np.join()')
 
 
-# In[ ]:
+# In[23]:
+
+#gdf_test = gpd.sjoin(gdf_basins, gdf_streams_grouped_simple, how="left", op='intersects')
+
+
+# In[24]:
+
+##gdf_test_simple = gpd.GeoDataFrame(gdf_test[["geometry_group","GDBD_ID"]],
+##                                 geometry=gdf_test.geometry)
+
+
+# In[25]:
+
+gdf_joined_simple = post_process_results(results)
+
+
+# In[26]:
+
+gdf_match = gdf_joined_simple.loc[gdf_joined_simple["geometry_group"]>=0]
+
+
+# In[27]:
+
+df_out = gdf_match.groupby(['GDBD_ID']).geometry_group.agg(["count"])
+
+
+# In[28]:
+
+df_out = df_out.rename(columns = {"count":"grouped_stream_count"})
+
+
+# In[29]:
+
+gdf_basins_out = gdf_basins.copy()
+
+
+# In[30]:
+
+gdf_basins_out = gdf_basins_out.merge(right=df_out,
+                                      how='inner',
+                                      left_on="GDBD_ID",
+                                      right_index=True)
+
+
+# In[31]:
+
+gdf_basins_out.head()
+
+
+# In[32]:
 
 output_path_shp = "{}gdf_streams_group_V{:02.0f}.shp".format(EC2_OUTPUT_PATH,OUTPUT_VERSION)
 print(output_path_shp)
+output_path_pkl = "{}gdf_streams_group_V{:02.0f}.pkl".format(EC2_OUTPUT_PATH,OUTPUT_VERSION)
+print(output_path_pkl)
 
 
-# In[ ]:
+# In[33]:
 
-gdf_streams_group.to_file(output_path_shp,driver='ESRI Shapefile')
+gdf_basins_out.to_file(output_path_shp,driver='ESRI Shapefile')
 
 
-# In[ ]:
+# In[34]:
+
+gdf_basins_out.to_pickle(output_path_pkl)
+
+
+# In[35]:
 
 get_ipython().system('aws s3 cp --recursive {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH}')
 
 
-# In[ ]:
+# In[36]:
 
-test = gdf_basins.loc[7:9]
+gdf_basins_out.plot(column="grouped_stream_count")
 
 
-# In[ ]:
-
-gdf_basins
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf_test = gdf_out[1:100]
-
-
-# In[ ]:
-
-gdf_test.plot()
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf_test.shape
-
-
-# In[ ]:
-
-tiny_value = 0.01
-gdf_test_polygon = gdf_test.copy()
-gdf_test_polygon['geometry'] = gdf_test_polygon.geometry.buffer(tiny_value)
-
-
-# In[ ]:
-
-gdf_test.head()
-
-
-# In[ ]:
-
-gdf_test["group"] = 1
-gdf_test_dissolved = gdf_test.dissolve(by="group")
-gdf_test_out = explode(gdf_test_dissolved)
-gdf_test_out = gdf_test_out.reset_index()
-
-
-# In[ ]:
-
-gdf_test_out
-
-
-# In[ ]:
-
-gdf_test_out.plot(column="level_1")
-
-
-# In[ ]:
-
-gdf_test = gdf_test.reset_index()
-
-
-# In[ ]:
-
-gdf_test2 = gdf_test.copy()
-
-
-# In[ ]:
-
-gdf_test2.head()
-
-
-# ## Tiny buffer
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf_test2.head()
-
-
-# In[ ]:
-
-gdf_test2.plot()
-
-
-# ## whatever
-
-# In[ ]:
-
-intersection = gpd.overlay(gdf_test2,gdf_test2, how='intersection')
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf4 = gpd.sjoin(gdf_test, gdf_test2, how="inner", op='intersects')
-
-
-# In[ ]:
-
-gdf4.head()
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-shape = "streams"
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-print(output_path_shp)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
+# In[37]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
-
-
-# In[ ]:
-
-
 
