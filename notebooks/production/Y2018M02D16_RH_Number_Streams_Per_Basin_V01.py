@@ -43,7 +43,7 @@ S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/{}/output".format(SCR
 
 
 INPUT_VERSION = 6
-OUTPUT_VERSION = 8
+OUTPUT_VERSION = 10
 
 TESTING = 0
 
@@ -110,7 +110,7 @@ gdf_streams_backup.shape
 
 # In[11]:
 
-gdf_streams.shape
+gdf_basins.shape
 
 
 # In[12]:
@@ -160,7 +160,7 @@ def explode(gdf):
     return gdf_out
 
 
-def group_geometry(gdf, buffer_value=0.01, out_column_name="geometry_group"):
+def group_geometry(gdf, buffer_value=0.0001, out_column_name="geometry_group"):
     """
     Adds a column to the dataframe with a geometry group number. The
     group number is determined by overlapping or touching geometries.
@@ -202,6 +202,12 @@ def group_geometry(gdf, buffer_value=0.01, out_column_name="geometry_group"):
     return gdf_exploded_out
 
 
+def shrink_buffer(gdf_basins_subset):
+    gdf_basins_subset['geometry'] = gdf_basins_subset.geometry.buffer(tiny_value*(-1),
+                                                                      resolution=1)
+    return gdf_basins_subset
+
+
 def spatial_join(gdf_basins_subset):
     gdf_joined = gpd.sjoin(gdf_basins_subset, gdf_streams_grouped_simple, how="left", op='intersects')
     gdf_joined_simple = gpd.GeoDataFrame(gdf_joined[["geometry_group","GDBD_ID"]],
@@ -225,7 +231,7 @@ print(cpu_count)
 
 # In[16]:
 
-get_ipython().run_cell_magic('time', '', 'gdf_stream_groups = group_geometry(gdf_streams)')
+get_ipython().run_cell_magic('time', '', '# Last clock: Wall time: 12min 34s\n\ngdf_stream_groups = group_geometry(gdf_streams,buffer_value=tiny_value)')
 
 
 # In[17]:
@@ -258,30 +264,24 @@ gdf_streams_grouped_simple.head()
 gdf_split = np.array_split(gdf_basins, cpu_count*100)
 
 
-# In[ ]:
-
-
-
-
 # In[22]:
 
-get_ipython().run_cell_magic('time', '', 'p= Pool()\nresults = p.map(spatial_join,gdf_split)\np.close()\np.join()')
+get_ipython().run_cell_magic('time', '', 'p= Pool()\nresults_buffered = p.map(shrink_buffer,gdf_split)\np.close()\np.join()\ngdf_basins_buffered = post_process_results(results_buffered)')
 
 
 # In[23]:
 
-#gdf_test = gpd.sjoin(gdf_basins, gdf_streams_grouped_simple, how="left", op='intersects')
+gdf_split_buffered = np.array_split(gdf_basins_buffered, cpu_count*100)
 
 
 # In[24]:
 
-##gdf_test_simple = gpd.GeoDataFrame(gdf_test[["geometry_group","GDBD_ID"]],
-##                                 geometry=gdf_test.geometry)
+get_ipython().run_cell_magic('time', '', '# Last clock Wall time: 2min 27s\n\np= Pool()\nresults_joined = p.map(spatial_join,gdf_split_buffered)\np.close()\np.join()')
 
 
 # In[25]:
 
-gdf_joined_simple = post_process_results(results)
+gdf_joined_simple = post_process_results(results_joined)
 
 
 # In[26]:
@@ -307,7 +307,7 @@ gdf_basins_out = gdf_basins.copy()
 # In[30]:
 
 gdf_basins_out = gdf_basins_out.merge(right=df_out,
-                                      how='inner',
+                                      how='left',
                                       left_on="GDBD_ID",
                                       right_index=True)
 
@@ -319,33 +319,50 @@ gdf_basins_out.head()
 
 # In[32]:
 
+gdf_basins_deltas = gdf_basins_out.loc[gdf_basins_out["grouped_stream_count"]>=1]
+
+
+# In[33]:
+
+gdf_basins_deltas = gdf_basins_deltas.set_index("GDBD_ID")
+
+
+# In[34]:
+
+gdf_basins_deltas_simple = gpd.GeoDataFrame(gdf_basins_deltas["grouped_stream_count"],
+                                            geometry=gdf_basins_deltas.geometry)
+                                            
+
+
+# In[35]:
+
 output_path_shp = "{}gdf_streams_group_V{:02.0f}.shp".format(EC2_OUTPUT_PATH,OUTPUT_VERSION)
 print(output_path_shp)
 output_path_pkl = "{}gdf_streams_group_V{:02.0f}.pkl".format(EC2_OUTPUT_PATH,OUTPUT_VERSION)
 print(output_path_pkl)
 
 
-# In[33]:
+# In[36]:
 
 gdf_basins_out.to_file(output_path_shp,driver='ESRI Shapefile')
 
 
-# In[34]:
+# In[37]:
 
 gdf_basins_out.to_pickle(output_path_pkl)
 
 
-# In[35]:
+# In[38]:
 
 get_ipython().system('aws s3 cp --recursive {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH}')
 
 
-# In[36]:
+# In[39]:
 
 gdf_basins_out.plot(column="grouped_stream_count")
 
 
-# In[37]:
+# In[40]:
 
 end = datetime.datetime.now()
 elapsed = end - start
