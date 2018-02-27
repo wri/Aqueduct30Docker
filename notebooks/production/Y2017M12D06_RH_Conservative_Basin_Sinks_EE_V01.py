@@ -4,6 +4,7 @@
 # # Y2017M12D06_RH_Conservative_Basin_Sinks_EE_V01
 # 
 # * Purpose of script: find conservative discharge point
+# * This script has been modified on Feb 27 2018 to restructure PCRGlobWB raw and processed data. Support files such as area images and basin sinks will be s
 # * Kernel used: python27
 # * Date created: 20171206
 

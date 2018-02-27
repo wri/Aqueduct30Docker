@@ -54,25 +54,25 @@
 # 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
 #     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa   
 #     
-#     November 24th 2017, restructure data for better processing in postGIS vertical table. Absolute values, Short term Trend, Short term average, Long term Trend and Long term average for all demand indicators, runoff and discharge and water stress uncapped. 
+#     November 24th 2017, restructure data for better processing in postGIS vertical table. Absolute values, Short term Trend, Short term average, Long term Trend and Long term average for all demand indicators, runoff and discharge and water stress uncapped.  
 #     
 # 1. **Y2017M11D24_RH_Prepare_Image_Collections_EE_V01**  
 #     put all earth engine imagecollections in the same format (millionm^3  and dimensionless)
 # 1. **Y2017M11D29_RH_totalWW_totalWN_WS_Pixel_EE_V01**  
 #     calculate total demand WW WN and water stress at pixel level    
 # 1. **Y2017M12D06_RH_Conservative_Basin_Sinks_EE_V01**  
-#     find conservative discharge point
-#     
-#     February 27th 2018, based on a discusssion at the Utrecht University I will have to take a slightly different approach. 
-#     This includes the grouping of delta basins and calculating a running average. I will put the unused scripts in an archive folder. 
-#     
-#     
+#     find conservative discharge point    
 # 1. **Y2017M12D01_RH_ZonalStats_PCRGlobWB_toImage_EE_V01**  
 #     calculate sectoral demand, total demand, runoff and discharge per Hydrobasin level 6, export to imageCollections
 # 1. **Y2017M12D07_RH_ZonalStats_MaxQ_toImage_EE_V01**  
 #     find conservative and global max discharge value per Hydrobasin level 6 and export to imageCollection. 
 # 1. **Y2017M12D12_RH_Zonal_Areas_EE_V01**  
-#     create raster images with the area per basin at 5min and 30s resolution    
+#     create raster images with the area per basin at 5min and 30s resolution
+#     
+# February 27th 2018, based on a discusssion at the Utrecht University I will have to take a slightly different approach. 
+#     This includes the grouping of delta basins and calculating a running average. I will put the unused scripts in an archive folder. I also cleaned up the scripts and assets in GEE 
+# 
+#     
 # 1. **Y2017M12D12_RH_Water_Stress_EE_V02**  
 #     Calculate water stress using maximum discharge and total withdrawals per month or year 
 # 1. **Y2017M12D15_RH_Statistics_Trend_EE_V01**  
