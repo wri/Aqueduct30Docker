@@ -52,7 +52,7 @@
 # 1. **Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01**  
 #     This script ingests some auxiliary datafile onto earth engine included DEM, StreamFlow Network etc.      
 # 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
-#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa
+#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa   
 #     
 #     November 24th 2017, restructure data for better processing in postGIS vertical table. Absolute values, Short term Trend, Short term average, Long term Trend and Long term average for all demand indicators, runoff and discharge and water stress uncapped. 
 #     
@@ -61,7 +61,12 @@
 # 1. **Y2017M11D29_RH_totalWW_totalWN_WS_Pixel_EE_V01**  
 #     calculate total demand WW WN and water stress at pixel level    
 # 1. **Y2017M12D06_RH_Conservative_Basin_Sinks_EE_V01**  
-#     find conservative discharge point    
+#     find conservative discharge point
+#     
+#     February 27th 2018, based on a discusssion at the Utrecht University I will have to take a slightly different approach. 
+#     This includes the grouping of delta basins and calculating a running average. I will put the unused scripts in an archive folder. 
+#     
+#     
 # 1. **Y2017M12D01_RH_ZonalStats_PCRGlobWB_toImage_EE_V01**  
 #     calculate sectoral demand, total demand, runoff and discharge per Hydrobasin level 6, export to imageCollections
 # 1. **Y2017M12D07_RH_ZonalStats_MaxQ_toImage_EE_V01**  
