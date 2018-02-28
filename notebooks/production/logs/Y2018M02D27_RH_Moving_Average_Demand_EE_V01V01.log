@@ -24,3 +24,12 @@
 2018-02-28 10:36:14,578:ERROR:b'Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014_movingaverage_10y_V01 already exists\n'
 2018-02-28 10:39:16,955:ERROR:b'Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01 already exists\n'
 2018-02-28 10:39:18,975:ERROR:b'Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014_movingaverage_10y_V01 already exists\n'
+2018-02-28 10:41:35,680:ERROR:b'Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01 already exists\n'
+2018-02-28 10:41:37,854:ERROR:b'Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014_movingaverage_10y_V01 already exists\n'
+2018-02-28 10:44:20,510:ERROR:b'Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01 already exists\n'
+2018-02-28 10:46:41,734:ERROR:b'Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01 already exists\n'
+2018-02-28 10:46:43,594:INFO:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01/global_historical_PTotWW_month_m_pfaf06_Y1970M01_movingaverage_10y_V01
+2018-02-28 10:46:45,308:INFO:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01/global_historical_PTotWW_month_m_pfaf06_Y1971M01_movingaverage_10y_V01
+2018-02-28 11:02:48,581:ERROR:b'Asset projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01 already exists\n'
+2018-02-28 11:02:50,340:INFO:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01/global_historical_PTotWW_month_m_pfaf06_Y1970M01_movingaverage_10y_V01
+2018-02-28 11:02:51,991:INFO:projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWW_month_m_pfaf06_1960_2014_movingaverage_10y_V01/global_historical_PTotWW_month_m_pfaf06_Y1971M01_movingaverage_10y_V01

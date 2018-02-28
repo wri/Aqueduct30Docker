@@ -25,13 +25,11 @@ sys.version
 
 SCRIPT_NAME = "Y2018M02D27_RH_Moving_Average_Demand_EE_V01"
 
-OUTPUT_VERSION = 1
-
 CRS = "EPSG:4326"
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 DIMENSION30S = {}
 DIMENSION30S["x"] = 43200
@@ -39,6 +37,8 @@ DIMENSION30S["y"] = 21600
 
 
 MA_WINDOW_LENGTH = 10 # Moving average window length. 
+
+TESTING = 0
 
 
 # In[3]:
@@ -81,15 +81,12 @@ crsTransform30sSmall = [
     81   
 ]
 
-
-# In[ ]:
-
-
+dimensions30sSmall = "{}x{}".format(DIMENSION30S["x"],int(0.9*DIMENSION30S["y"]))
 
 
 # The images in the imagecollection have two bands: count and mean. 
 
-# In[15]:
+# In[8]:
 
 def create_collection(assetid):
     """ Create image collection in earth engine asset folder
@@ -161,8 +158,9 @@ def set_properties(image):
     
     properties ={}
     properties["year"] = row["year"]
+    properties["month"] = row["month"]
     properties["moving_average_length"] = MA_WINDOW_LENGTH
-    properties["moving_average_year_min"] = row["year"]- (MA_WINDOW_LENGTH+1)
+    properties["moving_average_year_min"] = row["year"]- (MA_WINDOW_LENGTH-1)
     properties["script_used"] = SCRIPT_NAME
     properties["indicator"] = row["indicator"]
     properties["version"] = OUTPUT_VERSION
@@ -190,15 +188,15 @@ def export_asset(image):
     asset_id = row["output_i_assetid"]
     task = ee.batch.Export.image.toAsset(
         image =  ee.Image(image),
-        description = row["exportdescription"],
+        description = "{}V{}".format(row["exportdescription"],OUTPUT_VERSION),
         assetId = asset_id,
-        dimensions = DIMENSION30S,
+        dimensions = dimensions30sSmall,
         crs = CRS,
         crsTransform = crsTransform30sSmall,
         maxPixels = 1e10     
     )
-    print(asset_id)
-    #task.start()
+    task.start()
+    return asset_id
 
 
 
@@ -213,11 +211,6 @@ indicators = ["PTotWW","PTotWN"]
 
 
 # It is only possible to calculate a 10 year running mean starting in 1969
-
-# In[ ]:
-
-
-
 
 # In[10]:
 
@@ -245,6 +238,22 @@ df.head()
 
 # In[12]:
 
+if TESTING:
+    df = df[0:2]
+
+
+# In[13]:
+
+df.shape
+
+
+# In[14]:
+
+df.loc[0]
+
+
+# In[15]:
+
 for output_ic_assetid in df["output_ic_assetid"].unique():
     result = create_collection(output_ic_assetid)
     print(result)
@@ -253,18 +262,21 @@ for output_ic_assetid in df["output_ic_assetid"].unique():
 # In[16]:
 
 function_time_start = datetime.datetime.now()
-for index, row in df.iterrows():
-    print(index)
+for index, row in df.iterrows():    
+
     ic = ee.ImageCollection("{}/global_historical_{}_month_m_pfaf06_1960_2014".format(EE_PATH,row["indicator"]))
-    ic_month = ic.filter(ee.Filter.eq("month",month))
-    i_mean = moving_average_decade(year,ic_month)
+    ic = ic.select(["mean"])
+    ic_month = ic.filter(ee.Filter.eq("month",row["month"]))
+    print(ic_month.first().get("month").getInfo())
+    i_mean = moving_average_decade(row["year"],ic_month)
     i_mean = set_properties(i_mean)
-    export_asset(i_mean)
+    asset_id = export_asset(i_mean)
+    logger.info(asset_id)
     elapsed = datetime.datetime.now() - function_time_start
-    print("Processing image {} month {} of year {} runtime {}".format(index,month,year,elapsed))
+    print("Processing image {} month {} of year {} runtime {}".format(index,row["month"],row["year"],elapsed))
 
 
-# In[ ]:
+# In[17]:
 
 end = datetime.datetime.now()
 elapsed = end - start
