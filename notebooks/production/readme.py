@@ -68,7 +68,7 @@
 #     find conservative and global max discharge value per Hydrobasin level 6 and export to imageCollection. 
 # 1. **Y2017M12D12_RH_Zonal_Areas_EE_V01**  
 #     create raster images with the area per basin at 5min and 30s resolution
-# 1. **Y2018M02D27_RH_Moving_Average_Demand_EE_V01**
+# 1. **Y2018M02D27_RH_Moving_Average_Demand_EE_V01**  
 #     Moving average for demand at basin resolution
 #     
 # February 27th 2018, based on a discusssion at the Utrecht University I will have to take a slightly different approach. 
