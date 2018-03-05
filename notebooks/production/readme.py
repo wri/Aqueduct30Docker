@@ -69,7 +69,10 @@
 # 1. **Y2017M12D12_RH_Zonal_Areas_EE_V01**  
 #     create raster images with the area per basin at 5min and 30s resolution
 # 1. **Y2018M02D27_RH_Moving_Average_Demand_EE_V01**  
-#     Moving average for demand at basin resolution
+#     moving average for demand at basin resolution
+# 1. **Y2018M03D01_RH_Moving_Average_Discharge_EE_V01**  
+#     moving average for discharge at basin resolution  
+# 
 #     
 # February 27th 2018, based on a discusssion at the Utrecht University I will have to take a slightly different approach. 
 #     This includes the grouping of delta basins and calculating a running average. I will put the unused scripts in an archive folder. I also cleaned up the scripts and assets in GEE 

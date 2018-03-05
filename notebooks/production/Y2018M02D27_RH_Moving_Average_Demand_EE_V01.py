@@ -86,7 +86,7 @@ dimensions30sSmall = "{}x{}".format(DIMENSION30S["x"],int(0.9*DIMENSION30S["y"])
 
 # The images in the imagecollection have two bands: count and mean. 
 
-# In[8]:
+# In[18]:
 
 def create_collection(assetid):
     """ Create image collection in earth engine asset folder
@@ -129,9 +129,8 @@ def moving_average_decade(year,ic):
     min_year = year - MA_WINDOW_LENGTH
     
     ic_filtered = (ic.filter(ee.Filter.gt("year",min_year))
-                     .filter(ee.Filter.lte("year",year))
-                  )
-    
+                     .filter(ee.Filter.lte("year",year)))
+                  
     i_mean = ic_filtered.reduce(ee.Reducer.mean()) 
     
     
