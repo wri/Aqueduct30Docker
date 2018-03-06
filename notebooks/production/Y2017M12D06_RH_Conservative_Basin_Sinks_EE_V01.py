@@ -4,9 +4,18 @@
 # # Y2017M12D06_RH_Conservative_Basin_Sinks_EE_V01
 # 
 # * Purpose of script: find conservative discharge point
-# * This script has been modified on Feb 27 2018 to restructure PCRGlobWB raw and processed data. Support files such as area images and basin sinks will be s
+# * This script has been modified on Feb 27 2018 to restructure PCRGlobWB raw and processed data. 
 # * Kernel used: python27
 # * Date created: 20171206
+# 
+# Returns
+#     image (ee.Image) : Image with three band i.e. q_search_mask, masked_max_fa and i_zones_mode_pfaf6
+#                        q_search_mask [0-2] has value 2 in endorheic pixels, 1 in FAmax-1 and 0 anywhere else. 
+#                        masked_max_fa is an image with the value of FAmax-1 per modPfaf65min or the value of FAmax in endorheic basins. 
+#     
+#     
+# 
+# 
 
 # In[1]:
 

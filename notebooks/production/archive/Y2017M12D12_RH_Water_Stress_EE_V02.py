@@ -32,6 +32,15 @@ YEARMAX = 2014
 
 THRESHOLD = 1.25 #Qmax > 1.25 Qsum -> use Qsum, else use max(Qmax,Qsum) 
 
+"""
+if qmax < 1.25 qsum:
+    q = qmax
+else:
+    q = qsum
+
+"""
+
+
 DIMENSIONS30SSMALL = "43200x19440"
 
 CRS = "EPSG:4326"

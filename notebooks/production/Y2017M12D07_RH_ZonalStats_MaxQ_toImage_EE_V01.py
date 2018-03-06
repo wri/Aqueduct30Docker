@@ -6,6 +6,18 @@
 # * Purpose of script: find conservative and global max discharge value per Hydrobasin level 6 and export to imageCollection. 
 # * Kernel used: python27
 # * Date created: 20171207
+# 
+# 
+# Returns
+#         global_historical_availableriverdischarge_year_millionm3_5minPfaf6_1960_2014 (ee.ImageCollection) : imageCollection with images with three bands:   
+#         
+# 1. zones_mode_pfaf6  
+# 1. sum. sum is the sum of the discharge in millionm3 at the q_search_mask (output of Y2017M12D06_RH_Conservative_Basin_Sinks_EE_V01). q_search_mask is FAmax-1 expect when endorheic or sinks
+# 1. max. global maximum of Q within basin. 
+# 
+# 
+# 
+# 
 
 # In[1]:
 
