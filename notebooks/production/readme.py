@@ -71,7 +71,9 @@
 # 1. **Y2018M02D27_RH_Moving_Average_Demand_EE_V01**  
 #     moving average for demand at basin resolution
 # 1. **Y2018M03D01_RH_Moving_Average_Discharge_EE_V01**  
-#     moving average for discharge at basin resolution  
+#     moving average for discharge at basin resolution
+# 1. **Y2018M03D07_RH_Moving_Average_Water_Stress_EE_V01**  
+#     
 # 
 #     
 # February 27th 2018, based on a discusssion at the Utrecht University I will have to take a slightly different approach. 
