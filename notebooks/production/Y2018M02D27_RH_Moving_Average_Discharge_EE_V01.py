@@ -19,28 +19,23 @@
 # 
 # 
 # 
+# Methodology to apply. 
+# 
+# 
+# if qmax < 1.25 qsum:  
+#     q = qmax  
+# else:  
+#     q = qsum  
+#     
+# Can be optimized. Options include: Use flow accumulation instead of discharge
+# Use multiple level FAmax FAmax-1 FAmax-2 etc. 
+#     
+# 
+# 
 # 
 # 
 
 # In[1]:
-
-"""
-Methodology to apply. 
-
-
-if qmax < 1.25 qsum:
-    q = qmax
-else:
-    q = qsum
-    
-Can be optimized. Options include: Use flow accumulation instead of discharge
-Use multiple level FAmax FAmax-1 FAmax-2 etc. 
-    
-
-"""
-
-
-# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -50,7 +45,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[3]:
+# In[2]:
 
 SCRIPT_NAME = "Y2018M02D27_RH_Moving_Average_Discharge_EE_V01"
 
@@ -58,7 +53,7 @@ CRS = "EPSG:4326"
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DIMENSION5MIN = {}
 DIMENSION5MIN["x"] = 4320
@@ -71,8 +66,13 @@ TESTING = 1
 
 THRESHOLD = 1.25
 
+PFAF_LEVEL = 6
 
-# In[4]:
+DIMENSIONS30SSMALL = "43200x19440"
+CRS_TRANSFORM30S_SMALL = [0.008333333333333333, 0.0, -180.0, 0.0, -0.008333333333333333, 81.0]
+
+
+# In[3]:
 
 import ee
 import os
@@ -81,12 +81,12 @@ import pandas as pd
 import subprocess
 
 
-# In[5]:
+# In[4]:
 
 ee.Initialize()
 
 
-# In[6]:
+# In[5]:
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -96,26 +96,44 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-# In[7]:
+# In[6]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
+# In[7]:
+
+geometrySmall = ee.Geometry.Polygon(coords=[[-180.0, -81.0], [180,  -81.0], [180, 81], [-180,81]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+
+
 # In[8]:
 
-crsTransform5minSmall = [
-    360.0 / DIMENSION5MIN["x"], 
-    0,
-    -180,
-    0,
-    -162.0 / (0.9* DIMENSION5MIN["y"]),
-    81   
-]
+area30s = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/area_30s_m2V11")
+zones30s = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev00_v1c_merged_fiona_30s_V01")
+zones30s = zones30s.divide(ee.Number(10).pow(ee.Number(12).subtract(PFAF_LEVEL))).floor().toInt64();
 
-dimensions5minSmall = "{}x{}".format(DIMENSION5MIN["x"],int(0.9*DIMENSION5MIN["y"]))
+crs30s = area30s.projection()
+
+area30s_pfaf06 = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/area_30spfaf06_m2_V01V01").select(["sum"])
+
+scale30s = zones30s.projection().nominalScale().getInfo()
 
 
 # In[9]:
+
+"""
+crsTransform5min = [
+                0.0833333309780367,
+                0,
+                -179.99999491255934,
+                0,
+                -0.0833333309780367,
+                90.00000254430942
+              ]
+"""
+
+
+# In[10]:
 
 def prepare_discharge_collection(image):
     """ find the available discharge based on max and sum bands of available discharge
@@ -133,7 +151,8 @@ def prepare_discharge_collection(image):
     
     
     """
-    
+
+
     i_q_max = image.select(["max"])  
     i_q_sum = image.select(["sum"])
     
@@ -142,12 +161,13 @@ def prepare_discharge_collection(image):
     use_max = i_ratio_q.lte(THRESHOLD)
     use_sum = i_ratio_q.gt(THRESHOLD)
     
-    i_q_out = use_max.multiply(i_q_max).add((use_sum.multiply(i_q_sum)) 
-    i_q_out = i_q_out.select(["max"],["b1"])                                         
-    
+    i_q_out = use_max.multiply(i_q_max).add((use_sum.multiply(i_q_sum)))
+    i_q_out = i_q_out.select(["max"],["b1"]) 
+    i_q_out = i_q_out.copyProperties(image)                                                                              
+                                                             
     return i_q_out
-                                  
-                                  
+
+
 
 def create_collection(assetid):
     """ Create image collection in earth engine asset folder
@@ -202,34 +222,131 @@ def moving_average_decade(year,ic):
                                    "year",
                                    "output_version",
                                    "version",
-                                   "reducer"])
+                                   "reducer",
+                                   "description"])
     
     return ee.Image(i_mean)
 
 
-# In[ ]:
+def mapList(results, key):
+    newResult = results.map(lambda x: ee.Dictionary(x).get(key))
+    return newResult
+
+def ensure_default_properties(obj): 
+    obj = ee.Dictionary(obj)
+    default_properties = ee.Dictionary({"mean": -9999,"count": -9999})
+    return default_properties.combine(obj)
+
+
+def zonal_stats_to_raster(image,zonesImage,geometry,maxPixels,reducerType,scale):
+    # reducertype can be mean, max, sum, first. Count is always included for QA
+    # the resolution of the zonesimage is used for scale
+
+    reducer = ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"mean"),ee.Reducer.mean(),
+    ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"max"),ee.Reducer.max(),
+    ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"sum"),ee.Reducer.sum(),
+    ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"first"),ee.Reducer.first(),
+    ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"mode"),ee.Reducer.mode(),"error"))))
+    )
+    reducer = ee.Reducer(reducer).combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName="zones") 
+
+    
+    zonesImage = zonesImage.select(zonesImage.bandNames(),["zones"])
+
+    totalImage = ee.Image(image).addBands(zonesImage)
+    resultsList = ee.List(totalImage.reduceRegion(
+        geometry= geometry, 
+        reducer= reducer,
+        scale= scale,
+        maxPixels=maxPixels,
+        bestEffort =True
+        ).get("groups"))
+
+    resultsList = resultsList.map(ensure_default_properties); 
+    zoneList = mapList(resultsList, 'zones');
+    countList = mapList(resultsList, 'count');
+    valueList = mapList(resultsList, reducerType);
+
+    valueImage = zonesImage.remap(zoneList, valueList).select(["remapped"],[reducerType])
+    countImage = zonesImage.remap(zoneList, countList).select(["remapped"],["count"])
+    newImage = zonesImage.addBands(countImage).addBands(valueImage)
+    return newImage
+
+
+def set_properties(image):
+    """ Set properties to image based on rows in pandas dataframe
+    
+    Args:
+        image (ee.Image) : image without properties
+        
+    Returns:
+        image_out (ee.Image) : image with properties
+    """
+    
+    properties ={}
+    properties["year"] = row["year"]
+    properties["month"] = row["month"]
+    properties["units"] = "millionm3"
+    properties["moving_average_length"] = MA_WINDOW_LENGTH
+    properties["moving_average_year_min"] = row["year"]- (MA_WINDOW_LENGTH-1)
+    properties["script_used"] = SCRIPT_NAME
+    properties["indicator"] = row["indicator"]
+    properties["version"] = OUTPUT_VERSION
+    properties["spatial_resolution"] = "30s"
+    properties["exportdescription"] = row["exportdescription"]
+    
+    image_out = ee.Image(image).set(properties)
+    return image_out
+
+
+def export_asset(image):
+    """ Export a google earth engine image to an asset folder
+    
+    function will start a new task. To view the status of the task
+    check the javascript API or query tasks script. Function is used 
+    as mapped function so other arguments need to be set globally. 
+    
+    Args:
+        image (ee.Image) : Image to export
+        
+    Returns:
+        asset_id (string) : asset id of     
+    """
+    
+    asset_id = row["output_i_assetid"]
+    task = ee.batch.Export.image.toAsset(
+        image =  ee.Image(image),
+        description = "{}V{}".format(row["exportdescription"],OUTPUT_VERSION),
+        assetId = asset_id,
+        dimensions = DIMENSIONS30SSMALL,
+        crs = CRS,
+        crsTransform = CRS_TRANSFORM30S_SMALL,
+        maxPixels = 1e10     
+    )
+    task.start()
+    return asset_id
 
 
 
 
-# In[ ]:
+# In[11]:
+
+area30sPfaf6 = zonal_stats_to_raster(area30s,zones30s,geometrySmall,1e10,"sum",scale30s)
 
 
+# In[12]:
+
+area30sPfaf6_m2 = area30sPfaf6.select(["sum"]) # image at 30s with area in m^2 per basin
 
 
-# In[10]:
+# In[13]:
 
 months = range(1,13)
 years = range(1960+9,2014+1)
 indicators = ["availabledischarge"]
 
 
-# In[ ]:
-
-
-
-
-# In[11]:
+# In[14]:
 
 df = pd.DataFrame()
 for indicator in indicators:
@@ -247,54 +364,68 @@ for indicator in indicators:
             df= df.append(newRow,ignore_index=True)
 
 
-# In[12]:
+# In[15]:
 
 df.head()
 
 
-# In[13]:
+# In[16]:
 
 if TESTING:
     df = df[0:1]
 
 
-# In[14]:
+# In[17]:
 
 df.shape
 
 
-# In[15]:
+# In[18]:
 
 for output_ic_assetid in df["output_ic_assetid"].unique():
     result = create_collection(output_ic_assetid)
     print(result)
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[18]:
+# In[19]:
 
 function_time_start = datetime.datetime.now()
 for index, row in df.iterrows():    
     ic = ee.ImageCollection("{}/global_historical_availableriverdischarge_month_millionm3_5minPfaf6_1960_2014".format(EE_PATH))
     ic_month = ic.filter(ee.Filter.eq("month",row["month"]))
-    i_mean = moving_average_decade(row["year"],ic_month)
+    
+    
+    ic_month_simplified = ic_month.map(prepare_discharge_collection)
+    i_mean = moving_average_decade(row["year"],ic_month_simplified)
+    
+    
+    
+    # The result of this operation is at 5arc min. The withdrawal and demand data is at 30s though. Resampling to 30s using the "mode" aka majority
+    i_mean_30s = zonal_stats_to_raster(i_mean,zones30s,geometrySmall,1e10,"mode",scale30s).select(["mode"])
+    i_mean_30s = i_mean_30s.copyProperties(
+        source = i_mean,
+        exclude= ["resolution","spatial_resolution"])
+    i_mean_30s = set_properties(i_mean_30s)
+        
+    asset_id = export_asset(i_mean_30s)
+    logger.info(asset_id)
+    elapsed = datetime.datetime.now() - function_time_start
+    print("Processing image {} month {} of year {} runtime {}".format(index,row["month"],row["year"],elapsed))
 
 
-# In[19]:
+# In[20]:
 
-print(i_mean.getInfo())
-
-
-# In[ ]:
+i_mean.getInfo()
 
 
+# In[21]:
+
+i_mean_30s.getInfo()
+
+
+# In[22]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
