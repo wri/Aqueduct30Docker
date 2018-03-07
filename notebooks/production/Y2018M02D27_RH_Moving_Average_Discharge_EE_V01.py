@@ -62,7 +62,7 @@ DIMENSION5MIN["y"] = 2160
 
 MA_WINDOW_LENGTH = 10 # Moving average window length. 
 
-TESTING = 1
+TESTING = 0
 
 THRESHOLD = 1.25
 
@@ -239,9 +239,21 @@ def ensure_default_properties(obj):
 
 
 def zonal_stats_to_raster(image,zonesImage,geometry,maxPixels,reducerType,scale):
+    """ Zonal statistics using rasterized zones
+    
+    Args:
+        image (ee.Image) : input image with values (Check the units)
+        zonesImage (ee.Image) : integer image with the zones
+        geometry (ee.Geometry) : geometry indicating the extent of the calculation. Note if geometry is geodesic
+        maxPixels (integer) : maximum numbers of pixels within geometry
+        reducerType (string) : options include 'mean', 'max', 'sum', 'first' en 'mode' 
+    
+    
+    
     # reducertype can be mean, max, sum, first. Count is always included for QA
     # the resolution of the zonesimage is used for scale
-
+    """
+    
     reducer = ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"mean"),ee.Reducer.mean(),
     ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"max"),ee.Reducer.max(),
     ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"sum"),ee.Reducer.sum(),
@@ -393,12 +405,9 @@ function_time_start = datetime.datetime.now()
 for index, row in df.iterrows():    
     ic = ee.ImageCollection("{}/global_historical_availableriverdischarge_month_millionm3_5minPfaf6_1960_2014".format(EE_PATH))
     ic_month = ic.filter(ee.Filter.eq("month",row["month"]))
-    
-    
+      
     ic_month_simplified = ic_month.map(prepare_discharge_collection)
     i_mean = moving_average_decade(row["year"],ic_month_simplified)
-    
-    
     
     # The result of this operation is at 5arc min. The withdrawal and demand data is at 30s though. Resampling to 30s using the "mode" aka majority
     i_mean_30s = zonal_stats_to_raster(i_mean,zones30s,geometrySmall,1e10,"mode",scale30s).select(["mode"])
@@ -414,16 +423,6 @@ for index, row in df.iterrows():
 
 
 # In[20]:
-
-i_mean.getInfo()
-
-
-# In[21]:
-
-i_mean_30s.getInfo()
-
-
-# In[22]:
 
 end = datetime.datetime.now()
 elapsed = end - start
