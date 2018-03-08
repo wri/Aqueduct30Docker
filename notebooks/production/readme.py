@@ -33,7 +33,8 @@
 # 1. **Y2017M11D23_RH_Upstream_Downstream_Basin_To_Database_V01**  
 #     add upstream pfaf ID to postgis database  
 # 
-# 
+# ### Delta Regions
+# Delta basins grouped manually 
 #     
 # ### PCRGlobWB 2.0
 # 

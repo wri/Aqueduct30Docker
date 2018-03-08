@@ -29,10 +29,12 @@
 #     
 # Can be optimized. Options include: Use flow accumulation instead of discharge
 # Use multiple level FAmax FAmax-1 FAmax-2 etc. 
-#     
 # 
 # 
+# Known issues:  
+# When the most downstream pixel is a lake, the blue water available of the lake is available to the entire sub-basin. For example pfaf_id 434210
 # 
+# Sub-basins which have only one discharge cell of the main river: e.g. 142739 (Famale, Niger)
 # 
 
 # In[1]:
