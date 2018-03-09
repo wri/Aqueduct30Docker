@@ -33,8 +33,18 @@
 # 1. **Y2017M11D23_RH_Upstream_Downstream_Basin_To_Database_V01**  
 #     add upstream pfaf ID to postgis database  
 # 
-# ### Delta Regions
+# 
+# ### Group Delta Region in HydroBasin level 6
 # Delta basins grouped manually 
+# 1. **Y2018M03D09_RH_Delta_Regions_Manual_V01**  
+#     several manual steps to create a list of delta sub-basins
+# 1. **Y2018M02D15_RH_GDBD_Merge_V01**  
+#     This script will reproject GDBD basins and streams and merge them.
+# 1. **Y2018M02D16_RH_Number_Streams_Per_Basin_V01**  
+#     determine the number of streams per GDBD basin 
+#     
+# 
+# 
 #     
 # ### PCRGlobWB 2.0
 # 
@@ -137,13 +147,6 @@
 #     
 #     
 # 
-# ### Group Delta Region in HydroBasin level 6
-# 
-# 1. **Y2018M02D15_RH_GDBD_Merge_V01**  
-#     This script will reproject GDBD basins and streams and merge them.
-# 1. **Y2018M02D16_RH_Number_Streams_Per_Basin_V01**  
-#     determine the number of streams per GDBD basin 
-#     
 # 
 
 # In[ ]:

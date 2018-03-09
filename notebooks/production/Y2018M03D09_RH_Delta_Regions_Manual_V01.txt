@@ -1,0 +1,130 @@
+Grouping of delta regions 
+
+
+Background
+
+The standard hydrobasin level 6 sub-basins assume a scrictly convergent flow. This creates issues in delta regions such as the Nile Delta, Huang He and Rhine delta's where the entire river is channelled through one line of connected cells. The previous version of Aqueduct (v2.1) uses different sub-basins based on the Global Drainage Basin Database that has 68 delta regions grouped. 
+
+According to the authors of GDBD it is not possible to replicate the method for GDBD with Hydrobasin level 6. Therefore a semi-automatic approach was developed by Rutger Hofste. 
+
+The semi-automatic approach first uses a list of basins from email correspondence with Yuji Masutomi, author of GDBD. The list is copied below. 
+
+Next, a automatic GIS approach is used in scripts Y2018M02D15_RH_GDBD_Merge_V01 and Y2018M02D16_RH_Number_Streams_Per_Basin_V0 to find the sub-basins with multiple streams, an indication of a delta region.
+
+The two aforementioned approaches are combined in an augmented GDBD shapefile that served as a search mask to find delta regions. 
+
+The search mask is further enhanced by using the wikipedia page of commonly know river deltas https://en.wikipedia.org/wiki/River_delta accessed February 2018. 
+
+The next step is a manual grouping of hydrobasin level-6 sub-basins. Deltas were individually determined based on the previous steps, satellite imagery, Open Street Maps, water infrastructure, bifurcations, flow direction etc. 
+
+Deltas have been assigned a unique delta_id. 
+
+Delta_ID	Name
+1	Ayeyarwady (Irrawaddy)
+2	Danube
+3	Ebro
+4	Fly River
+5	Godavari 
+6	Indus
+7	Kaveri
+8	Krishna
+9	Lena
+10	Mackenzie
+11	Mekong
+12	Mississippi
+13	Niger River
+14	Nile
+15	Ob
+16	Orinoco
+17	Otter Point Creek
+18	Paraná
+19	Po
+20	Rhine
+21	Rhône
+22	Sacramento–San Joaquin
+23	The Ganges/Brahmaputra
+24	The St. Clair River
+25	Tigris–Euphrates river system
+26	Volga
+27	Yangtze
+28	Yellow River (also known as Huanghe)
+29	Yenisei
+30	Yukon River
+
+The result is a lookup table with pfaf6_ids that are part of a delta region. The lookup table furthermore contains information about the most important pfaf_6 basin in the delta region. This is often the most downstream sub-basin with the largest upstream area (FA). In the case of a combined delta (e.g. Godavari, Krishna)
+
+GDBD_ID 
+16682
+21115
+20987
+20774
+22966
+22788
+25748
+25782
+25918
+26373
+26407
+27601
+27620
+27987
+28616
+28491
+28105
+31512
+30671
+30974
+31888
+31993
+32160
+32393
+32608
+33696
+29418
+29180
+29168
+29711
+29559
+29296
+29727
+30540
+30502
+30424
+8
+13557
+13668
+10977
+9261
+40797
+38227
+38545
+39352
+39245
+44395
+44465
+44436
+44672
+45240
+39586
+43442
+41677
+43723
+55070
+55029
+55144
+47359
+47246
+47196
+47268
+47331
+48028
+70355
+64668
+63786
+
+
+
+
+
+
+
