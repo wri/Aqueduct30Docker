@@ -12,7 +12,7 @@
 # 
 # 
 
-# In[2]:
+# In[1]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -22,7 +22,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[66]:
+# In[2]:
 
 SCRIPT_NAME = "Y2018M03D24_RH_Moving_Average_Demand_To_GCS_V01"
 
@@ -30,22 +30,24 @@ INPUT_VERSION = 3
 
 OUTPUT_VERSION = 1
 
+EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
+
 GCS_OUTPUT_PATH = "{}/outputV{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 GCS_BUCKET = "aqueduct30_v01"
 
 
-# In[29]:
+# In[3]:
 
 import ee
 import pandas as pd
 
 
-# In[5]:
+# In[4]:
 
 ee.Initialize()
 
 
-# In[68]:
+# In[5]:
 
 # Functions
 
@@ -96,10 +98,30 @@ def dict_to_feature(d):
     """
     f = ee.Feature(None,ee.Dictionary(d))
     return f
-    
-    
 
+    
+def filter_ic(ic,year,month):
+    """ filters an imagecollection based on year and month
+    
+    Args:
+        ic (ee.ImageCollection) : ImageColllection to filter. Must have
+                                  year and month properties.
+        year (integer) : year
+        month (integer) : month  
+    Returns:
+        image (ee.Image): filtered image
+    
+    TODO: if the filter operation results in more than one image, 
+    an error should be raised.
+    
+    """
+    
+    ic_filtered = (ic.filter(ee.Filter.eq("month",month))
+                    .filter(ee.Filter.eq("year",year)))
+    image = ee.Image(ic_filtered.first())
+    return(image)   
 
+    
 def zonalStatsToRaster(image,zonesImage,geometry,maxPixels,reducerType):
     """ Zonal statistics with rasters as input and rasters and lists as output
     
@@ -198,8 +220,11 @@ def zonalStatsToFeatureCollection(image,zonesImage,geometry,maxPixels,reducerTyp
     return fc
 
 
-def export_asset(fc):
+def export_table_to_cloudstorage(fc,description,fileNamePrefix):
     """ Export a google earth engine featureCollection to an asset folder
+    
+    WARNING: Choose the filename wisely. Adding properties is inefficent
+    store all properties in filename. 
     
     function will start a new task. To view the status of the task
     check the javascript API or query tasks script. Function is used 
@@ -214,7 +239,7 @@ def export_asset(fc):
     
     task = ee.batch.Export.table.toCloudStorage(
         collection =  ee.FeatureCollection(fc),
-        description = "test_description",
+        description = description,
         bucket = GCS_BUCKET,
         fileNamePrefix = GCS_OUTPUT_PATH  + "fileName",
         fileFormat = "CSV"
@@ -223,52 +248,61 @@ def export_asset(fc):
 
 
 
-# In[11]:
-
-temp_image = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/area_30spfaf06_m2_V01V01")
-
-
-# In[12]:
-
-area_30spfaf06_m2 = temp_image.select(["sum"])
-
-
-# In[13]:
-
-zones_30spfaf06 = temp_image.select(["zones"])
-
-
-# In[21]:
+# In[6]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
-# In[15]:
+# In[7]:
 
-ic_WN = ee.ImageCollection("projects/WRI-Aquaduct/PCRGlobWB20V07/global_historical_PTotWN_month_m_pfaf06_1960_2014_movingaverage_10y_V{:02.0f}".format(INPUT_VERSION))
-
-
-# In[17]:
-
-test_image = ee.Image(ic_WN.first())
+temp_image = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/area_30spfaf06_m2_V01V01")
+area_30spfaf06_m2 = temp_image.select(["sum"])
+zones_30spfaf06 = temp_image.select(["zones"])
 
 
-# In[24]:
+# In[8]:
 
-newImage,zoneList,valueList,countList = zonalStatsToRaster(test_image,zones_30spfaf06,geometry,1e10,"mode")
-
-
-# In[54]:
-
-fc = zonalStatsToFeatureCollection(test_image,zones_30spfaf06,geometry,1e10,"mode")
+months = range(1,13)
+years = range(1960+9,2014+1)
+indicators = ["PTotWW","PTotWN"]
 
 
-# In[69]:
+# In[9]:
 
-export_asset(fc)
+df = pd.DataFrame()
+
+for indicator in indicators:
+    for month in months:
+        for year in years:
+            newRow = {}
+            newRow["month"] = month
+            newRow["year"] = year
+            newRow["indicator"] = indicator            
+            df= df.append(newRow,ignore_index=True)
+
+
+# In[10]:
+
+df = df[1:3]
+
+
+# In[12]:
+
+function_time_start = datetime.datetime.now()
+for index, row in df.iterrows():
+    ic = ee.ImageCollection("{}/global_historical_{}_month_m_pfaf06_1960_2014_movingaverage_10y_V{:02.0f}".format(EE_PATH,row["indicator"],INPUT_VERSION))
+    image = filter_ic(ic,row["year"],row["month"])
+    fc = zonalStatsToFeatureCollection(image,zones_30spfaf06,geometry,1e10,"mode")
+    fileNamePrefix = "global_historical_{}_month_m_pfaf06_1960_2014_movingaverage_10y_mode_Y{:04.0f}M{:02.0f}_V{:02.0f}".format(row["indicator"],row["year"],row["month"],INPUT_VERSION)
+    description = fileNamePrefix
+    export_table_to_cloudstorage(fc,description,fileNamePrefix)
+    print(index)
+    
 
 
 # In[ ]:
 
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
