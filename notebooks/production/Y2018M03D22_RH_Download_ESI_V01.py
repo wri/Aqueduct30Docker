@@ -9,6 +9,14 @@
 # * Date created: 20180322
 # 
 # * http://catalogue.servirglobal.net/Product?product_id=198
+# 
+# 
+# I asked a question on stack exchange however the answer came too late.
+# https://stackoverflow.com/questions/49448291/combining-wget-and-aws-s3-cp-to-upload-data-to-s3-without-saving-locally/49467225#49467225
+# 
+# You can maybe upgrade this with the --recursive flag
+# 
+# 
 
 # In[1]:
 

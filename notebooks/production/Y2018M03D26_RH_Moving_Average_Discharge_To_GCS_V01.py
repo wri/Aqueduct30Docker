@@ -1,14 +1,13 @@
 
 # coding: utf-8
 
-# # Y2018M03D24_RH_Moving_Average_Demand_To_GCS_V01
+# # Y2018M03D26_RH_Moving_Average_Discharge_To_GCS_V01
 # 
-# * Purpose of script: store moving average results for demand in a CSV file in GCS.
+# * Purpose of script: store moving average results for discharge in a CSV file in GCS.
 # 
 # * Script exports to: 
 # * Kernel used: python35
 # * Date created: 20180324
-# 
 # 
 # 
 
@@ -24,18 +23,18 @@ sys.version
 
 # In[2]:
 
-SCRIPT_NAME = "Y2018M03D24_RH_Moving_Average_Demand_To_GCS_V01"
+SCRIPT_NAME = "Y2018M03D26_RH_Moving_Average_Discharge_To_GCS_V01"
 
-INPUT_VERSION = 3
+INPUT_VERSION = 2
 
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 1
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 GCS_OUTPUT_PATH = "{}/outputV{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 GCS_BUCKET = "aqueduct30_v01"
 
-TESTING = 0
+TESTING = 1
 
 
 # In[3]:
@@ -49,7 +48,7 @@ import pandas as pd
 ee.Initialize()
 
 
-# In[5]:
+# In[18]:
 
 # Functions
 
@@ -79,7 +78,7 @@ def mapList(results, key):
     Args:
         results (ee.List) : list of result dictionaries.
         key (string) : key name.
-    .
+    
     Returns:
         newResult (ee.List) : List of values
     
@@ -101,26 +100,6 @@ def dict_to_feature(d):
     f = ee.Feature(None,ee.Dictionary(d))
     return f
 
-def volumeToFlux(volume_image):
-    """ Convert volume to flux
-    WARNING: This function will be applied in a mapping function. Therefore it
-    can only take one parameter. Make sure the units are consistent!!
-    
-    Args:
-        volume_image (ee.Image) : Image with volume data
-        
-    Returns:
-        flux_image (ee.Image) : Image with flux data
-    
-    
-    """
-    image = ee.Image(volume_image)
-    flux_image = image.divide(ee.Image(AREA_PFAF6_30MIN)).multiply(1e6).copyProperties(image)
-    flux_image = flux_image.set("units","m")
-    flux_image = flux_image.set("convertedToFlux", 1)
-    return flux_image
-
-    
 def filter_ic(ic,year,month):
     """ filters an imagecollection based on year and month
     
@@ -140,60 +119,7 @@ def filter_ic(ic,year,month):
     ic_filtered = (ic.filter(ee.Filter.eq("month",month))
                     .filter(ee.Filter.eq("year",year)))
     image = ee.Image(ic_filtered.first())
-    return(image)   
-
-    
-def zonalStatsToRaster(image,zonesImage,geometry,maxPixels,reducerType):
-    """ Zonal statistics with rasters as input and rasters and lists as output
-    
-    Args:
-        image (ee.Image) : image with value. Make sure the dimensions and units are 
-                           compatible with the zones image.
-        zonesImage (ee.Image) : image with zones stores as unique integers. Dimensions
-                                must match image argument.
-        geometry (ee.Geometry) : geometry specifying the extent of the calculation.
-        maxPixels (integer) : Maximum number of pixels in calculation. Defaults to 1e10.
-        reducerType (string) : reducer type. Options include mean max sum first and mode.
-        
-    Returns:
-        newImage (ee.Image) : Image with zones, count and values as bands
-        zoneList (ee.List) : list with zones
-        countList : (ee.List) : list with counts per zone
-        valueList : (ee.List) : list with values per zone       
-    
-    
-    """
-    # reducertype can be mean, max, sum, first. Count is always included for QA
-    # the resolution of the zonesimage is used for scale
-
-    reducer = ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"mean"),ee.Reducer.mean(),
-    ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"max"),ee.Reducer.max(),
-    ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"sum"),ee.Reducer.sum(),
-    ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"first"),ee.Reducer.first(),
-    ee.Algorithms.If(ee.Algorithms.IsEqual(reducerType,"mode"),ee.Reducer.mode(),"error"))))
-    )
-    reducer = ee.Reducer(reducer).combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName="zones") 
-
-    scale = zonesImage.projection().nominalScale().getInfo()
-    zonesImage = zonesImage.select(zonesImage.bandNames(),["zones"])
-
-    totalImage = ee.Image(image).addBands(zonesImage)
-    resultsList = ee.List(totalImage.reduceRegion(
-        geometry= geometry, 
-        reducer= reducer,
-        scale= scale,
-        maxPixels=maxPixels
-        ).get("groups"))
-
-    resultsList = resultsList.map(ensure_default_properties); 
-    zoneList = mapList(resultsList, 'zones');
-    countList = mapList(resultsList, 'count');
-    valueList = mapList(resultsList, reducerType);
-
-    valueImage = zonesImage.remap(zoneList, valueList).select(["remapped"],[reducerType])
-    countImage = zonesImage.remap(zoneList, countList).select(["remapped"],["count"])
-    newImage = zonesImage.addBands(countImage).addBands(valueImage)
-    return newImage,zoneList,valueList,countList
+    return(image)
 
 
 def zonalStatsToFeatureCollection(image,zonesImage,geometry,maxPixels,reducerType):
@@ -241,54 +167,26 @@ def zonalStatsToFeatureCollection(image,zonesImage,geometry,maxPixels,reducerTyp
     return fc
 
 
-def export_table_to_cloudstorage(fc,description,fileNamePrefix):
-    """ Export a google earth engine featureCollection to an asset folder
-    
-    WARNING: Choose the filename wisely. Adding properties is inefficent
-    store all properties in filename. 
-    
-    function will start a new task. To view the status of the task
-    check the javascript API or query tasks script. Function is used 
-    as mapped function so other arguments need to be set globally. 
-    
-    Args:
-        fc (ee.FeatureCollection) : featureCollection to export
-        
-    Returns:
-           
-    """
-    
-    task = ee.batch.Export.table.toCloudStorage(
-        collection =  ee.FeatureCollection(fc),
-        description = description,
-        bucket = GCS_BUCKET,
-        fileNamePrefix = GCS_OUTPUT_PATH + fileNamePrefix,
-        fileFormat = "CSV"
-    )
-    task.start()
-
-
-
-# In[6]:
+# In[15]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
-# In[7]:
+# In[16]:
 
 temp_image = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/area_30spfaf06_m2_V01V01")
 area_30spfaf06_m2 = temp_image.select(["sum"])
 zones_30spfaf06 = temp_image.select(["zones"])
 
 
-# In[8]:
+# In[6]:
 
 months = range(1,13)
 years = range(1960+9,2014+1)
-indicators = ["PTotWW","PTotWN"]
+indicators = ["availabledischarge"]
 
 
-# In[9]:
+# In[7]:
 
 df = pd.DataFrame()
 
@@ -302,29 +200,43 @@ for indicator in indicators:
             df= df.append(newRow,ignore_index=True)
 
 
-# In[ ]:
+# In[8]:
 
 if TESTING:
     df = df[1:3]
 
 
-# In[ ]:
+# In[9]:
+
+df.shape
+
+
+# In[19]:
 
 function_time_start = datetime.datetime.now()
 for index, row in df.iterrows():
-    ic = ee.ImageCollection("{}/global_historical_{}_month_m_pfaf06_1960_2014_movingaverage_10y_V{:02.0f}".format(EE_PATH,row["indicator"],INPUT_VERSION))
+    ic = ee.ImageCollection("{}/global_historical_{}_month_millionm3_pfaf06_1960_2014_movingaverage_10y_V{:02.0f}".format(EE_PATH,row["indicator"],INPUT_VERSION))
     image = filter_ic(ic,row["year"],row["month"])
-    fc = zonalStatsToFeatureCollection(image,zones_30spfaf06,geometry,1e10,"mode")
-    fileNamePrefix = "global_historical_{}_month_m_pfaf06_1960_2014_movingaverage_10y_mode_Y{:04.0f}M{:02.0f}_V{:02.0f}".format(row["indicator"],row["year"],row["month"],OUTPUT_VERSION)
-    description = fileNamePrefix
-    export_table_to_cloudstorage(fc,description,fileNamePrefix)
-    print(index)
+    # volumeToFlu
     
+    fc = zonalStatsToFeatureCollection(image,zones_30spfaf06,geometry,1e10,"mode")
+    fileNamePrefix = "global_historical_{}_month_millionm3_pfaf06_1960_2014_movingaverage_10y_mode_Y{:04.0f}M{:02.0f}_V{:02.0f}".format(row["indicator"],row["year"],row["month"],OUTPUT_VERSION)
+    #description = fileNamePrefix
+    #export_table_to_cloudstorage(fc,description,fileNamePrefix)
+    #print(index)
+
+
+# In[11]:
+
+ic.getInfo()
+
+
+# In[12]:
+
+image.getInfo()
 
 
 # In[ ]:
 
-end = datetime.datetime.now()
-elapsed = end - start
-print(elapsed)
+
 

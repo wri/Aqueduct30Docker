@@ -84,7 +84,9 @@
 # 1. **Y2018M03D01_RH_Moving_Average_Discharge_EE_V01**  
 #     moving average for discharge at basin resolution.
 # 1. **Y2018M03D24_RH_Moving_Average_Demand_To_GCS_V01**  
-#     store moving average results for demand in a CSV file in GCS
+#     store moving average results for demand in a CSV file in GCS  
+# 1. **Y2018M03D26_RH_Moving_Average_Discharge_To_GCS_V01**  
+#     store moving average results for discharge in a CSV file in GCS 
 #     
 #     
 # 
@@ -152,7 +154,7 @@
 # 
 # 
 # ### Evaporative Stress Index  
-# 1.  **Y2018M03D22_RH_Download_ESI_V01**
+# 1.  **Y2018M03D22_RH_Download_ESI_V01**  
 #     Download ESI (Evaporative Stress Index) to Instance, Google Cloud Services and Amazon S3.
 #     
 # 
