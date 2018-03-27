@@ -53,7 +53,7 @@
 # 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V01**  
 #     Download the data to your machine, unzip files.
 # 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01**  
-#     convert netCDF4 to Geotiff.
+#     convert netCDF4 to Geotiff.    
 # 1.  **Y2017M08D02_RH_Upload_to_GoogleCS_V01**  
 #     upload files to Google Cloud Storage. 
 # 1. **Y2017M08D02_RH_Ingest_GCS_EE_V01**  

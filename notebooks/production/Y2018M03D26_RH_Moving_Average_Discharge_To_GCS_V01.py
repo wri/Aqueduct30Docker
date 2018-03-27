@@ -27,14 +27,14 @@ SCRIPT_NAME = "Y2018M03D26_RH_Moving_Average_Discharge_To_GCS_V01"
 
 INPUT_VERSION = 2
 
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07"
 
 GCS_OUTPUT_PATH = "{}/outputV{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 GCS_BUCKET = "aqueduct30_v01"
 
-TESTING = 1
+TESTING = 0
 
 
 # In[3]:
@@ -48,7 +48,7 @@ import pandas as pd
 ee.Initialize()
 
 
-# In[18]:
+# In[5]:
 
 # Functions
 
@@ -121,6 +121,24 @@ def filter_ic(ic,year,month):
     image = ee.Image(ic_filtered.first())
     return(image)
 
+def volumeToFlux(volume_image):
+    """ convert volume image to flux
+    WARNING: This function is applied (mapped) over an ic
+    make sure the units / areas are consistent!
+    
+    Args:
+        volume_image (ee.Image) : image with volume values (millionm3)
+    
+    Returns:
+        flux_image (ee.Image) : Image with flux values (m) 
+    
+    """
+    volume_image = ee.Image(volume_image)
+    flux_image = volume_image.divide(ee.Image(area_30spfaf06_m2)).multiply(1e6).copyProperties(volume_image)
+    flux_image = flux_image.set("units","m")
+    flux_image = flux_image.set("convertedToFlux", 1)
+    return flux_image
+
 
 def zonalStatsToFeatureCollection(image,zonesImage,geometry,maxPixels,reducerType):
     """ Zonal statistics with rasters as input and rasters and lists as output
@@ -166,27 +184,53 @@ def zonalStatsToFeatureCollection(image,zonesImage,geometry,maxPixels,reducerTyp
 
     return fc
 
+def export_table_to_cloudstorage(fc,description,fileNamePrefix):
+    """ Export a google earth engine featureCollection to an asset folder
+    
+    WARNING: Choose the filename wisely. Adding properties is inefficent
+    store all properties in filename. 
+    
+    function will start a new task. To view the status of the task
+    check the javascript API or query tasks script. Function is used 
+    as mapped function so other arguments need to be set globally. 
+    
+    Args:
+        fc (ee.FeatureCollection) : featureCollection to export
+        
+    Returns:
+           
+    """
+    
+    task = ee.batch.Export.table.toCloudStorage(
+        collection =  ee.FeatureCollection(fc),
+        description = description,
+        bucket = GCS_BUCKET,
+        fileNamePrefix = GCS_OUTPUT_PATH + fileNamePrefix,
+        fileFormat = "CSV"
+    )
+    task.start()
 
-# In[15]:
+
+# In[6]:
 
 geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
 
 
-# In[16]:
+# In[7]:
 
 temp_image = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/area_30spfaf06_m2_V01V01")
 area_30spfaf06_m2 = temp_image.select(["sum"])
 zones_30spfaf06 = temp_image.select(["zones"])
 
 
-# In[6]:
+# In[8]:
 
 months = range(1,13)
 years = range(1960+9,2014+1)
 indicators = ["availabledischarge"]
 
 
-# In[7]:
+# In[9]:
 
 df = pd.DataFrame()
 
@@ -200,43 +244,35 @@ for indicator in indicators:
             df= df.append(newRow,ignore_index=True)
 
 
-# In[8]:
+# In[10]:
 
 if TESTING:
     df = df[1:3]
 
 
-# In[9]:
+# In[ ]:
 
 df.shape
 
 
-# In[19]:
+# In[ ]:
 
 function_time_start = datetime.datetime.now()
 for index, row in df.iterrows():
     ic = ee.ImageCollection("{}/global_historical_{}_month_millionm3_pfaf06_1960_2014_movingaverage_10y_V{:02.0f}".format(EE_PATH,row["indicator"],INPUT_VERSION))
-    image = filter_ic(ic,row["year"],row["month"])
-    # volumeToFlu
+    volume_image = filter_ic(ic,row["year"],row["month"])
+    flux_image = volumeToFlux(volume_image)
     
-    fc = zonalStatsToFeatureCollection(image,zones_30spfaf06,geometry,1e10,"mode")
+    fc = zonalStatsToFeatureCollection(flux_image,zones_30spfaf06,geometry,1e10,"mode")
     fileNamePrefix = "global_historical_{}_month_millionm3_pfaf06_1960_2014_movingaverage_10y_mode_Y{:04.0f}M{:02.0f}_V{:02.0f}".format(row["indicator"],row["year"],row["month"],OUTPUT_VERSION)
-    #description = fileNamePrefix
-    #export_table_to_cloudstorage(fc,description,fileNamePrefix)
-    #print(index)
-
-
-# In[11]:
-
-ic.getInfo()
-
-
-# In[12]:
-
-image.getInfo()
+    description = fileNamePrefix[-98:] # description lenght limited to 100
+    export_table_to_cloudstorage(fc,description,fileNamePrefix)
+    print(index,description)
 
 
 # In[ ]:
 
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
