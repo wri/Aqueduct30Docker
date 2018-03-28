@@ -83,14 +83,13 @@ get_ipython().system('mkdir -p {ec2_output_path}')
 get_ipython().system('aws s3 cp {s3_input_path} {ec2_output_path} --recursive')
 
 
-# In[ ]:
+# In[8]:
 
 #List files downloaded (32 in my case)
-
 get_ipython().system('find {ec2_output_path} -type f | wc -l')
 
 
-# In[ ]:
+# In[9]:
 
 # As you can see there are some zipped files. Unzipping.  
 # Unzipping the file results in a 24GB file which is signifact. Therefore this step will take quite some time
@@ -101,22 +100,22 @@ get_ipython().system('unzip {ec2_output_path}totalRunoff_monthTot_output.zip -d 
 # The total number of files should be around 25 but can change if the raw data changed. 
 # In the data that Yoshi provided there is only Livestock data for consumption (WN). However in an email he specified that the withdrawal (WW) equals the consumption (100% consumption) for livestock. Therefore we copy the WN Livestock files to WW to make looping over WN and WW respectively easier. 
 
-# In[ ]:
+# In[10]:
 
 get_ipython().system('cp {ec2_output_path}/global_historical_PLivWN_month_millionm3_5min_1960_2014.nc4 {ec2_output_path}/global_historical_PLivWW_month_millionm3_5min_1960_2014.nc4')
 
 
-# In[ ]:
+# In[11]:
 
 get_ipython().system('cp {ec2_output_path}/global_historical_PLivWN_year_millionm3_5min_1960_2014.nc4 {ec2_output_path}/global_historical_PLivWW_year_millionm3_5min_1960_2014.nc4')
 
 
-# In[ ]:
+# In[12]:
 
 get_ipython().system('ls -lah {ec2_output_path}')
 
 
-# In[ ]:
+# In[13]:
 
 files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
@@ -126,7 +125,7 @@ print("Number of files: " + str(len(files)))
 
 # Some files that WRI received from Utrecht refer to water "Use" instead of WN (net). Renaming the relevant file. Renaming them
 
-# In[ ]:
+# In[14]:
 
 get_ipython().system('mv {ec2_output_path}/global_historical_PDomUse_month_millionm3_5min_1960_2014.nc4 {ec2_output_path}/global_historical_PDomWN_month_millionm3_5min_1960_2014.nc4')
 get_ipython().system('mv {ec2_output_path}/global_historical_PDomUse_year_millionm3_5min_1960_2014.nc4 {ec2_output_path}/global_historical_PDomWN_year_millionm3_5min_1960_2014.nc4')
@@ -146,26 +145,31 @@ get_ipython().system('mv {ec2_output_path}/global_historical_PIndUse_year_millio
 # global_historical_runoff_month_mmonth_5min_1958_2014.nc
 # 
 
-# In[ ]:
+# In[15]:
 
 get_ipython().system('mv {ec2_output_path}/totalRunoff_annuaTot_output.nc {ec2_output_path}/global_historical_runoff_year_myear_5min_1958_2014.nc')
 
 
-# In[ ]:
+# In[16]:
 
 get_ipython().system('mv {ec2_output_path}/totalRunoff_monthTot_output.nc {ec2_output_path}/global_historical_runoff_month_mmonth_5min_1958_2014.nc')
 
 
 # Final Folder strcuture
 
-# In[ ]:
+# In[17]:
 
 get_ipython().system('ls {ec2_output_path}')
 
 
-# In[ ]:
+# In[18]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+
 

@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 """ convert netCDF4 to Geotiff.
 -------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ import subprocess
 import numpy as np
 import pyproj
 import warnings
-from netCDF4 import Dataset
+import netCDF4
 
 try:
     from osgeo import ogr, osr, gdal
@@ -71,90 +71,21 @@ if 'GDAL_DATA' not in os.environ:
     os.environ['GDAL_DATA'] = r'/usr/share/gdal/2.1'
 
 
-
-# In[ ]:
+# In[4]:
 
 # ETL
 
-ec2_input_path_additional = "/volumes/data/{}/input".format(SCRIPT_NAME)
-
-S3_INPUT_PATH_ADDITIONAL = "s3://wri-projects/Aqueduct30/rawData/WRI/samplegeotiff/"
-
 ec2_output_path = "/volumes/data/{}/output/".format(SCRIPT_NAME)
-
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output/".format(SCRIPT_NAME)
 
 
-# In[ ]:
+# In[5]:
+
+get_ipython().system('rm -r {ec2_output_path}')
+get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-array = np.ones([y_dimension,x_dimenstion])
-
-
-# In[ ]:
-
-test = create_global_geotiff(output_path,array)
-
-
-# In[ ]:
-
-get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
-
-
-# In[ ]:
-
-get_ipython().system('mkdir -p {ec2_input_path_additional}')
-
-
-# In[ ]:
-
-get_ipython().system('mkdir -p {EC2_OUTPUTPATH}')
-
-
-# In[ ]:
-
-get_ipython().system('aws s3 cp {S3_INPUT_PATH_ADDITIONAL} {ec2_input_path_additional} --recursive')
-
-
-# Check if the file is actually copied
-
-# In[ ]:
-
-get_ipython().system('ls {EC2_INPUT_PATH_ADDITIONAL}')
-
-
-# In[ ]:
-
-inputLocationSampleGeotiff = os.path.join(ec2_input_path_additional,"sampleGeotiff.tiff")
-
-
-# In[ ]:
-
-print(inputLocationSampleGeotiff)
-
-
-# In[ ]:
-
-
-
-
-# # Functions
-
-# In[ ]:
-
-
-
-
-# In[12]:
+# In[6]:
 
 # Functions
 def read_gdal_file(input_path):
@@ -245,168 +176,128 @@ def write_geotiff(output_path,geotransform,geoprojection,data,nodata_value=-9999
     return 1
 
 
-def netCDF4_to_geotiff(fileName,fileLocation):
-    netCDFInputBaseName = fileName.split('.')[0]
-    nc_fid = Dataset(fileLocation, 'r')
+def netCDF4_to_geotiff(file_name,input_path,output_dir_path, output_geotransform, output_geoprojection):
+    """Convert every image in a netCDF4 file to a geotiff
+    -------------------------------------------------------------------------------
+    
+    the output filenames will be appended with relevant metadata stored in the 
+    netCDF file. 
+    
+    
+    Args:
+        file_name (string) : filename including extension.
+        input_path (string) : input path to netCDF4 file (.nc or .nc4)
+        output_dir_path (string) : output path to directory (.tif or .tiff)
+        output_geotransform (tuple) : geotransform
+        output_geoprojection (string) : geoprojection in osr format
+        
+    Returns    
+    
+    """
+    
+    netCDF_input_base_name = file_name.split('.')[0]
+    nc_fid = netCDF4.Dataset(input_path, 'r')
     nc_attrs, nc_dims, nc_vars = ncdump(nc_fid, PRINT_METADATA)
     parameter = nc_vars[3]
+    
     lats = nc_fid.variables['latitude'][:]  # extract/copy the data
     lons = nc_fid.variables['longitude'][:]
     times = nc_fid.variables['time'][:]
-    timeUnit = nc_fid.variables["time"].getncattr("units")
-    timeNormal =[]
-    for time in times:
-        if timeUnit == ("days since 1900-01-01 00:00:00") or (timeUnit =="Days since 1900-01-01"):
-            timeNormal.append(datetime.datetime(1900,1,1) + datetime.timedelta(days=time))
-        elif timeUnit == "days since 1901-01-01 00:00:00":
-            timeNormal.append(datetime.datetime(1901,1,1) + datetime.timedelta(days=time))
-        else:
-            print "Error"
-            timeNormal.append(-9999)
-            
+    time_unit = nc_fid.variables["time"].getncattr("units")
+    
+    standardized_time = standardize_time(time_unit,times)
+
+      
     for i in range(0,len(timeNormal)):
-        #print timeNormal[i].year
         Z = nc_fid.variables[parameter][i, :, :]
         Z[Z<-9990]= -9999
         Z[Z>1e19] = -9999
-        outputFilename = netCDFInputBaseName + "I%0.3dY%0.2dM%0.2d.tif" %(i,timeNormal[i].year,timeNormal[i].month)
-        writefilename = os.path.join(EC2_OUTPUTPATH,outputFilename)
-        writeFile(writefilename,geotransform,geoproj,Z)
+        output_filename = netCDF_input_base_name + "I{:03.0f}Y{:04.0f}M{:02.0f}.tif".format(i,standardized_time[i].year,standardized_time[i].month)
+        output_path = os.path.join(output_dir_path,output_filename)
+        #writeFile(writefilename,geotransform,geoproj,Z)
+        print(output_path)
+        write_geotiff(output_path,output_geotransform,output_geoprojection,Z,nodata_value=-9999,datatype=gdal.GDT_Float32)
     
-    return time, timeUnit, timeNormal
+    return Z
 
 
-
+def standardize_time(time_unit,times):
+    """ Append standardize time to list
+    -------------------------------------------------------------------------------
+    
+    The netCDF results of the university of Utrecht consist of multiple time 
+    formats. 
+    
+    Args:
+        time_unit (string) : units as provided by the netCDF4 file. 
+        times (list) : list of time in units provided in time_units (e.g. days).
+    
+    Returns:
+        standardized_time (list) : list of normalized times in datetime format.
+    
+    """
+    
+    standardized_time =[]
+    for time in times:
+        if time_unit == ("days since 1900-01-01 00:00:00") or (time_unit =="Days since 1900-01-01"):
+            standardized_time.append(datetime.datetime(1900,1,1) + datetime.timedelta(days=time))
+        elif time_unit == "days since 1901-01-01 00:00:00":
+            standardized_time.append(datetime.datetime(1901,1,1) + datetime.timedelta(days=time))
+        else:
+            raise("Error, unknown format:",time_unit)
+            standardized_time.append(-9999)
+    return standardized_time
+    
+    
 def ncdump(nc_fid, verb=True):
-    '''
-    ncdump outputs dimensions, variables and their attribute information.
+    '''ncdump outputs dimensions, variables and their attribute information.
+    -------------------------------------------------------------------------------
+    
     The information is similar to that of NCAR's ncdump utility.
     ncdump requires a valid instance of Dataset.
 
-    Parameters
-    ----------
-    nc_fid : netCDF4.Dataset
-        A netCDF4 dateset object
-    verb : Boolean
-        whether or not nc_attrs, nc_dims, and nc_vars are printed
+    Args:
+        nc_fid (netCDF4.Dataset) : A netCDF4 dateset object
+        verb (boolean) : whether or not nc_attrs, nc_dims, and nc_vars are printed
+                         Defaults to True.
 
-    Returns
-    -------
-    nc_attrs : list
-        A Python list of the NetCDF file global attributes
-    nc_dims : list
-        A Python list of the NetCDF file dimensions
-    nc_vars : list
-        A Python list of the NetCDF file variables
+    Returns:
+        nc_attrs (list) : A Python list of the NetCDF file global attributes
+        nc_dims (list) : A Python list of the NetCDF file dimensions
+        nc_vars (list) : A Python list of the NetCDF file variables
     '''
-    def print_ncattr(key):
-        """
-        Prints the NetCDF file attributes for a given key
 
-        Parameters
-        ----------
-        key : unicode
-            a valid netCDF4.Dataset.variables key
-        """
-        try:
-            print "\t\ttype:", repr(nc_fid.variables[key].dtype)
-            for ncattr in nc_fid.variables[key].ncattrs():
-                print '\t\t%s:' % ncattr,                      repr(nc_fid.variables[key].getncattr(ncattr))
-        except KeyError:
-            print "\t\tWARNING: %s does not contain variable attributes" % key
-
-    # NetCDF global attributes
     nc_attrs = nc_fid.ncattrs()
-    if verb:
-        print "NetCDF Global Attributes:"
-        for nc_attr in nc_attrs:
-            print '\t%s:' % nc_attr, repr(nc_fid.getncattr(nc_attr))
     nc_dims = [dim for dim in nc_fid.dimensions]  # list of nc dimensions
-    # Dimension shape information.
-    if verb:
-        print "NetCDF dimension information:"
-        for dim in nc_dims:
-            print "\tName:", dim
-            print "\t\tsize:", len(nc_fid.dimensions[dim])
-            print_ncattr(dim)
-    # Variable information.
     nc_vars = [var for var in nc_fid.variables]  # list of nc variables
-    if verb:
-        print "NetCDF variable information:"
-        for var in nc_vars:
-            if var not in nc_dims:
-                print '\tName:', var
-                print "\t\tdimensions:", nc_fid.variables[var].dimensions
-                print "\t\tsize:", nc_fid.variables[var].size
-                print_ncattr(var)
     return nc_attrs, nc_dims, nc_vars
 
 
-# In[ ]:
+
+    
 
 
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
+    
 
 
 # In[7]:
 
-array = np.ones([2,3])
+# Assume uniform dimensions specified in input dimensions. 
 
+default_geotransform, default_geoprojection = global_georeference(np.ones([Y_DIMENSION_5MIN,X_DIMENSION_5MIN]))
 
-# In[13]:
-
-geotransform, geoprojection = global_georeference(array)
-
-
-# In[ ]:
-
-type(ZSample)
-
-
-# In[ ]:
-
-print xsize, ysize, geotransform
-
-
-# In[ ]:
-
-for root, dirs, files in os.walk(EC2_INPUT_PATH):
-    for oneFile in files:
-        if oneFile.endswith(".nc4") or oneFile.endswith(".nc"):
-            print(oneFile)
-            fileLocation = os.path.join(root, oneFile)
-            fileName = oneFile
-            netCDF4toGeotiff(fileName,fileLocation)
+for root, dirs, file_names in os.walk(EC2_INPUT_PATH):
+    for file_name in file_names:
+        if file_name.endswith(".nc4") or file_name.endswith(".nc"):
+            print(file_name)
+            input_path = os.path.join(root, file_name) 
+            Z = netCDF4_to_geotiff(file_name,input_path,ec2_output_path, default_geotransform, default_geoprojection)
                 
 
 
 # In[ ]:
 
-files = os.listdir(OUTPUTPATH)
+files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
 
 
@@ -426,81 +317,14 @@ get_ipython().system('mkdir /volumes/data/trash')
 
 # In[ ]:
 
-get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
-get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
-get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif')
+get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
+get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
+get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif')
 
 
 
 # In[ ]:
 
-files = os.listdir(OUTPUTPATH)
+files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-def create_global_geotiff_from_array(output_path,array,nodata_value=-9999,datatype=gdal.GDT_Int16):
-    """ Writes array to global geotiff
-    -------------------------------------------------------------------------------
-    
-    In many geospatial debugging analyses, a raster with only ones or random values
-    is useful. Stores the output geotiff in the output_path. 
-        
-    Uses the WGS epsg 4326 projection. Make sure the array and data type are 
-    compatible. Requires GDAL to be installed with GDAL_DATA added to the system
-    path. 
-    
-    Args:
-        output_path (string) : file path with write permission to store geotiff.
-        array (np.array) : numpy array to write to geotiff.
-        datatype (gdal datatype) : datatype of output image. See https://naturalatlas.github.io/node-gdal/classes/Constants%20(GDT).html
-                                   for options. Defaults to gdal.GDT_Float32
-        nodata_value (integer) : NoData value. Defaults to -9999.
-    
-    Returns:
-        image (geoTiff) : geotiff image with all
-        
-    
-    TODO: Support other crs
-    
-    """
-    y_dimension = array.shape[0] #rows, lat
-    x_dimension = array.shape[1] #cols, lon
-    geotransform = (-180,360.0/x_dimension,0,90,0,-180.0/y_dimension)
-        
-    out_raster_srs = osr.SpatialReference()
-    out_raster_srs.ImportFromEPSG(4326)
-    projection = out_raster_srs.ExportToWkt()
-    
-    if len(projection) == 0:
-        warnings.warn("GDAL_DATA path not set correctly. Assert os.environ "                       "contains GDAL_DATA \n"                       "Code will execute without projection set")
-       
-    out_raster = write_geotiff(output_path,geotransform,geoprojection,data,nodata_value,datatype)    
-    return out_raster
 
