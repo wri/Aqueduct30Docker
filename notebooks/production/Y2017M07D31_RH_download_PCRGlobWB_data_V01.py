@@ -1,6 +1,36 @@
 
 # coding: utf-8
 
+# In[ ]:
+
+""" Short description of the notebook. 
+-------------------------------------------------------------------------------
+Notebooks in the Aqueduct Project are used in production. This means that the   
+notebooks should execute completely by pressing restart and run in the menu.
+Commands should not exceed the 80 character limit which is the length of this  |
+
+Author: Rutger Hofste
+Date: 20180327
+Kernel: python36
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:
+
+    SCRIPT_NAME (string) : Script name
+
+
+Returns:
+
+
+"""
+
+# Input Parameters
+
+SCRIPT_NAME = "Y0000M00D00_XX_Script_Template_V01"
+
+# Output Parameters
+
+
 # ### Download PcrGlobWB data to instance
 # 
 # * Purpose of script: This notebook will download the data from S3 to the EC2 instance 

@@ -48,11 +48,11 @@
 #     
 # ### PCRGlobWB 2.0
 # 
-# 1.  **Y2017M07D31_RH_copy_S3raw_s3process_V01**  
+# 1.  **Y2017M07D31_RH_copy_S3raw_s3process_V02**  
 #     Copy files from raw data folder to process data folder, all within S3. 
-# 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V01**  
+# 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V02**  
 #     Download the data to your machine, unzip files.
-# 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V01**  
+# 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02**  
 #     convert netCDF4 to Geotiff.    
 # 1.  **Y2017M08D02_RH_Upload_to_GoogleCS_V01**  
 #     upload files to Google Cloud Storage. 

@@ -4,13 +4,19 @@
 # In[ ]:
 
 """ Short description of the notebook. 
-
+-------------------------------------------------------------------------------
 Notebooks in the Aqueduct Project are used in production. This means that the   
 notebooks should execute completely by pressing restart and run in the menu.
 Commands should not exceed the 80 character limit which is the length of this  |
 
+Code follows the Google for Python Styleguide. Exception are the scripts that 
+use earth engine since this is camelCase instead of underscore.
+
+
 Author: Rutger Hofste
 Date: 20180327
+Kernel: python36
+Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
 
@@ -40,22 +46,13 @@ print(dateString,timeString)
 sys.version
 
 
-# In[1]:
-
-# ETL
-
-
 # In[ ]:
 
 # Imports
 
-
-# In[2]:
+# ETL
 
 # Functions
-
-
-# In[3]:
 
 # Script
 

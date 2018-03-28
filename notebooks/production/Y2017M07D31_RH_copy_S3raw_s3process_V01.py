@@ -1,6 +1,55 @@
 
 # coding: utf-8
 
+# In[ ]:
+
+""" Copy data from S3 raw to S3 process.
+-------------------------------------------------------------------------------
+
+Copy files from S3 raw to S3 process data
+
+Author: Rutger Hofste
+Date: 20170731
+Kernel: python36
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:
+
+    SCRIPT_NAME (string) : Script name
+
+
+Returns:
+
+
+"""
+
+# Input Parameters
+
+SCRIPT_NAME = "Y0000M00D00_XX_Script_Template_V01"
+
+# Output Parameters
+
+
+# In[1]:
+
+import subprocess
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
 # # Copy data from S3 raw to S3 process
 # 
 # * Purpose of script: Copy files from raw data folder to process data folder, all within S3. 
