@@ -35,10 +35,13 @@ EC2_INPUT_PATH = "/volumes/data/Y2017M07D31_RH_download_PCRGlobWB_data_V02/outpu
 
 PRINT_METADATA = False
 
+X_DIMENSION_5MIN = 4320
+Y_DIMENSION_5MIN = 2160
+
 # Output Parameters
 
 
-# In[ ]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -48,7 +51,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
+# In[3]:
 
 # Imports
 import os
@@ -87,18 +90,9 @@ s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output/".format(SC
 
 
 
-
-
-
 # In[ ]:
 
-output_path = "/volumes/data/{}/output/test4.tif"
 
-
-# In[ ]:
-
-x_dimenstion_5min = 4320
-y_dimension_5min = 2160
 
 
 # In[ ]:
@@ -157,55 +151,98 @@ print(inputLocationSampleGeotiff)
 
 # In[ ]:
 
+
+
+
+# In[12]:
+
 # Functions
-def create_global_geotiff_from_array(output_path,array,datatype=gdal.GDT_Int16,nodata_value=-9999):
-    """ Writes array to global geotiff
+def read_gdal_file(input_path):
+    """ Reads file using GDAL
     -------------------------------------------------------------------------------
     
-    In many geospatial debugging analyses, a raster with only ones or random values
-    is useful. Stores the output geotiff in the output_path. 
-        
-    Uses the WGS epsg 4326 projection. Make sure the array and data type are 
-    compatible. Requires GDAL to be installed with GDAL_DATA added to the system
-    path. 
+    WARNING: This function only reads the first band. Data Stored in memory
     
     Args:
-        output_path (string) : file path with write permission to store geotiff.
-        array (np.array) : numpy array to write to geotiff.
-        datatype (gdal datatype) : datatype of output image. See https://naturalatlas.github.io/node-gdal/classes/Constants%20(GDT).html
-                                   for options. Defaults to gdal.GDT_Float32
-        nodata_value (integer) : NoData value. Defaults to -9999.
+        input_path (string) : path to input file
     
     Returns:
-        image (geoTiff) : geotiff image with all
-        
-    
-    TODO: Support other crs
+        xsize (integer) : number of columns
+        ysize (integer) : number of rows
+        geotransform (tuple) : geotransform
+        geoproj (string) : geoprojection in osr format
+        Z (np.array) : array with values 
     
     """
+    
+    filehandle = gdal.Open(input_path)
+    band1 = filehandle.GetRasterBand(1)
+    geotransform = filehandle.GetGeoTransform()
+    geoproj = filehandle.GetProjection()
+    Z = band1.ReadAsArray()
+    xsize = filehandle.RasterXSize
+    ysize = filehandle.RasterYSize
+    filehandle = None
+    return xsize,ysize,geotransform,geoproj,Z
+
+
+
+def global_georeference(array):
+    """ Get the geotransform and projection for a numpy array
+    -------------------------------------------------------------------------------
+    
+    Returns a geotransform and projection for a global extent in epsg 4326 
+    projection.
+    
+    Args:
+        array (np.array) : numpy array
+    
+    Returns:
+        geotransform (tuple) : geotransform
+        geoprojection (string) : geoprojection in osr format    
+    
+    """
+    
     y_dimension = array.shape[0] #rows, lat
     x_dimension = array.shape[1] #cols, lon
     geotransform = (-180,360.0/x_dimension,0,90,0,-180.0/y_dimension)
     
-    driver = gdal.GetDriverByName('GTiff')
-    out_raster = driver.Create(output_path, x_dimension, y_dimension, 1, datatype,['COMPRESS=LZW'])
-    out_raster.SetGeoTransform(geotransform)
-    out_band = out_raster.GetRasterBand(1)
-    out_band.SetNoDataValue(nodata_value)
-    out_band.WriteArray(array)
-    out_raster_srs = osr.SpatialReference()
-    out_raster_srs.ImportFromEPSG(4326)
+    srs = osr.SpatialReference()
+    srs.ImportFromEPSG(4326)
+    geoprojection = srs.ExportToWkt()
     
-    projection = out_raster_srs.ExportToWkt()
-    if len(projection) == 0:
+    if len(geoprojection) == 0:
         warnings.warn("GDAL_DATA path not set correctly. Assert os.environ "                       "contains GDAL_DATA \n"                       "Code will execute without projection set")
+
+    return geotransform, geoprojection
+
+
+def write_geotiff(output_path,geotransform,geoprojection,data,nodata_value=-9999,datatype=gdal.GDT_Float32):
     
-    out_raster.SetProjection(projection)
-    out_band.FlushCache()        
-    return out_raster
-
-
-# In[ ]:
+    """ Write data to geotiff file
+    -------------------------------------------------------------------------------
+    
+    Args: 
+        output_path (string) : output_path 
+        geotransform (tuple) : geotransform
+        geoprojection (string) : geoprojection in osr format
+        data (np.array) : numpy array    
+        nodata_value (integer) : NoData value
+        datatype (GDAL datatype)
+    
+    """  
+    
+    (x,y) = data.shape
+    format = "GTiff"
+    driver = gdal.GetDriverByName(format)
+    # you can change the dataformat but be sure to be able to store negative values including -9999
+    dst_ds = driver.Create(output_path,y,x,1,datatype, [ 'COMPRESS=LZW' ])
+    dst_ds.GetRasterBand(1).SetNoDataValue(nodata_value)
+    dst_ds.GetRasterBand(1).WriteArray(data)
+    dst_ds.SetGeoTransform(geotransform)
+    dst_ds.SetProjection(geoprojection)
+    dst_ds = None
+    return 1
 
 
 def netCDF4_to_geotiff(fileName,fileLocation):
@@ -238,41 +275,7 @@ def netCDF4_to_geotiff(fileName,fileLocation):
     
     return time, timeUnit, timeNormal
 
-def read_file(input_path):
-    """ Reads file using GDAL
-    
-    Args:
-        input_path (string) : path to input file
-    
-    Returns:
-        xsize (integer) : number of columns
-        ysize (integer) : number of rows
-    
-    """
-    
-    filehandle = gdal.Open(filename)
-    band1 = filehandle.GetRasterBand(1)
-    geotransform = filehandle.GetGeoTransform()
-    geoproj = filehandle.GetProjection()
-    Z = band1.ReadAsArray()
-    xsize = filehandle.RasterXSize
-    ysize = filehandle.RasterYSize
-    filehandle = None
-    return xsize,ysize,geotransform,geoproj,Z
 
-def writeFile(filename,geotransform,geoprojection,data):
-    (x,y) = data.shape
-    format = "GTiff"
-    driver = gdal.GetDriverByName(format)
-    # you can change the dataformat but be sure to be able to store negative values including -9999
-    dst_datatype = gdal.GDT_Float32
-    dst_ds = driver.Create(filename,y,x,1,dst_datatype, [ 'COMPRESS=LZW' ])
-    dst_ds.GetRasterBand(1).SetNoDataValue(-9999)
-    dst_ds.GetRasterBand(1).WriteArray(data)
-    dst_ds.SetGeoTransform(geotransform)
-    dst_ds.SetProjection(geoprojection)
-    dst_ds = None
-    return 1
 
 def ncdump(nc_fid, verb=True):
     '''
@@ -339,11 +342,44 @@ def ncdump(nc_fid, verb=True):
     return nc_attrs, nc_dims, nc_vars
 
 
-# # Script
+# In[ ]:
+
+
+
 
 # In[ ]:
 
 
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[7]:
+
+array = np.ones([2,3])
+
+
+# In[13]:
+
+geotransform, geoprojection = global_georeference(array)
 
 
 # In[ ]:
@@ -405,4 +441,66 @@ print("Number of files: " + str(len(files)))
 # In[ ]:
 
 
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+def create_global_geotiff_from_array(output_path,array,nodata_value=-9999,datatype=gdal.GDT_Int16):
+    """ Writes array to global geotiff
+    -------------------------------------------------------------------------------
+    
+    In many geospatial debugging analyses, a raster with only ones or random values
+    is useful. Stores the output geotiff in the output_path. 
+        
+    Uses the WGS epsg 4326 projection. Make sure the array and data type are 
+    compatible. Requires GDAL to be installed with GDAL_DATA added to the system
+    path. 
+    
+    Args:
+        output_path (string) : file path with write permission to store geotiff.
+        array (np.array) : numpy array to write to geotiff.
+        datatype (gdal datatype) : datatype of output image. See https://naturalatlas.github.io/node-gdal/classes/Constants%20(GDT).html
+                                   for options. Defaults to gdal.GDT_Float32
+        nodata_value (integer) : NoData value. Defaults to -9999.
+    
+    Returns:
+        image (geoTiff) : geotiff image with all
+        
+    
+    TODO: Support other crs
+    
+    """
+    y_dimension = array.shape[0] #rows, lat
+    x_dimension = array.shape[1] #cols, lon
+    geotransform = (-180,360.0/x_dimension,0,90,0,-180.0/y_dimension)
+        
+    out_raster_srs = osr.SpatialReference()
+    out_raster_srs.ImportFromEPSG(4326)
+    projection = out_raster_srs.ExportToWkt()
+    
+    if len(projection) == 0:
+        warnings.warn("GDAL_DATA path not set correctly. Assert os.environ "                       "contains GDAL_DATA \n"                       "Code will execute without projection set")
+       
+    out_raster = write_geotiff(output_path,geotransform,geoprojection,data,nodata_value,datatype)    
+    return out_raster
 
