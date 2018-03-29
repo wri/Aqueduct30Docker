@@ -208,7 +208,7 @@ def netCDF4_to_geotiff(file_name,input_path,output_dir_path, output_geotransform
     standardized_time = standardize_time(time_unit,times)
 
       
-    for i in range(0,len(timeNormal)):
+    for i in range(0,len(standardized_time)):
         Z = nc_fid.variables[parameter][i, :, :]
         Z[Z<-9990]= -9999
         Z[Z>1e19] = -9999
