@@ -1,6 +1,39 @@
 
 # coding: utf-8
 
+# In[ ]:
+
+""" Ingest data on Google Earth Engine
+-------------------------------------------------------------------------------
+This notebook will upload the geotiff files from the Google Cloud Storage to
+the WRI/aqueduct earthengine bucket. 
+
+Code follows the Google for Python Styleguide. Exception are the scripts that 
+use earth engine since this is camelCase instead of underscore.
+
+
+Author: Rutger Hofste
+Date: 20170802
+Kernel: python36
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:
+
+    SCRIPT_NAME (string) : Script name
+
+
+Returns:
+
+
+"""
+
+# Input Parameters
+
+SCRIPT_NAME = "Y0000M00D00_XX_Script_Template_V01"
+
+# Output Parameters
+
+
 # ### Ingest data on Google Earth Engine (WRI bucket)
 # 
 # * Purpose of script: This notebook will upload the geotiff files from the Google Cloud Storage to the WRI/aqueduct earthengine bucket. 

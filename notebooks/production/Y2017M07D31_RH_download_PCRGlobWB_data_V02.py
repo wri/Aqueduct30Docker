@@ -159,17 +159,17 @@ get_ipython().system('mv {ec2_output_path}/totalRunoff_monthTot_output.nc {ec2_o
 
 # In[17]:
 
-get_ipython().system('ls {ec2_output_path}')
+number_of_files =  len(os.listdir(ec2_output_path))
 
 
 # In[18]:
 
+assert number_of_files == 35, ("Number of files is different than previous run. {} instead of 35".format(number_of_files))
+
+
+# In[19]:
+
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
-
-
-# In[ ]:
-
-
 
