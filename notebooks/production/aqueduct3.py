@@ -219,3 +219,92 @@ def ncdump(nc_fid):
     nc_dims = [dim for dim in nc_fid.dimensions]  # list of nc dimensions
     nc_vars = [var for var in nc_fid.variables]  # list of nc variables
     return nc_attrs, nc_dims, nc_vars
+
+
+
+def upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,properties):
+    """Upload geotiff to earthengine image collection
+    -------------------------------------------------------------------------------
+    
+    Ingest a geotiff to earth engine imageCollection and set metadata. A dictionary
+    of properties will be used to define the metadata of the image.
+    
+    Args:
+        geotiff_gcs_path (string) : Google Cloud Storage path of geotiff.
+        output_ee_asset_id (string) : Earth Engine output asset id. Full path 
+                                      including imageCollection asset id.
+        properties (dictionary) : Dictionary with metadata. the 'nodata_value' key
+                                  can be used to set a NoData Value.
+        
+    
+    Returns:
+        df_errors2 (pd.Dataframe) : Pandas DataFrame with the command and response.
+        
+    
+    TODO:
+    update function to work with dictionary of properties
+    
+    """
+    command = "/opt/anaconda3/bin/earthengine upload image --asset_id {} {}".format(output_ee_asset_id,geotiff_gcs_path)
+    metadata_command = dictionary_to_EE_upload_command(properties)
+    
+    command = command + metadata_command
+    
+    
+    try:
+        response = subprocess.check_output(command, shell=True)
+        out_dict = {"command":command,"response":response,"error":0}
+        df_errors2 = pd.DataFrame(out_dict,index=[index])
+        pass
+    except:
+        try:
+            out_dict = {"command":command,"response":response,"error":1}
+        except:
+            out_dict = {"command":command,"response":-9999,"error":2}
+        df_errors2 = pd.DataFrame(out_dict,index=[index])
+        print("error")
+    return df_errors2
+
+def dictionary_to_EE_upload_command(d):
+    """ Convert a dictionary to command that can be appended to upload command
+    -------------------------------------------------------------------------------
+    WARNING: images with temporal resolution 'year' will have a month 12 
+    stored in their metadata. This is for convenience (equal string length). The
+    result is an odd looking time_start property of 'yyyy-12-01' for yearly images.     
+    
+    Args:
+        d (dictionary) : Dictionary with metadata. nodata_value, 
+                         temporal_resolution are used as special properties.
+    
+    Returns:
+        command (string) : string to append to upload string.    
+    
+    """
+    command = ""
+    # Add start and end timestamp
+    command = command + " --time_start {:04.0f}-{:02.0f}-01".format(d["year"],d["month"])
+    
+    for key, value in d.items():
+            
+        if key == "nodata_value":
+            command = command + " --nodata_value={}".format(value)
+        else:
+            command = command + " -p {}={}".format(key,value)
+
+    return command
+
+def create_imageCollection(ic_id):
+    """ Creates an imageCollection using command line
+    -------------------------------------------------------------------------------
+    Args:
+        ic_id (string) : asset_id of image Collection.
+        
+    Returns:
+        command (string) : command parsed to subprocess module 
+        result (string) : subprocess result 
+        
+    """
+    command = "earthengine create collection {}".format(ic_id)
+    result = subprocess.check_output(command,shell=True)
+    return command, result
+

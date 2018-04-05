@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[8]:
+# In[1]:
 
 """ Ingest data on Google Earth Engine
 -------------------------------------------------------------------------------
@@ -18,21 +18,25 @@ Requirements:
 
     Have access to the Google Cloud Storage Bucker
 
-Run in your terminal `gcloud config set project aqueduct30`
+Make sure to set the project to Aqueduct30 by running
+`gcloud config set project aqueduct30`
 
 Code follows the Google for Python Styleguide. Exception are the scripts that 
 use earth engine since this is camelCase instead of underscore.
 
-
 Author: Rutger Hofste
 Date: 20170802
-Kernel: python36
+Kernel: python27
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
-Args:
-
-    SCRIPT_NAME (string) : Script name
-
+Args:    
+    TESTING (Boolean) : Toggle Testing Mode.
+    OVERWRITE (Boolean) : Overwrite old folder !CAUTION!
+    SCRIPT_NAME (string) : Script name.
+    GCS_BASE (string) : Google Cloud Storage namespace.
+    EE_BASE (string) : Earth Engine folder to store the imageCollections
+    OUTPUT_FILE_NAME (string) : File Name for a csv file containing the failed tasks. 
+    S3_OUTPUT_PATH (string) : Amazon S3 Output path.
 
 Returns:
 
@@ -41,14 +45,18 @@ Returns:
 
 # Input Parameters
 
+TESTING = 1
+OVERWRITE = 1 # !CAUTION!
 SCRIPT_NAME = "Y2017M08D02_RH_Ingest_GCS_EE_V02"
 GCS_BASE = "gs://aqueduct30_v01/Y2017M08D02_RH_Upload_to_GoogleCS_V02/"
 EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V08"
+OUTPUT_FILE_NAME = "df_errorsV01.csv"
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/{}/output".format(SCRIPT_NAME)
 
 # Output Parameters
 
 
-# In[9]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -58,28 +66,36 @@ print(dateString,timeString)
 sys.version
 
 
-# In[10]:
+# In[8]:
 
 # Imports
 import subprocess
 import datetime
 import os
 import time
-from datetime import timedelta
 import re
 import pandas as pd
+from datetime import timedelta
+import aqueduct3
 
 
-# In[12]:
+# In[9]:
 
 # ETL
 
-command = ("earthengine create folder %s") %EE_BASE
+ec2_output_path = "/volumes/data/{}/output".format(SCRIPT_NAME)
+
+if OVERWRITE:
+    command = "earthengine rm -r {}".format(EE_BASE)
+    print(command)
+    subprocess.check_output(command,shell=True)
+
+command = "earthengine create folder {}".format(EE_BASE)
 print(command)
 subprocess.check_output(command,shell=True)
 
 
-# In[31]:
+# In[10]:
 
 # Functions
 
@@ -112,7 +128,7 @@ def split_parameter(parameter):
     """Split parameter 
     -------------------------------------------------------------------------------
     WARNING: This function is dependant on the name convention of PCRGLOBWB
-    Do not use with other keys
+    Do not use with other keys.
     
     Args:
         parameter (string) : parameter string.
@@ -130,148 +146,71 @@ def split_parameter(parameter):
     out_dict["parameter"] = parameter
     return out_dict
 
-def upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,properties):
-    """Upload geotiff to earthengine image collection
-    -------------------------------------------------------------------------------
-    
-    Ingest a geotiff to earth engine imageCollection and set metadata. A dictionary
-    of properties will be used to define the metadata of the image.
-    
-    Args:
-        geotiff_gcs_path (string) : Google Cloud Storage path of geotiff.
-        output_ee_asset_id (string) : Earth Engine output asset id. Full path 
-                                      including imageCollection asset id.
-        properties (dictionary) : Dictionary with metadata. the 'nodata_value' key
-                                  can be used to set a NoData Value.
-        
-    
-    Returns:
-        command (string) : command string parsed to subprocess module.
-        
-    
-    TODO:
-    update function to work with dictionary of properties
-    
-    """
-    
-    
-    
-    
-    
-    target = EE_BASE +"/"+ row.parameter + "/" + row.fileName
-    source = GCS_BASE + row.fileName + "." + row.extension
-    metadata = "--nodata_value=%s --time_start %s-%s-01 -p extension=%s -p filename=%s -p identifier=%s -p month=%s -p parameter=%s -p year=%s -p geographic_range=%s -p indicator=%s -p spatial_resolution=%s -p temporal_range=%s -p temporal_range_max=%s -p temporal_range_min=%s -p temporal_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.year,row.month,row.extension,row.fileName,row.identifier,row.month,row.parameter,row.year,row.geographic_range,row.indicator,row.spatial_resolution,row.temporal_range,row.temporal_range_max,row.temporal_range_min, row.temporal_resolution, row.units, row.ingested_by, row.exportdescription)
-    command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
-    try:
-        response = subprocess.check_output(command, shell=True)
-        outDict = {"command":command,"response":response,"error":0}
-        df_errors2 = pd.DataFrame(outDict,index=[index])
-        pass
-    except:
-        try:
-            outDict = {"command":command,"response":response,"error":1}
-        except:
-            outDict = {"command":command,"response":-9999,"error":2}
-        df_errors2 = pd.DataFrame(outDict,index=[index])
-        print("error")
-    return df_errors2
 
-
-def dictionary_to_upload_command(d):
-    """ Convert a dictionary to command that can be appended to upload command
+def get_GCS_keys(GCS_BASE):
+    """ get list of keys from Google Cloud Storage
     -------------------------------------------------------------------------------
     
     Args:
-        d (dictionary) : Dictionary with metadata.
-    
+        GCS_BASE (string) : Google Cloud Storage namespace containing files.
+        
     Returns:
-        command (string) : string to append to upload string.    
+        df (pd.DataFrame) : DataFrame with properties useful to Aqueduct. 
     
     """
-    command = ""
-    for key, value in d.items():
-            
-        if key == "nodata_value":
-            command = command + " --nodata_value={}".format(value)
-        else:
-            command = command + " -p {}={}".format(key,value)
+    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(GCS_BASE)
+    keys = subprocess.check_output(command,shell=True)
+    keys = keys.decode('UTF-8').splitlines()
+    
+    df = keys_to_df(keys)
+    
+    return df
 
-    return command
-
-def create_imageCollection(ic_id):
-    """ Creates an imageCollection using command line
-    -------------------------------------------------------------------------------
+def keys_to_df(keys):
+    """ helper function for 'get_GCS_keys'
+    
     Args:
-        ic_id (string) : asset_id of image Collection.
+        keys (list) : list of strings with keys.
         
     Returns:
-        command (string) : command parsed to subprocess module 
-        result (string) : subprocess result 
-        
+        df (pd.DataFrame) : Pandas DataFrame with all relvant properties for
+                            Aqueduct 3.0.
     """
-    command = "earthengine create collection {}".format(ic_id)
-    result = subprocess.check_output(command,shell=True)
-    return command, result
+    
+    df = pd.DataFrame()
+    i = 0
+    for key in keys:
+        i = i+1
+        out_dict = split_key(key)
+        df2 = pd.DataFrame(out_dict,index=[i])
+        df = df.append(df2)    
+    return df
 
 
-# ## Script
+# In[11]:
 
-# In[15]:
-
-command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(GCS_BASE)
-keys = subprocess.check_output(command,shell=True)
-keys = keys.decode('UTF-8').splitlines()
+# Script
 
 
-# In[24]:
+# In[12]:
 
-df = pd.DataFrame()
-i = 0
-for key in keys:
-    i = i+1
-    out_dict = split_key(key)
-    df2 = pd.DataFrame(out_dict,index=[i])
-    df = df.append(df2)    
-
-
-# In[25]:
-
-df.head()
-
-
-# In[26]:
-
-df.tail()
-
-
-# In[27]:
-
+df = get_GCS_keys(GCS_BASE)
 df.shape
 
 
-# In[28]:
+# In[13]:
 
+# Create ImageCollections
 parameters = df.parameter.unique()
-
-
-# In[29]:
-
-print(parameters)
-
-
-# In[33]:
-
 for parameter in parameters:
     ic_id = EE_BASE + "/" + parameter
-    command, result = create_imageCollection(ic_id)
-    print(command)
-    
+    command, result = aqueduct3.create_imageCollection(ic_id)
+    print(command,result)
 
 
-# Now that the folder and collections have been created we can start ingesting the data. It is crucial to store the relevant metadata with the images. 
+# In[ ]:
 
-# In[36]:
-
+# Prepare Dataframe
 df_parameter = pd.DataFrame()
 i = 0
 for parameter in parameters:
@@ -282,96 +221,99 @@ for parameter in parameters:
     
 
 
-# In[37]:
-
-df_parameter.head()
-
-
-# In[38]:
-
-df_parameter.tail()
-
-
-# In[39]:
+# In[ ]:
 
 df_parameter.shape
 
 
-# In[40]:
+# In[ ]:
 
 df_complete = df.merge(df_parameter,how='left',left_on='parameter',right_on='parameter')
 
 
 # Adding NoData value, ingested_by and exportdescription
 
-# In[41]:
+# In[ ]:
 
-df_complete["nodata"] = -9999
+df_complete["nodata_value"] = -9999
 df_complete["ingested_by"] ="RutgerHofste"
 df_complete["exportdescription"] = df_complete["indicator"] + "_" + df_complete["temporal_resolution"]+"Y"+df_complete["year"]+"M"+df_complete["month"]
+df_complete["script_used"] = SCRIPT_NAME
+df_complete = df_complete.apply(pd.to_numeric, errors='ignore')
 
 
-# In[42]:
+# In[ ]:
 
 df_complete.head()
 
 
-# In[43]:
+# In[ ]:
 
 df_complete.tail()
 
 
-# In[27]:
+# In[ ]:
 
 list(df_complete.columns.values)
 
 
-# In[46]:
+# In[ ]:
+
+if TESTING:
+    df_complete = df_complete[1:3]
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
 
 df_errors = pd.DataFrame()
 start_time = time.time()
 for index, row in df_complete.iterrows():
     elapsed_time = time.time() - start_time 
-    print(index,"%.2f" %((index/9289.0)*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
+    print(index,"%.2f" %((index/df_complete.shape[0])*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
     
-    upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,properties)
+    geotiff_gcs_path = GCS_BASE + row.file_name + "." + row.extension
+    output_ee_asset_id = EE_BASE +"/"+ row.parameter + "/" + row.file_name
+    properties = row.to_dict()
     
-    #df_errors2 = uploadEE(index,row)
-    #df_errors = df_errors.append(df_errors2)
-    
-    
+    df_errors2 = upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties)
+    df_errors = df_errors.append(df_errors2)
 
 
-# In[37]:
+# In[ ]:
 
-get_ipython().system('mkdir /volumes/data/temp')
-
-
-# In[38]:
-
-df_errors.to_csv("/volumes/data/temp/df_errors.csv")
+get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[39]:
+# In[ ]:
 
-get_ipython().system('aws s3 cp  /volumes/data/temp/df_errors.csv s3://wri-projects/Aqueduct30/temp/df_errors.csv')
+df_errors.to_csv("{}/{}".format(ec2_output_path,OUTPUT_FILE_NAME))
+
+
+# In[ ]:
+
+get_ipython().system('aws s3 cp  {ec2_output_path} {S3_OUTPUT_PATH} --recursive')
 
 
 # Retry the ones with errors
 
-# In[40]:
+# In[ ]:
 
 df_retry = df_errors.loc[df_errors['error'] != 0]
 
 
-# In[41]:
+# In[ ]:
 
 for index, row in df_retry.iterrows():
     response = subprocess.check_output(row.command, shell=True)
     
 
 
-# In[53]:
+# In[ ]:
 
 uniques = df_errors["error"].unique()
 
