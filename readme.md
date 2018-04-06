@@ -75,7 +75,7 @@ For windows it requires some additional steps and might require enabling Hyper-V
 you can check if docker is installed by typing `docker -v` in your terminal or command prompt. If you ever got stuck in one of the next steps or closed your terminal window it is important to understand some basic docker commands. First, you need to understand the concpet of an [image and a container](https://stackoverflow.com/questions/23735149/docker-image-vs-container). You can list your images using `docker images` and you can list your active containers using `docker ps` and all your containers using `docker ps -a`. If your container is still running you can bash (terminal) into your container using `docker exec -it <container name> bash`. To shut down a container, use 'exit'. Furthermore you can delete containers using `docker rm -f <ContainerName>` and images using `docker rmi <imageName>`. I also created a couple of [cheatsheets](https://github.com/rutgerhofste/cheatsheets) for various tools. 
 
 1. Run a Docker Container:  
-`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`  
+`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:stable bash`  
 This will download the docker image and run a container with name aqueduct in -it mode (interactive, tty), forward port 8888 on the container to the localhost port 8888 and execute a bash script. It will be helpful to understand the basics of Docker to understand what you are doing here. Docker will automatically put your terminal or command prompt in your container. It will say root@containerID instead of your normal user. You can tell if you are in a container by the first characters in you terminal. It will state something like "root@240c3eb5620e:/#" indicating you are a root user on the virtual machine named "240c3eb5620e". The code will be different in your case. 
 
 1. Setup Security certificates:  
@@ -138,7 +138,7 @@ check if docker is installed
 `docker version`
 1. download the latest docker image for aqueduct. Check https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=rutgerhofste&starCount=0
 run your container  
-`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:latest bash`
+`docker run --name aqueduct -it -p 8888:8888 rutgerhofste/gisdocker:stable bash`
 1. (recommended) Set up HTTPS access
 in your container create a certificate by running  
 `openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /.keys/mykey.key -out /.keys/mycert.pem`
