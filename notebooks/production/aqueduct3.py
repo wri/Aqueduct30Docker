@@ -16,6 +16,8 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 import os
 import datetime
 import netCDF4
+import subprocess
+import pandas as pd
 
 try:
     from osgeo import ogr, osr, gdal
@@ -28,6 +30,13 @@ if 'GDAL_DATA' not in os.environ:
 def checks():
     """ Check if GDAL DATA is configured correctly.
     -------------------------------------------------------------------------------
+    
+    Args:
+        None
+        
+    Returns:
+        geoprojection (string) : The standard epsg 4326 projection.
+    
     """
     srs = osr.SpatialReference()
     srs.ImportFromEPSG(4326)
@@ -222,7 +231,7 @@ def ncdump(nc_fid):
 
 
 
-def upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,properties):
+def upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,properties,index):
     """Upload geotiff to earthengine image collection
     -------------------------------------------------------------------------------
     
@@ -235,6 +244,8 @@ def upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,pro
                                       including imageCollection asset id.
         properties (dictionary) : Dictionary with metadata. the 'nodata_value' key
                                   can be used to set a NoData Value.
+        index (object) : integer or string with the index used for capturing the
+                         error dataframe.
         
     
     Returns:

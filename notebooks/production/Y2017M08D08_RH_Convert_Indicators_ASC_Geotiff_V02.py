@@ -1,16 +1,12 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 """ Convert Indicators from ASCII to Geotiff
 -------------------------------------------------------------------------------
-Notebooks in the Aqueduct Project are used in production. This means that the   
-notebooks should execute completely by pressing restart and run in the menu.
-Commands should not exceed the 80 character limit which is the length of this  |
-
-Code follows the Google for Python Styleguide. Exception are the scripts that 
-use earth engine since this is camelCase instead of underscore.
+A couple of indicators are shared in ASCII format. Converting to geotiff and
+upload to GCS and AWS.
 
 
 Author: Rutger Hofste
@@ -30,26 +26,11 @@ Returns:
 
 # Input Parameters
 
-SCRIPT_NAME = "Y0000M00D00_XX_Script_Template_V01"
+SCRIPT_NAME = "Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V02"
 
-# Output Parameters
-
-
-# In[ ]:
+S3_INPUT_PATH 
 
 
-
-
-# # Convert Indicators from ASCII to Geotiff
-# 
-# * Purpose of script: Some Utrecht Indicators are shared in Ascii format. This script converts them to geotiff and uploads to GCS
-# * Author: Rutger Hofste
-# * Kernel used: python35
-# * Date created: 20170808
-
-# ## Settings
-
-# In[1]:
 
 EC2_INPUT_PATH = "/volumes/data/Y2017M07D31_RH_download_PCRGlobWB_data_V01/output"
 EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01/output"
@@ -58,6 +39,18 @@ S3_INPUT_PATH_ADDITIONAL = "s3://wri-projects/Aqueduct30/rawData/WRI/samplegeoti
 GCS_OUTPUT = "gs://aqueduct30_v01/Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01/"
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01/output/"
 EE_OUTPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V05/"
+
+# Output Parameters
+
+
+# In[2]:
+
+import time, datetime, sys
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
+print(dateString,timeString)
+sys.version
 
 
 # In[2]:

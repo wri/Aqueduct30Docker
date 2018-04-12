@@ -45,7 +45,7 @@ Returns:
 
 # Input Parameters
 
-TESTING = 1
+TESTING = 0
 OVERWRITE = 1 # !CAUTION!
 SCRIPT_NAME = "Y2017M08D02_RH_Ingest_GCS_EE_V02"
 GCS_BASE = "gs://aqueduct30_v01/Y2017M08D02_RH_Upload_to_GoogleCS_V02/"
@@ -66,7 +66,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[8]:
+# In[3]:
 
 # Imports
 import subprocess
@@ -79,7 +79,7 @@ from datetime import timedelta
 import aqueduct3
 
 
-# In[9]:
+# In[4]:
 
 # ETL
 
@@ -95,7 +95,7 @@ print(command)
 subprocess.check_output(command,shell=True)
 
 
-# In[10]:
+# In[5]:
 
 # Functions
 
@@ -187,18 +187,14 @@ def keys_to_df(keys):
     return df
 
 
-# In[11]:
+# In[6]:
 
 # Script
-
-
-# In[12]:
-
 df = get_GCS_keys(GCS_BASE)
 df.shape
 
 
-# In[13]:
+# In[7]:
 
 # Create ImageCollections
 parameters = df.parameter.unique()
@@ -208,7 +204,7 @@ for parameter in parameters:
     print(command,result)
 
 
-# In[ ]:
+# In[8]:
 
 # Prepare Dataframe
 df_parameter = pd.DataFrame()
@@ -221,19 +217,19 @@ for parameter in parameters:
     
 
 
-# In[ ]:
+# In[9]:
 
 df_parameter.shape
 
 
-# In[ ]:
+# In[10]:
 
 df_complete = df.merge(df_parameter,how='left',left_on='parameter',right_on='parameter')
 
 
 # Adding NoData value, ingested_by and exportdescription
 
-# In[ ]:
+# In[11]:
 
 df_complete["nodata_value"] = -9999
 df_complete["ingested_by"] ="RutgerHofste"
@@ -242,33 +238,28 @@ df_complete["script_used"] = SCRIPT_NAME
 df_complete = df_complete.apply(pd.to_numeric, errors='ignore')
 
 
-# In[ ]:
+# In[12]:
 
 df_complete.head()
 
 
-# In[ ]:
+# In[13]:
 
 df_complete.tail()
 
 
-# In[ ]:
+# In[14]:
 
 list(df_complete.columns.values)
 
 
-# In[ ]:
+# In[15]:
 
 if TESTING:
     df_complete = df_complete[1:3]
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
+# In[16]:
 
 df_errors = pd.DataFrame()
 start_time = time.time()
@@ -280,45 +271,50 @@ for index, row in df_complete.iterrows():
     output_ee_asset_id = EE_BASE +"/"+ row.parameter + "/" + row.file_name
     properties = row.to_dict()
     
-    df_errors2 = upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties)
+    df_errors2 = aqueduct3.upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties,index)
     df_errors = df_errors.append(df_errors2)
 
 
-# In[ ]:
+# In[17]:
 
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[ ]:
+# In[18]:
 
 df_errors.to_csv("{}/{}".format(ec2_output_path,OUTPUT_FILE_NAME))
 
 
-# In[ ]:
+# In[19]:
 
 get_ipython().system('aws s3 cp  {ec2_output_path} {S3_OUTPUT_PATH} --recursive')
 
 
 # Retry the ones with errors
 
-# In[ ]:
+# In[20]:
 
 df_retry = df_errors.loc[df_errors['error'] != 0]
 
 
-# In[ ]:
+# In[21]:
 
 for index, row in df_retry.iterrows():
     response = subprocess.check_output(row.command, shell=True)
     
 
 
-# In[ ]:
+# In[22]:
 
 uniques = df_errors["error"].unique()
 
 
-# In[ ]:
+# In[24]:
+
+df_retry
+
+
+# In[23]:
 
 end = datetime.datetime.now()
 elapsed = end - start
