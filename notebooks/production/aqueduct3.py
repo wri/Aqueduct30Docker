@@ -14,6 +14,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 # Imports
 import os
+import re
 import datetime
 import netCDF4
 import subprocess
@@ -261,7 +262,7 @@ def upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,pro
     
     command = command + metadata_command
     
-    
+    print(command)
     try:
         response = subprocess.check_output(command, shell=True)
         out_dict = {"command":command,"response":response,"error":0}
@@ -293,7 +294,10 @@ def dictionary_to_EE_upload_command(d):
     """
     command = ""
     # Add start and end timestamp
-    command = command + " --time_start {:04.0f}-{:02.0f}-01".format(d["year"],d["month"])
+    if "year" in d and "month" in d:
+        command = command + " --time_start {:04.0f}-{:02.0f}-01".format(d["year"],d["month"])
+    else:
+        pass
     
     for key, value in d.items():
             
@@ -318,4 +322,42 @@ def create_imageCollection(ic_id):
     command = "earthengine create collection {}".format(ic_id)
     result = subprocess.check_output(command,shell=True)
     return command, result
+
+
+def split_key(key,schema):
+    """ Split a key using the PCRGLOBWB Schema to get the metadata. 
+    -------------------------------------------------------------------------------
+    PCRGLOBWB uses a semi-standardized naming convention. Geotiffs cannot store
+    metadata but a straight-forward solution is to store metadata in the filename. 
+    
+    the naming convention used by the University of Utrecht uses hyphens and 
+    underscores to separate metadata. Provide the structure of the filename in 
+    list of strings format. 
+    
+    Example:    
+    global_q4seasonalvariabilitywatersupply_5min_1960-2014.asc uses a schema of:
+    ["geographic_range",
+     "indicator",
+     "spatial_resolution",
+     "temporal_range_min",
+     "temporal_range_max"]
+     
+    filename and extension are stored as extra key value pairs in the output_dict.
+    
+    Args:
+        key (string) : file path including extension
+        schema (list) : list of strings
+    
+    Returns:
+        output_dict (dictionary) : dictionary with PCRGLOBWB shema, filename 
+                                   and extension.     
+    """
+    prefix, extension = key.split(".")
+    file_name = prefix.split("/")[-1]
+    values = re.split("_|-", file_name)
+    keyz = schema
+    output_dict = dict(zip(keyz, values))
+    output_dict["file_name"]=file_name
+    output_dict["extension"]=extension
+    return output_dict
 

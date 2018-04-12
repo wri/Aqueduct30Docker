@@ -60,6 +60,8 @@
 #     ingest data from Google Cloud Storage to EarthEngine, adding metadata.
 # 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01**  
 #     A couple of indicators are shared in ASCII format. Converting to geotiff.
+# 1. **Y2018M04D12_RH_Ingest_Indicators_GCS_EE_V01**  
+#     Ingest the remaining indicators into earth engine. 
 # 1. **Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01**  
 #     This script ingests some auxiliary datafile onto earth engine included DEM, StreamFlow Network etc.      
 # 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
