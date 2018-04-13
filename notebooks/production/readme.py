@@ -53,17 +53,17 @@
 # 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V02**  
 #     Download the data to your machine, unzip files.
 # 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02**  
-#     convert netCDF4 to Geotiff.    
+#     Convert netCDF4 to Geotiff.    
 # 1.  **Y2017M08D02_RH_Upload_to_GoogleCS_V02**  
-#     upload files to Google Cloud Storage. 
+#     Upload files to Google Cloud Storage. 
 # 1. **Y2017M08D02_RH_Ingest_GCS_EE_V02**  
-#     ingest data from Google Cloud Storage to EarthEngine, adding metadata.
+#     Ingest PCRGLOBWB timeseries data on Google Earth Engine
 # 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01**  
 #     A couple of indicators are shared in ASCII format. Converting to geotiff.
 # 1. **Y2018M04D12_RH_Ingest_Indicators_GCS_EE_V01**  
-#     Ingest the remaining indicators into earth engine. 
+#     Ingest the non-time-series indicators into earth engine. 
 # 1. **Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01**  
-#     This script ingests some auxiliary datafile onto earth engine included DEM, StreamFlow Network etc.      
+#     Ingest additional rasters like DEM, LDD etc.     
 # 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
 #     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa.   
 #     

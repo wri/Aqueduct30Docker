@@ -15,6 +15,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 # Imports
 import os
 import re
+import time
 import datetime
 import netCDF4
 import subprocess
@@ -264,7 +265,7 @@ def upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,pro
     
     print(command)
     try:
-        response = subprocess.check_output(command, shell=True)
+        #response = subprocess.check_output(command, shell=True)
         out_dict = {"command":command,"response":response,"error":0}
         df_errors2 = pd.DataFrame(out_dict,index=[index])
         pass
@@ -324,7 +325,79 @@ def create_imageCollection(ic_id):
     return command, result
 
 
-def split_key(key,schema):
+
+def upload_directory_to_EE(gcs_namespace,ee_namespace,schema,extra_properties,separator="_|-"):
+    """ get list of keys from Google Cloud Storage
+    -------------------------------------------------------------------------------
+    Upload a directory containing geotiffs to Google Earth Engine. The geotiffs
+    can carry metadata in their filename. Specify a separator and schema to copy
+    the metadata from the file name to the earth engine properties.     
+    
+    For the schema there is one special string i.e. 'PCRGLOBWB_id' 
+    which has format 'YxxxxMxxDxxIxxx'. The data stored in this section of the 
+    schema will be stored in properties 'year', 'month' and 'identifier'.
+    
+    In the extra_properties you can set 'nodata_value' to store a nodata value.
+       
+    Args:
+        gcs_namespace (string) : Google Cloud Storage namespace containing files.
+        ee_namespace (string) : Google Earth Engine namespace. Can be a folder or
+                                imageCollection.(Create imageCollection first.) 
+        schema (list) : List of string with property names. If the filenames
+                        do not contain any metadata set to None. 
+                             
+        extra_properties (dictionary) : Dictionary with extra properties to specify.
+        separator (regex) : separator used in filename e.g. '_','-' or '_|-' etc.
+                            defaults to '_|-'
+        
+    Returns:
+        df (pandas dataframe) : pandas dataframe with the commands and 
+                                responses. 
+        df_errors (pandas dataframe) : pandas dataframe with the commands and 
+                                       errors
+    
+    TODO: 
+        Add option to store in imagecollection.
+        Add option to overwrite.
+        Allow not specifying a schema
+
+    """
+    
+    
+    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(gcs_namespace)
+    keys = subprocess.check_output(command,shell=True)
+    keys = keys.decode('UTF-8').splitlines()
+    
+    
+    df = pd.DataFrame()
+    i = 0
+    for key in keys:
+        i = i+1
+        out_dict = split_key(key,separator,schema)
+        df2 = pd.DataFrame(out_dict,index=[i])
+        df = df.append(df2)
+    
+    df = df.assign(**extra_properties)
+    df = df.apply(pd.to_numeric, errors='ignore')
+    
+    df_errors = pd.DataFrame()
+    start_time = time.time()
+    for index, row in df.iterrows():
+        elapsed_time = time.time() - start_time 
+        print(index,"{:02.2f}".format((float(index)/df.shape[0])*100) + "elapsed: ", str(datetime.timedelta(seconds=elapsed_time)))
+
+        geotiff_gcs_path = gcs_namespace + row.file_name + "." + row.extension
+        output_ee_asset_id = ee_namespace +"/"+ row.file_name
+        properties = row.to_dict()
+
+        df_errors2 = upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties,index)
+        df_errors = df_errors.append(df_errors2)
+    
+    
+    return df,df_errors
+
+
+def split_key(key,separator,schema):
     """ Split a key using the PCRGLOBWB Schema to get the metadata. 
     -------------------------------------------------------------------------------
     PCRGLOBWB uses a semi-standardized naming convention. Geotiffs cannot store
@@ -346,6 +419,8 @@ def split_key(key,schema):
     
     Args:
         key (string) : file path including extension
+        separator (regex) : separator used in filename e.g. '_','-' or '_|-' etc.
+                            defaults to '_|-'
         schema (list) : list of strings
     
     Returns:
@@ -354,7 +429,7 @@ def split_key(key,schema):
     """
     prefix, extension = key.split(".")
     file_name = prefix.split("/")[-1]
-    values = re.split("_|-", file_name)
+    values = re.split(separator, file_name)
     keyz = schema
     output_dict = dict(zip(keyz, values))
     output_dict["file_name"]=file_name

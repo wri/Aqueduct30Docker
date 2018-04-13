@@ -3,7 +3,7 @@
 
 # In[1]:
 
-""" Ingest the remaining indicators into earth engine.
+""" Ingest the non-time-series indicators into earth engine. 
 -------------------------------------------------------------------------------
 ingest the converted indicators that were shared in ascii format to Earth
 Engine. 
@@ -226,9 +226,11 @@ uniques = df_errors["error"].unique()
 df_retry
 
 
-# In[20]:
+# In[23]:
 
-df_retry.loc[1]
+# this script will only retry once. For more advanced retrying, check out the retrying package.
+for index, row in df_retry.iterrows():
+    response = subprocess.check_output(row.command, shell=True)
 
 
 # In[18]:

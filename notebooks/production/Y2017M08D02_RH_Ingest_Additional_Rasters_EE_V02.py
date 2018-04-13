@@ -1,154 +1,113 @@
 
 # coding: utf-8
 
-# # Ingest Additional Rasters on Earth Engine
-# 
-# * Purpose of script: This notebook will ingest some of the missing rasters to Earth Engine like streamflow direction, DEM etc. 
-# * Author: Rutger Hofste
-# * Kernel used: python27
-# * Date created: 20170802
+# In[84]:
 
-# ## Preparation
-# 
-# 1. gcloud authorization (`gcloud init`)
-# 1. earthengine authorization (`earthengine authorize`)
-# 1. aws authorization (`aws configure`)
-# 
+""" Ingest additional rasters like DEM, LDD etc. 
+-------------------------------------------------------------------------------
+This notebook will upload the geotiff files of auxiliary rasters 
+from S3 to Google Cloud Storage and into the WRI/aqueduct earthengine bucket. 
 
-# In[1]:
+Requirements:
+    Authorize earthengine by running in your terminal: earthengine 
+                                                       authenticate
 
-S3_INPUT_PATH_SAMPLE = "s3://wri-projects/Aqueduct30/rawData/WRI/samplegeotiff"
+    you need to have access to the WRI-Aquaduct (yep a Google employee made a
+    typo) bucket to ingest the data. Rutger can grant access to write to this 
+    folder. 
+
+    Have access to the Google Cloud Storage Bucket
+    
+    AWS CLI configured
+
+Make sure to set the project to Aqueduct30 by running
+`gcloud config set project aqueduct30`
+
+Code follows the Google for Python Styleguide. Exception are the scripts that 
+use earth engine since this is camelCase instead of underscore.
+
+Author: Rutger Hofste
+Date: 20170802
+Kernel: python27
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:    
+    TESTING (Boolean) : Toggle Testing Mode.
+    OVERWRITE (Boolean) : Overwrite old folder !CAUTION!
+    SCRIPT_NAME (string) : Script name.  
+    S3_INPUT_PATH (string) : Amazon S3 location of data to be ingested.
+    X_DIMENSION_5MIN (integer) : horizontal or longitudinal dimension of 
+                                 raster.
+    Y_DIMENSION_5MIN (integer) : vertical or latitudinal dimension of 
+                                 raster.
+    GCS_BASE (string) : Google Cloud Storage output namespace.   
+    EE_BASE (string) : Earth Engine folder to store the assets.
+    
+    OUTPUT_FILE_NAME (string) : File Name for a csv file containing the failed tasks. 
+    
+Returns:
+
+
+"""
+
+# Input Parameters
+TESTING = 0
+OVERWRITE = 0 # !CAUTION!
+SCRIPT_NAME = "Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V02"
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/flowNetwork/topo_pcrglobwb_05min"
-INPUTLOCATION_SAMPLE_GEOTIFF = "/volumes/data/PCRGlobWB20V01/additional/sampleGeotiff.tiff"
-EC2_INPUT_PATH = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/input"
-EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/output"
-GCS_PATH = "gs://aqueduct30_v01/Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01/output/"
-EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
+X_DIMENSION_5MIN = 4320
+Y_DIMENSION_5MIN = 2160
+GCS_BASE = "gs://aqueduct30_v01/{}/".format(SCRIPT_NAME)
+EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V08"
+OUTPUT_FILE_NAME = "df_errorsV01.csv"
 
 
-# In[2]:
+# In[33]:
 
-get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
-get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
+import time, datetime, sys
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
+print(dateString,timeString)
+sys.version
 
 
-# In[3]:
+# In[71]:
 
-get_ipython().system('aws s3 cp {S3_INPUT_PATH_SAMPLE} {EC2_INPUT_PATH} --recursive')
-
-
-# Check if the file is actually copied
-
-# ## Script
-
-# Create working environment and copy relevant files. 
-
-# In[4]:
-
-try:
-    from osgeo import ogr, osr, gdal
-except:
-    sys.exit('ERROR: cannot find GDAL/OGR modules')
-    
-from netCDF4 import Dataset
+# imports
 import os
-import time
-from datetime import timedelta
-import datetime
+import numpy as np
 import subprocess
+import warnings
 import pandas as pd
-import re
+from osgeo import gdal
+from datetime import timedelta
+
+import aqueduct3
 
 
-# In[5]:
+# In[53]:
 
-def readFile(filename):
-    filehandle = gdal.Open(filename)
-    band1 = filehandle.GetRasterBand(1)
-    geotransform = filehandle.GetGeoTransform()
-    geoproj = filehandle.GetProjection()
-    Z = band1.ReadAsArray()
-    xsize = filehandle.RasterXSize
-    ysize = filehandle.RasterYSize
-    filehandle = None
-    return xsize,ysize,geotransform,geoproj,Z
+# ETL
 
-def writeFile(filename,geotransform,geoprojection,data):
-    (x,y) = data.shape
-    format = "GTiff"
-    driver = gdal.GetDriverByName(format)
-    # you can change the dataformat but be sure to be able to store negative values including -9999
-    dst_datatype = gdal.GDT_Float32
-    dst_ds = driver.Create(filename,y,x,1,dst_datatype, [ 'COMPRESS=LZW' ])
-    dst_ds.GetRasterBand(1).SetNoDataValue(-9999)
-    dst_ds.GetRasterBand(1).WriteArray(data)
-    dst_ds.SetGeoTransform(geotransform)
-    dst_ds.SetProjection(geoprojection)
-    dst_ds = None
-    return 1
+ec2_input_path = "/volumes/data/{}/input".format(SCRIPT_NAME)
+ec2_output_path = "/volumes/data/{}/output".format(SCRIPT_NAME)
 
-def splitKey(key):
-    prefix, extension = key.split(".")
-    fileName = prefix.split("/")[-1]
-    values = re.split("_|-", fileName)
-    keyz = ["indicator","spatial_resolution","units"]
-    outDict = dict(zip(keyz, values))
-    outDict["fileName"]=fileName
-    outDict["extension"]=extension
-    return outDict
-
-def uploadEE(index,row):
-    target = EE_BASE + row.fileName
-    source = GCS_PATH + row.fileName + "." + row.extension
-    metadata = "--nodata_value=%s -p extension=%s -p filename=%s -p indicator=%s -p spatial_resolution=%s -p units=%s -p ingested_by=%s -p exportdescription=%s" %(row.nodata,row.extension,row.fileName,row.indicator,row.spatial_resolution, row.units, row.ingested_by, row.exportdescription)
-    command = "/opt/anaconda3/bin/earthengine upload image --asset_id %s %s %s" % (target, source,metadata)
-    try:
-        response = subprocess.check_output(command, shell=True)
-        outDict = {"command":command,"response":response,"error":0}
-        df_errors2 = pd.DataFrame(outDict,index=[index])
-        pass
-    except:
-        try:
-            outDict = {"command":command,"response":response,"error":1}
-        except:
-            outDict = {"command":command,"response":-9999,"error":2}
-        df_errors2 = pd.DataFrame(outDict,index=[index])
-        print("error")
-    return df_errors2
-
-   
-    
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output/".format(SCRIPT_NAME)
 
 
-# extension                                                           tif
-# fileName              global_droughtseveritystandardisedsoilmoisture...
-# geographic_range                                                 global
-# indicator                       droughtseveritystandardisedsoilmoisture
-# spatial_resolution                                                 5min
-# temporal_range_max                                                 2014
-# temporal_range_min                                                 1960
-# nodata                                                            -9999
-# ingested_by                                                RutgerHofste
-# exportdescription               droughtseveritystandardisedsoilmoisture
+# In[37]:
 
-# In[6]:
-
-[xsizeSample,ysizeSample,geotransformSample,geoprojSample,ZSample] = readFile(os.path.join(EC2_INPUT_PATH,"sampleGeotiff.tiff"))
+get_ipython().system('mkdir -p {ec2_input_path}')
+get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# ## PCRGlobWB auxiliary datasets
-# 
-# after receiving the results from Yoshi, there was a fair amount of information missing such as flow direction, basins etc. Rens van Beek has been very supportive and provided WRI with some auxiliary datasets. This script will put them in the right format, upload to GCS and ingest them to Earth Engine.  
-# 
+# In[36]:
 
-# In[7]:
-
-get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive')
 
 
-# Copy to EC2 instance
-
-# renaming the files with a structured name indicator_5min_unit.map
+# renaming the files with a structured name using schema: `<indicator>_<spatial_resolution>_<unit>.map`
 # 
 # copy from readme.txt file on S3
 # 
@@ -167,102 +126,154 @@ get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --q
 # All files are 5 arc minute maps in PCRaster format and WGS84 projection (implicit).
 # The gtopo05min.map is the DEM from the gtopo30 dataset that we use for downscaling meteo data occasionally. This is consistent with the CRU climate data sets and the hydro1k drainage dataset. Elevation is in **metres**. The cellsize05.correct.map is the surface area of a geographic cell in **m2** per 5 arc minute cell. The lddsound_05min.map is identical to the LDD we sent you earlier with the **8-point pour algorithm**.(numpad e.g. 7 is NW 6 is E etc.) The accumulated_drainage_area_05min_sqkm.map is the accumulated drainage area in **km2** per cell along the LDD.
 # 
-# 
-# 
-# 
 
-# In[8]:
+# In[38]:
 
-get_ipython().system('mv {EC2_INPUT_PATH}/accumulated_drainage_area_05min_sqkm.map {EC2_INPUT_PATH}/accumulateddrainagearea_05min_km2.map')
-get_ipython().system('mv {EC2_INPUT_PATH}/cellsize05min.correct.map {EC2_INPUT_PATH}/cellsize_05min_m2.map')
-get_ipython().system('mv {EC2_INPUT_PATH}/gtopo05min.map {EC2_INPUT_PATH}/gtopo_05min_m.map')
-get_ipython().system('mv {EC2_INPUT_PATH}/lddsound_05min.map {EC2_INPUT_PATH}/lddsound_05min_numpad.map')
+get_ipython().system('mv {ec2_input_path}/accumulated_drainage_area_05min_sqkm.map {ec2_input_path}/accumulateddrainagearea_05min_km2.map')
+get_ipython().system('mv {ec2_input_path}/cellsize05min.correct.map {ec2_input_path}/cellsize_05min_m2.map')
+get_ipython().system('mv {ec2_input_path}/gtopo05min.map {ec2_input_path}/gtopo_05min_m.map')
+get_ipython().system('mv {ec2_input_path}/lddsound_05min.map {ec2_input_path}/lddsound_05min_numpad.map')
 
 
+# In[39]:
 
-# In[9]:
-
-files = os.listdir(EC2_INPUT_PATH)
-
-
-# In[10]:
-
-print(files)
+# Added on 20180413. Removing geotiff folder since the extent was generated by arcgis and is not
+# exactly 180 and 90 degrees respectively
+get_ipython().system('rm -r {ec2_input_path}/geotiff')
 
 
-# In[11]:
+# In[63]:
 
-newExtension =".tif"
-for oneFile in files:
-    if oneFile.endswith(".map"):
-        print(oneFile)
-        base , extension = oneFile.split(".")
-        xsize,ysize,geotransform,geoproj,Z = readFile(os.path.join(EC2_INPUT_PATH,oneFile))
-        Z[Z<-9990]= -9999
-        Z[Z>1e19] = -9999
-        outputFileName = base + newExtension
-        writeFile(os.path.join(EC2_OUTPUT_PATH,outputFileName),geotransformSample,geoprojSample,Z)
+# Functions
+def get_GCS_keys(GCS_BASE):
+    """ get list of keys from Google Cloud Storage
+    -------------------------------------------------------------------------------
+    
+    Args:
+        GCS_BASE (string) : Google Cloud Storage namespace containing files.
         
+    Returns:
+        df (pd.DataFrame) : DataFrame with properties useful to Aqueduct. 
+    
+    """
+    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(GCS_BASE)
+    keys = subprocess.check_output(command,shell=True)
+    keys = keys.decode('UTF-8').splitlines()
+    
+    df = keys_to_df(keys)
+    
+    return df
+
+def keys_to_df(keys):
+    """ helper function for 'get_GCS_keys'
+    
+        
+    Args:
+        keys (list) : list of strings with keys.
+        
+    Returns:
+        df (pd.DataFrame) : Pandas DataFrame with all relvant properties for
+                            Aqueduct 3.0.
+    """
+    
+    df = pd.DataFrame()
+    i = 0
+    for key in keys:
+        i = i+1
+        schema = ["indicator","spatial_resolution","unit"]
+        out_dict = aqueduct3.split_key(key,schema)
+        df2 = pd.DataFrame(out_dict,index=[i])
+        df = df.append(df2)    
+    return df
 
 
-# Upload Auxiliary files to GCS
+# In[40]:
 
-# In[12]:
-
-get_ipython().system('gsutil -m cp {EC2_OUTPUT_PATH}/*.tif {GCS_PATH}')
+# Convert rasters to geotiff
 
 
-# Ingest GCS data in earthengine. Some metadata is missing, therefore 
+# In[41]:
 
-# In[12]:
-
-command = ("/opt/google-cloud-sdk/bin/gsutil ls %s") %(GCS_PATH)
+default_geotransform, default_geoprojection = aqueduct3.get_global_georeference(np.ones([Y_DIMENSION_5MIN,X_DIMENSION_5MIN]))
 
 
-# In[13]:
+# In[49]:
 
-keys = subprocess.check_output(command,shell=True)
-keys = keys.decode('UTF-8').splitlines()
+for root, dirs, file_names in os.walk(ec2_input_path):
+    for file_name in file_names:
+        print(file_name)
+        base , extension = file_name.split(".")
+        if extension == "map":
+            output_path = os.path.join(ec2_output_path,base + ".tif")
+            input_path = os.path.join(root, file_name)     
 
-
-# In[14]:
-
-print(keys)
-
-
-# Upload Rasterized HydroBasin files to GCS
-
-# In[15]:
-
-df = pd.DataFrame()
-i = 0
-for key in keys:
-    i = i+1
-    outDict = splitKey(key)
-    df2 = pd.DataFrame(outDict,index=[i])
-    df = df.append(df2)    
+            xsize,ysize,geotransform,geoproj,Z = aqueduct3.read_gdal_file(input_path)
+            Z[Z<-9990]= -9999
+            Z[Z>1e19] = -9999
+            aqueduct3.write_geotiff(output_path,default_geotransform,default_geoprojection,Z,nodata_value=-9999,datatype=gdal.GDT_Float32)
+        else:
+            warnings.warn("File Not Converted: {}".format(file_name), UserWarning)
 
 
-# In[16]:
+# In[51]:
 
-df["nodata"] = -9999
-df["ingested_by"] ="RutgerHofste"
-df["exportdescription"] = df["indicator"]
+get_ipython().system('gsutil -m cp {ec2_output_path}/*.tif {GCS_BASE}')
 
 
-# In[17]:
+# In[54]:
+
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[64]:
+
+df = get_GCS_keys(GCS_BASE)
+df.shape
+
+
+# In[67]:
+
+df_complete = df.copy()
+
+
+# In[68]:
+
+df_complete["nodata_value"] = -9999
+df_complete["ingested_by"] ="RutgerHofste"
+df_complete["exportdescription"] = df_complete["indicator"]
+df_complete["script_used"] = SCRIPT_NAME
+df_complete = df_complete.apply(pd.to_numeric, errors='ignore')
+
+
+# In[88]:
 
 df_errors = pd.DataFrame()
 start_time = time.time()
-rows = df.shape[0]*1.0
-for index, row in df.iterrows():
+for index, row in df_complete.iterrows():
     elapsed_time = time.time() - start_time 
-    print(index,"%.2f" %((index/rows)*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
-    df_errors2 = uploadEE(index,row)
+    print(index,"{:02.2f}".format((float(index)/df_complete.shape[0])*100) + "elapsed: ", str(timedelta(seconds=elapsed_time)))
+    
+    geotiff_gcs_path = GCS_BASE + row.file_name + "." + row.extension
+    output_ee_asset_id = EE_BASE +"/"+ row.file_name
+    properties = row.to_dict()
+    
+    df_errors2 = aqueduct3.upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties,index)
     df_errors = df_errors.append(df_errors2)
+
+
+# In[89]:
+
+df_errors.to_csv("{}/{}".format(ec2_output_path,OUTPUT_FILE_NAME))
+
+
+# In[91]:
+
+df_errors
 
 
 # In[ ]:
 
-
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 

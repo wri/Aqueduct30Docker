@@ -3,7 +3,7 @@
 
 # In[25]:
 
-""" Ingest data on Google Earth Engine
+""" Ingest PCRGLOBWB timeseries data on Google Earth Engine
 -------------------------------------------------------------------------------
 This notebook will upload the geotiff files from the Google Cloud Storage to
 the WRI/aqueduct earthengine bucket. 
