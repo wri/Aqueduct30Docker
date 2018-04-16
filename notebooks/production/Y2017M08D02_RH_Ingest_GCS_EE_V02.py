@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[7]:
+# In[124]:
 
 """ Ingest PCRGLOBWB timeseries data on Google Earth Engine
 -------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ print("Input gcs: " +  gcs_input_path +
       "\nOutput S3: " + s3_output_path )
 
 
-# In[2]:
+# In[125]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -77,7 +77,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[1]:
+# In[126]:
 
 # Imports
 import subprocess
@@ -106,7 +106,7 @@ print(command)
 subprocess.check_output(command,shell=True)
 
 
-# In[114]:
+# In[211]:
 
 def split_key(key,schema,separator='_|-'):
     """ Split a key using the PCRGLOBWB Schema to get the metadata. 
@@ -154,35 +154,87 @@ def split_key(key,schema,separator='_|-'):
         
     else:
         pass
+        
     
     prefix, extension = key.split(".")
     file_name = prefix.split("/")[-1]
+  
     values = re.split(separator, file_name)
-    keyz = schema
-    output_dict = dict(zip(keyz, values))
+    assert  len(values)==len(schema) ,"Make sure your scheme matches the asset. Length of schema should be: {} and match {}".format(len(values),values)
+    
+    """
+    output_dict = dict(zip(schema, values))
     output_dict["file_name"]=file_name
     output_dict["extension"]=extension
     
     # Python 3.5 or above 
+    """
+    
+    output_dict ={}
+    
     output_dict2 = {**output_dict, **pcrglobwb_dict}
     
-    return output_dict2
+    return values
+    
 
 
-# In[115]:
+# In[127]:
 
 # Script
 keys = aqueduct3.get_GCS_keys(gcs_input_path)
 
 
-# In[119]:
+# In[139]:
 
 key = keys[1]
 
 
-# In[120]:
+# In[140]:
 
-split_key(key)
+key
+
+
+# In[143]:
+
+key2 = 'gs://aqueduct30_v01/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output_V01/global_historical_PLivWN_year_millionm3_5min_1960_blah.tif'
+
+
+# In[132]:
+
+separator = "_|-"
+
+
+# In[190]:
+
+schema = ["geographic_range",
+     "temporal_range",
+     "indicator",
+     "temporal_resolution",
+     "unit",
+     "spatial_resolution",
+     "temporal_range_min",
+     "temporal_range_max"]
+
+
+# In[212]:
+
+schema = [   "temporal_range_min",
+     "temporal_range_max"]
+
+
+# In[213]:
+
+filtered_key = split_key(key,schema,separator)
+
+
+# In[196]:
+
+
+
+
+# In[183]:
+
+filtered_key
 
 
 # In[73]:
@@ -197,11 +249,7 @@ pattern = "I\d{3}Y\d{4}M\d{2}."
 
 # In[123]:
 
-schema = ["geographic_range",
-     "indicator",
-     "spatial_resolution",
-     "temporal_range_min",
-     "temporal_range_max"]
+
 
 
 # In[95]:

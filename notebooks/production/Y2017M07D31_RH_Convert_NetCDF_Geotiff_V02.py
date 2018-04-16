@@ -37,7 +37,7 @@ PRINT_METADATA = False
 SCRIPT_NAME = "Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02"
 PREVIOUS_SCRIPT_NAME = "Y2017M07D31_RH_download_PCRGlobWB_data_V02"
 INPUT_VERSION = 1
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
 
@@ -101,7 +101,7 @@ for root, dirs, file_names in os.walk(ec2_input_path):
             output_path = aqueduct3.netCDF4_to_geotiff(file_name,input_path,ec2_output_path, default_geotransform, default_geoprojection)
 
 
-# In[ ]:
+# In[6]:
 
 files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
@@ -116,42 +116,42 @@ print("Number of files: " + str(len(files)))
 # 
 # 
 
-# In[ ]:
+# In[7]:
 
 get_ipython().system('mkdir /volumes/data/trash')
 
 
-# In[ ]:
+# In[8]:
 
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif')
 
 
-# In[ ]:
+# In[9]:
 
 files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
 
 
-# In[ ]:
+# In[10]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[11]:
 
 get_ipython().system('gsutil -m cp {ec2_output_path}*.tif {gcs_output_path}')
 
 
-# In[ ]:
+# In[12]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# In[ ]:
+# In[13]:
 
 Previous runs:    
 
