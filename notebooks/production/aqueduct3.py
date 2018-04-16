@@ -173,7 +173,7 @@ def netCDF4_to_geotiff(file_name,input_path,output_dir_path, output_geotransform
         Z = nc_fid.variables[parameter][i, :, :]
         Z[Z<-9990]= -9999
         Z[Z>1e19] = -9999
-        output_filename = netCDF_input_base_name + "I{:03.0f}Y{:04.0f}M{:02.0f}.tif".format(i,standardized_time[i].year,standardized_time[i].month)
+        output_filename = netCDF_input_base_name + "_I{:03.0f}Y{:04.0f}M{:02.0f}.tif".format(i,standardized_time[i].year,standardized_time[i].month)
         output_path = os.path.join(output_dir_path,output_filename)
         #writeFile(writefilename,geotransform,geoproj,Z)
         print(output_path)
@@ -408,12 +408,12 @@ def get_GCS_keys(gcs_path):
         keys (list) : List of strings with asset_ids. 
     
     """
-    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(gcs_path)
+    command = "gsutil ls {}".format(gcs_path)
     keys = subprocess.check_output(command,shell=True)
     keys = keys.decode('UTF-8').splitlines() 
     return keys
 
-def convert_keys_to_df(keys,separator,schema):
+def keys_to_df(keys,separator,schema):
     """ Convert keys to dataframe.
     -------------------------------------------------------------------------------
     Certain metadata is stored in the geotiff filename. Loop over keys and acquire the
@@ -434,13 +434,13 @@ def convert_keys_to_df(keys,separator,schema):
     i = 0
     for key in keys:
         i = i+1
-        out_dict = aqueduct3.split_key(key,separator,schema)
+        out_dict = split_key(key,schema,separator)
         df2 = pd.DataFrame(out_dict,index=[i])
         df = df.append(df2)    
     return df
 
 
-def split_key(key,separator,schema):
+def split_key(key,schema,separator='_|-'):
     """ Split a key using the PCRGLOBWB Schema to get the metadata. 
     -------------------------------------------------------------------------------
     PCRGLOBWB uses a semi-standardized naming convention. Geotiffs cannot store
@@ -462,18 +462,17 @@ def split_key(key,separator,schema):
     
     Args:
         key (string) : file path including extension
+        schema (list) : list of strings.
         separator (regex) : separator used in filename e.g. '_','-' or '_|-' etc.
-                            defaults to '_|-'
-        schema (list) : list of strings
+            defaults to '_|-'
     
     Returns:
-        output_dict (dictionary) : dictionary with PCRGLOBWB shema, filename 
+        output_dict_combined (dictionary) : dictionary with PCRGLOBWB shema, filename 
                                    and extension.     
     """
     
     # check if a pcrglobwb identifier is present.
-    pattern = "I\d{3}Y\d{4}M\d{2}"
-    
+    pattern = "I\d{3}Y\d{4}M\d{2}"   
     pcrglobwb_dict = {}
     
     if re.search(pattern,key):
@@ -482,21 +481,26 @@ def split_key(key,separator,schema):
         pcrglobwb_dict["identifier"] = pcrglobwb_id[1:4]
         pcrglobwb_dict["year"] = pcrglobwb_id[5:9]
         pcrglobwb_dict["month"] = pcrglobwb_id[10:12]  
-        key = re.sub(pattern,"",key)
+        newkey = re.sub(pattern,"",key)
         
     else:
-        pass
-    
+        newkey = key
+        
     prefix, extension = key.split(".")
     file_name = prefix.split("/")[-1]
-    values = re.split(separator, file_name)
-    keyz = schema
-    output_dict = dict(zip(keyz, values))
-    output_dict["file_name"]=file_name
-    output_dict["extension"]=extension
+    # The parameter is defined as the filename without the pcrglobwb id.
+    # if there is no pcrglobwb, then the filename = pcrglobwb id. 
+    parameter = re.sub(pattern,"",file_name)  
+    values = re.split(separator, parameter)
+    assert(len(values)==len(schema)),("Make sure your scheme matches the asset. Length of schema should be: {} and match {}".format(len(values),values))
     
-    # Python 3.5 or above 
-    output_dict2 = {**output_dict, **pcrglobwb_dict}
+    output_dict = dict(zip(schema, values))
+    output_dict["parameter"]= parameter
+    output_dict["file_name"]= file_name
+    output_dict["extension"]= extension
     
-    return output_dict2
+    # Python 3.5 or above         
+    output_dict_combined = {**output_dict, **pcrglobwb_dict}
+    
+    return output_dict_combined
 

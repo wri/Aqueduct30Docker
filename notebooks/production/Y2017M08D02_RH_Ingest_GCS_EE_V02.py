@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[124]:
+# In[1]:
 
 """ Ingest PCRGLOBWB timeseries data on Google Earth Engine
 -------------------------------------------------------------------------------
@@ -57,17 +57,32 @@ OUTPUT_VERSION = 9
 
 OUTPUT_FILE_NAME = "df_errorsV01.csv"
 
+SEPARATOR = "_|-"
+SCHEMA = ["geographic_range",
+     "temporal_range",
+     "indicator",
+     "temporal_resolution",
+     "unit",
+     "spatial_resolution",
+     "temporal_range_min",
+     "temporal_range_max"]
+
+extra_properties = {"nodata_value":-9999,
+                    "ingested_by" : "RutgerHofste",
+                    "script_used": SCRIPT_NAME}
+
 # ETL
 gcs_input_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(PREVIOUS_SCRIPT_NAME,INPUT_VERSION)
 ee_output_path = "projects/WRI-Aquaduct/PCRGlobWB20V{:02.0f}".format(OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 print("Input gcs: " +  gcs_input_path +
       "\nOutput ee: " + ee_output_path +
       "\nOutput S3: " + s3_output_path )
 
 
-# In[125]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -77,7 +92,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[126]:
+# In[20]:
 
 # Imports
 import subprocess
@@ -90,334 +105,106 @@ from datetime import timedelta
 import aqueduct3
 
 
-# In[4]:
-
 # ETL
+def main():
+    start_time = time.time()
+    
 
-ec2_output_path = "/volumes/data/{}/output".format(SCRIPT_NAME)
+    if OVERWRITE:
+        command = "earthengine rm -r {}".format(ee_output_path)
+        print(command)
+        subprocess.check_output(command,shell=True)
 
-if OVERWRITE:
-    command = "earthengine rm -r {}".format(EE_BASE)
+    command = "earthengine create folder {}".format(ee_output_path)
     print(command)
     subprocess.check_output(command,shell=True)
 
-command = "earthengine create folder {}".format(EE_BASE)
-print(command)
-subprocess.check_output(command,shell=True)
+    # Script
 
+    
+    keys = aqueduct3.get_GCS_keys(gcs_input_path)
+    df = aqueduct3.keys_to_df(keys,separator,schema)
 
-# In[211]:
+    df = df.assign(**extra_properties)
+    df["exportdescription"] = df["indicator"] + "_" + df["temporal_resolution"]+"Y"+df["year"]+"M"+df["month"]
+    df = df.apply(pd.to_numeric, errors='ignore')
+    
+    # Create ImageCollections
+    parameters = df.parameter.unique()
+    for parameter in parameters:
+        ic_id = ee_output_path + "/" + parameter
+        command, result = aqueduct3.create_imageCollection(ic_id)
+        print(command,result)
 
-def split_key(key,schema,separator='_|-'):
-    """ Split a key using the PCRGLOBWB Schema to get the metadata. 
-    -------------------------------------------------------------------------------
-    PCRGLOBWB uses a semi-standardized naming convention. Geotiffs cannot store
-    metadata but a straight-forward solution is to store metadata in the filename. 
-    
-    the naming convention used by the University of Utrecht uses hyphens and 
-    underscores to separate metadata. Provide the structure of the filename in 
-    list of strings format. 
-    
-    Example:    
-    global_q4seasonalvariabilitywatersupply_5min_1960-2014.asc uses a schema of:
-    ["geographic_range",
-     "indicator",
-     "spatial_resolution",
-     "temporal_range_min",
-     "temporal_range_max"]
-     
-    filename and extension are stored as extra key value pairs in the output_dict.
-    
-    Args:
-        key (string) : file path including extension
-        schema (list) : list of strings.
-        separator (regex) : separator used in filename e.g. '_','-' or '_|-' etc.
-            defaults to '_|-'
-    
-    Returns:
-        output_dict2 (dictionary) : dictionary with PCRGLOBWB shema, filename 
-                                   and extension.     
-    """
-    
-    # check if a pcrglobwb identifier is present.
-    pattern = "I\d{3}Y\d{4}M\d{2}"
-    
-    pcrglobwb_dict = {}
-    
-    if re.search(pattern,key):
-        result = re.search(pattern,key)
-        pcrglobwb_id = result.group(0)
-        pcrglobwb_dict["identifier"] = pcrglobwb_id[1:4]
-        pcrglobwb_dict["year"] = pcrglobwb_id[5:9]
-        pcrglobwb_dict["month"] = pcrglobwb_id[10:12]  
-        key = re.sub(pattern,"",key)
+    if TESTING:
+        df_complete = df_complete[1:3]
         
-    else:
-        pass
         
+    df_errors = pd.DataFrame()
     
-    prefix, extension = key.split(".")
-    file_name = prefix.split("/")[-1]
-  
-    values = re.split(separator, file_name)
-    assert  len(values)==len(schema) ,"Make sure your scheme matches the asset. Length of schema should be: {} and match {}".format(len(values),values)
-    
-    """
-    output_dict = dict(zip(schema, values))
-    output_dict["file_name"]=file_name
-    output_dict["extension"]=extension
-    
-    # Python 3.5 or above 
-    """
-    
-    output_dict ={}
-    
-    output_dict2 = {**output_dict, **pcrglobwb_dict}
-    
-    return values
-    
+    for index, row in df_complete.iterrows():
+        elapsed_time = time.time() - start_time 
+        print(index,"%.2f" %((index/df_complete.shape[0])*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
+        geotiff_gcs_path = GCS_BASE + row.file_name + "." + row.extension
+        output_ee_asset_id = EE_BASE +"/"+ row.parameter + "/" + row.file_name
+        properties = row.to_dict()
 
+        df_errors2 = aqueduct3.upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties,index)
+        df_errors = df_errors.append(df_errors2)    
 
-# In[127]:
 
-# Script
-keys = aqueduct3.get_GCS_keys(gcs_input_path)
 
-
-# In[139]:
-
-key = keys[1]
-
-
-# In[140]:
-
-key
-
-
-# In[143]:
-
-key2 = 'gs://aqueduct30_v01/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output_V01/global_historical_PLivWN_year_millionm3_5min_1960_blah.tif'
-
-
-# In[132]:
-
-separator = "_|-"
-
-
-# In[190]:
-
-schema = ["geographic_range",
-     "temporal_range",
-     "indicator",
-     "temporal_resolution",
-     "unit",
-     "spatial_resolution",
-     "temporal_range_min",
-     "temporal_range_max"]
-
-
-# In[212]:
-
-schema = [   "temporal_range_min",
-     "temporal_range_max"]
-
-
-# In[213]:
-
-filtered_key = split_key(key,schema,separator)
-
-
-# In[196]:
-
-
-
-
-# In[183]:
-
-filtered_key
-
-
-# In[73]:
-
-teststring = "global_historical_PLivWN_year_millionm3_5min_1960_2014I020Y1980M12.tif"
-
-
-# In[97]:
-
-pattern = "I\d{3}Y\d{4}M\d{2}."
-
-
-# In[123]:
-
-
-
-
-# In[95]:
-
-out_dict = preprocess_key(teststring,pattern)
-
-
-# In[96]:
-
-out_dict
-
-
-# In[47]:
-
-print(test)
-
-
-# In[110]:
-
-a = {"rutger":42,"test":1}
-
-
-# In[111]:
-
-b = {"blah":1,"foo":2}
-
-
-# In[112]:
-
-a.update(b)
-
-
-# In[113]:
-
-a
-
-
-# In[24]:
-
-re.split(pattern2,teststring)
-
-
-# In[19]:
-
-test = re.match(pattern,teststring)
-
-
-# In[7]:
-
-# Create ImageCollections
-parameters = df.parameter.unique()
-for parameter in parameters:
-    ic_id = EE_BASE + "/" + parameter
-    command, result = aqueduct3.create_imageCollection(ic_id)
-    print(command,result)
-
-
-# In[8]:
-
-# Prepare Dataframe
-df_parameter = pd.DataFrame()
-i = 0
-for parameter in parameters:
-    i = i+1
-    out_dict_parameter = split_parameter(parameter)
-    df_parameter2 = pd.DataFrame(out_dict_parameter,index=[i])
-    df_parameter = df_parameter.append(df_parameter2)   
-    
-
-
-# In[9]:
-
-df_parameter.shape
-
-
-# In[10]:
-
-df_complete = df.merge(df_parameter,how='left',left_on='parameter',right_on='parameter')
+if __name__ == "__main__":
+    main()
 
 
 # Adding NoData value, ingested_by and exportdescription
 
-# In[11]:
-
-df_complete["nodata_value"] = -9999
-df_complete["ingested_by"] ="RutgerHofste"
-df_complete["exportdescription"] = df_complete["indicator"] + "_" + df_complete["temporal_resolution"]+"Y"+df_complete["year"]+"M"+df_complete["month"]
-df_complete["script_used"] = SCRIPT_NAME
-df_complete = df_complete.apply(pd.to_numeric, errors='ignore')
+# In[ ]:
 
 
-# In[12]:
-
-df_complete.head()
 
 
-# In[13]:
-
-df_complete.tail()
-
-
-# In[14]:
-
-list(df_complete.columns.values)
-
-
-# In[15]:
-
-if TESTING:
-    df_complete = df_complete[1:3]
-
-
-# In[16]:
-
-df_errors = pd.DataFrame()
-start_time = time.time()
-for index, row in df_complete.iterrows():
-    elapsed_time = time.time() - start_time 
-    print(index,"%.2f" %((index/df_complete.shape[0])*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
-    
-    geotiff_gcs_path = GCS_BASE + row.file_name + "." + row.extension
-    output_ee_asset_id = EE_BASE +"/"+ row.parameter + "/" + row.file_name
-    properties = row.to_dict()
-    
-    df_errors2 = aqueduct3.upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties,index)
-    df_errors = df_errors.append(df_errors2)
-
-
-# In[17]:
+# In[ ]:
 
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[18]:
+# In[ ]:
 
 df_errors.to_csv("{}/{}".format(ec2_output_path,OUTPUT_FILE_NAME))
 
 
-# In[19]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp  {ec2_output_path} {S3_OUTPUT_PATH} --recursive')
 
 
 # Retry the ones with errors
 
-# In[20]:
+# In[ ]:
 
 df_retry = df_errors.loc[df_errors['error'] != 0]
 
 
-# In[21]:
+# In[ ]:
 
 for index, row in df_retry.iterrows():
     response = subprocess.check_output(row.command, shell=True)
     
 
 
-# In[22]:
+# In[ ]:
 
 uniques = df_errors["error"].unique()
 
 
-# In[24]:
+# In[ ]:
 
 df_retry
 
 
-# In[23]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start

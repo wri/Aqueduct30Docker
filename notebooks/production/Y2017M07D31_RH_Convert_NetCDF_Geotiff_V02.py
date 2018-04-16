@@ -81,7 +81,7 @@ get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[5]:
+# In[ ]:
 
 """
 
@@ -101,7 +101,7 @@ for root, dirs, file_names in os.walk(ec2_input_path):
             output_path = aqueduct3.netCDF4_to_geotiff(file_name,input_path,ec2_output_path, default_geotransform, default_geoprojection)
 
 
-# In[6]:
+# In[ ]:
 
 files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
@@ -116,42 +116,39 @@ print("Number of files: " + str(len(files)))
 # 
 # 
 
-# In[7]:
+# In[ ]:
 
 get_ipython().system('mkdir /volumes/data/trash')
 
 
-# In[8]:
+# In[ ]:
 
-get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
-get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
-get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif')
+get_ipython().system('mv {ec2_output_path}/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
+get_ipython().system('mv {ec2_output_path}/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
+get_ipython().system('mv {ec2_output_path}/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif')
 
 
-# In[9]:
+# In[ ]:
 
 files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
 
 
-# In[10]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[11]:
+# In[ ]:
 
 get_ipython().system('gsutil -m cp {ec2_output_path}*.tif {gcs_output_path}')
 
 
-# In[12]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# In[13]:
-
-Previous runs:    
-
+# Previous runs:    

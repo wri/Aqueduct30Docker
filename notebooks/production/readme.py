@@ -5,6 +5,12 @@
 # 
 # This document will keep track of what scripts to run to get to the results. 
 # 
+# ### Setup Checks  
+# 1. **Y2018M04D16_RH_Checks_V01**  
+#    Run setup checks for credentials. 
+# 
+# 
+# 
 # ### PostGIS PostgreSQL database
 # 1. **Y2017M11D15_RH_Create_PostGIS_Database_V01**  
 #     create postgis database using AWS RDS.  

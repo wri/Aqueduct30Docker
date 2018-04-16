@@ -15,7 +15,7 @@ use earth engine since this is camelCase instead of underscore.
 
 Author: Rutger Hofste
 Date: 20180327
-Kernel: python36
+Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
@@ -62,4 +62,10 @@ sys.version
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+Previous runs:  
+0:24:15.930678    
 
