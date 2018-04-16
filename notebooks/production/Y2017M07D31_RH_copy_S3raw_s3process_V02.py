@@ -16,7 +16,8 @@ Details:
 Args:
 
     SCRIPT_NAME (string) : Script name
-
+    OUTPUT_VERSION (integer) : Output version. 
+    S3_INPUT_PATHS (list) : S3 directories with files to copy. 
 
 Returns:
 
@@ -34,6 +35,7 @@ s3://wri-projects/Aqueduct30/processData/01PCRGlobWBV01 folder
 # Input Parameters
 
 SCRIPT_NAME = "Y2017M07D31_RH_copy_S3raw_s3process_V02"
+OUTPUT_VERSION = 3
 
 S3_INPUT_PATHS = ["s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/waterdemand",
                "s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/wateravailability",
@@ -45,7 +47,7 @@ S3_INPUT_PATHS = ["s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/wa
 
 # Output Parameters
 
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/{}/output".format(SCRIPT_NAME)
+S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 
 # In[2]:
@@ -81,4 +83,12 @@ for S3_input_path in S3_INPUT_PATHS:
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# Previous runs:  
+# 0:04:08.981370
+
+# In[ ]:
+
+
 

@@ -326,7 +326,7 @@ def create_imageCollection(ic_id):
 
 
 
-def upload_directory_to_EE(gcs_namespace,ee_namespace,schema,extra_properties,separator="_|-"):
+def upload_directory_to_EE(gcs_input_namespace,ee_output_namespace,schema,extra_properties,separator="_|-"):
     """ get list of keys from Google Cloud Storage
     -------------------------------------------------------------------------------
     Upload a directory containing geotiffs to Google Earth Engine. The geotiffs
@@ -340,21 +340,22 @@ def upload_directory_to_EE(gcs_namespace,ee_namespace,schema,extra_properties,se
     In the extra_properties you can set 'nodata_value' to store a nodata value.
        
     Args:
-        gcs_namespace (string) : Google Cloud Storage namespace containing files.
-        ee_namespace (string) : Google Earth Engine namespace. Can be a folder or
-                                imageCollection.(Create imageCollection first.) 
+        gcs_input_namespace (string) : Input Google Cloud Storage namespace 
+            containing files.
+        ee_output_namespace (string) : Output Google Earth Engine namespace. Can be a folder or
+            imageCollection.(Create imageCollection first.) 
         schema (list) : List of string with property names. If the filenames
-                        do not contain any metadata set to None. 
+            do not contain any metadata set to None. 
                              
         extra_properties (dictionary) : Dictionary with extra properties to specify.
         separator (regex) : separator used in filename e.g. '_','-' or '_|-' etc.
-                            defaults to '_|-'
+            defaults to '_|-'.
         
     Returns:
         df (pandas dataframe) : pandas dataframe with the commands and 
-                                responses. 
+            responses. 
         df_errors (pandas dataframe) : pandas dataframe with the commands and 
-                                       errors
+            errors
     
     TODO: 
         Add option to store in imagecollection.
@@ -364,7 +365,7 @@ def upload_directory_to_EE(gcs_namespace,ee_namespace,schema,extra_properties,se
     """
     
     
-    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(gcs_namespace)
+    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(gcs_input_namespace)
     keys = subprocess.check_output(command,shell=True)
     keys = keys.decode('UTF-8').splitlines()
     
@@ -386,8 +387,8 @@ def upload_directory_to_EE(gcs_namespace,ee_namespace,schema,extra_properties,se
         elapsed_time = time.time() - start_time 
         print(index,"{:02.2f}".format((float(index)/df.shape[0])*100) + "elapsed: ", str(datetime.timedelta(seconds=elapsed_time)))
 
-        geotiff_gcs_path = gcs_namespace + row.file_name + "." + row.extension
-        output_ee_asset_id = ee_namespace +"/"+ row.file_name
+        geotiff_gcs_path = gcs_input_namespace + row.file_name + "." + row.extension
+        output_ee_asset_id = ee_output_namespace +"/"+ row.file_name
         properties = row.to_dict()
 
         df_errors2 = upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties,index)

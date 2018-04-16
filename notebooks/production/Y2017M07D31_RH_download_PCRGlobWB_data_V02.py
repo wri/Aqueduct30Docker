@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[27]:
 
 """ This notebook will download the data from S3 to the EC2 instance 
 -------------------------------------------------------------------------------
@@ -25,10 +25,10 @@ Args:
 
     SCRIPT_NAME (string) : Script name
     INPUT_VERSION (integer) : input version, see readme and output number
-                              of previous script. 
+                              of previous script.
+    OUTPUT_VERSION (integer) : output version for ec2 and s3.
     
-
-
+    
 Returns:
 
 Result:
@@ -40,9 +40,15 @@ Result:
 # Input Parameters
 
 SCRIPT_NAME = "Y2017M07D31_RH_download_PCRGlobWB_data_V02"
-INPUT_VERSION = 2
+PREVIOUS_SCRIPT_NAME = "Y2017M07D31_RH_copy_S3raw_s3process_V02"
+INPUT_VERSION = 3
+OUTPUT_VERSION = 1
 
-# Output Parameters
+# ETL
+s3_input_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(PREVIOUS_SCRIPT_NAME,INPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input S3:", s3_input_path, "\nOutput ec2:" ,ec2_output_path)
 
 
 # In[2]:
@@ -59,13 +65,6 @@ sys.version
 
 # Imports
 import os
-
-
-# In[4]:
-
-# ETL
-s3_input_path = "s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V{:02.0f}/output/".format(INPUT_VERSION)
-ec2_output_path = "/volumes/data/{}/output/".format(SCRIPT_NAME)
 
 
 # In[5]:
@@ -172,4 +171,12 @@ assert number_of_files == 35, ("Number of files is different than previous run. 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# Previous runs:  
+# 0:24:15.930678    
+
+# In[ ]:
+
+
 

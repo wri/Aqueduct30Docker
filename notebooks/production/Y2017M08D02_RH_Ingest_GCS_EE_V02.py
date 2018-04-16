@@ -1,12 +1,12 @@
 
 # coding: utf-8
 
-# In[25]:
+# In[7]:
 
 """ Ingest PCRGLOBWB timeseries data on Google Earth Engine
 -------------------------------------------------------------------------------
 This notebook will upload the geotiff files from the Google Cloud Storage to
-the WRI/aqueduct earthengine bucket. 
+the WRI/aqueduct earthengine bucket. An errorlog will be stored on Amazon S3.
 
 Requirements:
     Authorize earthengine by running in your terminal: earthengine 
@@ -33,10 +33,13 @@ Args:
     TESTING (Boolean) : Toggle Testing Mode.
     OVERWRITE (Boolean) : Overwrite old folder !CAUTION!
     SCRIPT_NAME (string) : Script name.
-    GCS_BASE (string) : Google Cloud Storage namespace.
-    EE_BASE (string) : Earth Engine folder to store the imageCollections
+    
+    PREVIOUS_SCRIPT_NAME (string) : Previous script name. 
+    INPUT_VERSION (integer) : Input version. 
+    
+    OUTPUT_VERSION (integer) : Output version. 
+    
     OUTPUT_FILE_NAME (string) : File Name for a csv file containing the failed tasks. 
-    S3_OUTPUT_PATH (string) : Amazon S3 Output path.
 
 Returns:
 
@@ -44,13 +47,24 @@ Returns:
 """
 
 # Input Parameters
-TESTING = 0
+TESTING = 1
 OVERWRITE = 0 # !CAUTION!
 SCRIPT_NAME = "Y2017M08D02_RH_Ingest_GCS_EE_V02"
-GCS_BASE = "gs://aqueduct30_v01/Y2017M08D02_RH_Upload_to_GoogleCS_V02/"
-EE_BASE = "projects/WRI-Aquaduct/PCRGlobWB20V08"
+PREVIOUS_SCRIPT_NAME = "Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02"
+
+INPUT_VERSION = 1
+OUTPUT_VERSION = 9
+
 OUTPUT_FILE_NAME = "df_errorsV01.csv"
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/{}/output".format(SCRIPT_NAME)
+
+# ETL
+gcs_input_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(SCRIPT_NAME,INPUT_VERSION)
+ee_output_path = "projects/WRI-Aquaduct/PCRGlobWB20V{:02.0f}".format(OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input gcs: " +  gcs_input_path +
+      "\nOutput ee: " + ee_output_path +
+      "\nOutput S3: " + s3_output_path )
 
 
 # In[2]:
@@ -63,7 +77,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[3]:
+# In[5]:
 
 # Imports
 import subprocess
@@ -92,80 +106,29 @@ print(command)
 subprocess.check_output(command,shell=True)
 
 
-# In[5]:
+# In[1]:
 
 # Functions
-
-def split_key(key):
-    """ Split key into dictionary
-    -------------------------------------------------------------------------------
-    WARNING: This function is dependant on the name convention of PCRGLOBWB
-    Do not use with other keys
-    
-    Args:
-        key (string) : key containing information about parameter, year month etc.
-        
-    Returns:
-        out_dict (dictionary): Dictionary containing all information contained
-                               in key.      
-
-    """
-    
-    # will yield the root file code and extension of a set of keys
-    prefix, extension = key.split(".")
-    file_name = prefix.split("/")[-1]
-    parameter = file_name[:-12]
-    month = file_name[-2:] #can also do this with regular expressions if you like
-    year = file_name[-7:-3]
-    identifier = file_name[-11:-8]
-    out_dict = {"file_name":file_name,"extension":extension,"parameter":parameter,"month":month,"year":year,"identifier":identifier}
-    return out_dict
-
-def split_parameter(parameter):
-    """Split parameter 
-    -------------------------------------------------------------------------------
-    WARNING: This function is dependant on the name convention of PCRGLOBWB
-    Do not use with other keys.
-    
-    Args:
-        parameter (string) : parameter string.
-    
-    Returns:
-        out_dict (dictionary) : dictionary containing all information contained
-                                in parameter key.
-    
-    """
-    
-    values = re.split("_|-", parameter) #soilmoisture uses a hyphen instead of underscore between the years
-    keys = ["geographic_range","temporal_range","indicator","temporal_resolution","units","spatial_resolution","temporal_range_min","temporal_range_max"]
-    # ['global', 'historical', 'PDomWN', 'month', 'millionm3', '5min', '1960', '2014']
-    out_dict = dict(zip(keys, values))
-    out_dict["parameter"] = parameter
-    return out_dict
-
-
-def get_GCS_keys(GCS_BASE):
+def get_GCS_keys(gcs_path):
     """ get list of keys from Google Cloud Storage
     -------------------------------------------------------------------------------
     
     Args:
-        GCS_BASE (string) : Google Cloud Storage namespace containing files.
+        gcs_path (string) : Google Cloud Storage namespace containing files.
         
     Returns:
-        df (pd.DataFrame) : DataFrame with properties useful to Aqueduct. 
+        keys (list) : List of strings with asset_ids. 
     
     """
-    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(GCS_BASE)
+    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(gcs_path)
     keys = subprocess.check_output(command,shell=True)
-    keys = keys.decode('UTF-8').splitlines()
-    
-    df = keys_to_df(keys)
-    
-    return df
+    keys = keys.decode('UTF-8').splitlines() 
+    return keys
 
 def keys_to_df(keys):
     """ helper function for 'get_GCS_keys'
-    
+    -------------------------------------------------------------------------------
+        
     Args:
         keys (list) : list of strings with keys.
         
@@ -178,7 +141,8 @@ def keys_to_df(keys):
     i = 0
     for key in keys:
         i = i+1
-        out_dict = split_key(key)
+        schema = ["indicator","spatial_resolution","unit"]
+        out_dict = aqueduct3.split_key(key,schema)
         df2 = pd.DataFrame(out_dict,index=[i])
         df = df.append(df2)    
     return df
@@ -187,8 +151,12 @@ def keys_to_df(keys):
 # In[6]:
 
 # Script
-df = get_GCS_keys(GCS_BASE)
-df.shape
+keys = get_GCS_keys(GCS_INPUT_PATH)
+
+
+# In[ ]:
+
+
 
 
 # In[7]:
@@ -316,4 +284,101 @@ df_retry
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+# Functions
+
+def split_key(key):
+    """ Split key into dictionary
+    -------------------------------------------------------------------------------
+    WARNING: This function is dependant on the name convention of PCRGLOBWB
+    Do not use with other keys
+    
+    Args:
+        key (string) : key containing information about parameter, year month etc.
+        
+    Returns:
+        out_dict (dictionary): Dictionary containing all information contained
+                               in key.      
+
+    """
+    
+    # will yield the root file code and extension of a set of keys
+    prefix, extension = key.split(".")
+    file_name = prefix.split("/")[-1]
+    parameter = file_name[:-12]
+    month = file_name[-2:] #can also do this with regular expressions if you like
+    year = file_name[-7:-3]
+    identifier = file_name[-11:-8]
+    out_dict = {"file_name":file_name,"extension":extension,"parameter":parameter,"month":month,"year":year,"identifier":identifier}
+    return out_dict
+
+def split_parameter(parameter):
+    """Split parameter 
+    -------------------------------------------------------------------------------
+    WARNING: This function is dependant on the name convention of PCRGLOBWB
+    Do not use with other keys.
+    
+    Args:
+        parameter (string) : parameter string.
+    
+    Returns:
+        out_dict (dictionary) : dictionary containing all information contained
+                                in parameter key.
+    
+    """
+    
+    values = re.split("_|-", parameter) #soilmoisture uses a hyphen instead of underscore between the years
+    keys = ["geographic_range","temporal_range","indicator","temporal_resolution","units","spatial_resolution","temporal_range_min","temporal_range_max"]
+    # ['global', 'historical', 'PDomWN', 'month', 'millionm3', '5min', '1960', '2014']
+    out_dict = dict(zip(keys, values))
+    out_dict["parameter"] = parameter
+    return out_dict
+
+
+def get_GCS_keys(GCS_BASE):
+    """ get list of keys from Google Cloud Storage
+    -------------------------------------------------------------------------------
+    
+    Args:
+        GCS_BASE (string) : Google Cloud Storage namespace containing files.
+        
+    Returns:
+        df (pd.DataFrame) : DataFrame with properties useful to Aqueduct. 
+    
+    """
+    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(GCS_BASE)
+    keys = subprocess.check_output(command,shell=True)
+    keys = keys.decode('UTF-8').splitlines()
+    
+    df = keys_to_df(keys)
+    
+    return df
+
+def keys_to_df(keys):
+    """ helper function for 'get_GCS_keys'
+    
+    Args:
+        keys (list) : list of strings with keys.
+        
+    Returns:
+        df (pd.DataFrame) : Pandas DataFrame with all relvant properties for
+                            Aqueduct 3.0.
+    """
+    
+    df = pd.DataFrame()
+    i = 0
+    for key in keys:
+        i = i+1
+        out_dict = split_key(key)
+        df2 = pd.DataFrame(out_dict,index=[i])
+        df = df.append(df2)    
+    return df
 

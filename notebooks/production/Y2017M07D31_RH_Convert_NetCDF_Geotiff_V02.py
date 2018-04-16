@@ -1,13 +1,13 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 """ convert netCDF4 to Geotiff.
 -------------------------------------------------------------------------------
 
-Convert individual images from a netCDF to geotiffs. Output is stored in 
-Amazon S3 folder and on EC2 
+Convert individual images from a netCDF on EC2 to geotiffs. Output is stored in 
+Amazon S3 folder and on EC2 / GCS. 
 
 
 Author: Rutger Hofste
@@ -16,32 +16,45 @@ Kernel: python36
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
-
-    SCRIPT_NAME (string) : Script name
-    EC2_INPUT_PATH (string) : path to output of previous script. See Readme 
-                              for more details. 
-    PRINT_METADATA (boolean) : Print out metadata in Jupyter Notebook
-
-
+    PRINT_METADATA (boolean) : Print out metadata in Jupyter Notebook.
+    SCRIPT_NAME (string) : Script name.
+    PREVIOUS_SCRIPT_NAME (string) : Previous script name used to identify input files.    
+    INPUT_VERSION (integer) : Input version.
+    OUTPUT_VERSION (integer) : Output version.     
+    X_DIMENSION_5MIN (integer) : horizontal or longitudinal dimension of 
+                                 raster.
+    Y_DIMENSION_5MIN (integer) : vertical or latitudinal dimension of 
+                                 raster.
+    
+    
 Returns:
 
 """
 
+
 # Input Parameters
-
-SCRIPT_NAME = "Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02"
-
-EC2_INPUT_PATH = "/volumes/data/Y2017M07D31_RH_download_PCRGlobWB_data_V02/output/"
-
 PRINT_METADATA = False
-
+SCRIPT_NAME = "Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02"
+PREVIOUS_SCRIPT_NAME = "Y2017M07D31_RH_download_PCRGlobWB_data_V02"
+INPUT_VERSION = 1
+OUTPUT_VERSION = 1
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
 
-# Output Parameters
+
+# ETL
+ec2_input_path = "/volumes/data/{}/output_V{:02.0f}/".format(PREVIOUS_SCRIPT_NAME,INPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+gcs_output_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input ec2: " + ec2_input_path +
+      "\nOutput ec2: " + ec2_output_path +
+      "\nOutput S3: " + s3_output_path +
+      "\nOutput GCS: " +  gcs_output_path)
 
 
-# In[3]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -51,39 +64,35 @@ print(dateString,timeString)
 sys.version
 
 
-# In[4]:
+# In[3]:
 
 # Imports
 import aqueduct3
-
 import os
-import datetime
 import subprocess
 import numpy as np
 import warnings
 
 
-# In[5]:
-
-# ETL
-
-ec2_output_path = "/volumes/data/{}/output/".format(SCRIPT_NAME)
-s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output/".format(SCRIPT_NAME)
-
-
-# In[6]:
+# In[4]:
 
 get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[7]:
+# In[ ]:
 
-# Assume uniform dimensions specified in input dimensions. 
+"""
+
+This cell loops over the images in a netCDF. There are a couple of PCRGlobWB specific properties so
+be careful when using with other netCDFs. PCRGLOBWB specific properties include datatype (float32), 
+nodata value, time format, minmax value etc. 
+
+"""
 
 default_geotransform, default_geoprojection = aqueduct3.get_global_georeference(np.ones([Y_DIMENSION_5MIN,X_DIMENSION_5MIN]))
 
-for root, dirs, file_names in os.walk(EC2_INPUT_PATH):
+for root, dirs, file_names in os.walk(ec2_input_path):
     for file_name in file_names:
         if file_name.endswith(".nc4") or file_name.endswith(".nc"):
             print(file_name)
@@ -92,7 +101,7 @@ for root, dirs, file_names in os.walk(EC2_INPUT_PATH):
            
 
 
-# In[8]:
+# In[ ]:
 
 files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
@@ -107,27 +116,32 @@ print("Number of files: " + str(len(files)))
 # 
 # 
 
-# In[9]:
+# In[ ]:
 
 get_ipython().system('mkdir /volumes/data/trash')
 
 
-# In[12]:
+# In[ ]:
 
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
 get_ipython().system('mv /volumes/data/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif')
 
 
-# In[11]:
+# In[ ]:
 
 files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
 
 
-# In[8]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[ ]:
+
+get_ipython().system('gsutil -m cp {ec2_output_path}*.tif {gcs_output_path}')
 
 
 # In[ ]:
@@ -135,4 +149,9 @@ get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+Previous runs:    
 

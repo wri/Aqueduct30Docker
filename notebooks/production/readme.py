@@ -54,8 +54,6 @@
 #     Download the data to your machine, unzip files.
 # 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02**  
 #     Convert netCDF4 to Geotiff.    
-# 1.  **Y2017M08D02_RH_Upload_to_GoogleCS_V02**  
-#     Upload files to Google Cloud Storage. 
 # 1. **Y2017M08D02_RH_Ingest_GCS_EE_V02**  
 #     Ingest PCRGLOBWB timeseries data on Google Earth Engine
 # 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01**  
@@ -116,6 +114,9 @@
 #     
 #     
 #     Archived (unused) scripts:  
+#     
+# 1.  **Y2017M08D02_RH_Upload_to_GoogleCS_V02**(obsolete as of 20180416)  
+#     Upload files to Google Cloud Storage. 
 #     
 # 1. **Y2017M08D30_RH_Average_Supply_EE_V01**  
 #     This script will canculate the average PCRGlobWB2.0 supply (local runoff) using the ee python API.
