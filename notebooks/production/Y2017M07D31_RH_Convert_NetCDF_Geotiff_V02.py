@@ -11,8 +11,8 @@ Amazon S3 folder and on EC2 / GCS.
 
 
 Author: Rutger Hofste
-Date: 20180327
-Kernel: python36
+Date: 20180731
+Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
@@ -72,6 +72,7 @@ import os
 import subprocess
 import numpy as np
 import warnings
+import logging
 
 
 # In[4]:
@@ -80,7 +81,7 @@ get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[ ]:
+# In[5]:
 
 """
 
@@ -97,8 +98,7 @@ for root, dirs, file_names in os.walk(ec2_input_path):
         if file_name.endswith(".nc4") or file_name.endswith(".nc"):
             print(file_name)
             input_path = os.path.join(root, file_name) 
-            Z = aqueduct3.netCDF4_to_geotiff(file_name,input_path,ec2_output_path, default_geotransform, default_geoprojection)
-           
+            output_path = aqueduct3.netCDF4_to_geotiff(file_name,input_path,ec2_output_path, default_geotransform, default_geoprojection)
 
 
 # In[ ]:

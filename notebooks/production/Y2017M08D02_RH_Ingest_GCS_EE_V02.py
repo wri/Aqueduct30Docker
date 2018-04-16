@@ -58,7 +58,7 @@ OUTPUT_VERSION = 9
 OUTPUT_FILE_NAME = "df_errorsV01.csv"
 
 # ETL
-gcs_input_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(SCRIPT_NAME,INPUT_VERSION)
+gcs_input_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(PREVIOUS_SCRIPT_NAME,INPUT_VERSION)
 ee_output_path = "projects/WRI-Aquaduct/PCRGlobWB20V{:02.0f}".format(OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
@@ -77,7 +77,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[5]:
+# In[1]:
 
 # Imports
 import subprocess
@@ -106,57 +106,147 @@ print(command)
 subprocess.check_output(command,shell=True)
 
 
-# In[1]:
+# In[114]:
 
-# Functions
-def get_GCS_keys(gcs_path):
-    """ get list of keys from Google Cloud Storage
+def split_key(key,schema,separator='_|-'):
+    """ Split a key using the PCRGLOBWB Schema to get the metadata. 
     -------------------------------------------------------------------------------
+    PCRGLOBWB uses a semi-standardized naming convention. Geotiffs cannot store
+    metadata but a straight-forward solution is to store metadata in the filename. 
+    
+    the naming convention used by the University of Utrecht uses hyphens and 
+    underscores to separate metadata. Provide the structure of the filename in 
+    list of strings format. 
+    
+    Example:    
+    global_q4seasonalvariabilitywatersupply_5min_1960-2014.asc uses a schema of:
+    ["geographic_range",
+     "indicator",
+     "spatial_resolution",
+     "temporal_range_min",
+     "temporal_range_max"]
+     
+    filename and extension are stored as extra key value pairs in the output_dict.
     
     Args:
-        gcs_path (string) : Google Cloud Storage namespace containing files.
-        
-    Returns:
-        keys (list) : List of strings with asset_ids. 
+        key (string) : file path including extension
+        schema (list) : list of strings.
+        separator (regex) : separator used in filename e.g. '_','-' or '_|-' etc.
+            defaults to '_|-'
     
-    """
-    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(gcs_path)
-    keys = subprocess.check_output(command,shell=True)
-    keys = keys.decode('UTF-8').splitlines() 
-    return keys
-
-def keys_to_df(keys):
-    """ helper function for 'get_GCS_keys'
-    -------------------------------------------------------------------------------
-        
-    Args:
-        keys (list) : list of strings with keys.
-        
     Returns:
-        df (pd.DataFrame) : Pandas DataFrame with all relvant properties for
-                            Aqueduct 3.0.
+        output_dict2 (dictionary) : dictionary with PCRGLOBWB shema, filename 
+                                   and extension.     
     """
     
-    df = pd.DataFrame()
-    i = 0
-    for key in keys:
-        i = i+1
-        schema = ["indicator","spatial_resolution","unit"]
-        out_dict = aqueduct3.split_key(key,schema)
-        df2 = pd.DataFrame(out_dict,index=[i])
-        df = df.append(df2)    
-    return df
+    # check if a pcrglobwb identifier is present.
+    pattern = "I\d{3}Y\d{4}M\d{2}"
+    
+    pcrglobwb_dict = {}
+    
+    if re.search(pattern,key):
+        result = re.search(pattern,key)
+        pcrglobwb_id = result.group(0)
+        pcrglobwb_dict["identifier"] = pcrglobwb_id[1:4]
+        pcrglobwb_dict["year"] = pcrglobwb_id[5:9]
+        pcrglobwb_dict["month"] = pcrglobwb_id[10:12]  
+        key = re.sub(pattern,"",key)
+        
+    else:
+        pass
+    
+    prefix, extension = key.split(".")
+    file_name = prefix.split("/")[-1]
+    values = re.split(separator, file_name)
+    keyz = schema
+    output_dict = dict(zip(keyz, values))
+    output_dict["file_name"]=file_name
+    output_dict["extension"]=extension
+    
+    # Python 3.5 or above 
+    output_dict2 = {**output_dict, **pcrglobwb_dict}
+    
+    return output_dict2
 
 
-# In[6]:
+# In[115]:
 
 # Script
-keys = get_GCS_keys(GCS_INPUT_PATH)
+keys = aqueduct3.get_GCS_keys(gcs_input_path)
 
 
-# In[ ]:
+# In[119]:
+
+key = keys[1]
 
 
+# In[120]:
+
+split_key(key)
+
+
+# In[73]:
+
+teststring = "global_historical_PLivWN_year_millionm3_5min_1960_2014I020Y1980M12.tif"
+
+
+# In[97]:
+
+pattern = "I\d{3}Y\d{4}M\d{2}."
+
+
+# In[123]:
+
+schema = ["geographic_range",
+     "indicator",
+     "spatial_resolution",
+     "temporal_range_min",
+     "temporal_range_max"]
+
+
+# In[95]:
+
+out_dict = preprocess_key(teststring,pattern)
+
+
+# In[96]:
+
+out_dict
+
+
+# In[47]:
+
+print(test)
+
+
+# In[110]:
+
+a = {"rutger":42,"test":1}
+
+
+# In[111]:
+
+b = {"blah":1,"foo":2}
+
+
+# In[112]:
+
+a.update(b)
+
+
+# In[113]:
+
+a
+
+
+# In[24]:
+
+re.split(pattern2,teststring)
+
+
+# In[19]:
+
+test = re.match(pattern,teststring)
 
 
 # In[7]:

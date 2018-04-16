@@ -397,6 +397,48 @@ def upload_directory_to_EE(gcs_input_namespace,ee_output_namespace,schema,extra_
     
     return df,df_errors
 
+def get_GCS_keys(gcs_path):
+    """ get list of keys from Google Cloud Storage
+    -------------------------------------------------------------------------------
+    
+    Args:
+        gcs_path (string) : Google Cloud Storage namespace containing files.
+        
+    Returns:
+        keys (list) : List of strings with asset_ids. 
+    
+    """
+    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(gcs_path)
+    keys = subprocess.check_output(command,shell=True)
+    keys = keys.decode('UTF-8').splitlines() 
+    return keys
+
+def convert_keys_to_df(keys,separator,schema):
+    """ Convert keys to dataframe.
+    -------------------------------------------------------------------------------
+    Certain metadata is stored in the geotiff filename. Loop over keys and acquire the
+    metadata. See split_key for help. 
+    
+    Args:
+        keys (list) : list of strings with keys.
+        separator (regex) : separator used in filename e.g. '_','-' or '_|-' etc.
+                            defaults to '_|-'
+        schema (list) : list of strings
+        
+    Returns:
+        output_dict (dictionary) : dictionary with PCRGLOBWB shema, filename 
+                                   and extension. 
+    """
+    
+    df = pd.DataFrame()
+    i = 0
+    for key in keys:
+        i = i+1
+        out_dict = aqueduct3.split_key(key,separator,schema)
+        df2 = pd.DataFrame(out_dict,index=[i])
+        df = df.append(df2)    
+    return df
+
 
 def split_key(key,separator,schema):
     """ Split a key using the PCRGLOBWB Schema to get the metadata. 
@@ -428,6 +470,23 @@ def split_key(key,separator,schema):
         output_dict (dictionary) : dictionary with PCRGLOBWB shema, filename 
                                    and extension.     
     """
+    
+    # check if a pcrglobwb identifier is present.
+    pattern = "I\d{3}Y\d{4}M\d{2}"
+    
+    pcrglobwb_dict = {}
+    
+    if re.search(pattern,key):
+        result = re.search(pattern,key)
+        pcrglobwb_id = result.group(0)
+        pcrglobwb_dict["identifier"] = pcrglobwb_id[1:4]
+        pcrglobwb_dict["year"] = pcrglobwb_id[5:9]
+        pcrglobwb_dict["month"] = pcrglobwb_id[10:12]  
+        key = re.sub(pattern,"",key)
+        
+    else:
+        pass
+    
     prefix, extension = key.split(".")
     file_name = prefix.split("/")[-1]
     values = re.split(separator, file_name)
@@ -435,5 +494,9 @@ def split_key(key,separator,schema):
     output_dict = dict(zip(keyz, values))
     output_dict["file_name"]=file_name
     output_dict["extension"]=extension
-    return output_dict
+    
+    # Python 3.5 or above 
+    output_dict2 = {**output_dict, **pcrglobwb_dict}
+    
+    return output_dict2
 
