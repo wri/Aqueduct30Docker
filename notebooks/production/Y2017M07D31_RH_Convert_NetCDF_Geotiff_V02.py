@@ -29,6 +29,9 @@ Args:
     
 Returns:
 
+Todo:
+replace score with underscre in soil moisture time-series. 
+
 """
 
 
@@ -81,7 +84,7 @@ get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[ ]:
+# In[5]:
 
 """
 
@@ -107,6 +110,8 @@ files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
 
 
+# Previous runs: 9293
+
 # Some files from Utrecht contain double years, removing the erroneous ones (used Panoply/Qgis to inspect those files):
 # 
 # global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif
@@ -116,23 +121,25 @@ print("Number of files: " + str(len(files)))
 # 
 # 
 
-# In[ ]:
+# In[13]:
 
 get_ipython().system('mkdir /volumes/data/trash')
 
 
-# In[ ]:
+# In[14]:
 
-get_ipython().system('mv {ec2_output_path}/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014I055Y1960M01.tif')
-get_ipython().system('mv {ec2_output_path}/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I660Y1960M01.tif')
-get_ipython().system('mv {ec2_output_path}/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014I661Y1960M01.tif')
+get_ipython().system('mv {ec2_output_path}global_historical_PDomWN_year_millionm3_5min_1960_2014_I055Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_year_millionm3_5min_1960_2014_I055Y1960M01.tif')
+get_ipython().system('mv {ec2_output_path}global_historical_PDomWN_month_millionm3_5min_1960_2014_I660Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014_I660Y1960M01.tif')
+get_ipython().system('mv {ec2_output_path}global_historical_PDomWN_month_millionm3_5min_1960_2014_I661Y1960M01.tif /volumes/data/trash/global_historical_PDomWN_month_millionm3_5min_1960_2014_I661Y1960M01.tif')
 
 
-# In[ ]:
+# In[15]:
 
 files = os.listdir(ec2_output_path)
 print("Number of files: " + str(len(files)))
 
+
+# Previous run: 9290
 
 # In[ ]:
 
@@ -152,3 +159,4 @@ print(elapsed)
 
 
 # Previous runs:    
+# 2:41:55.997256

@@ -140,6 +140,8 @@ def write_geotiff(output_path,geotransform,geoprojection,data,nodata_value=-9999
 def netCDF4_to_geotiff(file_name,input_path,output_dir_path, output_geotransform, output_geoprojection):
     """Convert every image in a netCDF4 file to a geotiff
     -------------------------------------------------------------------------------
+    Convert a netCDF4 file containing a geospatial time series to geotiffs. 
+    Required variables include "latitude","longitude" and "time". 
     
     the output filenames will be appended with relevant metadata stored in the 
     netCDF file. 
@@ -263,19 +265,16 @@ def upload_geotiff_to_EE_imageCollection(geotiff_gcs_path,output_ee_asset_id,pro
     
     command = command + metadata_command
     
-    print(command)
     try:
-        #response = subprocess.check_output(command, shell=True)
+        response = subprocess.check_output(command, shell=True)
         out_dict = {"command":command,"response":response,"error":0}
         df_errors2 = pd.DataFrame(out_dict,index=[index])
-        pass
     except:
         try:
             out_dict = {"command":command,"response":response,"error":1}
         except:
             out_dict = {"command":command,"response":-9999,"error":2}
         df_errors2 = pd.DataFrame(out_dict,index=[index])
-        print("error")
     return df_errors2
 
 def dictionary_to_EE_upload_command(d):
@@ -488,10 +487,13 @@ def split_key(key,schema,separator='_|-'):
         
     prefix, extension = key.split(".")
     file_name = prefix.split("/")[-1]
-    # The parameter is defined as the filename without the pcrglobwb id.
+    # The parameter is defined as the filename without the pcrglobwb id and 
+    # unnecesary 'global_historical' tags. 
     # if there is no pcrglobwb, then the filename = pcrglobwb id. 
-    parameter = re.sub(pattern,"",file_name)  
+    parameter = re.sub(pattern,"",file_name)
+    parameter = re.sub("(_|-)$","",parameter) # rm trailing (under)scores
     values = re.split(separator, parameter)
+    values = list(filter(None, values)) 
     assert(len(values)==len(schema)),("Make sure your scheme matches the asset. Length of schema should be: {} and match {}".format(len(values),values))
     
     output_dict = dict(zip(schema, values))

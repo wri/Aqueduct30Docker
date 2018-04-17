@@ -32,14 +32,19 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 Args:    
     TESTING (Boolean) : Toggle Testing Mode.
     OVERWRITE (Boolean) : Overwrite old folder !CAUTION!
-    SCRIPT_NAME (string) : Script name.
     
+    SCRIPT_NAME (string) : Script name.    
     PREVIOUS_SCRIPT_NAME (string) : Previous script name. 
-    INPUT_VERSION (integer) : Input version. 
-    
-    OUTPUT_VERSION (integer) : Output version. 
-    
+    INPUT_VERSION (integer) : Input version.     
+    OUTPUT_VERSION (integer) : Output version.     
     OUTPUT_FILE_NAME (string) : File Name for a csv file containing the failed tasks. 
+    
+    SEPARATOR (regex) : Regular expression of separators used in geotiff
+      filenames.     
+    SCHEMA (list) : A list of strings containing the schema. See 
+      aqueduct3.split_key() for more info.
+    EXTRA_PROPERTIES (Dictionary) : Extra properties to add to assets. nodata_value,
+      script used are common properties.
 
 Returns:
 
@@ -47,12 +52,12 @@ Returns:
 """
 
 # Input Parameters
-TESTING = 1
-OVERWRITE = 0 # !CAUTION!
+TESTING = 0
+OVERWRITE = 1 # !CAUTION!
 SCRIPT_NAME = "Y2017M08D02_RH_Ingest_GCS_EE_V02"
 PREVIOUS_SCRIPT_NAME = "Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02"
 
-INPUT_VERSION = 1
+INPUT_VERSION = 2
 OUTPUT_VERSION = 9
 
 OUTPUT_FILE_NAME = "df_errorsV01.csv"
@@ -67,7 +72,7 @@ SCHEMA = ["geographic_range",
      "temporal_range_min",
      "temporal_range_max"]
 
-extra_properties = {"nodata_value":-9999,
+EXTRA_PROPERTIES = {"nodata_value":-9999,
                     "ingested_by" : "RutgerHofste",
                     "script_used": SCRIPT_NAME}
 
@@ -79,7 +84,8 @@ ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_
 
 print("Input gcs: " +  gcs_input_path +
       "\nOutput ee: " + ee_output_path +
-      "\nOutput S3: " + s3_output_path )
+      "\nOutput S3: " + s3_output_path +
+      "\nOutput ec2: " + ec2_output_path)
 
 
 # In[2]:
@@ -92,7 +98,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[20]:
+# In[ ]:
 
 # Imports
 import subprocess
@@ -105,11 +111,18 @@ from datetime import timedelta
 import aqueduct3
 
 
-# ETL
 def main():
     start_time = time.time()
+    get_ipython().system('mkdir -p {ec2_output_path}')
     
-
+    keys = aqueduct3.get_GCS_keys(gcs_input_path)
+    df = aqueduct3.keys_to_df(keys,SEPARATOR,SCHEMA)
+    df = df.assign(**EXTRA_PROPERTIES)
+    df["exportdescription"] = df["indicator"] + "_" + df["temporal_resolution"]+"Y"+df["year"]+"M"+df["month"]
+    df = df.apply(pd.to_numeric, errors='ignore')
+    
+    # Earth Engine Preparations
+    # Create folder
     if OVERWRITE:
         command = "earthengine rm -r {}".format(ee_output_path)
         print(command)
@@ -118,16 +131,6 @@ def main():
     command = "earthengine create folder {}".format(ee_output_path)
     print(command)
     subprocess.check_output(command,shell=True)
-
-    # Script
-
-    
-    keys = aqueduct3.get_GCS_keys(gcs_input_path)
-    df = aqueduct3.keys_to_df(keys,separator,schema)
-
-    df = df.assign(**extra_properties)
-    df["exportdescription"] = df["indicator"] + "_" + df["temporal_resolution"]+"Y"+df["year"]+"M"+df["month"]
-    df = df.apply(pd.to_numeric, errors='ignore')
     
     # Create ImageCollections
     parameters = df.parameter.unique()
@@ -137,71 +140,36 @@ def main():
         print(command,result)
 
     if TESTING:
-        df_complete = df_complete[1:3]
-        
-        
+        df = df[1:3] 
+       
     df_errors = pd.DataFrame()
     
-    for index, row in df_complete.iterrows():
+    for index, row in df.iterrows():
         elapsed_time = time.time() - start_time 
-        print(index,"%.2f" %((index/df_complete.shape[0])*100), "elapsed: ", str(timedelta(seconds=elapsed_time)))
-        geotiff_gcs_path = GCS_BASE + row.file_name + "." + row.extension
-        output_ee_asset_id = EE_BASE +"/"+ row.parameter + "/" + row.file_name
+        print(index,"{:02.2f}".format((float(index)/df.shape[0])*100) + "elapsed: ", str(timedelta(seconds=elapsed_time)))
+
+        geotiff_gcs_path = gcs_input_path + row.file_name + "." + row.extension
+        output_ee_asset_id = ee_output_path +"/"+ row.parameter + "/" + row.file_name
         properties = row.to_dict()
 
         df_errors2 = aqueduct3.upload_geotiff_to_EE_imageCollection(geotiff_gcs_path, output_ee_asset_id, properties,index)
         df_errors = df_errors.append(df_errors2)    
 
+    # Storing error dataframe on ec2 and S3
+    df_errors.to_csv("{}/{}".format(ec2_output_path,OUTPUT_FILE_NAME))
+    get_ipython().system('aws s3 cp  {ec2_output_path} {s3_output_path} --recursive')
+    
+    # Retry Failed Tasks Once
+    df_retry = df_errors.loc[df_errors['error'] != 0]
+    for index, row in df_retry.iterrows():
+        response = subprocess.check_output(row.command, shell=True)
+    
+    return df,df_errors
+
 
 
 if __name__ == "__main__":
-    main()
-
-
-# Adding NoData value, ingested_by and exportdescription
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-get_ipython().system('mkdir -p {ec2_output_path}')
-
-
-# In[ ]:
-
-df_errors.to_csv("{}/{}".format(ec2_output_path,OUTPUT_FILE_NAME))
-
-
-# In[ ]:
-
-get_ipython().system('aws s3 cp  {ec2_output_path} {S3_OUTPUT_PATH} --recursive')
-
-
-# Retry the ones with errors
-
-# In[ ]:
-
-df_retry = df_errors.loc[df_errors['error'] != 0]
-
-
-# In[ ]:
-
-for index, row in df_retry.iterrows():
-    response = subprocess.check_output(row.command, shell=True)
-    
-
-
-# In[ ]:
-
-uniques = df_errors["error"].unique()
-
-
-# In[ ]:
-
-df_retry
+    df,df_errors = main()
 
 
 # In[ ]:
@@ -211,99 +179,9 @@ elapsed = end - start
 print(elapsed)
 
 
-# In[ ]:
-
-
-
+# Previous Runs:
 
 # In[ ]:
 
-# Functions
 
-def split_key(key):
-    """ Split key into dictionary
-    -------------------------------------------------------------------------------
-    WARNING: This function is dependant on the name convention of PCRGLOBWB
-    Do not use with other keys
-    
-    Args:
-        key (string) : key containing information about parameter, year month etc.
-        
-    Returns:
-        out_dict (dictionary): Dictionary containing all information contained
-                               in key.      
-
-    """
-    
-    # will yield the root file code and extension of a set of keys
-    prefix, extension = key.split(".")
-    file_name = prefix.split("/")[-1]
-    parameter = file_name[:-12]
-    month = file_name[-2:] #can also do this with regular expressions if you like
-    year = file_name[-7:-3]
-    identifier = file_name[-11:-8]
-    out_dict = {"file_name":file_name,"extension":extension,"parameter":parameter,"month":month,"year":year,"identifier":identifier}
-    return out_dict
-
-def split_parameter(parameter):
-    """Split parameter 
-    -------------------------------------------------------------------------------
-    WARNING: This function is dependant on the name convention of PCRGLOBWB
-    Do not use with other keys.
-    
-    Args:
-        parameter (string) : parameter string.
-    
-    Returns:
-        out_dict (dictionary) : dictionary containing all information contained
-                                in parameter key.
-    
-    """
-    
-    values = re.split("_|-", parameter) #soilmoisture uses a hyphen instead of underscore between the years
-    keys = ["geographic_range","temporal_range","indicator","temporal_resolution","units","spatial_resolution","temporal_range_min","temporal_range_max"]
-    # ['global', 'historical', 'PDomWN', 'month', 'millionm3', '5min', '1960', '2014']
-    out_dict = dict(zip(keys, values))
-    out_dict["parameter"] = parameter
-    return out_dict
-
-
-def get_GCS_keys(GCS_BASE):
-    """ get list of keys from Google Cloud Storage
-    -------------------------------------------------------------------------------
-    
-    Args:
-        GCS_BASE (string) : Google Cloud Storage namespace containing files.
-        
-    Returns:
-        df (pd.DataFrame) : DataFrame with properties useful to Aqueduct. 
-    
-    """
-    command = "/opt/google-cloud-sdk/bin/gsutil ls {}".format(GCS_BASE)
-    keys = subprocess.check_output(command,shell=True)
-    keys = keys.decode('UTF-8').splitlines()
-    
-    df = keys_to_df(keys)
-    
-    return df
-
-def keys_to_df(keys):
-    """ helper function for 'get_GCS_keys'
-    
-    Args:
-        keys (list) : list of strings with keys.
-        
-    Returns:
-        df (pd.DataFrame) : Pandas DataFrame with all relvant properties for
-                            Aqueduct 3.0.
-    """
-    
-    df = pd.DataFrame()
-    i = 0
-    for key in keys:
-        i = i+1
-        out_dict = split_key(key)
-        df2 = pd.DataFrame(out_dict,index=[i])
-        df = df.append(df2)    
-    return df
 
