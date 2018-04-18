@@ -1,41 +1,60 @@
 
 # coding: utf-8
 
-# ### Create Area and ones Image EE
-# 
-# * Purpose of script: This notebooks create an area image (30s) in m2 to go from flux to volume and vice versa
-# * Author: Rutger Hofste
-# * Kernel used: python27
-# * Date created: 20170905
+# In[11]:
 
-# In[1]:
+""" Create Area and ones Image EE
+-------------------------------------------------------------------------------
+create an area image (30s and 5min) in m2 to go from flux to volume and vice 
+versa. Also creates ones images. 
 
-import time
-dateString = time.strftime("Y%YM%mD%d")
-timeString = time.strftime("UTC %H:%M")
-print(dateString,timeString)
+Author: Rutger Hofste
+Date: 20170905
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:
+
+    SCRIPT_NAME (string) : Script name.
+    INPUT_VERSION (string) : Input version.
+    OUTPUT_VERSION (string) : Output version.
+    DIMENSIONS_5MIN (string) : Dimensions for global 5 arc minute data
+      in string format: '1234x1234'.
+    DIMENSIONS_30S (string) : Dimensions for global 30 arc second data
+      in string format: '1234x1234'.
+    CRS (string) : Coordinate Reference System in string format using 'EPSG:'.
+    EXTRA_PROPERTIES (Dictionary) : Extra properties to add to assets. nodata_value,
+      script used are common properties.
+
+Returns:
+
+TODO:
+
+- remove the need to specify transform if dimension is specified.
+- remove some unnecessary iteration in dictionary specification.
 
 
-# In[2]:
-
-import ee
-import numpy as np
+"""
 
 
-# In[3]:
+SCRIPT_NAME = "Y2017M09D05_RH_create_area_image_EE_V01"
+INPUT_VERSION = 2
+OUTPUT_VERSION =1 
 
-EE_PATH = "projects/WRI-Aquaduct/PCRGlobWB20V07/"
-
-DIMENSION5MIN = "4320x2160"
-DIMENSION30S = "43200x21600"
+X_DIMENSION_5MIN = 4320
+Y_DIMENSION_5MIN = 2160
+X_DIMENSION_30S = 43200
+Y_DIMENSION_30S = 21600
 CRS = "EPSG:4326"
 
-VERSION = 11
 
+EXTRA_PROPERTIES = {
+"ingested_by" : "RutgerHofste",
+"script_used": SCRIPT_NAME,
+"output_version":OUTPUT_VERSION   
+}
 
-# In[4]:
-
-crsTransform5min = [
+CRS_TRANSFORM_5MIN = [
     0.08333333333333333,
     0,
     -180,
@@ -44,10 +63,7 @@ crsTransform5min = [
     90
 ]
 
-
-# In[5]:
-
-crsTransform30s = [
+CRS_TRANSFORM_30S = [
     0.008333333333333333,
     0,
     -180,
@@ -57,38 +73,42 @@ crsTransform30s = [
   ]
 
 
-# In[6]:
+ee_path = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V{:02.0f}".format(INPUT_VERSION)
+
+print("Input ee: " +  ee_path +
+      "\nOutput ee: " + ee_path)
+
+
+# In[2]:
+
+import ee
+import numpy as np
+import aqueduct3
 
 ee.Initialize()
 
 
-# These "random" images are used to set the scales. These images were used because they were created using GDAL which is the most reliable way to create the rasters. 
+# In[3]:
 
-# In[8]:
-
-hybas_lev06_v1c_merged_fiona_30s_V01 = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev06_v1c_merged_fiona_30s_V01")
-hybas_lev06_v1c_merged_fiona_5min_V01 = ee.Image("projects/WRI-Aquaduct/PCRGlobWB20V07/hybas_lev06_v1c_merged_fiona_5min_V01")
-
-
-# In[9]:
-
-scale30s = hybas_lev06_v1c_merged_fiona_30s_V01.projection().nominalScale().getInfo()
-scale5min = hybas_lev06_v1c_merged_fiona_5min_V01.projection().nominalScale().getInfo()
-
-
-# In[10]:
-
-onesRaster = ee.Image.constant(1)
-areaRaster = ee.Image.pixelArea()
-
-
-# In[11]:
-
-def exportToAsset(eePath, geometry,d):
+def exportToAsset(ee_path,d):
+    """ Export image to asset
+    
+    Args:
+        ee_path (string) : earth engine folder.
+        d (dictionary) : dictionary with properties. Required:
+          'image'  and 'dimensions'
+    
+    
+    
+    
+    
+    """
+    
+    
     if d["spatial_resolution"] == "5min":
-        crsTransform = crsTransform5min
+        crsTransform = CRS_TRANSFORM_5MIN
     elif d["spatial_resolution"] == "30s":
-        crsTransform = crsTransform30s
+        crsTransform = CRS_TRANSFORM_30S
         
     image = d["image"]
     dimensions = d["dimensions"]
@@ -100,10 +120,11 @@ def exportToAsset(eePath, geometry,d):
     
     
     image = image.set(metadata)    
-    assetId = eePath + d["exportdescription"] + "V%0.2d" %(VERSION)
+    assetId = ee_path + d["exportdescription"] + "_V{:02.0f}".format(OUTPUT_VERSION)
+    
     task = ee.batch.Export.image.toAsset(
         image =  ee.Image(image),
-        description = d["exportdescription"] + "V%0.2d" %(VERSION),
+        description = d["exportdescription"] + "_V{:02.0f}".format(OUTPUT_VERSION),
         assetId = assetId,
         dimensions = dimensions,
         #region = geometry.bounds().getInfo()['coordinates'][0],
@@ -112,68 +133,92 @@ def exportToAsset(eePath, geometry,d):
         maxPixels = 1e10
         )
     task.start()
+    
+    
+dimensions_5min = "{}x{}".format(X_DIMENSION_5MIN,Y_DIMENSION_5MIN)
+dimensions_30s = "{}x{}".format(X_DIMENSION_30S,Y_DIMENSION_30S)    
 
 
-# In[12]:
+ones_raster = ee.Image.constant(1)
+area_raster = ee.Image.pixelArea()
+
+
+# In[4]:
 
 properties ={}
 
 
-# In[13]:
+# In[5]:
 
-properties["ones_5min"] = {"image":onesRaster,
-                           "dimensions":DIMENSION5MIN,
+properties["ones_5min"] = {"image":ones_raster,
+                           "dimensions":dimensions_5min,
                            "spatial_resolution":"5min",
-                            "ingested_by":"RutgerHofste" ,
-                            "exportdescription": "ones_5min" ,
-                            "units": "dimensionless" ,
-                            "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
-                            "spatial_resolution":"5min"
-                            }
+                           "ingested_by":"RutgerHofste" ,
+                           "exportdescription": "ones_5min" ,
+                           "units": "dimensionless" ,
+                           "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
+                           "spatial_resolution":"5min",
+                           "output_version":OUTPUT_VERSION
+                           }
 
 
-# In[14]:
+# In[6]:
 
-properties["ones_30s"] = {"image":onesRaster,
-                          "dimensions":DIMENSION30S,
+properties["ones_30s"] = {"image":ones_raster,
+                          "dimensions":dimensions_30s,
                           "spatial_resolution":"30s",
                           "ingested_by":"RutgerHofste",
                           "exportdescription": "ones_30s" ,
                           "units": "dimensionless",
                           "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
-                          "spatial_resolution":"30s"
-                            }
+                          "spatial_resolution":"30s",
+                          "output_version":OUTPUT_VERSION
+                          }
 
 
-# In[15]:
+# In[7]:
 
-properties["area_5min_m2"] = {"image":areaRaster,
-                              "dimensions":DIMENSION5MIN,
+properties["area_5min_m2"] = {"image":area_raster,
+                              "dimensions":dimensions_5min,
                               "spatial_resolution":"5min",
                               "ingested_by":"RutgerHofste" ,
                               "exportdescription": "area_5min_m2" ,
                               "units": "m2",
                               "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
-                              "spatial_resolution":"5min"
+                              "spatial_resolution":"5min",
+                              "output_version":OUTPUT_VERSION
                              }
 
 
-# In[16]:
+# In[8]:
 
-properties["area_30s_m2"] = {"image":areaRaster,
-                             "dimensions":DIMENSION30S,
+properties["area_30s_m2"] = {"image":area_raster,
+                             "dimensions":dimensions_30s,
                              "spatial_resolution":"30s",
                              "ingested_by":"RutgerHofste" ,
                              "exportdescription": "area_30s_m2" ,
                              "units": "m2",
                              "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
-                             "spatial_resolution":"30s"
+                             "spatial_resolution":"30s",
+                             "output_version":OUTPUT_VERSION
                              }
 
 
-# In[17]:
+# In[9]:
 
-for key, value in properties.iteritems():
-    exportToAsset(EE_PATH, geometry,value)
+for key, value in properties.items():
+    exportToAsset(ee_path,value)
     print(key)   
+
+
+# In[ ]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# In[ ]:
+
+
 

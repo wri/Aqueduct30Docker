@@ -54,7 +54,9 @@ Returns:
 TESTING = 0
 OVERWRITE = 0 # !CAUTION!
 SCRIPT_NAME = "Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V02"
+
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/flowNetwork/topo_pcrglobwb_05min"
+
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
 GCS_BASE = "gs://aqueduct30_v01/{}/".format(SCRIPT_NAME)

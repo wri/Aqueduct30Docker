@@ -59,15 +59,24 @@
 # 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V02**  
 #     Download the data to your machine, unzip files.
 # 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02**  
-#     Convert netCDF4 to Geotiff.    
+#     Convert netCDF4 to Geotiff. Store on GCS.    
 # 1. **Y2017M08D02_RH_Ingest_GCS_EE_V02**  
 #     Ingest PCRGLOBWB timeseries data on Google Earth Engine
 # 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V02**  
-#     A couple of indicators are shared in ASCII format. Converting to geotiff.
+#     A couple of indicators are shared in ASCII format. Converting to geotiff.Store on GCS.
 # 1. **Y2018M04D12_RH_Ingest_Indicators_GCS_EE_V01**  
 #     Ingest the non-time-series indicators into earth engine. 
-# 1. **Y2017M08D02_RH_Ingest_Additional_Rasters_EE_V01**  
-#     Ingest additional rasters like DEM, LDD etc.     
+# 1. **Y2018M04D18_RH_Convert_Aux_Rasters_Geotiff_V01**  
+#     Convert auxiliary files like DEM, LDD etc. to geotiff. Store on GCS.
+# 1. **Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02**  
+#     Ingest additional rasters like DEM, LDD etc.
+# 1. **Y2018M04D18_RH_Standardize_Demand_Units_5min_EE_V01**  
+#     Demand data is provided as volumes. Calculate Fluxes.
+#     
+#     
+#     
+#     
+#     
 # 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
 #     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa.   
 #     
