@@ -35,7 +35,8 @@ Args:
     
     SCRIPT_NAME (string) : Script name.    
     PREVIOUS_SCRIPT_NAME (string) : Previous script name. 
-    INPUT_VERSION (integer) : Input version.     
+    INPUT_VERSION (integer) : Input version.
+    EE_OUTPUT_VERSION (integer) : Output version for earthengine. 
     OUTPUT_VERSION (integer) : Output version.     
     OUTPUT_FILE_NAME (string) : File Name for a csv file containing the failed tasks. 
     
@@ -58,6 +59,7 @@ SCRIPT_NAME = "Y2017M08D02_RH_Ingest_GCS_EE_V02"
 PREVIOUS_SCRIPT_NAME = "Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02"
 
 INPUT_VERSION = 2
+EE_OUTPUT_VERSION = 9
 OUTPUT_VERSION = 9
 
 OUTPUT_FILE_NAME = "df_errorsV01.csv"
@@ -74,11 +76,12 @@ SCHEMA = ["geographic_range",
 
 EXTRA_PROPERTIES = {"nodata_value":-9999,
                     "ingested_by" : "RutgerHofste",
-                    "script_used": SCRIPT_NAME}
+                    "script_used": SCRIPT_NAME,
+                    "output_version":OUTPUT_VERSION}}
 
 # ETL
 gcs_input_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(PREVIOUS_SCRIPT_NAME,INPUT_VERSION)
-ee_output_path = "projects/WRI-Aquaduct/PCRGlobWB20V{:02.0f}".format(OUTPUT_VERSION)
+ee_output_path = "projects/WRI-Aquaduct/PCRGlobWB20V{:02.0f}".format(EE_OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
@@ -98,7 +101,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
+# In[3]:
 
 # Imports
 import subprocess
@@ -172,16 +175,12 @@ if __name__ == "__main__":
     df,df_errors = main()
 
 
-# In[ ]:
+# In[4]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# Previous Runs:
-
-# In[ ]:
-
-
-
+# Previous Runs:  
+# 7:49:15.632514

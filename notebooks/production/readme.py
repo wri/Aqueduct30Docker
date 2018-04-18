@@ -62,7 +62,7 @@
 #     Convert netCDF4 to Geotiff.    
 # 1. **Y2017M08D02_RH_Ingest_GCS_EE_V02**  
 #     Ingest PCRGLOBWB timeseries data on Google Earth Engine
-# 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V01**  
+# 1. **Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V02**  
 #     A couple of indicators are shared in ASCII format. Converting to geotiff.
 # 1. **Y2018M04D12_RH_Ingest_Indicators_GCS_EE_V01**  
 #     Ingest the non-time-series indicators into earth engine. 

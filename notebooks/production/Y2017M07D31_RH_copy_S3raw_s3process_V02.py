@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[3]:
 
 """ Copy data from S3 raw to S3 process.
 -------------------------------------------------------------------------------
@@ -48,6 +48,10 @@ S3_INPUT_PATHS = ["s3://wri-projects/Aqueduct30/rawData/Utrecht/yoshi20161219/wa
 # Output Parameters
 
 S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+
+print("Input s3: " + str(S3_INPUT_PATHS) +
+      "\nOutput s3: " + S3_OUTPUT_PATH)
 
 
 # In[2]:

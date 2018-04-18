@@ -57,7 +57,7 @@ print("Input ec2: " + ec2_input_path +
       "\nOutput GCS: " +  gcs_output_path)
 
 
-# In[2]:
+# In[16]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")

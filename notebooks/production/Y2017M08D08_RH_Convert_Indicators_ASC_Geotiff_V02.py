@@ -1,12 +1,12 @@
 
 # coding: utf-8
 
-# In[33]:
+# In[1]:
 
 """ Convert Indicators from ASCII to Geotiff
 -------------------------------------------------------------------------------
-A couple of indicators are shared in ASCII format. Converting to geotiff and
-upload to GCS and AWS.
+A couple of indicators are shared in ASCII format. Renaming to a uniform naming
+convention. Converting to geotiff and upload to GCS and AWS.
 
 
 Author: Rutger Hofste
@@ -16,17 +16,16 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
 
-    SCRIPT_NAME (string) : Script name
-    S3_INPUT_PATH (string) : S3 input path containing the ascii rasters.  
-    GCS_OUTPUT (string) : Google Cloud Storage output namespace.
+    SCRIPT_NAME (string) : Script name.
+    PREVIOUS_SCRIPT_NAME (string) : Previous script name. 
+    INPUT_VERSION (integer) : Input version.
+    OUTPUT_VERSION (integer) : Output version.  
 
     X_DIMENSION_5MIN (integer) : horizontal or longitudinal dimension of 
                                  raster.
     Y_DIMENSION_5MIN (integer) : vertical or latitudinal dimension of 
                                  raster.
-    
-
-
+    RENAME_DICT (dictionary) : Old and new names.
 
 Returns:
 
@@ -36,22 +35,49 @@ Returns:
 # Input Parameters
 
 SCRIPT_NAME = "Y2017M08D08_RH_Convert_Indicators_ASC_Geotiff_V02"
+PREVIOUS_SCRIPT_NAME = "Y2017M07D31_RH_copy_S3raw_s3process_V02"
 
-
-INPUT_VERSION = 2
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_copy_S3raw_s3process_V{:02.0f}/output/".format(INPUT_VERSION)
-
-
-GCS_OUTPUT = "gs://aqueduct30_v01/{}/".format(SCRIPT_NAME)
-
+INPUT_VERSION = 3
+OUTPUT_VERSION = 7
 
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
 
-# Output Parameters
+RENAME_DICT = {
+ "global_droughtseveritystandardisedsoilmoisture_5min_1960-2014.tif":
+ "global_historical_droughtseveritystandardisedsoilmoisture_reduced_dimensionless_5min_1960_2014.tif",
+ "global_droughtseveritystandardisedstreamflow_5min_1960-2014.tif":
+ "global_historical_droughtseveritystandardisedstreamflow_reduced_dimensionless_5min_1960_2014.tif",
+ "global_environmentalflows_5min_1960-2014.tif":
+ "global_historical_environmentalflows_reduced_m3second_5min_1960_2014.tif",
+ "global_interannualvariabilitywatersupply_5min_1960-2014.tif":
+ "global_historical_interannualvariabilitywatersupply_reduced_dimensionless_5min_1960_2014.tif",
+ "global_q1seasonalvariabilitywatersupply_5min_1960-2014.tif":
+ "global_historical_q1seasonalvariabilitywatersupply_reduced_dimensionless_5min_1960-2014.tif",
+ "global_q2seasonalvariabilitywatersupply_5min_1960-2014.tif":
+ "global_historical_q2seasonalvariabilitywatersupply_reduced_dimensionless_5min_1960-2014.tif",
+ "global_q3seasonalvariabilitywatersupply_5min_1960-2014.tif":
+ "global_historical_q3seasonalvariabilitywatersupply_reduced_dimensionless_5min_1960-2014.tif",
+ "global_q4seasonalvariabilitywatersupply_5min_1960-2014.tif":
+ "global_historical_q4seasonalvariabilitywatersupply_reduced_dimensionless_5min_1960-2014.tif"
+}
 
 
-# In[4]:
+# ETL
+ec2_input_path = "/volumes/data/{}/input_V{:02.0f}/".format(SCRIPT_NAME,INPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_input_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(PREVIOUS_SCRIPT_NAME,INPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+gcs_output_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input s3: " + s3_input_path +
+      "\nInput ec2: " + ec2_input_path +
+      "\nOutput ec2: " + ec2_output_path +
+      "\nOutput s3: " + s3_output_path +
+      "\nOutput gcs: " + gcs_output_path )
+
+
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -61,7 +87,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[31]:
+# In[3]:
 
 # imports
 import os
@@ -70,31 +96,23 @@ from osgeo import gdal
 import aqueduct3
 
 
-# In[ ]:
-
-# ETL
-
-
-# In[35]:
-
-ec2_input_path =  "/volumes/data/{}/input/".format(SCRIPT_NAME)
-ec2_output_path = "/volumes/data/{}/output/".format(SCRIPT_NAME)
-
-s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output/".format(SCRIPT_NAME)
-
-
-# In[7]:
+# In[4]:
 
 get_ipython().system('mkdir -p {ec2_input_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[11]:
+# In[5]:
 
-get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive --exclude="*" --include="*.asc"')
+get_ipython().system('aws s3 cp {s3_input_path} {ec2_input_path} --recursive --exclude="*" --include="*.asc"')
 
 
-# In[32]:
+# In[6]:
+
+get_ipython().system('ls {ec2_input_path}')
+
+
+# In[7]:
 
 # Convert the ascii files in the ec2_input_directory into geotiffs in the ec2_output_directory
 
@@ -105,7 +123,6 @@ for root, dirs, file_names in os.walk(ec2_input_path):
         base , extension = file_name.split(".")
         output_path = ec2_output_path  + base + ".tif"
         input_path = os.path.join(root, file_name)     
-
         xsize,ysize,geotransform,geoproj,Z = aqueduct3.read_gdal_file(input_path)
         Z[Z<-9990]= -9999
         Z[Z>1e19] = -9999
@@ -113,21 +130,35 @@ for root, dirs, file_names in os.walk(ec2_input_path):
 
 
 
-# Upload to GCS
+# In[8]:
 
-# In[34]:
+for old_name, new_name in RENAME_DICT.items():
+    get_ipython().system('mv {ec2_output_path}{old_name} {ec2_output_path}{new_name}')
+    assert len(new_name)<100, "new key should not exceed 100 characters"
 
-get_ipython().system('gsutil -m cp {ec2_output_path}/*.tif {GCS_OUTPUT}')
+
+# In[9]:
+
+get_ipython().system('gsutil -m cp {ec2_output_path}/*.tif {gcs_output_path}')
 
 
-# In[36]:
+# In[10]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[39]:
+# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# Previous Runs:  
+# 0:04:07.188513 (manual)  
+# 0:01:02.868362 
+
+# In[ ]:
+
+
 
