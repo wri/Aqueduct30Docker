@@ -37,9 +37,9 @@ TODO:
 """
 
 
-SCRIPT_NAME = "Y2017M09D05_RH_create_area_image_EE_V01"
+SCRIPT_NAME = "Y2017M09D05_RH_Create_Area_Image_EE_V01"
 INPUT_VERSION = 2
-OUTPUT_VERSION =1 
+OUTPUT_VERSION = 5 
 
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
@@ -103,15 +103,14 @@ ee.Initialize()
 
 def exportToAsset(ee_path,d):
     """ Export image to asset
-    
+
     Args:
         ee_path (string) : earth engine folder.
         d (dictionary) : dictionary with properties. Required:
           'image'  and 'dimensions'
     
-    
-    
-    
+    Returns:
+        None
     
     """
     
@@ -131,7 +130,7 @@ def exportToAsset(ee_path,d):
     
     
     image = image.set(metadata)    
-    assetId = ee_path + d["exportdescription"] + "_V{:02.0f}".format(OUTPUT_VERSION)
+    assetId = ee_path + "/" + d["exportdescription"] + "_V{:02.0f}".format(OUTPUT_VERSION)
     
     task = ee.batch.Export.image.toAsset(
         image =  ee.Image(image),
@@ -161,13 +160,13 @@ properties ={}
 
 # In[6]:
 
-properties["ones_5min"] = {"image":ones_raster,
+properties["global_ones_5min"] = {"image":ones_raster,
                            "dimensions":dimensions_5min,
                            "spatial_resolution":"5min",
                            "ingested_by":"RutgerHofste" ,
-                           "exportdescription": "ones_5min" ,
-                           "units": "dimensionless" ,
-                           "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
+                           "exportdescription": "global_ones_5min" ,
+                           "unit": "dimensionless" ,
+                           "script_used":SCRIPT_NAME,
                            "spatial_resolution":"5min",
                            "output_version":OUTPUT_VERSION
                            }
@@ -175,13 +174,13 @@ properties["ones_5min"] = {"image":ones_raster,
 
 # In[7]:
 
-properties["ones_30s"] = {"image":ones_raster,
+properties["global_ones_30s"] = {"image":ones_raster,
                           "dimensions":dimensions_30s,
                           "spatial_resolution":"30s",
                           "ingested_by":"RutgerHofste",
-                          "exportdescription": "ones_30s" ,
-                          "units": "dimensionless",
-                          "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
+                          "exportdescription": "global_ones_30s" ,
+                          "unit": "dimensionless",
+                          "script_used":SCRIPT_NAME,
                           "spatial_resolution":"30s",
                           "output_version":OUTPUT_VERSION
                           }
@@ -189,13 +188,13 @@ properties["ones_30s"] = {"image":ones_raster,
 
 # In[8]:
 
-properties["area_5min_m2"] = {"image":area_raster,
+properties["global_area_m2_5min"] = {"image":area_raster,
                               "dimensions":dimensions_5min,
                               "spatial_resolution":"5min",
                               "ingested_by":"RutgerHofste" ,
-                              "exportdescription": "area_5min_m2" ,
-                              "units": "m2",
-                              "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
+                              "exportdescription": "global_area_m2_5min" ,
+                              "unit": "m2",
+                              "script_used":SCRIPT_NAME,
                               "spatial_resolution":"5min",
                               "output_version":OUTPUT_VERSION
                              }
@@ -203,13 +202,13 @@ properties["area_5min_m2"] = {"image":area_raster,
 
 # In[9]:
 
-properties["area_30s_m2"] = {"image":area_raster,
+properties["global_area_m2_30s"] = {"image":area_raster,
                              "dimensions":dimensions_30s,
                              "spatial_resolution":"30s",
                              "ingested_by":"RutgerHofste" ,
-                             "exportdescription": "area_30s_m2" ,
-                             "units": "m2",
-                             "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
+                             "exportdescription": "global_area_m2_30s" ,
+                             "unit": "m2",
+                             "script_used":SCRIPT_NAME,
                              "spatial_resolution":"30s",
                              "output_version":OUTPUT_VERSION
                              }

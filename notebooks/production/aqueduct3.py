@@ -21,6 +21,10 @@ import netCDF4
 import subprocess
 import pandas as pd
 
+# Submodule (not the official earthengine module)
+import earthengine
+
+
 try:
     from osgeo import ogr, osr, gdal
 except:
@@ -317,7 +321,10 @@ def create_imageCollection(ic_id):
     Returns:
         command (string) : command parsed to subprocess module 
         result (string) : subprocess result 
-        
+    
+    Todo:
+        - Move this function to the earthengine part.
+     
     """
     command = "earthengine create collection {}".format(ic_id)
     result = subprocess.check_output(command,shell=True)

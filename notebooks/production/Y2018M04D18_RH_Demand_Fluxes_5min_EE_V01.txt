@@ -1,0 +1,90 @@
+
+""" Demand data is provided as volumes. Calculate Fluxes.
+-------------------------------------------------------------------------------
+PCRGLOBWB Data for demand is provided in volumes with units millionm3 
+(implicit per pixel/per time step); converting to fluxes (m) and storing to 
+earth engine asset. 
+
+Converts demand to flux
+Converts supply and discharge to volume and flux
+
+Author: Rutger Hofste
+Date: 20180418
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:
+
+    SCRIPT_NAME (string) : Script name
+    
+
+Returns:
+
+
+"""
+
+# Input Parameters
+
+SCRIPT_NAME = "Y2018M04D18_RH_Demand_Fluxes_5min_EE_V01"
+EE_VERSION = 9
+
+OUTPUT_VERSION = 1 
+
+ee_path = "projects/WRI-Aquaduct/PCRGlobWB20V{:02.0f}".format(EE_VERSION)
+
+
+print("Input ee: " + ee_path +
+      "\nOutput ee: " + ee_path )
+
+
+
+import time, datetime, sys
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
+print(dateString,timeString)
+sys.version
+
+import ee
+import aqueduct3
+
+ee.Initialize()
+
+
+def update_property_script_used(image):
+    image = image.set("script_used",SCRIPT_NAME)
+    return image
+
+def update_property_output_version(image):
+    image = image.set("output_version",OUTPUT_VERSION)
+    return image
+
+
+sectors = ["PDom","PInd","PIrr","PLiv"]
+demand_types = ["WW","WN"]
+temporal_resolutions = ["year","month"]
+
+for sector in sectors:
+    for demand_type in demand_types:
+        for temporal_resolution in temporal_resolutions:
+            ic_file_name = "global_historical_{}{}_{}_millionm3_5min_1960_2014".format(sector,demand_type,temporal_resolution)
+            ic_asset_id = "{}/{}".format(ee_path,ic_file_name)
+            ic_volume_millionm3_5min = ee.ImageCollection(ic_asset_id)
+            #ic_flux_m_5min = ic_volume_millionm3_5min.map(aqueduct3.earthengine.volume_to_flux_5min_millionm3_m2)
+            #ic_flux_m_5min = ic_flux_m_5min.map(update_property_script_used)
+            #ic_flux_m_5min = ic_flux_m_5min.map(update_property_output_version)
+            
+
+
+
+ic_asset_id
+
+ic_flux_m_5min = ic_flux_m_5min.map(update_property_script_used)
+
+test_image = ee.Image(ic_flux_m_5min.first())
+
+aqueduct3.earthengine.export_image_global_5min(test_image)
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)

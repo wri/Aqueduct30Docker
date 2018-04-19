@@ -56,7 +56,7 @@
 # 
 # 1.  **Y2017M07D31_RH_copy_S3raw_s3process_V02**  
 #     Copy files from raw data folder to process data folder, all within S3. 
-# 1.  **Y2017M07D31_RH_download_PCRGlobWB_data_V02**  
+# 1.  **Y2017M07D31_RH_Download_PCRGlobWB_Data_V02**  
 #     Download the data to your machine, unzip files.
 # 1.  **Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02**  
 #     Convert netCDF4 to Geotiff. Store on GCS.    
@@ -70,15 +70,16 @@
 #     Convert auxiliary files like DEM, LDD etc. to geotiff. Store on GCS.
 # 1. **Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02**  
 #     Ingest additional rasters like DEM, LDD etc.
-# 1. **Y2018M04D18_RH_Standardize_Demand_Units_5min_EE_V01**  
+# 1. **Y2017M09D05_RH_Create_Area_Image_EE_V01**  
+#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa.  
+# 1. **Y2018M04D18_RH_Demand_Fluxes_5min_EE_V01**  
 #     Demand data is provided as volumes. Calculate Fluxes.
 #     
 #     
 #     
 #     
 #     
-# 1. **Y2017M09D05_RH_create_area_image_EE_V01**  
-#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa.   
+#  
 #     
 #     November 24th 2017, restructure data for better processing in postGIS vertical table. Absolute values, Short term Trend, Short term average, Long term Trend and Long term average for all demand indicators, runoff and discharge and water stress uncapped.  
 #     
