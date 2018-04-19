@@ -19,8 +19,10 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 import subprocess
+import re
 import ee
 import pandas as pd
+from retrying import retry
 ee.Initialize()
 
 
@@ -100,7 +102,7 @@ def volume_to_flux_5min_millionm3_m2(image_volume_millionm3_5min):
 
 
 
-    
+@retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
 def export_image_global_5min(image,description,output_asset_id):
     """ Exports an image using the 5min dimension.
     -------------------------------------------------------------------------------
@@ -125,9 +127,62 @@ def export_image_global_5min(image,description,output_asset_id):
     )
     task.start()
     
+
+
+def asset_exists(asset_id):
+    """ Check if asset exists.
+    -------------------------------------------------------------------------------
+    Args:
+        asset_id (string) : asset_id
+        
+    Returns:
+        exists (boolean) : Returns 1 if asset exists, 0 otherwise.
+    """
+    command = "earthengine asset info {}".format(asset_id)
+    try:
+        result = subprocess.check_output(command,shell=True)
+        exists = 1
+    except:
+        exists = 0
+    return exists
+    
+
+def get_df_from_ic(ic_input_asset_id):
+    """Create a pandas dataframe with the image asset ids from an imagecollection.
+    -------------------------------------------------------------------------------
+    
+    Args:
+        ic_input_asset_id (string) : asset id of input imagecollection.
+        
+    Returns:
+        df (pandas dataframe) : Pandas dataframe with asset_ids.
     
     
+    """
+    command = "earthengine ls {}".format(ic_input_asset_id)
+    asset_list_bytes = subprocess.check_output(command,shell=True).splitlines()
+    asset_list =[x.decode("utf-8")  for x in asset_list_bytes]
+    
+    df = pd.DataFrame(asset_list)
+    df.columns = ["input_image_asset_id"]
+    df["input_ic_asset_id"] = ic_input_asset_id
+    return df
+
+def add_export_parameters_for_export(df,old_unit,new_unit,output_version):
+    """ Add output_ic_asset_id, output_image_asset_id and description to df.
+    -------------------------------------------------------------------------------
+    
+    Args:
+        df (pandas dataframe) : Pandas dataframe with input i/ic asset ids.
+        old_unit (regex) : old unit to replace in regex format. 
+        new_unit (string) : new unit in string format.
+        output_version (integer) : output version will be stored in description.
     
     
-    
+    """
+    df_out = df.copy()
+    df_out["output_ic_asset_id"] = df_out["input_ic_asset_id"].apply(lambda x: re.sub(old_unit,new_unit,x))
+    df_out["output_image_asset_id"] = df_out["input_image_asset_id"].apply(lambda x: re.sub(old_unit,new_unit,x))
+    df_out["description"] = df_out["output_image_asset_id"].apply(lambda x: (re.split("/",x)[-1])+"_V{:02.0f}".format(output_version)) 
+    return df_out
     

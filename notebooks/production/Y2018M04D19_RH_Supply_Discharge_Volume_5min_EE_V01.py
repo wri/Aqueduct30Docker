@@ -3,22 +3,16 @@
 
 # In[1]:
 
-""" Demand data is provided as volumes. Calculate Fluxes.
+"""Supply and discharge data is provided as m3second. Convert to millionm3.
 -------------------------------------------------------------------------------
-PCRGLOBWB Data for demand is provided in volumes with units millionm3 
-(implicit per pixel/per time step); converting to fluxes (m) and storing to 
+PCRGLOBWB Data for demand is provided in volumes with units m3second
+(implicit per pixel/per time step); converting to volumes (millionm3) and 
+storing to 
 earth engine asset. 
 
-Notes:
-the uplaod API was overloading (>3000tasks submitted). A Retrying module has 
-been added to the script as well as a check if the files exists. Some tasks 
-will fail due to asynchronous submission.
-
-Converts demand to flux
-Converts supply and discharge to volume and flux
 
 Author: Rutger Hofste
-Date: 20180418
+Date: 20180419
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -35,10 +29,10 @@ Returns:
 
 # Input Parameters
 
-SCRIPT_NAME = "Y2018M04D18_RH_Demand_Fluxes_5min_EE_V01"
+SCRIPT_NAME = "Y2018M04D19_RH_Supply_Discharge_Volume_5min_EE_V01"
 EE_VERSION = 9
 
-OUTPUT_VERSION = 2 
+OUTPUT_VERSION = 1 
 
 TESTING = 1
 
@@ -59,7 +53,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[35]:
+# In[3]:
 
 import subprocess
 import pandas as pd
@@ -72,8 +66,7 @@ import aqueduct3
 ee.Initialize()
 
 
-# In[4]:
-
+# In[19]:
 
 def update_property_script_used(image):
     image = image.set("script_used",SCRIPT_NAME)
@@ -84,21 +77,7 @@ def update_property_output_version(image):
     return image
 
 
-# In[41]:
-
-old_unit = "millionm3"
-new_unit = "m"
-
-sectors = ["PDom","PInd","PIrr","PLiv"]
-demand_types = ["WW","WN"]
-temporal_resolutions = ["year","month"]
-
-if TESTING:
-    sectors = ["PDom"]
-    demand_types = ["WW"]
-    temporal_resolutions = ["year"]
-
-def ic_volume_to_flux_5min_millionm3_m2(ic_input_asset_id,output_version):
+def ic_flux_to_volume_5min_m3second_millionm3(ic_input_asset_id,output_version,old_units,new_units):
     """ Convert an imagecollection from volume to flux.
     -------------------------------------------------------------------------------
     The result is stored in an imagecollection with the same name as the input
@@ -139,46 +118,44 @@ def ic_volume_to_flux_5min_millionm3_m2(ic_input_asset_id,output_version):
         if aqueduct3.earthengine.asset_exists(output_image_asset_id):
             print("Asset exists, skipping: {}".format(output_image_asset_id))
         else:
-            i_volume_millionm3_5min = ee.Image(row["input_image_asset_id"])
-            i_flux_m_5min = aqueduct3.earthengine.volume_to_flux_5min_millionm3_m2(i_volume_millionm3_5min)
-            i_flux_m_5min = update_property_script_used(i_flux_m_5min)
-            i_flux_m_5min = update_property_output_version(i_flux_m_5min)
+            i_flux_m3second_5min = ee.Image(row["input_image_asset_id"])
+            i_volume_millionm3_5min = aqueduct3.earthengine.volume_to_flux_5min_millionm3_m2(i_flux_m3second_5min)
+            i_volume_millionm3_5min = update_property_script_used(i_volume_millionm3_5min)
+            i_volume_millionm3_5min = update_property_output_version(i_volume_millionm3_5min)
             
 
-            aqueduct3.earthengine.export_image_global_5min(i_flux_m_5min,description,output_image_asset_id)
+            #aqueduct3.earthengine.export_image_global_5min(i_flux_m_5min,description,output_image_asset_id)
             print(output_image_asset_id)    
-    
+
     return df
 
 
-# In[42]:
+
+# In[16]:
+
+old_unit = "m3second"
+new_unit = "millionm3"
+
+temporal_resolutions = ["year","month"]
+indicators = ["riverdischarge"]
+
+
+# In[18]:
 
 df = pd.DataFrame()
-for sector in sectors:
-    for demand_type in demand_types:
-        for temporal_resolution in temporal_resolutions:
-            print(sector,demand_type,temporal_resolution)
-            ic_input_file_name = "global_historical_{}{}_{}_millionm3_5min_1960_2014".format(sector,demand_type,temporal_resolution)
-            ic_input_asset_id = "{}/{}".format(ee_path,ic_input_file_name)
-            df = ic_volume_to_flux_5min_millionm3_m2(ic_input_asset_id,OUTPUT_VERSION)
-            
-
-
-# In[25]:
-
-df.head()
+for indicator in indicators:
+    for temporal_resolution in temporal_resolutions:
+        ic_input_file_name = "global_historical_{}_{}_m3second_5min_1960_2014".format(indicator,temporal_resolution)
+        ic_input_asset_id = "{}/{}".format(ee_path,ic_input_file_name)
+        df = ic_flux_to_volume_5min_m3second_millionm3(ic_input_asset_id,OUTPUT_VERSION)
 
 
 # In[ ]:
 
-end = datetime.datetime.now()
-elapsed = end - start
-print(elapsed)
 
 
-# Previous runs:  
-# 
 
-# 
-# 
-# 
+# In[ ]:
+
+
+

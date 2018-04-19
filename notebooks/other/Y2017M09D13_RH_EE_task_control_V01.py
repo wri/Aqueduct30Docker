@@ -20,7 +20,7 @@ print(dateString,timeString)
 
 # In[2]:
 
-MAXTASKS = 10
+MAXTASKS = 3000
 CANCELTASKS = 0
 
 
@@ -81,19 +81,29 @@ def get_details(taskList,MAXTASKS):
 taskList = get_tasks()
 
 
-# In[7]:
+# In[ ]:
+
+type(taskList)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
 
 detailedTasks = get_details(taskList,MAXTASKS)
 
 
-# In[8]:
+# In[ ]:
 
 detailedTasks
 
 
 # # DANGER ZONE
 
-# In[9]:
+# In[ ]:
 
 if CANCELTASKS == 1:
     pendingTasks = [task for task in taskList if task.config['state'] in (u'RUNNING',u'UNSUBMITTED',u'READY')]
