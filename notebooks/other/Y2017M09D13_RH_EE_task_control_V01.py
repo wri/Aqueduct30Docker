@@ -20,8 +20,8 @@ print(dateString,timeString)
 
 # In[2]:
 
-MAXTASKS = 3000
-CANCELTASKS = 0
+MAXTASKS = 500
+CANCELTASKS = 1 # Cancels all pending tasks
 
 
 # In[3]:
@@ -40,17 +40,17 @@ ee.Initialize()
 
 # # Functions
 
-# In[5]:
+# In[9]:
 
 def get_tasks():
     return ee.batch.Task.list()
 
 def cancel_task(task):
-    print task
+    print(task)
     random_time = random.random()
     time.sleep(0.5+random_time*0.5)
     if task.config['state'] in (u'RUNNING',u'UNSUBMITTED',u'READY') :
-        print 'canceling %s' % task
+        print('canceling %s' % task)
         task.cancel()
         
         
@@ -71,24 +71,24 @@ def get_details(taskList,MAXTASKS):
         except:
             pass
         df = df.append(dfNew)
-        print i
+        print(i)
     return df
     
 
 
-# In[6]:
+# In[10]:
 
 taskList = get_tasks()
 
 
-# In[ ]:
+# In[11]:
 
 type(taskList)
 
 
-# In[ ]:
+# In[13]:
 
-
+len(taskList)
 
 
 # In[ ]:
@@ -103,7 +103,7 @@ detailedTasks
 
 # # DANGER ZONE
 
-# In[ ]:
+# In[12]:
 
 if CANCELTASKS == 1:
     pendingTasks = [task for task in taskList if task.config['state'] in (u'RUNNING',u'UNSUBMITTED',u'READY')]

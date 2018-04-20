@@ -19,7 +19,9 @@
 # ### HydroBasins and FAO names
 #     
 # 1. **Y2017M08D02_RH_Merge_HydroBasins_V01**  
-#     copy hydrobasin files from S3 and merge in pyhton using Fiona. It ingests the data into ee. 
+#     copy hydrobasin files from S3 and merge in pyhton using Fiona. 
+# 1. **Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01**  
+#     Ingest hydrobasin rasters in earthengine.
 # 1. **Y2017M08D22_RH_Upstream_V01**  
 #     add upstream PFAFIDs to the merged hydrobasin shp/csv file. 
 # 1. **Y2017M08D23_RH_Downstream_V01**  
@@ -71,7 +73,14 @@
 # 1. **Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02**  
 #     Ingest additional rasters like DEM, LDD etc.
 # 1. **Y2017M09D05_RH_Create_Area_Image_EE_V01**  
-#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa.  
+#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa.
+# 1. **Y2018M04D20_RH_Zonal_Stats_Area_EE_V01**  
+#     Zonal statistics for basin area. Export in table format.
+#     
+#     
+#     
+#     
+#     
 # 1. **Y2018M04D18_RH_Demand_Fluxes_5min_EE_V01**  
 #     Demand data is provided as volumes. Calculate Fluxes.
 # 1. **Y2018M04D19_RH_Supply_Discharge_Volume_5min_EE_V01**  

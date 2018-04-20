@@ -91,6 +91,7 @@ def ic_flux_to_volume_5min_m3second_millionm3(ic_input_asset_id,output_version,o
     
     Args:
         ic_input_asset_id (string) : asset id of input imagecollection.
+        output_version (integer) : output version. 
 
     """
     start_time = time.time()
@@ -118,10 +119,16 @@ def ic_flux_to_volume_5min_m3second_millionm3(ic_input_asset_id,output_version,o
         if aqueduct3.earthengine.asset_exists(output_image_asset_id):
             print("Asset exists, skipping: {}".format(output_image_asset_id))
         else:
-            i_flux_m3second_5min = ee.Image(row["input_image_asset_id"])
-            i_volume_millionm3_5min = aqueduct3.earthengine.volume_to_flux_5min_millionm3_m2(i_flux_m3second_5min)
-            i_volume_millionm3_5min = update_property_script_used(i_volume_millionm3_5min)
-            i_volume_millionm3_5min = update_property_output_version(i_volume_millionm3_5min)
+            i_old_unit_5min = ee.Image(row["input_image_asset_id"])
+            
+            if old_unit == "millionm3" and new_unit == "m":
+                i_new_unit_5min = aqueduct3.earthengine.volume_to_flux_5min_millionm3_m2(i_old_unit_5min)
+            elif old_unit == "m3second" and new_unit == "millionm3":
+                i_new_unit_5min = aqueduct3.earthengine.flux_to_volume_5min_m3second_millionm3(i_old_unit_5min) 
+            else:
+                raise("Error: invalid combination of units.") 
+            i_new_unit_5min = update_property_script_used(i_new_unit_5min)
+            i_new_unit_5min = update_property_output_version(i_new_unit_5min)
             
 
             #aqueduct3.earthengine.export_image_global_5min(i_flux_m_5min,description,output_image_asset_id)

@@ -99,7 +99,9 @@ def volume_to_flux_5min_millionm3_m2(image_volume_millionm3_5min):
       
     return(ee.Image(image_flux_m_5min))
 
-
+def flux_to_volume_5min_m3second_millionm3(image_flux_m3second_5min):
+    # continue here.
+    pass
 
 
 @retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
@@ -185,4 +187,13 @@ def add_export_parameters_for_export(df,old_unit,new_unit,output_version):
     df_out["output_image_asset_id"] = df_out["input_image_asset_id"].apply(lambda x: re.sub(old_unit,new_unit,x))
     df_out["description"] = df_out["output_image_asset_id"].apply(lambda x: (re.split("/",x)[-1])+"_V{:02.0f}".format(output_version)) 
     return df_out
-    
+
+
+def get_global_geometry(test=False):
+    if test:
+        geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+    else:  
+        geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+    return geometry
+
+

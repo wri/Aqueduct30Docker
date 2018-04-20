@@ -24,9 +24,9 @@ Args:
     INPUT_VERSION (integer) : Input version.
     OUTPUT_VERSION (integer) : Output version.
     X_DIMENSION_5MIN (integer) : horizontal or longitudinal dimension of 
-                                 raster.
+        raster.
     Y_DIMENSION_5MIN (integer) : vertical or latitudinal dimension of 
-                                 raster.
+        raster.
     RENAME_DICT (dictionary) : Old and new names.
     
     
