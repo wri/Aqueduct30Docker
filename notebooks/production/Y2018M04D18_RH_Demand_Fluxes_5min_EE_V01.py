@@ -40,7 +40,7 @@ EE_VERSION = 9
 
 OUTPUT_VERSION = 2 
 
-TESTING = 1
+TESTING = 0
 
 ee_path = "projects/WRI-Aquaduct/PCRGlobWB20V{:02.0f}".format(EE_VERSION)
 
@@ -59,7 +59,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[35]:
+# In[3]:
 
 import subprocess
 import pandas as pd
@@ -84,7 +84,7 @@ def update_property_output_version(image):
     return image
 
 
-# In[41]:
+# In[5]:
 
 old_unit = "millionm3"
 new_unit = "m"
@@ -151,7 +151,7 @@ def ic_volume_to_flux_5min_millionm3_m2(ic_input_asset_id,output_version):
     return df
 
 
-# In[42]:
+# In[ ]:
 
 df = pd.DataFrame()
 for sector in sectors:
@@ -164,7 +164,7 @@ for sector in sectors:
             
 
 
-# In[25]:
+# In[ ]:
 
 df.head()
 

@@ -196,4 +196,26 @@ def get_global_geometry(test=False):
         geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
     return geometry
 
+def get_crs_transform(spatial_resolution,test=False):
+    if test:
+        print("todo, add test crs")
+        crs_transform = "todo, see function"
+    else:
+        if spatial_resolution == "5min":
+            crs_transform = CRS_TRANSFORM_5MIN
+        elif spatial_resolution == "30s":
+            crs_transform = CRS_TRANSFORM_30S
+    return crs_transform        
+
+
+def get_grouped_reducer(reducer_name):
+    if reducer_name == "sum":
+        reducer = ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
+    elif reducer_name == "mean":
+        reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
+    else:
+        reducer = -9999
+        raise "Reducer not supported"
+    return reducer
+
 

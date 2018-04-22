@@ -76,6 +76,8 @@
 #     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa.
 # 1. **Y2018M04D20_RH_Zonal_Stats_Area_EE_V01**  
 #     Zonal statistics for basin area. Export in table format.
+# 1. **Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01**  
+#     Zonal statistics for basin demand. Export in table format.
 #     
 #     
 #     
