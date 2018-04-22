@@ -98,6 +98,40 @@ get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
+# In[ ]:
+
+def zonal_stats():
+    """ Zonal Statistics for """
+    
+    
+    
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
 # In[5]:
 
 sectors = ["PDom","PInd","PIrr","PLiv"]

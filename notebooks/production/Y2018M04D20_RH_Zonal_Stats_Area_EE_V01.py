@@ -107,6 +107,39 @@ def post_process_results(result_list,function_properties,extra_properties=EXTRA_
     return df
     
     
+
+    
+
+def raster_zonal_stats(i_zones_asset_id,i_values_asset_id,reducer_name,output_type):
+    """ Zonal statistics 
+    -------------------------------------------------------------------------------
+    Zonal statistics with value and zones provided as rasters. Hardcoding 
+    geospatial transformation to save time. Depending on output type the function
+    is run client or server side. 
+    
+    
+    Args:
+        i_zones_asset_id (string) : Earthengine asset id for zones image.
+        i_values_asset_id (string) : Earthengine asset id for value image.
+        output_type (string) : Output data type. Supported are 'df'.  
+    
+    """
+    
+    
+    total_image = ee.Image(i_values_asset_id).addBands(ee.Image(i_zones_asset_id))
+
+    result_list = total_image.reduceRegion(geometry = geometry,
+                                    reducer= reducer,
+                                    crsTransform = crs_transform,
+                                    maxPixels=1e10
+                                    ).get("groups")
+
+    function_properties = {"pfaf_level":pfaf_level,
+                           "spatial_resolution":spatial_resolution,
+                           "reducer":reducer_name}
+
+    df = post_process_results(result_list,function_properties)    
+    
     
 
 
@@ -134,19 +167,9 @@ for reducer_name in reducer_names:
             
             i_zones_asset_id = "{}/hybas_lev{:02.0f}_v1c_merged_fiona_{}_V{:02.0f}".format(EE_INPUT_ZONES_PATH,pfaf_level,spatial_resolution,INPUT_VERSION_ZONES)
             i_values_asset_id = "{}/global_area_m2_{}_V{:02.0f}".format(EE_INPUT_VALUES_PATH,spatial_resolution,INPUT_VERSION_VALUES)
-            total_image = ee.Image(i_values_asset_id).addBands(ee.Image(i_zones_asset_id))
             
-            result_list = total_image.reduceRegion(geometry = geometry,
-                                            reducer= reducer,
-                                            crsTransform = crs_transform,
-                                            maxPixels=1e10
-                                            ).get("groups")
+            
 
-            function_properties = {"pfaf_level":pfaf_level,
-                                   "spatial_resolution":spatial_resolution,
-                                   "reducer":reducer_name}
-            
-            df = post_process_results(result_list,function_properties)
 
             output_file_path_pkl = "{}/df_hybas_lev{:02.0f}_{}.pkl".format(ec2_output_path,pfaf_level,spatial_resolution)
             output_file_path_csv = "{}/df_hybas_lev{:02.0f}_{}.csv".format(ec2_output_path,pfaf_level,spatial_resolution)
