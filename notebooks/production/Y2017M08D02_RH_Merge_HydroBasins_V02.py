@@ -251,8 +251,10 @@ elapsed = end - start
 print(elapsed)
 
 
-# In[11]:
+# Previous Runs:  
+# 0:43:42.915611
 
-Previous Runs: 
-0:43:42.915611
+# In[ ]:
+
+
 

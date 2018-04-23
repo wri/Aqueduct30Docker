@@ -169,6 +169,11 @@ for sector in sectors:
 df.head()
 
 
+# In[9]:
+
+df.head()
+
+
 # In[ ]:
 
 end = datetime.datetime.now()

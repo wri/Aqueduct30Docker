@@ -8,6 +8,26 @@
 # * Kernel used: python27
 # * Date created: 20170913
 
+# In[27]:
+
+SCRIPT_NAME = "Y2017M09D13_RH_EE_task_control_V01"
+OUTPUT_VERSION = 1
+OUTPUT_FILE_NAME = "detailed_tasks"
+
+
+ec2_output_path = ("/volumes/data/{}/output_V{:02.0f}/").format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Output s3: " + s3_output_path +
+      "\nOutput ec2: " + ec2_output_path)
+
+
+# In[16]:
+
+get_ipython().system('rm -r {ec2_output_path}')
+get_ipython().system('mkdir -p {ec2_output_path}')
+
+
 # In[1]:
 
 import time
@@ -20,8 +40,8 @@ print(dateString,timeString)
 
 # In[2]:
 
-MAXTASKS = 500
-CANCELTASKS = 1 # Cancels all pending tasks
+MAXTASKS = 3000
+CANCELTASKS = 0 # Cancels all pending tasks
 
 
 # In[3]:
@@ -40,7 +60,7 @@ ee.Initialize()
 
 # # Functions
 
-# In[9]:
+# In[5]:
 
 def get_tasks():
     return ee.batch.Task.list()
@@ -76,17 +96,17 @@ def get_details(taskList,MAXTASKS):
     
 
 
-# In[10]:
+# In[6]:
 
 taskList = get_tasks()
 
 
-# In[11]:
+# In[7]:
 
 type(taskList)
 
 
-# In[13]:
+# In[8]:
 
 len(taskList)
 
@@ -96,14 +116,30 @@ len(taskList)
 detailedTasks = get_details(taskList,MAXTASKS)
 
 
-# In[ ]:
+# In[19]:
 
-detailedTasks
+
+
+
+# In[20]:
+
+detailedTasks.to_csv(ec2_output_path + OUTPUT_FILE_NAME + ".csv")
+detailedTasks.to_pickle(ec2_output_path + OUTPUT_FILE_NAME + ".pkl")
+
+
+# In[29]:
+
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
 # # DANGER ZONE
 
 # In[12]:
+
+detailedTasks
+
+
+# In[ ]:
 
 if CANCELTASKS == 1:
     pendingTasks = [task for task in taskList if task.config['state'] in (u'RUNNING',u'UNSUBMITTED',u'READY')]
