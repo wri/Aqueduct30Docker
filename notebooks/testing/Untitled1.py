@@ -1,24 +1,26 @@
 
 # coding: utf-8
 
-# In[1]:
-
-from calendar import monthrange, isleap
+# In[ ]:
 
 
-# In[12]:
-
-year = 1980
 
 
-# In[13]:
-
-daysPerYear = 366 if isleap(year) else 365
+# In[ ]:
 
 
-# In[14]:
 
-print(daysPerYear)
+
+# In[2]:
+
+import sys
+sys.path.append("/opt/pcraster-4.1.0_x86-64/python")
+import pcraster
+
+
+# In[ ]:
+
+pcraster
 
 
 # In[ ]:

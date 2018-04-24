@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[6]:
 
 """ Short description of the notebook. 
 -------------------------------------------------------------------------------
@@ -20,7 +20,8 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
 
-    SCRIPT_NAME (string) : Script name
+    SCRIPT_NAME (string) : Script name.
+    OUTPUT_VERSION (integer) : Output version.
 
 
 Returns:
@@ -31,19 +32,35 @@ Returns:
 # Input Parameters
 
 SCRIPT_NAME = "Y0000M00D00_XX_Script_Template_V01"
+OUTPUT_VERSION = 1
 
 # Output Parameters
 
 
 
-# In[ ]:
+# In[7]:
 
-import time, datetime, sys
+import time, datetime, sys, logging
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
 start = datetime.datetime.now()
 print(dateString,timeString)
 sys.version
+
+
+# In[14]:
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+file_handler = logging.FileHandler("./logs/{}V{:02.0f}.log".format(SCRIPT_NAME,OUTPUT_VERSION))
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+
+# In[15]:
+
+logger.debug("test")
 
 
 # In[ ]:

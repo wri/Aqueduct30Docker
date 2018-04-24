@@ -18,7 +18,7 @@
 # 
 # ### HydroBasins and FAO names
 #     
-# 1. **Y2017M08D02_RH_Merge_HydroBasins_V01**  
+# 1. **Y2017M08D02_RH_Merge_HydroBasins_V02**  
 #     copy hydrobasin files from S3 and merge in pyhton using Fiona. 
 # 1. **Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01**  
 #     Ingest hydrobasin rasters in earthengine.
@@ -89,8 +89,7 @@
 #     Supply and discharge data is provided as m3second. Convert to millionm3.
 #     
 #     
-#     
-#     
+#  
 #  
 #     
 #     November 24th 2017, restructure data for better processing in postGIS vertical table. Absolute values, Short term Trend, Short term average, Long term Trend and Long term average for all demand indicators, runoff and discharge and water stress uncapped.  

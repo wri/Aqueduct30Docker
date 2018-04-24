@@ -180,8 +180,3 @@ print(elapsed)
 
 # Previous Runs:  
 # 0:00:39.741528
-
-# In[ ]:
-
-
-

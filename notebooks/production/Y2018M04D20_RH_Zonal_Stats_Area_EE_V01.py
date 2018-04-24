@@ -38,7 +38,7 @@ EE_INPUT_ZONES_PATH = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_G
 EE_INPUT_VALUES_PATH = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V02"
 INPUT_VERSION_ZONES = 4
 INPUT_VERSION_VALUES = 5
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 EXTRA_PROPERTIES = {"output_version":OUTPUT_VERSION,
                     "script_used":SCRIPT_NAME,
@@ -77,6 +77,12 @@ ee.Initialize()
 
 # In[4]:
 
+get_ipython().system('rm -r {ec2_output_path}')
+get_ipython().system('mkdir -p {ec2_output_path}')
+
+
+# In[5]:
+
 def dict_to_feature(dictje):
     return ee.Feature(None,dictje)
 
@@ -84,7 +90,7 @@ def post_process_results(result_list,function_properties,extra_properties=EXTRA_
     """Client side function to convert results of reduceRegion to pandas dataframe.
     -------------------------------------------------------------------------------
     
-    Adds additional properties. The script is client side for convenienve reasons.
+    Adds additional properties. The script is client side for convenience reasons.
     A more robust and fast approach would be to add the extra_properties to the 
     server side dictionary.
     
@@ -104,48 +110,7 @@ def post_process_results(result_list,function_properties,extra_properties=EXTRA_
     df = pd.DataFrame(result_list_clientside)
     df = df.assign(**extra_properties)
     df = df.apply(pd.to_numeric, errors='ignore')
-    return df
-    
-    
-
-    
-
-def raster_zonal_stats(i_zones_asset_id,i_values_asset_id,reducer_name,output_type):
-    """ Zonal statistics 
-    -------------------------------------------------------------------------------
-    Zonal statistics with value and zones provided as rasters. Hardcoding 
-    geospatial transformation to save time. Depending on output type the function
-    is run client or server side. 
-    
-    
-    Args:
-        i_zones_asset_id (string) : Earthengine asset id for zones image.
-        i_values_asset_id (string) : Earthengine asset id for value image.
-        output_type (string) : Output data type. Supported are 'df'.  
-    
-    """
-    
-    
-    total_image = ee.Image(i_values_asset_id).addBands(ee.Image(i_zones_asset_id))
-
-    result_list = total_image.reduceRegion(geometry = geometry,
-                                    reducer= reducer,
-                                    crsTransform = crs_transform,
-                                    maxPixels=1e10
-                                    ).get("groups")
-
-    function_properties = {"pfaf_level":pfaf_level,
-                           "spatial_resolution":spatial_resolution,
-                           "reducer":reducer_name}
-
-    df = post_process_results(result_list,function_properties)    
-    
-    
-
-
-# In[5]:
-
-
+    return df   
 
 
 # In[6]:
@@ -168,13 +133,26 @@ for reducer_name in reducer_names:
             i_zones_asset_id = "{}/hybas_lev{:02.0f}_v1c_merged_fiona_{}_V{:02.0f}".format(EE_INPUT_ZONES_PATH,pfaf_level,spatial_resolution,INPUT_VERSION_ZONES)
             i_values_asset_id = "{}/global_area_m2_{}_V{:02.0f}".format(EE_INPUT_VALUES_PATH,spatial_resolution,INPUT_VERSION_VALUES)
             
+            #df = raster_zonal_stats(i_zones_asset_id,i_values_asset_id,geometry,crs_transform,reducer,output_type)
             
-
-
+            
+            total_image = ee.Image(i_values_asset_id).addBands(ee.Image(i_zones_asset_id))
+            result_list = total_image.reduceRegion(geometry = geometry,
+                                    reducer= reducer,
+                                    crsTransform = crs_transform,
+                                    maxPixels=1e10
+                                    ).get("groups")
+            
+            function_properties = {"pfaf_level":pfaf_level,
+                                   "spatial_resolution":spatial_resolution,
+                                   "reducer":reducer_name}
+            df = post_process_results(result_list,function_properties) 
+            
+            
             output_file_path_pkl = "{}/df_hybas_lev{:02.0f}_{}.pkl".format(ec2_output_path,pfaf_level,spatial_resolution)
             output_file_path_csv = "{}/df_hybas_lev{:02.0f}_{}.csv".format(ec2_output_path,pfaf_level,spatial_resolution)
             df.to_pickle(output_file_path_pkl)
-            df.to_csv(output_file_path_csv)
+            df.to_csv(output_file_path_csv,encoding='utf-8')
 
 
 # In[7]:
@@ -194,11 +172,5 @@ elapsed = end - start
 print(elapsed)
 
 
-# Previous runs:
-# 0:00:09.043456
-# 
-
-# In[ ]:
-
-
-
+# Previous runs:  
+# 0:01:06.446569

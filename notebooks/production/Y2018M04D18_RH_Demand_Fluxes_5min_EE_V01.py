@@ -102,7 +102,7 @@ def ic_volume_to_flux_5min_millionm3_m2(ic_input_asset_id,output_version):
     """ Convert an imagecollection from volume to flux.
     -------------------------------------------------------------------------------
     The result is stored in an imagecollection with the same name as the input
-    imagecollection but with 'millionm3' replaced by 'm'
+    imagecollection but with 'm' instead of 'millionm3'.
     
     Input ic:
     global_historical_PDomWW_year_millionm3_5min_1960_2014

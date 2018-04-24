@@ -23,6 +23,7 @@ import re
 import ee
 import pandas as pd
 from retrying import retry
+from calendar import monthrange, isleap
 ee.Initialize()
 
 
@@ -74,6 +75,7 @@ def create_imageCollection(ic_id):
 
 def volume_to_flux_5min_millionm3_m2(image_volume_millionm3_5min):
     """ Convert image from volume to flux. Suitable for mapping over IC.
+    -------------------------------------------------------------------------------
     
     Args:
         image_volume_millionm3_5min (ee.Image) : image with volumetric data.
@@ -99,10 +101,43 @@ def volume_to_flux_5min_millionm3_m2(image_volume_millionm3_5min):
       
     return(ee.Image(image_flux_m_5min))
 
-def flux_to_volume_5min_m3second_millionm3(image_flux_m3second_5min):
-    # continue here.
-    pass
-
+def flux_to_volume_5min_m3second_millionm3(image_flux_m3second_5min,temporal_resolution,year,month):
+    """ Converts an image from flux (m3second) to volume
+    -------------------------------------------------------------------------------
+    Temporal resolution with year and month are required to convert m3second to 
+    millionm3 per month or year. 
+    
+    
+    Args:
+        image_flux_m3second_5min (ee.Image) : image with flux data.
+        temporal_resolution (string) : temporal resolution. Supported are year and
+            month.
+        year (integer) : year.
+        month (integer) : month.
+    
+    Returns:
+    
+    """
+    old_unit = "m3second"
+    new_unit = "millionm3"
+    update_properties = ["unit","parameter","file_name"]
+    seconds_per_day = 86400
+    
+    if temporal_resolution == "month":
+        seconds_per_month = monthrange(year,month)[1]*(seconds_per_day)
+        image_volume_millionm3_5min = image_flux_m3second_5min.multiply(seconds_per_month).divide(1e6)
+    elif temporal_resolution == "year":
+        days_per_year = 366 if isleap(year) else 365
+        seconds_per_year = days_per_year*(seconds_per_day)
+        image_volume_millionm3_5min = image_flux_m3second_5min.multiply(seconds_per_year).divide(1e6)
+    
+    image_volume_millionm3_5min = image_volume_millionm3_5min.copyProperties(image_flux_m3second_5min,exclude=update_properties)
+    
+    for update_property in update_properties:
+        old_property = ee.String(image_flux_m3second_5min.get(update_property))
+        new_property = old_property.replace(old_unit,new_unit)
+        image_volume_millionm3_5min = image_volume_millionm3_5min.set(update_property,new_property)
+    return image_volume_millionm3_5min
 
 @retry(wait_exponential_multiplier=10000, wait_exponential_max=100000)
 def export_image_global_5min(image,description,output_asset_id):
