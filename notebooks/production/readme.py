@@ -174,6 +174,12 @@
 # 
 # 1. **Y2017M10D09_RH_create_Line_Shape_File_V01**
 #     Create a shapefile to visualize the flow network
+# 1. **Y2018M04D24_RH_Create_Additional_Pcrasters_V01**  
+#     Use pcraster to create additional rasters such as streamorder.
+# 1. **Y2018M04D25_RH_Convert_Pcrasters_Map_Geotiff_V01**  
+#     Convert pcrasters to geotiffs. 
+# 1. **Y2018M04D25_RH_Ingest_Pcraster_GCS_EE_V01**  
+#     Ingest pcraster generated files from Cloud Storage to Earth Engine.
 #     
 # 
 # ### Create Final Databases
