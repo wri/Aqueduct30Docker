@@ -83,11 +83,13 @@
 #     
 #     
 #     
+#     
 # 1. **Y2018M04D18_RH_Demand_Fluxes_5min_EE_V01**  
 #     Demand data is provided as volumes. Calculate Fluxes.
 # 1. **Y2018M04D19_RH_Supply_Discharge_Volume_5min_EE_V01**  
 #     Supply and discharge data is provided as m3second. Convert to millionm3.
-#     
+# 1. **Y2018M05D01_RH_Supply_Fluxes_5min_EE_V01**  
+#     Supply data is available in m3second and millionm3. Convert to flux. 
 #     
 #  
 #  
