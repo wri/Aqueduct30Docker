@@ -59,12 +59,18 @@ print(dateString,timeString)
 sys.version
 
 
+# In[7]:
+
+
+
+
 # In[3]:
 
 import numpy as np
 import aqueduct3
 import netCDF4
 from osgeo import gdal
+import matplotlib as plt
 
 def etl():
     get_ipython().system('rm -r {ec2_input_path}')
