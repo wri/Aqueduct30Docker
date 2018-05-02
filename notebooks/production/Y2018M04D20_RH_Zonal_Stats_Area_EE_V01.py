@@ -25,7 +25,6 @@ Args:
     EXTRA_PROPERTIES (dictionary) : Extra properties to store in the resulting
         pandas dataframe. 
     
-
 Returns:
 
 

@@ -90,7 +90,7 @@
 #     Supply and discharge data is provided as m3second. Convert to millionm3.
 # 1. **Y2018M05D01_RH_Supply_Fluxes_5min_EE_V01**  
 #     Supply data is available in m3second and millionm3. Convert to flux. 
-# 1. **Y2018M05D02_RH_Find_Mask_Discharge_Pixels_V01**  
+# 1. **Y2018M05D02_RH_Mask_Discharge_Pixels_V01**  
 #     Find the pixels within each basin to use for river discharge.
 #     
 #  

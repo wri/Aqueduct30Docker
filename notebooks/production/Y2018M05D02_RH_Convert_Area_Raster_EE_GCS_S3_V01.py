@@ -65,46 +65,48 @@ import aqueduct3
 ee.Initialize()
 
 
-for file_name in INPUT_FILE_NAMES:
-    input_asset_id = EE_INPUT_PATH + file_name
-    if file_name == "global_area_m2_5min_V05":
-        spatial_resolution =  "5min"
-        if TESTING:
-            output_file_name = "sample_area_m2_5min_V05"
+def main():
+    for file_name in INPUT_FILE_NAMES:
+        input_asset_id = EE_INPUT_PATH + file_name
+        if file_name == "global_area_m2_5min_V05":
+            spatial_resolution =  "5min"
+            if TESTING:
+                output_file_name = "sample_area_m2_5min_V05"
+            else:
+                output_file_name = "global_area_m2_5min_V05"
+        elif file_name == "global_area_m2_30s_V05":
+            spatial_resolution =  "30s"
+            if TESTING:
+                output_file_name = "sample_area_m2_30s_V05"
+            else:
+                output_file_name = "global_area_m2_30s_V05"
         else:
-            output_file_name = "global_area_m2_5min_V05"
-    elif file_name == "global_area_m2_30s_V05":
-        spatial_resolution =  "30s"
-        if TESTING:
-            output_file_name = "sample_area_m2_30s_V05"
-        else:
-            output_file_name = "global_area_m2_30s_V05"
-    else:
-        raise Exception("File Name not recognized")
-       
-    output_file_name_prefix = "{}/output_v{:02.0f}/{}".format(SCRIPT_NAME,OUTPUT_VERSION,output_file_name)
-    print(output_file_name_prefix)
-    crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
-    dimensions = aqueduct3.earthengine.get_dimensions(spatial_resolution)
-    geometry = aqueduct3.earthengine.get_global_geometry(test=TESTING)
-    # Weird legacy stuff: 
-    # https://groups.google.com/d/msg/google-earth-engine-developers/TViMuO3ObeM/cpNNg-eMDAAJ
-    geometry_client_side = geometry.getInfo()['coordinates']
-    crs = aqueduct3.earthengine.CRS
+            raise Exception("File Name not recognized")
 
-    image = ee.Image(input_asset_id)
-    task = ee.batch.Export.image.toCloudStorage(
-                image= image, 
-                description= file_name,
-                bucket = OUTPUT_GCS_BUCKET,
-                fileNamePrefix = output_file_name_prefix,
-                region = geometry_client_side,
-                crs = crs,
-                crsTransform = crs_transform,
-                maxPixels = 1e10)
-    task.start()
+        output_file_name_prefix = "{}/output_v{:02.0f}/{}".format(SCRIPT_NAME,OUTPUT_VERSION,output_file_name)
+        print(output_file_name_prefix)
+        crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
+        dimensions = aqueduct3.earthengine.get_dimensions(spatial_resolution)
+        geometry = aqueduct3.earthengine.get_global_geometry(test=TESTING)
+        # Weird legacy stuff: 
+        # https://groups.google.com/d/msg/google-earth-engine-developers/TViMuO3ObeM/cpNNg-eMDAAJ
+        geometry_client_side = geometry.getInfo()['coordinates']
+        crs = aqueduct3.earthengine.CRS
 
-    
+        image = ee.Image(input_asset_id)
+        task = ee.batch.Export.image.toCloudStorage(
+                    image= image, 
+                    description= file_name,
+                    bucket = OUTPUT_GCS_BUCKET,
+                    fileNamePrefix = output_file_name_prefix,
+                    region = geometry_client_side,
+                    crs = crs,
+                    crsTransform = crs_transform,
+                    maxPixels = 1e10)
+        task.start()
+
+if __name__ == "__main__":
+    main()
 
 
 # In[4]:
@@ -115,4 +117,5 @@ print(elapsed)
 
 
 # Previous runs:  
+# 0:00:06.296458
 # 

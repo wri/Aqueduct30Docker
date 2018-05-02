@@ -225,6 +225,22 @@ def add_export_parameters_for_export(df,old_unit,new_unit,output_version):
 
 
 def get_global_geometry(test=False):
+    """ Returns a global or samplle geometry.
+    -------------------------------------------------------------------------------
+    please note that some python functions require you to modify the output.
+    geometry.getInfo()['coordinates'] 
+    
+    This will likely change in a future version of earthengine.
+    
+    
+    Args:
+        test (boolean) : toggle testing mode.
+        
+    Returns:
+        geomtery (ee.geometry) : Server side geometry object.
+    
+    """
+    
     if test:
         geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False )
     else:  
