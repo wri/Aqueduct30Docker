@@ -1,26 +1,28 @@
 
 # coding: utf-8
 
+# Example: https://www.programcreek.com/python/example/91667/osgeo.gdal.Polygonize
+# 
+# 
+
 # In[ ]:
 
 
 
 
-# In[ ]:
+# In[1]:
 
-
+from osgeo import gdal
 
 
 # In[2]:
 
-import sys
-sys.path.append("/opt/pcraster-4.1.0_x86-64/python")
-import pcraster
+dir(gdal)
 
 
-# In[ ]:
+# In[3]:
 
-pcraster
+help(gdal.Polygonize)
 
 
 # In[ ]:

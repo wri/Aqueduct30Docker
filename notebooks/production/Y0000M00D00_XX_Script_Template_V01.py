@@ -35,7 +35,16 @@ SCRIPT_NAME = "Y0000M00D00_XX_Script_Template_V01"
 OUTPUT_VERSION = 1
 
 # Output Parameters
+gcs_input_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(PREVIOUS_SCRIPT_NAME,INPUT_VERSION)
+ee_output_path = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V{:02.0f}".format(OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
+
+print("Input gcs: " +  gcs_input_path +
+      "\nOutput ee: " + ee_output_path +
+      "\nOutput S3: " + s3_output_path +
+      "\nOutput ec2: " + ec2_output_path)
 
 
 # In[7]:

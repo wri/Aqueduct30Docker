@@ -64,7 +64,7 @@ SCRIPT_NAME = "Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02"
 PREVIOUS_SCRIPT_NAME = "Y2018M04D18_RH_Convert_Aux_Rasters_Geotiff_V01"
 
 INPUT_VERSION  = 4
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 OUTPUT_FILE_NAME = "df_errors.csv"
 
@@ -84,7 +84,7 @@ EXTRA_PROPERTIES = {"nodata_value":-9999,
 
 
 gcs_input_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(PREVIOUS_SCRIPT_NAME,INPUT_VERSION)
-ee_output_path = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V{:02.0f}".format(OUTPUT_VERSION)
+ee_output_path = "projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
@@ -173,6 +173,16 @@ def main():
 
 if __name__ == "__main__":
     df,df_errors = main()
+
+
+# In[6]:
+
+df
+
+
+# In[7]:
+
+df_errors
 
 
 # In[5]:
