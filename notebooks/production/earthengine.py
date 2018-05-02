@@ -242,6 +242,14 @@ def get_crs_transform(spatial_resolution,test=False):
             crs_transform = CRS_TRANSFORM_30S
     return crs_transform        
 
+def get_dimensions(spatial_resolution):
+    if spatial_resolution == "5min":
+        dimensions = "{}x{}".format(X_DIMENSION_5MIN, Y_DIMENSION_5MIN)
+    elif spatial_resolution == "30s":
+        dimensions = "{}x{}".format(X_DIMENSION_30S, Y_DIMENSION_30S)
+    else:
+        raise Exception("Provide a valid spatial resolution, options include '5min' and '30s'")
+    return dimensions
 
 def get_grouped_reducer(reducer_name):
     if reducer_name == "sum":

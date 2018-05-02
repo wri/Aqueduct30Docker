@@ -73,11 +73,11 @@
 # 1. **Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02**  
 #     Ingest additional rasters like DEM, LDD etc.
 # 1. **Y2017M09D05_RH_Create_Area_Image_EE_V01**  
-#     Create an image with the pixel area size in m2 o go from flux to volumen and vice versa.
+#     Create an image with the pixel area size in m2 to go from flux to volumen and vice versa.
 # 1. **Y2018M04D20_RH_Zonal_Stats_Area_EE_V01**  
 #     Zonal statistics for basin area. Export in table format.
 # 1. **Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01**  
-#     Zonal statistics for basin demand. Export in table format.
+#     Zonal statistics for basin demand. ExporArea rasters were created in ee, storing in gcs and s3.t in table format.
 #     
 #     
 #     
@@ -196,6 +196,12 @@
 # ### Evaporative Stress Index  
 # 1.  **Y2018M03D22_RH_Download_ESI_V01**  
 #     Download ESI (Evaporative Stress Index) to Instance, Google Cloud Services and Amazon S3.
+#     
+#     
+# ### QA
+# 1.  **Y2018M05D02_RH_Convert_Area_Raster_EE_GCS_S3_V01**
+#     Area rasters were created in ee, storing in gcs and s3.
+# 
 #     
 # 
 # 

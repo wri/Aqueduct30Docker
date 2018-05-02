@@ -34,7 +34,7 @@ There are several subbasin types:
     e.g.: 172144.
 8) Large basin with main stream and other stream with large flow but lower 
     stream order.
-    e.g.: Yet to be found. 
+    e.g.: To be found. 
     
 The cell of highest streamorder will be masked for 5) and 7)
 No mask will be applied to the other categories. 
@@ -58,11 +58,13 @@ Returns:
 # Input Parameters
 
 SCRIPT_NAME = "Y2018M05D02_RH_Find_Mask_Discharge_Pixels_V01"
+STREAM_ORDER_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D25_RH_Ingest_Pcraster_GCS_EE_V01/output_V01/global_streamorder_dimensionless_05min_V02"
+HYBAS_LEV06_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V01/hybas_lev06_v1c_merged_fiona_30s_V04"
+GLOBAL_AREA_M2_30S_ASSET_ID = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V02/global_area_m2_30s_V05"
+
 OUTPUT_VERSION = 1
 
-
 ee_output_path = "projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
-
 
 print("Output ee: " +  ee_output_path)
 
