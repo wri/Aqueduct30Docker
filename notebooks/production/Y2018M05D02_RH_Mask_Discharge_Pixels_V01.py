@@ -63,7 +63,7 @@ Returns:
 SCRIPT_NAME = "Y2018M05D02_RH_Mask_Discharge_Pixels_V01"
 STREAM_ORDER_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D25_RH_Ingest_Pcraster_GCS_EE_V01/output_V01/global_streamorder_dimensionless_05min_V02"
 HYBAS_LEV06_30S_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_30s_V04"
-AREA_M2_30S_ASSET_ID = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V02/global_area_m2_30s_V05"
+AREA_M2_30S_ASSET_ID = "projects/WRI-Aquaduct/Y2017M09D05_RH_Create_Area_Image_EE_V01/output_V07/global_area_m2_30s_V07"
 OUTPUT_VERSION = 1
 
 COUNT_AREA_THRESHOLD_30S = 1000 # corresponds to 10 5min cells
@@ -104,19 +104,81 @@ ee.Initialize()
 
 
 
-# In[8]:
+# In[ ]:
 
-output_dict = {}
+
+
+
+# In[ ]:
+
+
+
+
+# In[6]:
+
+def master(i_zones,i_values,geometry,crs_transform,statistic_type):
+    result_list = aqueduct3.earthengine.raster_zonal_stats(
+                                            i_zones = i_zones,
+                                            i_values = i_values,
+                                            statistic_type = statistic_type,
+                                            geometry = geometry_server_side,
+                                            crs_transform = crs_transform,
+                                            crs="EPSG:4326")
+    i_result, i_count = aqueduct3.earthengine.zonal_stats_results_to_image(result_list,i_zones,statistic_type)
+    
+    i_dummy_result_properties = aqueduct3.earthengine.zonal_stats_image_propertes(i_zones,i_values,extra_properties={},zones_prefix="zones_",values_prefix="values_")
+    
+    i_result = i_result.multiply(1) #Deletes old properties
+    i_result = i_result.copyProperties(i_dummy_result_properties)
+    
+    return i_result, i_count
+    
+    
+
+
+# In[9]:
 
 spatial_resolution = "30s"
 geometry_server_side = aqueduct3.earthengine.get_global_geometry(test=True)
 geometry_client_side = geometry_server_side.getInfo()['coordinates']
 crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
 
+
 i_zones = ee.Image(HYBAS_LEV06_30S_ASSET_ID)
 
 i_global_area_m2_30s = ee.Image(AREA_M2_30S_ASSET_ID)
 i_global_streamorder = ee.Image(STREAM_ORDER_ASSET_ID)
+
+output_dict = {}
+
+output_dict["sum_area"], output_dict["count_area"] = master(i_zones,i_global_area_m2_30s,geometry_client_side,crs_transform,"sum")
+output_dict["max_streamorder"], output_dict["count_streamorder"] = master(i_zones,i_global_streamorder,geometry_client_side,crs_transform,"max")
+
+# Find pixels @30s where stream_order == max_streamorder
+i_max_streamorder_mask = ee.Image(output_dict["max_streamorder"]).eq(i_global_streamorder)
+output_dict["max_streamorder_mask"] = i_max_streamorder_mask
+
+output_dict["sum_max_streamorder"], output_dict["count_max_streamorder"] = master(i_zones,i_max_streamorder_mask,geometry_client_side,crs_transform,"sum")
+
+i_count_area_mask = output_dict["count_area"].gt(COUNT_AREA_THRESHOLD_30S)
+i_count_area_mask = i_count_area_mask.copyProperties(output_dict["count_area"],properties=["reducer","unit","zones","spatial_resolution","indicator"])
+i_count_area_mask = ee.Image(i_count_area_mask)
+
+i_sum_max_streamorder_mask = i_sum_max_streamorder.lt(SUM_MAX_STREAMORDER_THRESHOLD_30S)
+i_sum_max_streamorder_mask = i_sum_max_streamorder_mask.copyProperties(i_sum_max_streamorder,properties=["reducer","unit","zones","spatial_resolution","indicator"])
+
+
+i_mask = i_count_area_mask.multiply(i_sum_max_streamorder_mask)
+
+
+# In[16]:
+
+
+
+
+# In[ ]:
+
+output_dict = {}
 
 
 
@@ -160,24 +222,29 @@ result_list_sum_max_streamorder = aqueduct3.earthengine.raster_zonal_stats(
 i_sum_max_streamorder, i_count_sum_max_streamorder  = aqueduct3.earthengine.zonal_stats_results_to_image(result_list_sum_max_streamorder,i_zones,"sum")
 output_dict["i_sum_max_streamorder"] = i_sum_max_streamorder
 
-count_area_mask = i_count_area.gt(COUNT_AREA_THRESHOLD_30S)
-count_area_mask = count_area_mask.copyProperties(i_count_area,properties=["reducer","unit","zones","spatial_resolution"])
-sum_max_streamorder_mask = i_sum_max_streamorder.lt(SUM_MAX_STREAMORDER_THRESHOLD_30S)
-mask = count_area_mask.multiply(sum_max_streamorder_mask)
+i_count_area_mask = i_count_area.gt(COUNT_AREA_THRESHOLD_30S)
+i_count_area_mask = i_count_area_mask.copyProperties(i_count_area,properties=["reducer","unit","zones","spatial_resolution","indicator"])
+i_count_area_mask = ee.Image(i_count_area_mask)
 
-output_dict["count_area_mask"] = count_area_mask
-output_dict["sum_max_streamorder_mask"] = sum_max_streamorder_mask
-output_dict["mask"] = mask
+i_sum_max_streamorder_mask = i_sum_max_streamorder.lt(SUM_MAX_STREAMORDER_THRESHOLD_30S)
+i_sum_max_streamorder_mask = i_sum_max_streamorder_mask.copyProperties(i_sum_max_streamorder,properties=["reducer","unit","zones","spatial_resolution","indicator"])
 
 
-# In[11]:
+i_mask = i_count_area_mask.multiply(i_sum_max_streamorder_mask)
 
-i_global_area_m2_30s.getInfo()
+output_dict["count_area_mask"] = i_count_area_mask
+output_dict["sum_max_streamorder_mask"] = i_sum_max_streamorder_mask
+output_dict["mask"] = i_mask
 
 
-# In[10]:
+# In[ ]:
 
-i_count_area.getInfo()
+i_sum_max_streamorder.getInfo()
+
+
+# In[ ]:
+
+result = aqueduct3.earthengine.create_ee_folder_recursive(ee_output_path)
 
 
 # In[ ]:
@@ -193,12 +260,22 @@ mask
 
 # In[ ]:
 
+SCHEMA = ["geographic_range",
+      "statistic_type",
+      "indicator",
+      "unit",
+      "spatial_resolution",
+      ]
+
+i_sum_area = "global_sum_area_m2_30sPfaf06"
+i_count_area = "global_count_area_m2_30sPfaf06"
+i_max_streamorder = "global_max_streamorder_dimensionless_30sPfaf06"
+i_sum_max_streamorder = "global_summax_streamorder_dimensionless_30sPfaf06"
 
 
+# In[11]:
 
-# In[ ]:
-
-output_asset_id = "users/rutgerhofste/test/i_count_area"
+output_asset_id = "users/rutgerhofste/test/i_test"
 
 
 # In[ ]:
@@ -206,10 +283,10 @@ output_asset_id = "users/rutgerhofste/test/i_count_area"
 dimensions = aqueduct3.earthengine.get_dimensions("30s")
 
 
-# In[ ]:
+# In[12]:
 
 task = ee.batch.Export.image.toAsset(
-    image =  i_count_area,
+    image =  i_result,
     assetId = output_asset_id,
     description = "area",
     region = geometry_client_side,

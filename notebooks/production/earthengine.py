@@ -338,6 +338,8 @@ def raster_zonal_stats(i_zones,i_values,statistic_type,geometry, crs_transform,c
         reducer = ee.Reducer.max().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
     elif statistic_type == "sum":
         reducer = ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
+    elif statistic_type == "count":
+        reducer = ee.Reducer.count().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
     else:
         raise UserWarning("Statistic_type not yet supported, please modify function")
     
@@ -393,3 +395,46 @@ def zonal_stats_results_to_image(result_list,i_zones,statistic_type):
     i_stat = i_stat.set(stat_properties) 
     i_count = i_count.set(count_properties)
     return i_stat , i_count
+
+
+def add_image_property_prefix(image,prefix):
+    """ Add prefix to properties
+    
+    Args:
+        image (ee.Image) : image with properties.
+        prefix (string) : prefix string.
+    
+    Returns:
+        dummy_image (ee.Image) : Null image with renamed properties
+    
+    """
+    image = ee.Image(image)
+    original_keys = image.propertyNames()
+    values = original_keys.map(lambda x: ee.String(image.get(x)))
+    prefixed_keys = original_keys.map(lambda x: ee.String(prefix).cat(x))
+    prefixed_properties = ee.Dictionary.fromLists(prefixed_keys,values)
+    dummy_image = ee.Image(None).setMulti(prefixed_properties)
+    return dummy_image
+
+def zonal_stats_image_propertes(i_zones,i_values,extra_properties={},zones_prefix="zones_",values_prefix="values_"):
+    """ Copy the properties of the zonal image and value image to the result image
+    -------------------------------------------------------------------------------
+    
+    Args:
+        i_zones (ee.Image) : Zones image.
+        i_values (ee.Image) : Values image.
+        extra_properties (dict) : Dictionary with extra properties.
+        zones_prefix (string) : Prefix for zones image. Defaults to 'zones_'
+        values_prefix (string) : Prefix for values image. Defaults to 'values_'
+    Returns:
+        i_properties (ee.Image) : Null image with properties of zones and values.
+    
+    TODO:
+        Add option to include weigth image.
+ 
+    """
+    
+    i_dummy_zones_prefixed = add_image_property_prefix(i_zones,zones_prefix)
+    i_dummy_values_prefixed = add_image_property_prefix(i_values,values_prefix)   
+    i_properties = ee.Image(None).copyProperties(i_dummy_zones_prefixed).copyProperties(i_dummy_values_prefixed)
+    return ee.Image(i_properties)
