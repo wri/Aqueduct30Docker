@@ -11,8 +11,8 @@ discharge is the maximum discharge with a few exceptions. These exceptions
 occur as a result of a mismatch of the PCRGLOBWB local drainage direction and
 the hydrobasin level 6 subbasins. 
 
-- A basin has a few cells that belong to another stream. 
-    Often close to the most downstream pixel.
+- A basin has a few cells that belong to another stream, 
+    often close to the most downstream pixel.
 - A basin has a few cells that are an endorheic upstream basin.
 
 There are several subbasin types:
@@ -39,6 +39,8 @@ There are several subbasin types:
 The cell of highest streamorder will be masked for 5) and 7)
 No mask will be applied to the other categories. 
 
+
+
 Author: Rutger Hofste
 Date: 20180502
 Kernel: python35
@@ -49,6 +51,8 @@ Args:
     SCRIPT_NAME (string) : Script name.
     OUTPUT_VERSION (integer) : Output version.
 
+          
+
 
 Returns:
 
@@ -58,14 +62,27 @@ Returns:
 # Input Parameters
 SCRIPT_NAME = "Y2018M05D02_RH_Mask_Discharge_Pixels_V01"
 STREAM_ORDER_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D25_RH_Ingest_Pcraster_GCS_EE_V01/output_V01/global_streamorder_dimensionless_05min_V02"
-HYBAS_LEV06_30S_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V01/hybas_lev06_v1c_merged_fiona_30s_V04"
-GLOBAL_AREA_M2_30S_ASSET_ID = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V02/global_area_m2_30s_V05"
+HYBAS_LEV06_30S_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_30s_V04"
+AREA_M2_30S_ASSET_ID = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V02/global_area_m2_30s_V05"
 OUTPUT_VERSION = 1
+
+COUNT_AREA_THRESHOLD_30S = 1000 # corresponds to 10 5min cells
+SUM_MAX_STREAMORDER_THRESHOLD_30S = 150 # corresponds to 1.5 5min cells
+
+SCHEMA = ["geographic_range",
+      "indicator",
+      "unit",
+      "spatial_resolution",
+      ]
+
+EXTRA_PROPERTIES = {"nodata_value":-9999,
+                    "ingested_by" : "RutgerHofste",
+                    "script_used": SCRIPT_NAME,
+                    "output_version":OUTPUT_VERSION}
 
 ee_output_path = "projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 print("Output ee: " +  ee_output_path)
-
 
 
 # In[2]:
@@ -87,147 +104,114 @@ ee.Initialize()
 
 
 
-# In[4]:
+# In[8]:
 
+output_dict = {}
 
-# Count pixels per basin and total area
 spatial_resolution = "30s"
-total_image = ee.Image(GLOBAL_AREA_M2_30S_ASSET_ID).addBands(ee.Image(HYBAS_LEV06_30S_ASSET_ID))
-reducer = ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
 geometry_server_side = aqueduct3.earthengine.get_global_geometry(test=True)
 geometry_client_side = geometry_server_side.getInfo()['coordinates']
 crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
 
+i_zones = ee.Image(HYBAS_LEV06_30S_ASSET_ID)
+
+i_global_area_m2_30s = ee.Image(AREA_M2_30S_ASSET_ID)
+i_global_streamorder = ee.Image(STREAM_ORDER_ASSET_ID)
 
 
 
-# In[5]:
-
-def ensure_default_properties(obj): 
-    obj = ee.Dictionary(obj)
-    default_properties = ee.Dictionary({"mean": -9999,"count": -9999,"max":-9999})
-    return default_properties.combine(obj)
-
-def map_list(results, key):
-    new_result = results.map(lambda x: ee.Dictionary(x).get(key))
-    return new_result
 
 
-def raster_zonal_stats(i_zones,i_values,statistic_type,geometry, crs_transform,crs="EPSG:4326"):
-    """ Zonal Statistics using raster zones and values.
-    -------------------------------------------------------------------------------
-    Output options include a ee.FeatureCollection, pd.DataFrame or ee.Image.
-    The count is always included in the output results. 
-    
-    crs transform can be obtained by the get_crs_transform function.
-    
-    Note that if a zone does not contain data, the value is missing from the
-    dictionary in the list.
-    
-    Args:
-        i_zones (ee.Image) : Integer image with zones.
-        i_values (ee.Image) : Image with values.
-        statistic_type (string) : Statistics type like 'mean', 'sum'.
-        geometry (ee.Geometry) : Geometry defining extent of calculation.
-        nodata_value (integer) : nodata value. Defaults to -9999.
-        crs_transform (list) : crs transform. 
-        crs (string) : crs, deafults to 'EPSG:4326'.
-        
-    Returns:
-        result_list (ee.List) : list of dictionaries with keys 'zones','count'
-            and 'mean/max/sum etc.'. 
-            
-    """
-    
-    
-    if statistic_type == "mean":
-        reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
-    elif statistic_type == "max":
-        reducer = ee.Reducer.max().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
-    elif statistic_type == "sum":
-        reducer = ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
-    else:
-        raise UserWarning("Statistic_type not yet supported, please modify function")
-    
-    total_image = ee.Image(i_values).addBands(ee.Image(i_zones))
-    
-    result_list = total_image.reduceRegion(
-        geometry = geometry_server_side,
-        reducer= reducer,
-        crsTransform = crs_transform,
-        crs = crs,
-        maxPixels=1e10
-        ).get("groups")
+# Sum and count of area per zone
+sum_area_result_list = aqueduct3.earthengine.raster_zonal_stats(
+                                                i_zones = i_zones,
+                                                i_values = i_global_area_m2_30s,
+                                                statistic_type = "sum",
+                                                geometry = geometry_server_side,
+                                                crs_transform = crs_transform,
+                                                crs="EPSG:4326")
+i_sum_area, i_count_area = aqueduct3.earthengine.zonal_stats_results_to_image(sum_area_result_list,i_zones,"sum")
+output_dict["i_sum_area"] = i_sum_area
+output_dict["i_count_area"] = i_count_area
 
-    result_list = ee.List(result_list)    
-    
-    
-    return result_list
+# Max streamorder per zone
+result_list_max_streamorder = aqueduct3.earthengine.raster_zonal_stats(
+                                                        i_zones = i_zones,
+                                                        i_values = i_global_streamorder,
+                                                        statistic_type = "max",
+                                                        geometry = geometry_server_side,
+                                                        crs_transform = crs_transform,
+                                                        crs="EPSG:4326")
+
+i_max_streamorder, i_count_streamorder  = aqueduct3.earthengine.zonal_stats_results_to_image(result_list_max_streamorder,i_zones,"max")
+output_dict["i_max_streamorder"] = i_max_streamorder
+
+i_max_streamorder_mask = i_max_streamorder.eq(i_global_streamorder)
+output_dict["i_max_streamorder_mask"] = i_max_streamorder_mask
+
+# Sum of max_streamorder. Number of 30s cells within zones that have the highest streamorder.
+result_list_sum_max_streamorder = aqueduct3.earthengine.raster_zonal_stats(
+                                                            i_zones = i_zones,
+                                                            i_values = i_max_streamorder_mask,
+                                                            statistic_type = "sum",
+                                                            geometry = geometry_server_side,
+                                                            crs_transform = crs_transform,
+                                                            crs="EPSG:4326")
+i_sum_max_streamorder, i_count_sum_max_streamorder  = aqueduct3.earthengine.zonal_stats_results_to_image(result_list_sum_max_streamorder,i_zones,"sum")
+output_dict["i_sum_max_streamorder"] = i_sum_max_streamorder
+
+count_area_mask = i_count_area.gt(COUNT_AREA_THRESHOLD_30S)
+count_area_mask = count_area_mask.copyProperties(i_count_area,properties=["reducer","unit","zones","spatial_resolution"])
+sum_max_streamorder_mask = i_sum_max_streamorder.lt(SUM_MAX_STREAMORDER_THRESHOLD_30S)
+mask = count_area_mask.multiply(sum_max_streamorder_mask)
+
+output_dict["count_area_mask"] = count_area_mask
+output_dict["sum_max_streamorder_mask"] = sum_max_streamorder_mask
+output_dict["mask"] = mask
 
 
+# In[11]:
 
-def zonal_stats_results_to_image(result_list,i_zones,statistic_type):
-    """ Map result list on zones image to get result image.
-    -------------------------------------------------------------------------------
-    
-    Args:
-        result_list (ee.List) : list of dictionaries.
-        i_zones (ee.Image) : zones image.
-        statistic_type (string) : Statistics type like 'mean', 'sum'.
-        
-    Returns:
-        i_result (ee.Image) : result image with three bands 'zones','count' and
-            the statistical_type from result list.
-    
-    """
-    result_list = ee.List(result_list)
-    result_list = result_list.map(ensure_default_properties)
-    
-    zone_list = map_list(result_list, 'zones')
-    count_list = map_list(result_list,"count")
-    stat_list = map_list(result_list,statistic_type)
-    
-    
-    count_image = ee.Image(i_zones).remap(zone_list, count_list).select(["remapped"],["count"])
-    
-    
-    stat_image = ee.Image(i_zones).remap(zone_list, stat_list).select(["remapped"],[statistic_type])
-    
-
-    
-    result_image = i_zones.addBands(count_image).addBands(stat_image)
-    properties = {"statistic_type":statistic_type}
-    result_image = result_image.set(properties) 
-    
+i_global_area_m2_30s.getInfo()
 
 
-# In[6]:
+# In[10]:
 
-result_image = raster_zonal_stats(
-                i_zones = ee.Image(HYBAS_LEV06_30S_ASSET_ID),
-                i_values = ee.Image(GLOBAL_AREA_M2_30S_ASSET_ID),
-                statistic_type = "sum",
-                geometry = geometry_server_side,
-                crs_transform = crs_transform,
-                crs="EPSG:4326")
+i_count_area.getInfo()
 
 
-# In[7]:
+# In[ ]:
 
-output_asset_id = "users/rutgerhofste/test/test"
+# rasters to export:
+i_sum_area
+i_count_area
+i_max_streamorder
+i_sum_max_streamorder
+mask 
 
 
-# In[8]:
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+output_asset_id = "users/rutgerhofste/test/i_count_area"
+
+
+# In[ ]:
 
 dimensions = aqueduct3.earthengine.get_dimensions("30s")
 
 
-# In[13]:
+# In[ ]:
 
 task = ee.batch.Export.image.toAsset(
-    image =  result_image,
+    image =  i_count_area,
     assetId = output_asset_id,
-    description = "test",
+    description = "area",
     region = geometry_client_side,
     #dimensions = dimensions,
     crs = "EPSG:4326",

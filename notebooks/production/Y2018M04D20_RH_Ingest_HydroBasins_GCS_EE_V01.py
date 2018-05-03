@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[6]:
+# In[1]:
 
 """ Ingest hydrobasin rasters in earthengine.
 -------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ OVERWRITE = 0
 SCRIPT_NAME = "Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01"
 PREVIOUS_SCRIPT_NAME = "Y2017M08D02_RH_Merge_HydroBasins_V02"
 INPUT_VERSION = 4
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 OUTPUT_FILE_NAME = "df_errors.csv"
 
 X_DIMENSION_5MIN = 4320
@@ -58,7 +58,7 @@ SCHEMA = ["indicator",
           "WWF_version",
           "geographic_range",
           "algorithm_used_for_merge",
-          "sparial_resolution",
+          "spatial_resolution",
           "output_version"]
 
 EXTRA_PROPERTIES = {"WWF_lakes":"standard_no_lakes",

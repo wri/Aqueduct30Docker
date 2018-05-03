@@ -39,7 +39,7 @@ TODO:
 
 SCRIPT_NAME = "Y2017M09D05_RH_Create_Area_Image_EE_V01"
 INPUT_VERSION = 2
-OUTPUT_VERSION = 5 
+OUTPUT_VERSION = 7 
 
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
@@ -73,10 +73,11 @@ CRS_TRANSFORM_30S = [
   ]
 
 
-ee_path = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V{:02.0f}".format(INPUT_VERSION)
+ee_input_path = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V{:02.0f}".format(INPUT_VERSION)
+ee_output_path = "projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
-print("Input ee: " +  ee_path +
-      "\nOutput ee: " + ee_path)
+print("Input ee: " +  ee_input_path +
+      "\nOutput ee: " + ee_output_path)
 
 
 # In[2]:
@@ -93,15 +94,17 @@ sys.version
 
 # imports
 import ee
+import re
 import numpy as np
 import aqueduct3
+import subprocess
 
 ee.Initialize()
 
 
 # In[4]:
 
-def exportToAsset(ee_path,d):
+def exportToAsset(ee_output_path,d):
     """ Export image to asset
 
     Args:
@@ -130,7 +133,7 @@ def exportToAsset(ee_path,d):
     
     
     image = image.set(metadata)    
-    assetId = ee_path + "/" + d["exportdescription"] + "_V{:02.0f}".format(OUTPUT_VERSION)
+    assetId = ee_output_path + "/" + d["exportdescription"] + "_V{:02.0f}".format(OUTPUT_VERSION)
     
     task = ee.batch.Export.image.toAsset(
         image =  ee.Image(image),
@@ -168,7 +171,8 @@ properties["global_ones_5min"] = {"image":ones_raster,
                            "unit": "dimensionless" ,
                            "script_used":SCRIPT_NAME,
                            "spatial_resolution":"5min",
-                           "output_version":OUTPUT_VERSION
+                           "output_version":OUTPUT_VERSION,
+                           "indicator":"ones"
                            }
 
 
@@ -182,7 +186,8 @@ properties["global_ones_30s"] = {"image":ones_raster,
                           "unit": "dimensionless",
                           "script_used":SCRIPT_NAME,
                           "spatial_resolution":"30s",
-                          "output_version":OUTPUT_VERSION
+                          "output_version":OUTPUT_VERSION,
+                          "indicator":"ones"
                           }
 
 
@@ -196,7 +201,8 @@ properties["global_area_m2_5min"] = {"image":area_raster,
                               "unit": "m2",
                               "script_used":SCRIPT_NAME,
                               "spatial_resolution":"5min",
-                              "output_version":OUTPUT_VERSION
+                              "output_version":OUTPUT_VERSION,
+                              "indicator":"area"
                              }
 
 
@@ -210,18 +216,25 @@ properties["global_area_m2_30s"] = {"image":area_raster,
                              "unit": "m2",
                              "script_used":SCRIPT_NAME,
                              "spatial_resolution":"30s",
-                             "output_version":OUTPUT_VERSION
+                             "output_version":OUTPUT_VERSION,
+                             "indicator":"area"
                              }
 
 
 # In[10]:
 
-for key, value in properties.items():
-    exportToAsset(ee_path,value)
-    print(key)   
+result = aqueduct3.earthengine.create_ee_folder_recursive(ee_output_path)
+        
 
 
 # In[11]:
+
+for key, value in properties.items():
+    exportToAsset(ee_output_path,value)
+    print(key)   
+
+
+# In[12]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -230,6 +243,7 @@ print(elapsed)
 
 # Previous Runs:  
 # 0:00:08.226092
+# 0:00:13.646075
 
 # In[ ]:
 

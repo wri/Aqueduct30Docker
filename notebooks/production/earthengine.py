@@ -58,6 +58,19 @@ CRS_TRANSFORM_30S = [
 dimensions_5min = "{}x{}".format(X_DIMENSION_5MIN,Y_DIMENSION_5MIN)
 dimensions_30s = "{}x{}".format(X_DIMENSION_30S,Y_DIMENSION_30S)    
 
+def create_ee_folder_recursive(ee_output_path,overwrite=False,min_depth=3):
+    sep = "/"
+    tree = [sep+x for x in ee_output_path.split(sep)]
+    depth = min_depth
+    
+    while depth <= len(tree):
+        path =  ''.join(tree[0:depth])
+        path = path[1:]
+        command = "earthengine create folder {}".format(path)
+        result = subprocess.check_output(command,shell=True)
+        print(command,result)
+        depth = depth + 1
+    return result
 
 def create_imageCollection(ic_id):
     """ Creates an imageCollection using command line
@@ -268,6 +281,7 @@ def get_dimensions(spatial_resolution):
     return dimensions
 
 def get_grouped_reducer(reducer_name):
+    """ Deprecated?"""
     if reducer_name == "sum":
         reducer = ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
     elif reducer_name == "mean":
@@ -278,3 +292,104 @@ def get_grouped_reducer(reducer_name):
     return reducer
 
 
+def ensure_default_properties(obj):
+    """ helper function for zonal stats"""
+    obj = ee.Dictionary(obj)
+    default_properties = ee.Dictionary({"mean": -9999,"count": -9999,"max":-9999})
+    return default_properties.combine(obj)
+
+def map_list(results, key):
+    """ helper function for zonal stats"""
+    new_result = results.map(lambda x: ee.Dictionary(x).get(key))
+    return new_result
+
+
+def raster_zonal_stats(i_zones,i_values,statistic_type,geometry, crs_transform,crs="EPSG:4326"):
+    """ Zonal Statistics using raster zones and values.
+    -------------------------------------------------------------------------------
+    Output options include a ee.FeatureCollection, pd.DataFrame or ee.Image.
+    The count is always included in the output results. 
+    
+    crs transform can be obtained by the get_crs_transform function.
+    
+    Note that if a zone does not contain data, the value is missing from the
+    dictionary in the list.
+    
+    Args:
+        i_zones (ee.Image) : Integer image with zones.
+        i_values (ee.Image) : Image with values.
+        statistic_type (string) : Statistics type like 'mean', 'sum'.
+        geometry (ee.Geometry) : Geometry defining extent of calculation.
+            geometry can be server side.
+        nodata_value (integer) : nodata value. Defaults to -9999.
+        crs_transform (list) : crs transform. 
+        crs (string) : crs, deafults to 'EPSG:4326'.
+        
+    Returns:
+        result_list (ee.List) : list of dictionaries with keys 'zones','count'
+            and 'mean/max/sum etc.'. 
+            
+    """
+    
+    
+    if statistic_type == "mean":
+        reducer = ee.Reducer.mean().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
+    elif statistic_type == "max":
+        reducer = ee.Reducer.max().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
+    elif statistic_type == "sum":
+        reducer = ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
+    else:
+        raise UserWarning("Statistic_type not yet supported, please modify function")
+    
+    total_image = ee.Image(i_values).addBands(ee.Image(i_zones))
+    
+    result_list = total_image.reduceRegion(
+        geometry = geometry,
+        reducer= reducer,
+        crsTransform = crs_transform,
+        crs = crs,
+        maxPixels=1e10
+        ).get("groups")
+    
+    result_list = ee.List(result_list)    
+    return result_list
+
+
+
+def zonal_stats_results_to_image(result_list,i_zones,statistic_type):
+    """ Map result list on zones image to get result image.
+    -------------------------------------------------------------------------------
+    
+    Args:
+        result_list (ee.List) : list of dictionaries.
+        i_zones (ee.Image) : zones image.
+        statistic_type (string) : Statistics type like 'mean', 'sum'.
+        
+    Returns:
+        i_result (ee.Image) : result image with three bands 'zones','count' and
+            the statistical_type from result list.
+    
+    """
+    result_list = ee.List(result_list)
+    result_list = result_list.map(ensure_default_properties)
+    
+    zone_list = map_list(result_list, 'zones')
+    count_list = map_list(result_list,"count")
+    stat_list = map_list(result_list,statistic_type)
+    
+    
+    i_count = ee.Image(i_zones).remap(zone_list, count_list).select(["remapped"],["count"])
+    i_stat = ee.Image(i_zones).remap(zone_list, stat_list).select(["remapped"],[statistic_type])
+    
+    stat_properties = {"reducer":statistic_type,
+                       "spatial_resolution":"30sPfaf06",
+                       "zones":i_zones.get("file_name")
+                      }
+    count_properties = {"unit":"dimensionless",
+                        "reducer":"count",
+                        "spatial_resolution":"30sPfaf06",
+                        "zones":i_zones.get("file_name")
+                       }
+    i_stat = i_stat.set(stat_properties) 
+    i_count = i_count.set(count_properties)
+    return i_stat , i_count
