@@ -3,7 +3,7 @@
 
 # In[1]:
 
-""" Find the pixels to mask within each basin to use for river discharge. 
+""" Create area and streamorder images that can be used to mask riverdischarge.
 -------------------------------------------------------------------------------
 
 The riverdischarge data from PCRGLOBWB is cummulative runoff. The available
@@ -39,6 +39,16 @@ There are several subbasin types:
 The cell of highest streamorder will be masked for 5) and 7)
 No mask will be applied to the other categories. 
 
+This script creates several useful rasters to allow setting appropriate
+thresholds for area and streamorder:
+
+global_max_streamorder_dimensionless_30sPfaf06
+global_sum_area_m2_30sPfaf06
+global_count_maxStreamorder_dimensionless_30sPfaf06
+global_max_streamorder_mask_30sPfaf06
+global_count_area_dimensionless_30sPfaf06
+global_count_streamorder_dimensionless_30sPfaf06
+global_sum_maxStreamorder_dimensionless_30sPfaf06
 
 
 Author: Rutger Hofste
@@ -66,15 +76,6 @@ STREAM_ORDER_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D25_RH_Ingest_Pcraster_GC
 HYBAS_LEV06_30S_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_30s_V04"
 AREA_M2_30S_ASSET_ID = "projects/WRI-Aquaduct/Y2017M09D05_RH_Create_Area_Image_EE_V01/output_V07/global_area_m2_30s_V07"
 OUTPUT_VERSION = 2
-
-COUNT_AREA_THRESHOLD_30S = 1000 # corresponds to 10 5min cells
-SUM_MAX_STREAMORDER_THRESHOLD_30S = 150 # corresponds to 1.5 5min cells
-
-SCHEMA = ["geographic_range",
-      "indicator",
-      "unit",
-      "spatial_resolution",
-      ]
 
 EXTRA_PROPERTIES = {"nodata_value":-9999,
                     "ingested_by" : "RutgerHofste",
@@ -184,27 +185,6 @@ for key, value in output_dict.items():
     
 
 
-# In[ ]:
-
-
-
-
-# In[7]:
-
-"""
-i_count_area_mask = output_dict["count_area"].gt(COUNT_AREA_THRESHOLD_30S)
-i_count_area_mask = i_count_area_mask.copyProperties(output_dict["count_area"],properties=["reducer","unit","zones","spatial_resolution","indicator"])
-i_count_area_mask = ee.Image(i_count_area_mask)
-
-i_sum_max_streamorder_mask = i_sum_max_streamorder.lt(SUM_MAX_STREAMORDER_THRESHOLD_30S)
-i_sum_max_streamorder_mask = i_sum_max_streamorder_mask.copyProperties(i_sum_max_streamorder,properties=["reducer","unit","zones","spatial_resolution","indicator"])
-
-
-i_mask = i_count_area_mask.multiply(i_sum_max_streamorder_mask)
-"""
-pass
-
-
 # In[8]:
 
 end = datetime.datetime.now()
@@ -213,4 +193,9 @@ print(elapsed)
 
 
 # Previous Runs:  
-# 
+# 0:00:18.540335
+
+# In[ ]:
+
+
+
