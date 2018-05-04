@@ -61,9 +61,6 @@ Args:
     SCRIPT_NAME (string) : Script name.
     OUTPUT_VERSION (integer) : Output version.
 
-          
-
-
 Returns:
 
 

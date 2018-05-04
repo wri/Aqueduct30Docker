@@ -63,8 +63,8 @@ OVERWRITE = 1 # !CAUTION!
 SCRIPT_NAME = "Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02"
 PREVIOUS_SCRIPT_NAME = "Y2018M04D18_RH_Convert_Aux_Rasters_Geotiff_V01"
 
-INPUT_VERSION  = 4
-OUTPUT_VERSION = 3
+INPUT_VERSION  = 6
+OUTPUT_VERSION = 6
 
 OUTPUT_FILE_NAME = "df_errors.csv"
 
@@ -129,20 +129,12 @@ def main():
     
     # EXTRA FOR AUX FILES ONLY, replace nodata_value for ldd.
     df.loc[df['file_name'] == "global_lddsound_numpad_05min", "nodata_value"] = 255
+    df.loc[df['file_name'] == "global_outletendorheicbasins_boolean_05min", "nodata_value"] = 255
     
     df["exportdescription"] = df["indicator"]
     df = df.apply(pd.to_numeric, errors='ignore')
 
-    # Earth Engine Preparations
-    # Create folder
-    if OVERWRITE:
-        command = "earthengine rm -r {}".format(ee_output_path)
-        print(command)
-        subprocess.check_output(command,shell=True)
-
-    command = "earthengine create folder {}".format(ee_output_path)
-    print(command)
-    subprocess.check_output(command,shell=True)
+    aqueduct3.earthengine.create_ee_folder_recursive(ee_output_path)
 
 
     if TESTING:
@@ -175,17 +167,17 @@ if __name__ == "__main__":
     df,df_errors = main()
 
 
-# In[6]:
+# In[5]:
 
 df
 
 
-# In[7]:
+# In[6]:
 
 df_errors
 
 
-# In[5]:
+# In[7]:
 
 end = datetime.datetime.now()
 elapsed = end - start

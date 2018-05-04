@@ -31,7 +31,7 @@ SUM_MAXSTREAMORDER_ASSET_ID = "projects/WRI-Aquaduct/Y2018M05D02_RH_Prepare_Mask
 
 TESTING = 0
 
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 4
 
 EXTRA_PROPERTIES = {"nodata_value":-9999,
                     "ingested_by" : "RutgerHofste",
@@ -74,15 +74,15 @@ i_count_area_mask = i_count_area.gt(COUNT_AREA_THRESHOLD_30S)
 i_sum_maxstreamorder_mask = i_sum_maxstreamorder.lt(SUM_MAX_STREAMORDER_THRESHOLD_30S)
 
 i_mask = i_count_area_mask.multiply(i_sum_maxstreamorder_mask)
-
-
-
+# i_mask is a per basin mask. Only masking out the pixels with max_streamorder
+i_mask = ee.Image(i_mask).multiply(i_max_streamorder_mask)
+# Step added later. in earthengine 0 = invalid 1= valid for masks.
+i_mask = i_mask.neq(1)
 
 i_mask = i_mask.set(EXTRA_PROPERTIES)
 i_mask = i_mask.set({"count_area_threshold_30s":COUNT_AREA_THRESHOLD_30S,
                      "sum_max_streamorder_threshold_30s":SUM_MAX_STREAMORDER_THRESHOLD_30S})
 
-# i_mask is a per basin mask. Only masking out the pixels with max_streamorder
 
 
 

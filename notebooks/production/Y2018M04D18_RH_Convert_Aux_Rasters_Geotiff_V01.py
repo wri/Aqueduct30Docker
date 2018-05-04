@@ -35,7 +35,7 @@ Args:
 SCRIPT_NAME = "Y2018M04D18_RH_Convert_Aux_Rasters_Geotiff_V01"
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/Utrecht/additionalFiles/flowNetwork/topo_pcrglobwb_05min"
 INPUT_VERSION = 1
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 6
 
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
@@ -48,7 +48,9 @@ RENAME_DICT = {
     "gtopo05min.map":
     "global_gtopo_m_05min.map",
     "lddsound_05min.map":
-    "global_lddsound_numpad_05min.map"   
+    "global_lddsound_numpad_05min.map",
+    "outletendorheicbasins_05min.map":
+    "global_outletendorheicbasins_boolean_05min.map"
 }
 
 # ETL
@@ -110,6 +112,7 @@ get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive --e
 # |37325056|  02-24-2017 |15:45 |  cellsize05min.correct.map| $$m^2$$ |global_cellsize_m2_05min.map |
 # |37325056| 02-24-2017| 15:44 |  gtopo05min.map| $$m$$ |global_gtopo_km2_05min.map|
 # |9331456|  02-24-2017| 15:45 |   lddsound_05min.map| numpad |global_lddsound_numpad_05min.map |
+# | -9999 | 05-04-2018 | 13:29 | outletendorheicbasins_05min.map | boolean | global_outletendorheicbasins_boolean_05min.map|
 # |121306624| | |               4 files| | |
 # 
 # All files are 5 arc minute maps in PCRaster format and WGS84 projection (implicit).
@@ -148,7 +151,7 @@ for root, dirs, file_names in os.walk(ec2_input_path):
         Z[Z<-9990]= -9999
         Z[Z>1e19] = -9999
         
-        if file_name == "global_lddsound_numpad_05min.map":
+        if file_name == "global_lddsound_numpad_05min.map" or file_name == "global_outletendorheicbasins_boolean_05min.map":
             nodata_value= 255
             datatype=gdal.GDT_Int32 # Could probably use byte type as well.
             
