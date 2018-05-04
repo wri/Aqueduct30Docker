@@ -17,9 +17,6 @@ this script:
 2. apply mask to flow accumulation (FA) image.
 3. find max masked_FA
     assumption is that riverdischarge available in the main stream occurs here.
-4. apply mask to sinks image.
-    mask from previous script.
-5. add masked sinks to max(masked_FA)
 
 Note that in earthengine the .mask() uses:
 0 = invalid
@@ -32,8 +29,9 @@ Args:
 """
 
 
-TESTING = 1
+TESTING = 0
 SCRIPT_NAME = "Y2018M05D03_RH_Max_FA_Add_Sinks_EE_V01"
+OUTPUT_VERSION = 2
 
 MASK_EE_ASSET_ID = "projects/WRI-Aquaduct/Y2018M05D03_RH_Mask_Discharge_Pixels_V01/output_V04/global_riverdischarge_mask_30sPfaf06"
 FA_EE_ASSET_ID = "projects/WRI-Aquaduct/Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02/output_V03/global_accumulateddrainagearea_km2_05min"
@@ -41,7 +39,14 @@ LDD_EE_ASSET_ID = "projects/WRI-Aquaduct/Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_E
 ZONES_EE_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_30s_V04"
 ENDOSINKS_EE_ASSET_ID = "projects/WRI-Aquaduct/Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02/output_V06/global_outletendorheicbasins_boolean_05min"
 
+EXTRA_PROPERTIES = {"nodata_value":-9999,
+                    "ingested_by" : "RutgerHofste",
+                    "script_used": SCRIPT_NAME,
+                    "output_version":OUTPUT_VERSION}
 
+ee_output_path = "projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Output ee: " +  ee_output_path)
 
 
 
@@ -101,50 +106,60 @@ i_global_accumulateddrainagearea_km2_05min_masked = i_global_accumulateddrainage
 
 # 3. find max masked_FA
 
-
-# In[7]:
-
 # Geospatial constants
 spatial_resolution = "30s"
 geometry_server_side = aqueduct3.earthengine.get_global_geometry(test=TESTING)
 geometry_client_side = geometry_server_side.getInfo()['coordinates']
 crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
 
+output_dict = {}
+output_dict["global_max_maskedaccumulateddrainagearea_km2_30sPfaf06"], output_dict["global_count_maskedaccumulateddrainagearea_km2_30sPfaf06"] = master(i_zones = i_hybas_lev06_v1c_merged_fiona_30s_V04,
+                                                                                                                                                   i_values = i_global_accumulateddrainagearea_km2_05min_masked,
+                                                                                                                                                   geometry = geometry_client_side,
+                                                                                                                                                   crs_transform = crs_transform,
+                                                                                                                                                   statistic_type = "max",
+                                                                                                                                                   extra_properties= {})
+
+
+
+
+# In[7]:
+
+result = aqueduct3.earthengine.create_ee_folder_recursive(ee_output_path)
+
+for key, value in output_dict.items():
+    print(key)
+    image = ee.Image(value)
+    image = image.setMulti(EXTRA_PROPERTIES)
+    description = key    
+    output_asset_id = "{}/{}".format(ee_output_path,key)
+    
+    task = ee.batch.Export.image.toAsset(
+        image =  image,
+        assetId = output_asset_id,
+        region = geometry_client_side,
+        description = description,
+        #dimensions = dimensions,
+        crs = "EPSG:4326",
+        crsTransform = crs_transform,
+        maxPixels = 1e10     
+    )
+    task.start()
+    
 
 
 # In[8]:
 
-i_result, i_count = master(i_zones = i_hybas_lev06_v1c_merged_fiona_30s_V04,
-                           i_values = i_global_accumulateddrainagearea_km2_05min_masked,
-                           geometry = geometry_client_side,
-                           crs_transform = crs_transform,
-                           statistic_type = "max",
-                           extra_properties= {})
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
 
-
-# In[10]:
-
-
-
+# Previous Runs:  
+# 0:00:10.772770
+# 
 
 # In[ ]:
 
-print(key)
-image = ee.Image(value)
-image = image.setMulti(EXTRA_PROPERTIES)
-description = key    
-output_asset_id = "{}/{}".format(ee_output_path,key)
 
-task = ee.batch.Export.image.toAsset(
-    image =  image,
-    assetId = output_asset_id,
-    region = geometry_client_side,
-    description = description,
-    #dimensions = dimensions,
-    crs = "EPSG:4326",
-    crsTransform = crs_transform,
-    maxPixels = 1e10     
-)
-task.start()
 
