@@ -7,8 +7,15 @@
 -------------------------------------------------------------------------------
 Zonal statistics for basin area. Export in table format.
 
-find the maximum available riverdischarge. A mask is used to get rid of 
-erroneous pixels due to a mismatch in PCRGLOBWB routing and Hydrobasins.
+Strategy:
+
+1. first riverdischarge in zones masked by previous script (max_fa)
+
+2. mask endorheic basins with mask from previous script
+
+3. sum riverdischarge in remaining pixels
+
+
 
 
 
