@@ -340,6 +340,8 @@ def raster_zonal_stats(i_zones,i_values,statistic_type,geometry, crs_transform,c
         reducer = ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
     elif statistic_type == "count":
         reducer = ee.Reducer.count().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
+    elif statistic_type == "first":
+        reducer = ee.Reducer.first().combine(reducer2= ee.Reducer.count(), sharedInputs= True).group(groupField=1, groupName= "zones")
     else:
         raise UserWarning("Statistic_type not yet supported, please modify function")
     

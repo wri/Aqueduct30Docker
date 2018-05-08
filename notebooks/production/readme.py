@@ -96,6 +96,8 @@
 #     Mask pixels based on area and streamorder.
 # 1. **Y2018M05D03_RH_Max_FA_Add_Sinks_EE_V01**  
 #     Use flow accumulation and sinks to create second mask for riverdischarge.
+# 1. **Y2018M05D08_RH_Create_Zones_Mask_30sPfaf06_EE_V01**  
+#     Use the masked max riverdischarge flow accumulation and zones to create final masked zones image.
 # 1. **Y2018M05D04_RH_Zonal_Stats_Supply_EE_V01**  
 #     Zonal statistics for basin area. Export in table format.
 #     

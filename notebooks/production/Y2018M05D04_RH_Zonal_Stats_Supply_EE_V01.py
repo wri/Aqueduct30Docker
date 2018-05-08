@@ -41,14 +41,36 @@ Returns:
 
 """
 
-TESTING = 1
+TESTING = 0
 SCRIPT_NAME = "Y2018M05D04_RH_Zonal_Stats_Supply_EE_V01"
+OUTPUT_VERSION = 3
 
-EE_INPUT_ZONES_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_30s_V04"
-EE_INPUT_RIVERDISCHARGE_ASSET_ID = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_riverdischarge_month_millionm3_5min_1960_2014"
-EE_INPUT_FA_ASSET_ID = "projects/WRI-Aquaduct/Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02/output_V06/global_accumulateddrainagearea_km2_05min"
-EE_INPUT_MAX_MASKEDFA_ASSET_ID = "projects/WRI-Aquaduct/Y2018M05D03_RH_Max_FA_Add_Sinks_EE_V01/output_V02/global_max_maskedaccumulateddrainagearea_km2_30sPfaf06"
+EE_INPUT_ZONES_ASSET_ID = "projects/WRI-Aquaduct/Y2018M05D08_RH_Create_Zones_Mask_30sPfaf06_EE_V01/output_V02/validmaxfa_hybas_lev06_v1c_merged_fiona_30s_V04"
+EE_INPUT_RIVERDISCHARGE_PATH_ID = "projects/WRI-Aquaduct/PCRGlobWB20V09/"
 
+SEPARATOR = "_|-"
+SCHEMA =["geographic_range",
+         "temporal_range",
+         "indicator",
+         "temporal_resolution",
+         "unit",
+         "spatial_resolution",
+         "temporal_range_min",
+         "temporal_range_max"]
+
+EXTRA_PROPERTIES = {"output_version":OUTPUT_VERSION,
+                    "script_used":SCRIPT_NAME,
+                   }
+
+
+# Output Parameters
+gcs_output_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input ee zones: " +  EE_INPUT_ZONES_ASSET_ID +
+      "\nInput ee values path: " + EE_INPUT_RIVERDISCHARGE_PATH_ID  +
+      "\nOutput gcs: " + gcs_output_path)
 
 
 # In[2]:
@@ -85,72 +107,134 @@ logger.addHandler(file_handler)
 
 # In[5]:
 
-def master(i_zones,i_values,geometry,crs_transform,statistic_type,extra_properties):
-    result_list = aqueduct3.earthengine.raster_zonal_stats(
-                                            i_zones = i_zones,
-                                            i_values = i_values,
-                                            statistic_type = statistic_type,
-                                            geometry = geometry_server_side,
-                                            crs_transform = crs_transform,
-                                            crs="EPSG:4326")
-    i_result, i_count = aqueduct3.earthengine.zonal_stats_results_to_image(result_list,i_zones,statistic_type)
-    
-    i_dummy_result_properties = aqueduct3.earthengine.zonal_stats_image_propertes(i_zones,i_values,extra_properties,zones_prefix="zones_",values_prefix="values_")
-    
-    i_result = i_result.multiply(1) #Deletes old properties
-    i_result = i_result.copyProperties(i_dummy_result_properties)
-    
-    return i_result, i_count
+get_ipython().system('rm -r {ec2_output_path}')
+get_ipython().system('mkdir -p {ec2_output_path}')
 
 
 # In[6]:
 
-# Images
+def post_process_results(result_list,function_properties,extra_properties=EXTRA_PROPERTIES):
+    """Client side function to convert results of reduceRegion to pandas dataframe.
+    -------------------------------------------------------------------------------
+    
+    Adds additional properties. The script is client side for convenience reasons.
+    A more robust and fast approach would be to add the extra_properties to the 
+    server side dictionary.
+    
+    Args:
+        result_list (ee.List) : List of dictionaries. Result from reduceRegion
+        function_properties (dictionary) : Additional properties used in the 
+            reduceRegion function call.
+        extra_properties (dictionary) : Additional properties set at global level. 
+    
+    Returns:
+        df (pd.DataFrame) : Pandas dataframe with extra properties.
+    
+    
+    """
+    extra_properties = {**function_properties, **EXTRA_PROPERTIES}
+    result_list_clientside = result_list.getInfo()
+    df = pd.DataFrame(result_list_clientside)
+    df = df.assign(**extra_properties)
+    df = df.apply(pd.to_numeric, errors='ignore')
+    return df  
 
-i_zones_30sPfaf06 = ee.Image(EE_INPUT_ZONES_ASSET_ID)
-ic_riverdischarge_month_millionm3_05min = ee.ImageCollection(EE_INPUT_RIVERDISCHARGE_ASSET_ID)
-i_fa_km2_05min = ee.Image(EE_INPUT_FA_ASSET_ID)
-i_max_maskedfa_km2_30sPfaf06 = ee.Image(EE_INPUT_MAX_MASKEDFA_ASSET_ID)
 
+# In[7]:
 
-# Geospatial constants
-spatial_resolution = "30s"
-geometry_server_side = aqueduct3.earthengine.get_global_geometry(test=TESTING)
-geometry_client_side = geometry_server_side.getInfo()['coordinates']
-crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
+# 1. first riverdischarge in zones masked by previous script (max_fa)
 
 
 # In[8]:
 
-
-
-
-# In[9]:
-
-
-
-
-# In[10]:
-
-# 0. Mask from previous script: (Y2018M05D03_RH_Max_FA_Add_Sinks_EE_V01 == flow accumulation ) 
-i_mask_max_maskedfa_boolean_30sPfaf06 =  i_max_maskedfa_km2_30sPfaf06.eq(i_fa_km2_05min)
-i_masked_zones_30sPfaf06 = i_zones_30sPfaf06.multiply(i_mask_max_maskedfa_boolean_30sPfaf06)
-
-# 1. first riverdischarge in zones masked by previous script (max_fa)
-
-i_riverdischarge_month_millionm3_05min = ee.Image(ic_riverdischarge_month_millionm3_05min.first())
-
-output_dict = {}
-output_dict["i_first_riverdischarge_month_millionm3_05min"], output_dict["count_riverdischarge_month_millionm3_05min"] = master(i_zones = i_hybas_lev06_v1c_merged_fiona_30s_V04,
-                                                                                                                                                   i_values = i_global_accumulateddrainagearea_km2_05min_masked,
-                                                                                                                                                   geometry = geometry_client_side,
-                                                                                                                                                   crs_transform = crs_transform,
-                                                                                                                                                   statistic_type = "first",
-                                                                                                                                                   extra_properties= {})
-
+temporal_resolutions = ["month","year"]
+spatial_resolution = "30s"
+pfaf_level = 6
+indicator = "riverdischarge"
+reducer_name = "first"
 
 
 # In[ ]:
 
+i_processed = 0
+start_time = time.time()
+
+# Zones Image
+i_zones_30sPfaf06 = ee.Image(EE_INPUT_ZONES_ASSET_ID)
+
+# Geospatial constants
+geometry_server_side = aqueduct3.earthengine.get_global_geometry(test=TESTING)
+geometry_client_side = geometry_server_side.getInfo()['coordinates']
+
+crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
+
+for temporal_resolution in temporal_resolutions:
+    ic_values_input_asset_id = "{}global_historical_{}_{}_millionm3_5min_1960_2014".format(EE_INPUT_RIVERDISCHARGE_PATH_ID,indicator,temporal_resolution)
+    print(ic_values_input_asset_id)
+    df = aqueduct3.earthengine.get_df_from_ic(ic_values_input_asset_id)
+
+    if TESTING:
+        df = df[0:3]
+    else:
+        pass
+    
+    for index, row in df.iterrows():
+        i_processed = i_processed + 1
+        elapsed_time = time.time() - start_time
+        i_values_input_asset_id = row["input_image_asset_id"]
+        # Add an artificial extension to allow the function to run. 
+        # consider updating the split_key function to handle cases without an extension.
+        i_values_input_asset_id_extenstion = i_values_input_asset_id + ".ee_image"
+        dictje = aqueduct3.split_key(i_values_input_asset_id_extenstion,SCHEMA,SEPARATOR)
+
+        output_file_name = "{}_reduced_{:02.0f}_{}_{}".format(dictje["file_name"],pfaf_level,spatial_resolution,reducer_name)
+        output_file_path_pkl = "{}/{}.pkl".format(ec2_output_path,output_file_name)
+        output_file_path_csv = "{}/{}.csv".format(ec2_output_path,output_file_name)
+
+        if os.path.isfile(output_file_path_pkl):
+            message = "Index {:02.2f}, Skipping: {} Elapsed: {} Asset: {}".format(float(index),i_processed,str(timedelta(seconds=elapsed_time)),i_values_input_asset_id)
+            logger.debug(message)
+        else:
+            message = "Index {:02.2f}, Processed: {} Elapsed: {} Asset: {}".format(float(index),i_processed,str(timedelta(seconds=elapsed_time)),i_values_input_asset_id)
+            print(message)
+            logger.debug(message)
+
+            i_values = ee.Image(i_values_input_asset_id)
+            
+            
+            result_list = aqueduct3.earthengine.raster_zonal_stats(
+                                        i_zones = i_zones_30sPfaf06,
+                                        i_values = i_values,
+                                        statistic_type = reducer_name,
+                                        geometry = geometry_server_side,
+                                        crs_transform = crs_transform,
+                                        crs="EPSG:4326")
+            
+            function_properties = {"zones_pfaf_level":pfaf_level,
+                                   "zones_spatial_resolution":spatial_resolution,
+                                   "reducer":reducer_name,
+                                   "zones_image_asset_id":EE_INPUT_ZONES_ASSET_ID}
+
+            function_properties = {**function_properties, **dictje}
+            df = post_process_results(result_list,function_properties)
 
 
+            df.to_pickle(output_file_path_pkl)
+            #df.to_csv(output_file_path_csv,encoding='utf-8')                           
+                  
+
+
+# In[ ]:
+
+get_ipython().system("aws s3 cp {ec2_output_path} {s3_output_path} --recursive --exclude='*' --include='*.pkl'")
+
+
+# In[ ]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# Previous runs:  
+# 
