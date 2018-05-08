@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 """ Zonal statistics for basin demand. Export in table format.
 -------------------------------------------------------------------------------
@@ -14,8 +14,6 @@ Strategy:
 2. mask endorheic basins with mask from previous script
 
 3. sum riverdischarge in remaining pixels
-
-
 
 
 
@@ -46,14 +44,14 @@ Returns:
 TESTING = 1
 SCRIPT_NAME = "Y2018M05D04_RH_Zonal_Stats_Supply_EE_V01"
 
-EE_INPUT_ZONES_PATH = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V01"
-INPUT_VERSION_ZONES = 4
+EE_INPUT_ZONES_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_30s_V04"
+EE_INPUT_RIVERDISCHARGE_ASSET_ID = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_riverdischarge_month_millionm3_5min_1960_2014"
+EE_INPUT_FA_ASSET_ID = "projects/WRI-Aquaduct/Y2017M08D02_RH_Ingest_Aux_Rasters_GCS_EE_V02/output_V06/global_accumulateddrainagearea_km2_05min"
+EE_INPUT_MAX_MASKEDFA_ASSET_ID = "projects/WRI-Aquaduct/Y2018M05D03_RH_Max_FA_Add_Sinks_EE_V01/output_V02/global_max_maskedaccumulateddrainagearea_km2_30sPfaf06"
 
-SPATIAL_RESOLUTIONS = ["30s"]
-PFAF_LEVELS = [6]
 
 
-# In[3]:
+# In[2]:
 
 import time, datetime, sys, logging
 dateString = time.strftime("Y%YM%mD%d")
@@ -63,7 +61,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
+# In[3]:
 
 # Imports
 import pandas as pd
@@ -75,7 +73,7 @@ import aqueduct3
 ee.Initialize()
 
 
-# In[ ]:
+# In[4]:
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -85,28 +83,74 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
+# In[5]:
+
+def master(i_zones,i_values,geometry,crs_transform,statistic_type,extra_properties):
+    result_list = aqueduct3.earthengine.raster_zonal_stats(
+                                            i_zones = i_zones,
+                                            i_values = i_values,
+                                            statistic_type = statistic_type,
+                                            geometry = geometry_server_side,
+                                            crs_transform = crs_transform,
+                                            crs="EPSG:4326")
+    i_result, i_count = aqueduct3.earthengine.zonal_stats_results_to_image(result_list,i_zones,statistic_type)
+    
+    i_dummy_result_properties = aqueduct3.earthengine.zonal_stats_image_propertes(i_zones,i_values,extra_properties,zones_prefix="zones_",values_prefix="values_")
+    
+    i_result = i_result.multiply(1) #Deletes old properties
+    i_result = i_result.copyProperties(i_dummy_result_properties)
+    
+    return i_result, i_count
+
+
+# In[6]:
+
+# Images
+
+i_zones_30sPfaf06 = ee.Image(EE_INPUT_ZONES_ASSET_ID)
+ic_riverdischarge_month_millionm3_05min = ee.ImageCollection(EE_INPUT_RIVERDISCHARGE_ASSET_ID)
+i_fa_km2_05min = ee.Image(EE_INPUT_FA_ASSET_ID)
+i_max_maskedfa_km2_30sPfaf06 = ee.Image(EE_INPUT_MAX_MASKEDFA_ASSET_ID)
+
+
+# Geospatial constants
+spatial_resolution = "30s"
+geometry_server_side = aqueduct3.earthengine.get_global_geometry(test=TESTING)
+geometry_client_side = geometry_server_side.getInfo()['coordinates']
+crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
+
+
+# In[8]:
+
+
+
+
+# In[9]:
+
+
+
+
+# In[10]:
+
+# 0. Mask from previous script: (Y2018M05D03_RH_Max_FA_Add_Sinks_EE_V01 == flow accumulation ) 
+i_mask_max_maskedfa_boolean_30sPfaf06 =  i_max_maskedfa_km2_30sPfaf06.eq(i_fa_km2_05min)
+i_masked_zones_30sPfaf06 = i_zones_30sPfaf06.multiply(i_mask_max_maskedfa_boolean_30sPfaf06)
+
+# 1. first riverdischarge in zones masked by previous script (max_fa)
+
+i_riverdischarge_month_millionm3_05min = ee.Image(ic_riverdischarge_month_millionm3_05min.first())
+
+output_dict = {}
+output_dict["i_first_riverdischarge_month_millionm3_05min"], output_dict["count_riverdischarge_month_millionm3_05min"] = master(i_zones = i_hybas_lev06_v1c_merged_fiona_30s_V04,
+                                                                                                                                                   i_values = i_global_accumulateddrainagearea_km2_05min_masked,
+                                                                                                                                                   geometry = geometry_client_side,
+                                                                                                                                                   crs_transform = crs_transform,
+                                                                                                                                                   statistic_type = "first",
+                                                                                                                                                   extra_properties= {})
+
+
+
 # In[ ]:
 
-"""
-Tactic
 
-FA based approach: static
-
-
-use riverdischarge mask
-
-max_FA  (most downstream pixel)
-
-
-mask sinks
-
-add masked sinks
-
-
-
-
-
-
-
-"""
 
