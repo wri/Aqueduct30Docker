@@ -100,7 +100,8 @@
 #     Use the masked max riverdischarge flow accumulation and zones to create final masked zones image.
 # 1. **Y2018M05D04_RH_Zonal_Stats_Supply_EE_V01**  
 #     Zonal statistics for basin area. Export in table format.
-#     
+# 1. **Y2018M05D09_RH_Mask_Sinks_EE_V01**  
+#     Mask sinks that have already been used in the max flow accumumation scripts.
 #  
 #  
 #     

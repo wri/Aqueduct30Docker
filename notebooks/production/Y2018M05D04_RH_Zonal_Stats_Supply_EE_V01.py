@@ -107,8 +107,8 @@ logger.addHandler(file_handler)
 
 # In[5]:
 
-get_ipython().system('rm -r {ec2_output_path}')
-get_ipython().system('mkdir -p {ec2_output_path}')
+#!rm -r {ec2_output_path}
+#!mkdir -p {ec2_output_path}
 
 
 # In[6]:
@@ -216,12 +216,13 @@ for temporal_resolution in temporal_resolutions:
                                    "zones_image_asset_id":EE_INPUT_ZONES_ASSET_ID}
 
             function_properties = {**function_properties, **dictje}
-            df = post_process_results(result_list,function_properties)
-
-
-            df.to_pickle(output_file_path_pkl)
-            #df.to_csv(output_file_path_csv,encoding='utf-8')                           
-                  
+            try:
+                df = post_process_results(result_list,function_properties)
+                df.to_pickle(output_file_path_pkl)
+                #df.to_csv(output_file_path_csv,encoding='utf-8')
+            except:
+                message = "Index {:02.2f}, Error: {} Elapsed: {} Asset: {}".format(float(index),i_processed,str(timedelta(seconds=elapsed_time)),i_values_input_asset_id)
+                logger.debug(message)
 
 
 # In[ ]:

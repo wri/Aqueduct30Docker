@@ -40,7 +40,7 @@ print(dateString,timeString)
 
 # In[4]:
 
-MAXTASKS = 20
+MAXTASKS = 10
 CANCELTASKS = 0 # Cancels all pending tasks
 
 
