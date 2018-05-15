@@ -154,7 +154,7 @@ indicator = "riverdischarge"
 reducer_name = "first"
 
 
-# In[ ]:
+# In[9]:
 
 i_processed = 0
 start_time = time.time()
@@ -225,12 +225,12 @@ for temporal_resolution in temporal_resolutions:
                 logger.debug(message)
 
 
-# In[ ]:
+# In[10]:
 
 get_ipython().system("aws s3 cp {ec2_output_path} {s3_output_path} --recursive --exclude='*' --include='*.pkl'")
 
 
-# In[ ]:
+# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -238,4 +238,11 @@ print(elapsed)
 
 
 # Previous runs:  
+# 4:13:42.695557 (internal server errors, had to manually restart, half run)
 # 
+# 
+
+# In[ ]:
+
+
+

@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[11]:
+# In[ ]:
 
 """ Create postgis database using AWS RDS. 
 -------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ DATABASE_NAME = "database01"
 
 
 
-# In[16]:
+# In[1]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -45,7 +45,12 @@ print(dateString,timeString)
 sys.version
 
 
-# In[1]:
+# In[2]:
+
+
+
+
+# In[3]:
 
 import boto3
 import botocore
@@ -53,19 +58,19 @@ from sqlalchemy import *
 from geoalchemy2 import Geometry, WKTElement
 
 
+# In[4]:
+
+rds = boto3.client('rds')
+
+
 # In[5]:
 
-rds = boto3.client('rds',region_name="eu-central-1")
-
-
-# In[7]:
-
-F = open("/.password","r")
+F = open(".password","r")
 password = F.read().splitlines()[0]
 F.close()
 
 
-# In[9]:
+# In[6]:
 
 def createDB(password):
     db_identifier = DATABASE_IDENTIFIER
@@ -86,22 +91,22 @@ def createDB(password):
                        Tags=[{'Key': 'author', 'Value': 'rutger'}])
 
 
-# In[12]:
+# In[7]:
 
 createDB(password)
 
 
-# In[13]:
+# In[8]:
 
 response = rds.describe_db_instances(DBInstanceIdentifier="%s"%(DATABASE_IDENTIFIER))
 
 
-# In[14]:
+# In[9]:
 
 status = response["DBInstances"][0]["DBInstanceStatus"]
 
 
-# In[17]:
+# In[10]:
 
 # Pause the script while the database is being created
 while status != "available":
@@ -114,29 +119,29 @@ while status != "available":
     
 
 
-# In[18]:
+# In[11]:
 
 endpoint = response["DBInstances"][0]["Endpoint"]["Address"]
 
 
-# In[19]:
+# In[12]:
 
 print(endpoint)
 
 
-# In[20]:
+# In[13]:
 
 engine = create_engine('postgresql://rutgerhofste:%s@%s:5432/%s' %(password,endpoint,DATABASE_NAME))
 
 
-# In[21]:
+# In[14]:
 
 connection = engine.connect()
 
 
 # [Setting up PostGIS on RDS](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.html#Appendix.PostgreSQL.CommonDBATasks.PostGIS)
 
-# In[22]:
+# In[15]:
 
 sqlList = []
 sqlList.append("select current_user;")
@@ -153,7 +158,7 @@ sqlList.append("SET search_path=public,tiger;")
 sqlList.append("select na.address, na.streetname, na.streettypeabbrev, na.zip from normalize_address('1 Devonshire Place, Boston, MA 02109') as na;")
 
 
-# In[23]:
+# In[16]:
 
 resultList = []
 for sql in sqlList:
@@ -161,22 +166,14 @@ for sql in sqlList:
     resultList.append(connection.execute(sql))
 
 
-# In[24]:
+# In[17]:
 
 connection.close()
 
 
-# In[25]:
+# In[18]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
-
-
-# Previous Runs:  
-# 0:06:21.519555
-
-# In[ ]:
-
-
 
