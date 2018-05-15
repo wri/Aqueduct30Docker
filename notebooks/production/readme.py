@@ -102,7 +102,8 @@
 #     Zonal statistics for basin area. Export in table format.
 # 1. **Y2018M05D15_RH_Sum_Sinks_5min_EE_V01**  
 #     Calculate sum of sinks at 5min zones.
-#     
+# 1. **Y2018M05D15_RH_Sum_Riverdischarge_Sinks_5min_EE_V01**  
+#     Sum riverdischarge at sinks at 5min resolution. 
 #     
 #     
 #     

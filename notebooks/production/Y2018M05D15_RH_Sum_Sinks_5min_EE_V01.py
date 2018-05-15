@@ -15,13 +15,24 @@ Creates a table with 5min zones and sum of sinks. Export to pandas dataframe
 and featurecollection. 
 
 Args:
+    TESTING (Boolean) : Toggle testing case.
+    SCRIPT_NAME (string) : Script name.
+    OUTPUT_VERSION (integer) : output version.
+    ZONES5MIN_EE_ASSET_ID (string) : Earthengine Asset ID of WWF hydrobasin 
+        resampled to 5 arcminutes.
+    LDD_EE_ASSET_ID (string) : Earthengine Asset ID of the local drainage 
+        direction used to find sinks. 
+    ENDOSINKS_EE_ASSET_ID (string) : Currently not used. Earthengine Asset ID 
+        of the endorheic sinks.
+    EXTRA_PROPERTIES (dictionary) : Extra properties added to featureCollection
+        and images. Not added to pandas dataframe.
 
 """
 
 
 TESTING = 0
 SCRIPT_NAME = "Y2018M05D15_RH_Sum_Sinks_5min_EE_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 ZONES5MIN_EE_ASSET_ID = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_5min_V04"
 LDD_EE_ASSET_ID = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V02/global_lddsound_numpad_05min"
@@ -202,19 +213,23 @@ sample_geometry = ee.Geometry.Point(1,1)
 fc = ee.FeatureCollection(result_list.map(lambda d: ee.Feature(sample_geometry,d)))
 fc = fc.setMulti(EXTRA_PROPERTIES)
 fc = fc.copyProperties(output_dict["global_sum_sinks_dimensionless_5minPfaf06"])
-    
-taskParams = {'json' : fc.serialize(), 'type': 'EXPORT_FEATURES', 'assetId': 'users/rutgerhofste/fcexporttest','description': 'adescription'}
+
+
+taskParams = {'json' : fc.serialize(),
+              'type': 'EXPORT_FEATURES',
+              'assetId': "{}/{}_fc".format(ee_output_path,output_file_name),
+              'description': output_file_name}
 taskId = ee.data.newTaskId()[0]
 ee.data.startProcessing(taskId, taskParams)
 
 
 
-# In[14]:
+# In[13]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[13]:
+# In[14]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -224,8 +239,3 @@ print(elapsed)
 # Previous Runs:  
 # 0:00:14.735956
 # 
-
-# In[ ]:
-
-
-
