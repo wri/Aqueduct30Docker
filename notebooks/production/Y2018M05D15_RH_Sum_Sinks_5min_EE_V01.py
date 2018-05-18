@@ -128,10 +128,6 @@ def post_process_results(result_list,function_properties,extra_properties=EXTRA_
     df = df.apply(pd.to_numeric, errors='ignore')
     return df  
 
-
-
-
-
 def master(i_zones,i_values,geometry,crs_transform,statistic_type,extra_properties):
     result_list = aqueduct3.earthengine.raster_zonal_stats(
                                             i_zones = i_zones,

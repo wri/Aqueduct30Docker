@@ -19,7 +19,9 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 
 Args:
-
+    SCRIPT_NAME (string) : Script name.
+    DATABASE_IDENTIFIER (string) : Identifier of AWS RDS database.
+    DATABASE_NAME (string) : Database name. 
 
 
 

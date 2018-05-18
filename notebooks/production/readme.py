@@ -104,13 +104,16 @@
 #     Calculate sum of sinks at 5min zones.
 # 1. **Y2018M05D15_RH_Sum_Riverdischarge_Sinks_5min_EE_V01**  
 #     Sum riverdischarge at sinks at 5min resolution. 
-#     
+# 1. **Y2018M05D16_RH_Final_Riverdischarge_30sPfaf06_V01**  
+#     Combine riverdischarge in main channel and sinks. 
+# 1. **Y2018M05M17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V01**  
+#     Store combined riverdischarge data in postGIS database.  
 #     
 #     
 #     
 #     
 #      
-# 1. **Y2018M05D09_RH_Mask_Sinks_EE_V01**  
+# 1. **Y2018M05D09_RH_Mask_Sinks_EE_V01**(Not used)  
 #     Mask sinks that have already been used in the max flow accumumation scripts.  
 #     mask sinks if streamorder > max streamorder for main river. 5min
 #  

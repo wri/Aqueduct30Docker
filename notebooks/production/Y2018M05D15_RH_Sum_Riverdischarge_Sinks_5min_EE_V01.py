@@ -53,7 +53,7 @@ print("Output ee: " +  ee_output_path,
       "\nOutput s3: " + s3_output_path)
 
 
-# In[ ]:
+# In[2]:
 
 import time, datetime, sys, logging
 dateString = time.strftime("Y%YM%mD%d")
@@ -63,13 +63,13 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
+# In[3]:
 
-get_ipython().system('rm -r {ec2_output_path}')
-get_ipython().system('mkdir -p {ec2_output_path}')
+#!rm -r {ec2_output_path}
+#!mkdir -p {ec2_output_path}
 
 
-# In[ ]:
+# In[4]:
 
 # Imports
 import pandas as pd
@@ -81,7 +81,7 @@ import aqueduct3
 ee.Initialize()
 
 
-# In[ ]:
+# In[5]:
 
 def post_process_results(result_list,function_properties,extra_properties=EXTRA_PROPERTIES):
     """Client side function to convert results of reduceRegion to pandas dataframe.
@@ -110,7 +110,7 @@ def post_process_results(result_list,function_properties,extra_properties=EXTRA_
     return df  
 
 
-# In[ ]:
+# In[6]:
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -120,7 +120,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-# In[ ]:
+# In[7]:
 
 i_ldd_5min = ee.Image(LDD_EE_ASSET_ID)
 i_sinks_5min =  i_ldd_5min.eq(5)
@@ -128,7 +128,7 @@ i_sinks_5min = i_sinks_5min.copyProperties(i_ldd_5min)
 i_sinks_5min = i_sinks_5min.set("unit","boolean")
 
 
-# In[ ]:
+# In[8]:
 
 temporal_resolutions = ["month","year"]
 spatial_resolution = "5min"
@@ -137,7 +137,7 @@ indicator = "riverdischarge"
 reducer_name = "sum"
 
 
-# In[ ]:
+# In[9]:
 
 i_processed = 0
 start_time = time.time()
@@ -209,12 +209,12 @@ for temporal_resolution in temporal_resolutions:
                 logger.debug(message)
 
 
-# In[ ]:
+# In[10]:
 
 get_ipython().system("aws s3 cp {ec2_output_path} {s3_output_path} --recursive --exclude='*' --include='*.pkl'")
 
 
-# In[ ]:
+# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -222,6 +222,9 @@ print(elapsed)
 
 
 # Previous runs:  
+# 0:48:09.013517
+# 0:01:12.946037
+# 
 
 # In[ ]:
 
