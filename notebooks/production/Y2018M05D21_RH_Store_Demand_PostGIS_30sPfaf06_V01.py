@@ -9,6 +9,11 @@
 Store the demand results in the postGIS table. Use a 
 consistent schema to allow other indicators to be stored as well.
 
+Author: Rutger Hofste
+Date: 20180521
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
 
 Args:
     TESTING (Boolean) : Toggle testing case.

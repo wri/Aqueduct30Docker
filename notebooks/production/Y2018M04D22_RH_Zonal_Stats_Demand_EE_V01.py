@@ -9,11 +9,9 @@ Demand data is provided in volumes (millionm3) at 5min resolution.
 For further analysis the 30s rasterized zones of hydrobasin level 6 will be 
 used.
 
-Steps:
-    - Convert to flux at 5min.
-    - (under the hood) Convert to flux at 30s.
-    - Zonal stats for flux at 30s.
-
+Both volumetric and flux demand data is useful. Riverdischarge is calculated
+in volumes. For demand data, fluxes are being used. Water stress will be
+calculated by dividing the fluxes of demand and available supply. 
 
 Author: Rutger Hofste
 Date: 20180422

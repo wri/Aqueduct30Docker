@@ -8,6 +8,11 @@
 
 Store the area of 30sPfaf06 zones in the postGIS table. 
 
+Author: Rutger Hofste
+Date: 20180522
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
 
 Args:
     TESTING (Boolean) : Toggle testing case.
