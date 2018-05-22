@@ -3,10 +3,10 @@
 
 # In[1]:
 
-""" Store combined riverdischarge data in postGIS database.
+""" Store demand data in postGIS database.
 -------------------------------------------------------------------------------
 
-Store the combined riverdischarge results in the postGIS table. Use a 
+Store the demand results in the postGIS table. Use a 
 consistent schema to allow other indicators to be stored as well.
 
 
@@ -18,16 +18,15 @@ Args:
 """
 
 TESTING = 0
-OVERWRITE = 1
-SCRIPT_NAME = "Y2018M05M17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V01"
+OVERWRITE = 1 
+SCRIPT_NAME = "Y2018M05D21_RH_Store_Demand_PostGIS_30sPfaf06_V01"
 OUTPUT_VERSION = 1
 
-DATABASE_ENDPOINT = "aqueduct30v04.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
+DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-TABLE_NAME = "supply01"
+TABLE_NAME = "demand01"
 
-
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M05D16_RH_Final_Riverdischarge_30sPfaf06_V01/output_V03"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01/output_V01"
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
@@ -92,6 +91,7 @@ years = range(1960,2014+1)
 temporal_resolutions = ["year","month"]
 
 input_file_names = os.listdir(ec2_input_path)
+print(len(input_file_names))
 
 
 # In[9]:
@@ -102,7 +102,6 @@ def pre_process_df(df):
     # in a next version I might fill the nans with a no data value
     # and convert to integer. 
     return df
-    
 
 
 # In[10]:
@@ -133,10 +132,3 @@ print(elapsed)
 
 
 # Previous Runs:  
-# 2:16:22.809560
-# 
-
-# In[ ]:
-
-
-

@@ -91,17 +91,17 @@ get_ipython().system('mkdir -p {ec2_input_path_sinks}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[ ]:
+# In[6]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_MAINCHANNEL} {ec2_input_path_mainchannel} --recursive --exclude="*" --include="*.pkl"')
 
 
-# In[ ]:
+# In[7]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_SINKS} {ec2_input_path_sinks} --recursive --exclude="*" --include="*.pkl"')
 
 
-# In[ ]:
+# In[8]:
 
 # Open Mainchannel dataframe
 
@@ -118,7 +118,7 @@ temporal_resolutions = ["year","month"]
 mainchannel_file_names = os.listdir(ec2_input_path_mainchannel)
 
 
-# In[ ]:
+# In[9]:
 
 def read_mainchannel(mainchannel_path):
     df_mainchannel = pd.read_pickle(mainchannel_path)
@@ -151,19 +151,19 @@ def combine_riverdischarge(df):
     
     df_out = df.copy()
     df_out['riverdischarge_millionm3'] = np.where(df_out['count_sinks']>0, df_out["sum"], df["first"])
-    df_out.sort_index(axis=1)
+    df_out.sort_index(axis=1,inplace=True)
     return df_out
     
     
 
 
-# In[ ]:
+# In[10]:
 
 if TESTING:
     mainchannel_file_names = mainchannel_file_names[0:10]
 
 
-# In[ ]:
+# In[11]:
 
 for mainchannel_file_name in mainchannel_file_names:
     mainchannel_path = "{}/{}".format(ec2_input_path_mainchannel,mainchannel_file_name)
@@ -194,12 +194,12 @@ for mainchannel_file_name in mainchannel_file_names:
     
 
 
-# In[ ]:
+# In[12]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start

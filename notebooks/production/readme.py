@@ -76,16 +76,12 @@
 #     Create an image with the pixel area size in m2 to go from flux to volumen and vice versa.
 # 1. **Y2018M04D20_RH_Zonal_Stats_Area_EE_V01**  
 #     Zonal statistics for basin area. Export in table format.
-# 1. **Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01**  
-#     Zonal statistics for basin demand. ExporArea rasters were created in ee, storing in gcs and s3.t in table format.
-#     
-#     
-#     
-#     
-#     
-#     
 # 1. **Y2018M04D18_RH_Demand_Fluxes_5min_EE_V01**  
 #     Demand data is provided as volumes. Calculate Fluxes.
+# 1. **Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01**  
+#     Zonal statistics for basin demand. ExportArea rasters were created in ee, storing in gcs and s3.t in table format.
+# 1. **Y2018M05D21_RH_Store_Demand_PostGIS_30sPfaf06_V01**  
+#     Store demand data in postGIS database.     
 # 1. **Y2018M04D19_RH_Supply_Discharge_Volume_5min_EE_V01**  
 #     Supply and discharge data is provided as m3second. Convert to millionm3.
 # 1. **Y2018M05D01_RH_Supply_Fluxes_5min_EE_V01**  
