@@ -54,6 +54,7 @@ s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".
 
 print("Input ee zones: " +  EE_INPUT_ZONES_PATH +
       "\nInput ee values: " + EE_INPUT_VALUES_PATH +
+      "\n Output s3: " + s3_output_path,
       "\nOutput gcs: " + gcs_output_path)
 
 

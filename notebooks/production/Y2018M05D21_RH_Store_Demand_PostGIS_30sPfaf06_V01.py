@@ -64,13 +64,13 @@ get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive --e
 
 # In[6]:
 
-import pandas as pd
-pd.set_option('display.max_columns', 500)
 import os
 import numpy as np
-from datetime import timedelta
+import pandas as pd
 import aqueduct3
+from datetime import timedelta
 from sqlalchemy import *
+pd.set_option('display.max_columns', 500)
 
 
 # In[7]:
@@ -132,3 +132,4 @@ print(elapsed)
 
 
 # Previous Runs:  
+# 13:45:20.759114

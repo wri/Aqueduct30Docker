@@ -76,6 +76,8 @@
 #     Create an image with the pixel area size in m2 to go from flux to volumen and vice versa.
 # 1. **Y2018M04D20_RH_Zonal_Stats_Area_EE_V01**  
 #     Zonal statistics for basin area. Export in table format.
+# 1. **Y2018M05D22_RH_Store_Area_PostGIS_30sPfaf06_V01**  
+#     Store area of 30sPfaf06 basins in postGIS database. 
 # 1. **Y2018M04D18_RH_Demand_Fluxes_5min_EE_V01**  
 #     Demand data is provided as volumes. Calculate Fluxes.
 # 1. **Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01**  
