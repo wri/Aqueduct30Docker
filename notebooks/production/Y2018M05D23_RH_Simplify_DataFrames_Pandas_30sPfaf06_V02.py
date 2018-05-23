@@ -17,7 +17,7 @@ Args:
 
 """
 
-TESTING = 1
+TESTING = 0
 OVERWRITE = 0
 SCRIPT_NAME = "Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V02"
 OUTPUT_VERSION = 3
@@ -35,6 +35,7 @@ S3_INPUT_PATH_RIVERDISCHARGE = "s3://wri-projects/Aqueduct30/processData/Y2018M0
 S3_INPUT_PATH_DEMAND = "s3://wri-projects/Aqueduct30/processData/Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01/output_V01"
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 print("\nInput ec2: " + ec2_input_path,
       "\nInput postGIS table area: " + TABLE_NAME_AREA_30SPFAF06 ,
@@ -56,7 +57,9 @@ sys.version
 
 if OVERWRITE:
     get_ipython().system('rm -r {ec2_input_path}')
+    get_ipython().system('rm -r {ec2_output_path}')
     get_ipython().system('mkdir -p {ec2_input_path}')
+    get_ipython().system('mkdir -p {ec2_output_path}')
     get_ipython().system('aws s3 cp {S3_INPUT_PATH_RIVERDISCHARGE} {ec2_input_path} --recursive --exclude="*" --include="*.pkl"')
     get_ipython().system('aws s3 cp {S3_INPUT_PATH_DEMAND} {ec2_input_path} --recursive --exclude="*" --include="*.pkl"')
 
@@ -93,79 +96,52 @@ def get_area_df():
 
 def pre_process_area(df):
     df_out = df[["pfafid_30spfaf06","area_m2_30spfaf06","count"]]
-    df_out.rename(columns={"count":"area_count"},inplace=True)
+    df_out.rename(columns={"count":"area_count_30spfaf06"},inplace=True)
     df_out.set_index("pfafid_30spfaf06",inplace=True)
     return df_out
 
 
-# In[6]:
+def get_file_names(file_names,temporal_resolution,year,month):
+    """ Finds the filenames for riverdischarge and demand using regex.
+    -------------------------------------------------------------------------------
+    
+    WARNING: Month is set to 1 for yearly (annual) data for riverdischarge
+    whereas for demand month is set to 12. 
+    
+    
+    Args:
+        file_names (list) : list of all file names.
+        temporal_resolution (string) : 'month' or 'year'
+        year (integer) : year [1960:2014]
+        month (integer) : month [1:12]. Not used if temporal_resolution is 'year'
+    
+    Returns:
+        matching_file_names (dict) : dictionary with matching filenames for 
+            demand and discharge.
+    
+    """   
+    
+    matching_file_names = {}    
+    matching_file_names["riverdischarge"] = []
+    matching_file_names["demand"] = []
+    
+    if temporal_resolution == "year":
+        month_riverdischarge = 1
+        month_demand = 12
+        riverdischarge_pattern = "global_historical_combinedriverdischarge_{}_millionm3_30sPfaf06_1960_2014_I\d\d\dY{:04.0f}M{:02.0f}.pkl".format(temporal_resolution,year,month_riverdischarge)
+        demand_pattern = "global_historical_P....._{}_m_5min_1960_2014_I\d\d\dY{:04.0f}M{:02.0f}_reduced_06_30s_mean.pkl".format(temporal_resolution,year,month_demand)      
+    else:
+        riverdischarge_pattern = "global_historical_combinedriverdischarge_{}_millionm3_30sPfaf06_1960_2014_I\d\d\dY{:04.0f}M{:02.0f}.pkl".format(temporal_resolution,year,month)
+        demand_pattern = "global_historical_P....._{}_m_5min_1960_2014_I\d\d\dY{:04.0f}M{:02.0f}_reduced_06_30s_mean.pkl".format(temporal_resolution,year,month)
 
-df_area = get_area_df()
+    for file_name in file_names:
+        if re.search(riverdischarge_pattern,file_name):
+            matching_file_names["riverdischarge"].append(file_name)
+        elif re.search(demand_pattern,file_name):
+            matching_file_names["demand"].append(file_name)
+    return matching_file_names
 
-
-# In[7]:
-
-df_area = pre_process_area(df_area)
-
-
-# In[8]:
-
-df_area.head()
-
-
-# In[9]:
-
-file_names = os.listdir(ec2_input_path)
-
-
-# In[13]:
-
-temporal_resolution = "month"
-year = 1973
-month = 3
-
-
-# In[14]:
-
-matches_riverdisharge = []
-matches_demand = []
-
-riverdischarge_pattern = "global_historical_combinedriverdischarge_{}_millionm3_30sPfaf06_1960_2014_I\d\d\dY{:04.0f}M{:02.0f}.pkl".format(temporal_resolution,year,month)
-demand_pattern = "global_historical_P....._{}_m_5min_1960_2014_I\d\d\dY{:04.0f}M{:02.0f}_reduced_06_30s_mean.pkl".format(temporal_resolution,year,month)
-
-for file_name in file_names:
-    if re.search(riverdischarge_pattern,file_name):
-        matches_riverdisharge.append(file_name)
-    elif re.search(demand_pattern,file_name):
-        matches_demand.append(file_name)
-        
-
-
-# In[17]:
-
-matches_riverdisharge
-
-
-# In[16]:
-
-matches_demand
-
-
-# In[18]:
-
-df_demand_test_path  = "{}/{}".format(ec2_input_path,matches_demand[0])
-
-
-
-
-# In[67]:
-
-df_demand_test = pd.read_pickle(df_demand_test_path)
-
-
-# In[69]:
-
-def pre_process_demand_df(df):
+def pre_process_df(df):
     """ rename dataframe column and drastically simplify dataframe.
     -------------------------------------------------------------------------------
     
@@ -186,7 +162,6 @@ def pre_process_demand_df(df):
     df_in = df.copy()
     
     indicator = df_in.loc[0]["indicator"].lower()
-    indicator = indicator[1:] # remove p from start
     unit = df_in.loc[0]["unit"].lower()
     zones_spatial_resolution = df_in.loc[0]["zones_spatial_resolution"]
     zones_pfaf_level = df_in.loc[0]["zones_pfaf_level"]    
@@ -207,56 +182,116 @@ def pre_process_demand_df(df):
     return df_out
 
 
-# In[70]:
 
-df2 = pre_process_demand_df(df_demand_test)
+# In[6]:
 
-
-# In[71]:
-
-df2.head()
+df_area = get_area_df()
+df_area = pre_process_area(df_area)
 
 
-# In[46]:
+# In[7]:
 
-df_demand_test.head()
-
-
-# In[ ]:
+df_area.head()
 
 
+# In[8]:
+
+file_names = os.listdir(ec2_input_path)
 
 
-# In[ ]:
+# In[9]:
 
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-months = range(1,12+1)
-years = range(1960,2014+1)
 temporal_resolutions = ["year","month"]
+years = range(1960,2014+1)
+months = range(1,12+1)
+
+
+# In[10]:
 
 if TESTING:
-    months = [3]
-    years = [1983]
-    temporal_resolutions = ["year","month"]
+    temporal_resolutions = ["month"]
+    years = range(1960,1961)
+    months = range(1,3)
+    
 
 
 # In[ ]:
 
+i = 0
+start_time = time.time()
 for temporal_resolution in temporal_resolutions:
     for year in years:
         for month in months:
-            riverdischarge_input_filename = "global_historical_combinedriverdischarge_month_millionm3_30sPfaf06_1960_2014_I003Y1960M04.pkl"
+            i = i + 1
+            elapsed_time = time.time() - start_time 
+            print("Index: {:03.0f} Elapsed: {}".format(i, timedelta(seconds=elapsed_time)))
+            print(i,temporal_resolution,year,month)
+            matching_file_names = get_file_names(file_names,temporal_resolution,year,month)            
+            
+            
+            df_merged = df_area.copy()
+            for indicator, matching_file_names in matching_file_names.items():   
+                for matching_file_name in matching_file_names:    
+                    file_path = "{}/{}".format(ec2_input_path,matching_file_name)
+                    df = pd.read_pickle(file_path)   
+
+                    if indicator == "riverdischarge":
+                        df.rename(columns={"count_mainchannel":"count",
+                                           "riverdischarge_millionm3":"mean",
+                                           "year_mainchannel":"year",
+                                           "month_mainchannel":"month",
+                                           "temporal_resolution_mainchannel":"temporal_resolution",
+                                           "indicator_mainchannel":"indicator",
+                                           "unit_mainchannel":"unit",
+                                           "zones_spatial_resolution_mainchannel":"zones_spatial_resolution",
+                                           "zones_pfaf_level_mainchannel":"zones_pfaf_level"},
+                                  inplace = True)  
+
+
+                    elif indicator == "demand":
+                        pass
+                    df_cleaned = pre_process_df(df)
+                    
+                    
+                    df_merged = df_merged.merge(right= df_cleaned,
+                                                 how="left",
+                                                 left_index =True,
+                                                 right_index = True,
+                                                 suffixes = ["","_duplicate"])
+                    
+                    try:
+                        df_merged = df_merged.drop(columns = ["month_duplicate",
+                                                              "temporal_resolution_duplicate",
+                                                              "year_duplicate"] ) 
+                    except:
+                        pass
+
+            
+            df_merged["riverdischarge_m_30spfaf06"] = (df_merged["riverdischarge_millionm3_30spfaf06"] * 1e6) / df_merged["area_m2_30spfaf06"]
+            df_merged.drop(columns=["riverdischarge_millionm3_30spfaf06"])
+            df_merged.sort_index(axis=1, inplace=True)
+
+            output_file_name = "global_historical_merged_{}_millionm3_30sPfaf06_1960_2014_Y{:04.0f}M{:02.0f}.pkl".format(temporal_resolution,year,month)
+            output_path = "{}/{}".format(ec2_output_path,output_file_name)
+            df_merged.to_pickle(output_path)
+            
             
 
+
+# In[ ]:
+
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[ ]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# Previous Runs:
+# 
 
 # In[ ]:
 
