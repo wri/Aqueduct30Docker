@@ -19,7 +19,7 @@ Args:
 
 TESTING = 0
 OVERWRITE = 1
-SCRIPT_NAME = "Y2018M05M17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V02"
+SCRIPT_NAME = "Y2018M05D17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V02"
 OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -177,6 +177,7 @@ for input_file_name in input_file_names:
     df_out["script_used"] = SCRIPT_NAME
     df_out["output_version"] = OUTPUT_VERSION
     
+    df_out.to_pickle()
     df_out.to_sql(TABLE_NAME,engine,if_exists='append', index=False,chunksize=100000)
 
 

@@ -82,8 +82,10 @@
 #     Demand data is provided as volumes. Calculate Fluxes.
 # 1. **Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01**  
 #     Zonal statistics for basin demand. ExportArea rasters were created in ee, storing in gcs and s3.t in table format.
-# 1. **Y2018M05D21_RH_Store_Demand_PostGIS_30sPfaf06_V01**  
+#     
+# 1. **Y2018M05D21_RH_Store_Demand_PostGIS_30sPfaf06_V01**  (might get archived)
 #     Store demand data in postGIS database.    
+#     
 # 1. **Y2018M04D19_RH_Supply_Discharge_Volume_5min_EE_V01**  
 #     Supply and discharge data is provided as m3second. Convert to millionm3.
 # 1. **Y2018M05D01_RH_Supply_Fluxes_5min_EE_V01**  
@@ -104,10 +106,13 @@
 #     Sum riverdischarge at sinks at 5min resolution. 
 # 1. **Y2018M05D16_RH_Final_Riverdischarge_30sPfaf06_V01**  
 #     Combine riverdischarge in main channel and sinks. 
-# 1. **Y2018M05M17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V02**  
+#     
+# 1. **Y2018M05D17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V02**  (might get archived)
 #     Store combined riverdischarge data in postGIS database. 
-# 1. **Y2018M05D22_RH_Post_Process_Riverdischarge_PostGIS_30sPfaf06_V01**  NOT USED
-#     Convert riverdischarge data to flux and simplify table.
+#     
+# 1. **Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V02**  
+#     Combine and simplify demand and riverdischarge dataframes.
+# 
 #     
 #     
 #     
