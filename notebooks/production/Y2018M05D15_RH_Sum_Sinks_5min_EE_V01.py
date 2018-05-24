@@ -14,6 +14,11 @@ riverdischarge (30s validfa_mask) will be used.
 Creates a table with 5min zones and sum of sinks. Export to pandas dataframe
 and featurecollection. 
 
+Author: Rutger Hofste
+Date: 20180515
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
 Args:
     TESTING (Boolean) : Toggle testing case.
     SCRIPT_NAME (string) : Script name.

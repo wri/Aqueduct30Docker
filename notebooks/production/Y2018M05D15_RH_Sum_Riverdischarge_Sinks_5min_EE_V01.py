@@ -13,6 +13,10 @@ riverdischarge (30s validfa_mask) will be used.
 
 takes sum of riverdischarge at 5min sinks per zone. 
 
+Author: Rutger Hofste
+Date: 20180515
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
     TESTING (Boolean) : Toggle testing case.

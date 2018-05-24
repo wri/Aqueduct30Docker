@@ -1,19 +1,64 @@
 
 # coding: utf-8
 
-# ### Merge FAO shapefiles with basin names
-# 
-# * Purpose of script: Create a shapefile with the merged files of the FAO database with basin namesm
-# * Author: Rutger Hofste
-# * Kernel used: python35
-# * Date created: 20170823
+# In[1]:
 
-# In[9]:
+""" Merge the FAO shapefiles into one Shapefile (UTF-8).
+-------------------------------------------------------------------------------
 
-import time
+Create a shapefile with the merged files of the FAO database with basin names.
+
+Author: Rutger Hofste
+Date: 20170823
+Kernel: python27 -> python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:
+    TESTING (Boolean) : Toggle testing case.
+    SCRIPT_NAME (string) : Script name.
+    OUTPUT_VERSION (integer) : output version.
+    DATABASE_ENDPOINT (string) : RDS or postGreSQL endpoint.
+    DATABASE_NAME (string) : Database name.
+    TABLE_NAME_AREA_30SPFAF06 (string) : Table name used for areas. Must exist
+        on same database as used in rest of script.
+    S3_INPUT_PATH_RIVERDISCHARGE (string) : AWS S3 input path for 
+        riverdischarge.    
+    S3_INPUT_PATH_DEMAND (string) : AWS S3 input path for 
+        demand.    
+
+"""
+
+SCRIPT_NAME = "Y2017M08D23_RH_Merge_FAONames_V01"
+OUTPUT_VERSION  = 2
+
+S3_RAW_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/FAO/namedHydrobasins/"
+
+
+#S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_FAONames_V01/output/"
+#EC2_INPUT_PATH = "/volumes/data/Y2017M08D23_RH_Merge_FAONames_V01/input/"
+#EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D23_RH_Merge_FAONames_V01/output/"
+
+ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_input_path = "s3://wri-projects/Aqueduct30/processData/{}/input_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input ec2: " + ec2_input_path,
+      "\nInput s3 raw: " +  S3_RAW_INPUT_PATH,
+      "\nInput s3: " + s3_input_path ,
+      "\nOutput ec2: " + ec2_output_path,
+      "\nOutput s3: " + s3_output_path)
+
+
+
+# In[2]:
+
+import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
 print(dateString,timeString)
+sys.version
 
 
 # Data URL's, as you can see there is an error with the North America file on FAO's server. The data was downloaded using DownThemAll and stored on S3 
@@ -29,22 +74,15 @@ print(dateString,timeString)
 # |Central America | http://www.fao.org/geonetwork/srv/en/main.home?uuid=bc9139e6-ccc9-4ded-a0c4-93b91cb54dde |
 # |North America | http://ref.data.fao.org/map?entryId=b06dc828-3166-461a-a17d-26f4dc9f9819 |
 
-# In[1]:
-
-S3_RAW_INPUT_PATH = "s3://wri-projects/Aqueduct30/rawData/FAO/namedHydrobasins/"
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_FAONames_V01/input"
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_FAONames_V01/output/"
-EC2_INPUT_PATH = "/volumes/data/Y2017M08D23_RH_Merge_FAONames_V01/input/"
-EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D23_RH_Merge_FAONames_V01/output/"
-
-
-# In[2]:
-
-get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
-get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
-
-
 # In[3]:
+
+get_ipython().system('rm -r {ec2_input_path} ')
+get_ipython().system('rm -r {ec2_output_path} ')
+get_ipython().system('mkdir -p {ec2_input_path} ')
+get_ipython().system('mkdir -p {ec2_output_path} ')
+
+
+# In[4]:
 
 import os
 import fiona
@@ -52,26 +90,26 @@ import fiona
 
 # Copy to working file directory on S3 and EC2
 
-# In[4]:
-
-get_ipython().system('aws s3 cp {S3_RAW_INPUT_PATH} {S3_INPUT_PATH} --recursive --quiet')
-
-
 # In[5]:
 
-get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive --quiet')
+get_ipython().system('aws s3 cp {S3_RAW_INPUT_PATH} {s3_input_path} --recursive')
 
 
 # In[6]:
 
-os.chdir(EC2_INPUT_PATH)
-files = os.listdir(EC2_INPUT_PATH)
+get_ipython().system('aws s3 cp {s3_input_path} {ec2_input_path} --recursive')
 
 
 # In[7]:
 
+os.chdir(ec2_input_path)
+files = os.listdir(ec2_input_path)
+
+
+# In[8]:
+
 meta = fiona.open('hydrobasins_africa.shp').meta
-with fiona.open(EC2_OUTPUT_PATH+"/hydrobasins_fao_fiona_merged_v01.shp", 'w', **meta,encoding='UTF-8') as output:
+with fiona.open(ec2_output_path+"/hydrobasins_fao_fiona_merged_v01.shp", 'w', **meta,encoding='UTF-8') as output:
     for oneFile in files:    
         if oneFile.endswith(".shp"):
             print(oneFile)
@@ -79,35 +117,22 @@ with fiona.open(EC2_OUTPUT_PATH+"/hydrobasins_fao_fiona_merged_v01.shp", 'w', **
                 output.write(features)   
 
 
-# In[ ]:
+# In[10]:
 
-with fiona.open(EC2_OUTPUT_PATH+"/hydrobasins_fao_fiona_merged_v01.shp") as input:
-    # preserve the schema of the original shapefile, including the crs
-    meta = input.meta
-    with fiona.open(EC2_OUTPUT_PATH+"/hydrobasins_fao_fiona_merged_dissolved_v01.shp", 'w', **meta) as output:
-        # groupby clusters consecutive elements of an iterable which have the same key so you must first sort the features by the 'STATEFP' field
-        e = sorted(input, key=lambda k: k['properties']['STATEFP'])
-        # group by the 'STATEFP' field 
-        for key, group in itertools.groupby(e, key=lambda x:x['properties']['STATEFP']):
-            properties, geom = zip(*[(feature['properties'],shape(feature['geometry'])) for feature in group])
-            # write the feature, computing the unary_union of the elements in the group with the properties of the first element in the group
-            output.write({'geometry': mapping(unary_union(geom)), 'properties': properties[0]})
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet')
 
 
-# In[ ]:
+# In[11]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
 
-
-
-# In[ ]:
-
-
-
-
-# In[8]:
-
-get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive --quiet')
-
+# Previous Runs:  
+# 0:01:08.475027
+# 
+# 
 
 # In[ ]:
 

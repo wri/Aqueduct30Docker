@@ -13,6 +13,10 @@ riverdischarge (30s validfa_mask) will be used.
 
 Takes tabular result of main channel and sinks and combines them in one table.
 
+Author: Rutger Hofste
+Date: 20180516
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
     TESTING (Boolean) : Toggle testing case.

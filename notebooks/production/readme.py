@@ -23,33 +23,33 @@
 # 1. **Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01**  
 #     Ingest hydrobasin rasters in earthengine.
 # 1. **Y2017M08D22_RH_Upstream_V01**  
-#     add upstream PFAFIDs to the merged hydrobasin shp/csv file. 
+#     Add upstream PFAFIDs to the merged hydrobasin shp/csv file. 
 # 1. **Y2017M08D23_RH_Downstream_V01**  
-#     add downstream PFAFIDs to he merged hydrobasin csv file.
+#     Add downstream PFAFIDs to the merged hydrobasin csv file.
 # 1. **Y2017M08D23_RH_Merge_FAONames_V01**  
-#     merge the FAO shapefiles into one Shapefile (UTF-8) and also rasterize using gdal.
+#     Merge the FAO shapefiles into one Shapefile (UTF-8).
 # 1. **Y2017M08D23_RH_Buffer_FAONames_V01**  
 #     Create a negative buffer for the FAO basins to avoid sliver polygons.
 # 1. **Y2017M08D25_RH_spatial_join_FAONames_V01**  
 #     Add the FAO Names to the HydroBasins shapefile.
 # 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01**  
-#     join the tables with the FAO names and the upstream / downstream relations.
+#     Join the tables with the FAO names and the upstream / downstream relations.
 # 1. **Y2017M11D15_RH_Add_HydroBasins_postGIS_V01**  
 #     Add hdyrobasins geometry and table to postGIS database.    
 # 1. **Y2017M11D22_RH_FAO_To_Database_V01**    
 #     Store FAO data in AWS RDS database.
 # 1. **Y2017M11D23_RH_Upstream_Downstream_Basin_To_Database_V01**  
-#     add upstream pfaf ID to postgis database.  
+#     Sdd upstream pfaf ID to postgis database.  
 # 
 # 
 # ### Group Delta Region in HydroBasin level 6
 # Delta basins grouped manually 
 # 1. **Y2018M03D09_RH_Delta_Regions_Manual_V01**  
-#     several manual steps to create a list of delta sub-basins.
+#     Several manual steps to create a list of delta sub-basins.
 # 1. **Y2018M02D15_RH_GDBD_Merge_V01**  
 #     This script will reproject GDBD basins and streams and merge them.
 # 1. **Y2018M02D16_RH_Number_Streams_Per_Basin_V01**  
-#     determine the number of streams per GDBD basin. 
+#     Determine the number of streams per GDBD basin. 
 #     
 # 
 # 
@@ -107,12 +107,13 @@
 # 1. **Y2018M05D16_RH_Final_Riverdischarge_30sPfaf06_V01**  
 #     Combine riverdischarge in main channel and sinks. 
 #     
-# 1. **Y2018M05D17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V02**  (might get archived)
+# 1. **Y2018M05D17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V02**  (might get archived)  
 #     Store combined riverdischarge data in postGIS database. 
 #     
 # 1. **Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V02**  
 #     Combine and simplify demand and riverdischarge dataframes.
-# 
+# 1. **Y2018M05D24_RH_Ingest_Simplified_Dataframes_PostGIS_30sPfaf06_V01**   
+#     Store merged and simplified pandas dataframes in postGIS database. 
 #     
 #     
 #     

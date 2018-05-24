@@ -14,13 +14,21 @@ Args:
     TESTING (Boolean) : Toggle testing case.
     SCRIPT_NAME (string) : Script name.
     OUTPUT_VERSION (integer) : output version.
+    DATABASE_ENDPOINT (string) : RDS or postGreSQL endpoint.
+    DATABASE_NAME (string) : Database name.
+    TABLE_NAME_AREA_30SPFAF06 (string) : Table name used for areas. Must exist
+        on same database as used in rest of script.
+    S3_INPUT_PATH_RIVERDISCHARGE (string) : AWS S3 input path for 
+        riverdischarge.    
+    S3_INPUT_PATH_DEMAND (string) : AWS S3 input path for 
+        demand.     
 
 """
 
 TESTING = 0
-OVERWRITE = 0
+OVERWRITE = 1
 SCRIPT_NAME = "Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V02"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 6
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -36,11 +44,13 @@ S3_INPUT_PATH_DEMAND = "s3://wri-projects/Aqueduct30/processData/Y2018M04D22_RH_
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 print("\nInput ec2: " + ec2_input_path,
       "\nInput postGIS table area: " + TABLE_NAME_AREA_30SPFAF06 ,
       "\nInput s3 riverdischarge: " + S3_INPUT_PATH_RIVERDISCHARGE,
-      "\nInput s3 demand: " + S3_INPUT_PATH_DEMAND)
+      "\nInput s3 demand: " + S3_INPUT_PATH_DEMAND,
+      "\nOutput s3: " + s3_output_path)
 
 
 # In[2]:
@@ -215,7 +225,7 @@ if TESTING:
     
 
 
-# In[ ]:
+# In[11]:
 
 i = 0
 start_time = time.time()
@@ -268,29 +278,30 @@ for temporal_resolution in temporal_resolutions:
 
             
             df_merged["riverdischarge_m_30spfaf06"] = (df_merged["riverdischarge_millionm3_30spfaf06"] * 1e6) / df_merged["area_m2_30spfaf06"]
-            df_merged.drop(columns=["riverdischarge_millionm3_30spfaf06"])
+            df_merged.drop(columns=["riverdischarge_millionm3_30spfaf06"],inplace=True)
             df_merged.sort_index(axis=1, inplace=True)
 
-            output_file_name = "global_historical_merged_{}_millionm3_30sPfaf06_1960_2014_Y{:04.0f}M{:02.0f}.pkl".format(temporal_resolution,year,month)
+            output_file_name = "global_historical_merged_{}_m_30sPfaf06_1960_2014_Y{:04.0f}M{:02.0f}.pkl".format(temporal_resolution,year,month)
             output_path = "{}/{}".format(ec2_output_path,output_file_name)
-            df_merged.to_pickle(output_path)
-            
+            df_merged.to_pickle(output_path)           
             
 
 
-# In[ ]:
+# In[12]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# Previous Runs:
+# Previous Runs:  
+# 0:39:39.668227  
+# 0:42:53.025204
 # 
 
 # In[ ]:

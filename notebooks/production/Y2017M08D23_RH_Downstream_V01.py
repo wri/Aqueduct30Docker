@@ -1,44 +1,85 @@
 
 # coding: utf-8
 
-# ### Add downstream PFAFIDs to merged shapefile
-# 
-# * Purpose of script: Create a csv file with all PFAFID's downstream
-# * Author: Rutger Hofste
-# * Kernel used: python27
-# * Date created: 20170823
-
 # In[1]:
 
-import pandas as pd
-import numpy as np
-import os, ftplib
-from datetime import datetime, timedelta
-from ast import literal_eval
+""" Add downstream PFAFIDs to the merged hydrobasin csv file.
+-------------------------------------------------------------------------------
+Create a csv file with all PFAFID's downstream.
 
+Revisited to apply normalization to database structure. 
 
-# In[2]:
+Author: Rutger Hofste
+Date: 20170823
+Kernel: python27 -> python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
 
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D22_RH_Upstream_V01/output/"
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Downstream_V01/output/"
-EC2_INPUT_PATH = "/volumes/data/Y2017M08D23_RH_Downstream_V01/input/"
-EC2_OUTPUT_PATH = "/volumes/data/Y2017M08D23_RH_Downstream_V01/output/"
+Args:
+    TESTING (Boolean) : Toggle testing case.
+    SCRIPT_NAME (string) : Script name.
+    OUTPUT_VERSION (integer) : output version.
+    DATABASE_ENDPOINT (string) : RDS or postGreSQL endpoint.
+    DATABASE_NAME (string) : Database name.
+    TABLE_NAME_AREA_30SPFAF06 (string) : Table name used for areas. Must exist
+        on same database as used in rest of script.
+    S3_INPUT_PATH_RIVERDISCHARGE (string) : AWS S3 input path for 
+        riverdischarge.    
+    S3_INPUT_PATH_DEMAND (string) : AWS S3 input path for 
+        demand.    
+
+"""
+SCRIPT_NAME = "Y2017M08D23_RH_Downstream_V01"
+OUTPUT_VERSION = 1
+
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D22_RH_Upstream_V01/output_V04/"
+
 INPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_V01.csv"
 OUTPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_V01.csv"
 
 
+ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input ec2: " + ec2_input_path,
+      "\nInput s3: " + S3_INPUT_PATH ,
+      "\nOutput ec2: " + ec2_output_path,
+      "\nOutput s3: " + s3_output_path)
+
+
+# In[2]:
+
+import time, datetime, sys
+dateString = time.strftime("Y%YM%mD%d")
+timeString = time.strftime("UTC %H:%M")
+start = datetime.datetime.now()
+print(dateString,timeString)
+sys.version
+
+
 # In[3]:
 
-get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
-get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
+import pandas as pd
+import numpy as np
+import os
+import ftplib
+from ast import literal_eval
 
 
 # In[4]:
 
-get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive')
+get_ipython().system('rm -r {ec2_input_path} ')
+get_ipython().system('rm -r {ec2_output_path} ')
+get_ipython().system('mkdir -p {ec2_input_path} ')
+get_ipython().system('mkdir -p {ec2_output_path} ')
 
 
 # In[5]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive')
+
+
+# In[6]:
 
 def stringToList(string):
     # input format : "[42, 42, 42]" , note the spaces after the commas, in this case I have a list of integers
@@ -54,18 +95,18 @@ def stringToList(string):
     return(newList)
 
 
-# In[6]:
-
-df = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME))
-
-
 # In[7]:
+
+df = pd.read_csv(os.path.join(ec2_input_path,INPUT_FILENAME))
+
+
+# In[8]:
 
 df["Upstream_HYBAS_IDs"] = df["Upstream_HYBAS_IDs"].apply(lambda x: stringToList(x))
 df["Upstream_PFAF_IDs"] = df["Upstream_PFAF_IDs"].apply(lambda x: stringToList(x))
 
 
-# In[8]:
+# In[9]:
 
 header = df.dtypes
 
@@ -120,39 +161,49 @@ df_out.to_csv(outputLocation)
 print("done")
 
 
-# In[9]:
+# In[ ]:
 
 def concatenateHybas(row):
     return row["Downstream_HYBAS_IDs"] + row["Upstream_HYBAS_IDs"] + [row["HYBAS_ID"]]
 
 
-# In[10]:
+# In[ ]:
 
 df_out['Basin_HYBAS_IDs'] = df_out.apply(concatenateHybas, axis=1)
 
 
-# In[11]:
+# In[ ]:
 
 def concatenatePFAF(row):
     return row["Downstream_PFAF_IDs"] + row["Upstream_PFAF_IDs"] + [row["PFAF_ID"]]
 
 
-# In[12]:
+# In[ ]:
 
 df_out['Basin_PFAF_IDs'] = df_out.apply(concatenatePFAF, axis=1)
 
 
-# In[13]:
+# In[ ]:
 
 df_out.tail()
 
 
-# In[14]:
+# In[ ]:
 
-df_out.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILENAME))
+df_out.to_csv(os.path.join(ec2_output_path,OUTPUT_FILENAME))
 
 
-# In[15]:
+# In[ ]:
 
-get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
+
+# In[ ]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# Previous Runs:  
+# 
