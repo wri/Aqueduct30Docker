@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[10]:
+# In[1]:
 
 """ Add hydrobasins geometry and table to postGIS database. 
 -------------------------------------------------------------------------------
@@ -34,9 +34,8 @@ Args:
 """
 
 SCRIPT_NAME = "Y2017M11D15_RH_Add_HydroBasins_postGIS_V01"
-OUTPUT_VERSION= 2
+OUTPUT_VERSION= 4
 
-#S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D29_RH_Merge_FAONames_Upstream_V01/output_V07/"
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V02/output_V04/"
 INPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_V04" 
 
@@ -44,7 +43,6 @@ INPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_V04"
 DATABASE_IDENTIFIER = "aqueduct30v05"
 DATABASE_NAME = "database01"
 OUTPUT_TABLE_NAME = "hybas06_v{:02.0f}".format(OUTPUT_VERSION)
-
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -55,7 +53,7 @@ print("\nInput ec2: " + ec2_input_path,
       "\nOutput postGIS table : " + OUTPUT_TABLE_NAME)
 
 
-# In[7]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -65,7 +63,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[8]:
+# In[3]:
 
 get_ipython().system('rm -r {ec2_input_path}')
 get_ipython().system('rm -r {ec2_output_path}')
@@ -74,24 +72,24 @@ get_ipython().system('mkdir -p {ec2_input_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[9]:
+# In[4]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive --quiet')
 
 
-# In[11]:
+# In[5]:
 
 import os
 import boto3
 import botocore
-from sqlalchemy import *
-import geopandas as gpd
 import pandas as pd
+import geopandas as gpd
+from sqlalchemy import *
 from shapely.geometry.multipolygon import MultiPolygon
 from geoalchemy2 import Geometry, WKTElement
 
 
-# In[14]:
+# In[6]:
 
 def rdsConnect(database_identifier,database_name):
     rds = boto3.client('rds')
@@ -148,17 +146,17 @@ def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     return gdfFromSQL
 
 
-# In[15]:
+# In[7]:
 
 engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
 
 
-# In[16]:
+# In[8]:
 
 gdf = gpd.read_file(os.path.join(ec2_input_path,INPUT_FILENAME+".shp"))
 
 
-# In[17]:
+# In[9]:
 
 gdf.shape
 
@@ -192,86 +190,38 @@ gdf["pfaf_id"] = gdf.index
 
 # In[15]:
 
-gdf.shape
-
-
-# In[16]:
-
-#gdf = gdf.drop_duplicates(subset="pfaf_id",keep='first')
-
-
-# In[17]:
-
-df = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".csv"))
-
-
-# In[18]:
-
-df.columns = map(str.lower, df.columns)
-
-
-# In[19]:
-
-df = df.drop_duplicates(subset="pfaf_id",keep='first')
-
-
-# In[20]:
-
-df.dtypes
-
-
-# Select attributes that are NF 1-3 compliant
-
-# In[21]:
-
-df2 = df[["pfaf_id","hybas_id","next_down","next_sink","main_bas","dist_sink","dist_main","sub_area","up_area","endo","coast","order","sort"]]
-
-
-# In[22]:
-
-gdf2 = gdf.merge(df2,on="pfaf_id")
-
-
-# In[23]:
-
-gdf2 = gdf2.set_index("pfaf_id",drop=False)
-
-
-# In[24]:
-
-gdf2.head()
-
-
-# In[25]:
-
-gdf2.shape
-
-
-# In[26]:
-
-gdfFromSQL = uploadGDFtoPostGIS(gdf2,TABLE_NAME,False)
+gdfFromSQL = uploadGDFtoPostGIS(gdf,OUTPUT_TABLE_NAME,False)
 
 
 # ### Testing
 
-# In[27]:
+# In[16]:
 
 gdfFromSQL.head()
 
 
-# In[28]:
+# In[17]:
 
 gdfFromSQL.shape
 
 
-# In[29]:
+# In[18]:
 
 connection.close()
 
 
-# In[30]:
+# In[19]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# Previous Runs:  
+# 0:05:42.930054
+# 
+
+# In[ ]:
+
+
 

@@ -1,14 +1,62 @@
 
 # coding: utf-8
 
-# ### Merge Upstream Downstream with FAO names 
-# 
-# * Purpose of script: Create a shapefile and csv file with both the upstream / downstream relation and the FAO basin names
-# * Author: Rutger Hofste
-# * Kernel used: python35
-# * Date created: 20170829
+# In[12]:
 
-# In[1]:
+""" Create shapefile and csv table for hybas, fao and upstream/downstream
+-------------------------------------------------------------------------------
+
+This script needs a revision or needs to be archived. The database is based
+on stroing lists and is a non normalized version. violates N-1.
+
+
+Author: Rutger Hofste
+Date: 20170829
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:
+    TESTING (Boolean) : Toggle testing case.
+    SCRIPT_NAME (string) : Script name.
+    OUTPUT_VERSION (integer) : output version.
+    DATABASE_ENDPOINT (string) : RDS or postGreSQL endpoint.
+    DATABASE_NAME (string) : Database name.
+    TABLE_NAME_AREA_30SPFAF06 (string) : Table name used for areas. Must exist
+        on same database as used in rest of script.
+    S3_INPUT_PATH_RIVERDISCHARGE (string) : AWS S3 input path for 
+        riverdischarge.    
+    S3_INPUT_PATH_DEMAND (string) : AWS S3 input path for 
+        demand.    
+
+"""
+
+S3_INPUT_PATH_FAO ="s3://wri-projects/Aqueduct30/processData/Y2017M08D25_RH_spatial_join_FAONames_V01/output_V07/"
+S3_INPUT_PATH_DOWNSTREAM = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Downstream_V01/output_V02/"
+S3_INPUT_PATH_HYBAS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V02/output_V04/"
+
+SCRIPT_NAME = "Y2017M08D29_RH_Merge_FAONames_Upstream_V01"
+OUTPUT_VERSION = 3
+
+INPUT_FILE_NAME_FAO = "hybas_lev06_v1c_merged_fiona_withFAO_V07.pkl"
+INPUT_FILE_NAME_DOWNSTREAM = "hybas_lev06_v1c_merged_fiona_upstream_downstream_V01.pkl"
+INPUT_FILE_NAME_HYBAS = "hybas_lev06_v1c_merged_fiona_V04.shp"
+
+OUTPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V%0.2d" %(OUTPUT_VERSION)
+
+ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input ec2: " + ec2_input_path,
+      "\nOutput ec2: " + ec2_output_path,
+      "\nInput s3 FAO: " + S3_INPUT_PATH_FAO,
+      "\nInput s3 Downstream: " + S3_INPUT_PATH_DOWNSTREAM,
+      "\nInput s3 Hybas: " + S3_INPUT_PATH_HYBAS,
+      "\nOutput s3: " + s3_output_path)
+
+
+
+# In[5]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -18,53 +66,31 @@ print(dateString,timeString)
 sys.version
 
 
-# In[2]:
-
-S3_INPUT_PATH_FAO ="s3://wri-projects/Aqueduct30/processData/Y2017M08D25_RH_spatial_join_FAONames_V01/output/"
-S3_INPUT_PATH_DOWNSTREAM = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Downstream_V01/output/"
-S3_INPUT_PATH_HYBAS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
-
-SCRIPT_NAME = "Y2017M08D29_RH_Merge_FAONames_Upstream_V01"
-
-OUTPUT_VERSION = 3
-
-INPUT_FILE_NAME_FAO = "hybas_lev06_v1c_merged_fiona_withFAO_V01.csv"
-INPUT_FILE_NAME_DOWNSTREAM = "hybas_lev06_v1c_merged_fiona_upstream_downstream_V01.csv"
-INPUT_FILE_NAME_HYBAS = "hybas_lev06_v1c_merged_fiona_V01.shp"
-
-EC2_INPUT_PATH = "/volumes/data/%s/input/" %(SCRIPT_NAME)
-EC2_OUTPUT_PATH = "/volumes/data/%s/output/" %(SCRIPT_NAME)
-
-OUTPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_FAO_V%0.2d" %(OUTPUT_VERSION)
-
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/%s/output/" %(SCRIPT_NAME)
-
-
-# In[3]:
-
-get_ipython().system('rm -r {EC2_INPUT_PATH}')
-get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
-
-get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
-get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
-
-
-# In[4]:
-
-get_ipython().system('aws s3 cp {S3_INPUT_PATH_FAO} {EC2_INPUT_PATH} --recursive ')
-
-
-# In[5]:
-
-get_ipython().system('aws s3 cp {S3_INPUT_PATH_DOWNSTREAM} {EC2_INPUT_PATH} --recursive ')
-
-
 # In[6]:
 
-get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYBAS} {EC2_INPUT_PATH} --recursive --exclude *.tif')
+get_ipython().system('rm -r {ec2_input_path}')
+get_ipython().system('rm -r {ec2_output_path}')
+
+get_ipython().system('mkdir -p {ec2_input_path}')
+get_ipython().system('mkdir -p {ec2_output_path}')
 
 
 # In[7]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_FAO} {ec2_input_path} --recursive ')
+
+
+# In[8]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_DOWNSTREAM} {ec2_input_path} --recursive ')
+
+
+# In[9]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYBAS} {ec2_input_path} --recursive --exclude *.tif')
+
+
+# In[10]:
 
 import os
 if 'GDAL_DATA' not in os.environ:
@@ -76,50 +102,52 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import time
-get_ipython().magic('matplotlib notebook')
 
 
-# In[8]:
+# In[14]:
 
-dfFAO = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_FAO))
-dfFAO = dfFAO.set_index("PFAF_ID", drop=False)
+dfFAO = pd.read_pickle(os.path.join(ec2_input_path,INPUT_FILE_NAME_FAO))
 
 
-# In[9]:
+# In[17]:
 
 dfFAO.head()
 
 
-# In[10]:
+# In[18]:
 
-dfDownstream = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_DOWNSTREAM))
+dfDownstream = pd.read_pickle(os.path.join(ec2_input_path,INPUT_FILE_NAME_DOWNSTREAM))
+
+
+# In[ ]:
+
 dfDownstream = dfDownstream.set_index("PFAF_ID", drop=False)
 
 
-# In[11]:
+# In[19]:
 
 dfDownstream.head()
 
 
-# In[12]:
+# In[20]:
 
 dfDownstream.drop("Unnamed: 0",1,inplace=True)
 
 
-# In[13]:
+# In[21]:
 
-gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
+gdfHybas = gpd.read_file(os.path.join(ec2_input_path,INPUT_FILE_NAME_HYBAS))
 gdfHybas = gdfHybas.set_index("PFAF_ID", drop=False)
 
 
-# In[14]:
+# In[22]:
 
 dfHybas = pd.DataFrame(gdfHybas["PFAF_ID"])
 
 
 # Merging the the downstream and FAO datasets, adding Hybas geometry and export both Excel sheet and dataset.
 
-# In[15]:
+# In[23]:
 
 dfOut = dfDownstream.merge(dfFAO,how="outer")
 
@@ -141,22 +169,22 @@ gdfHybasSimple = gpd.GeoDataFrame(dfHybas, geometry=gdfHybas.geometry)
 
 # In[19]:
 
-gdfHybasSimple.to_file(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".shp"))
+gdfHybasSimple.to_file(os.path.join(ec2_output_path,OUTPUT_FILE_NAME+".shp"))
 
 
 # In[20]:
 
-dfOut.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
+dfOut.to_csv(os.path.join(ec2_output_path,OUTPUT_FILE_NAME+".csv"))
 
 
 # In[21]:
 
-dfOut.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".pkl"))
+dfOut.to_pickle(os.path.join(ec2_output_path,OUTPUT_FILE_NAME+".pkl"))
 
 
 # In[22]:
 
-get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
 # In[23]:
@@ -165,3 +193,6 @@ end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
+
+# Previous Runs:  
+# 0:02:27.045097

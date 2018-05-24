@@ -1,16 +1,58 @@
 
 # coding: utf-8
 
-# ### Spatially Join FAO Names to hydrobasins level 6
-# 
-# * Purpose of script: Spatially join FAO Names hydrobasins to the official HydroBasins level 6 polygons
-# * Author: Rutger Hofste
-# * Kernel used: python35
-# * Date created: 20170825
-
 # In[1]:
 
-get_ipython().magic('matplotlib inline')
+""" Add the FAO Names to the HydroBasins shapefile.
+-------------------------------------------------------------------------------
+Spatially join FAO Names hydrobasins to the official HydroBasins level 6 
+polygons
+
+Author: Rutger Hofste
+Date: 20170825
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
+
+Args:
+    TESTING (Boolean) : Toggle testing case.
+    SCRIPT_NAME (string) : Script name.
+    OUTPUT_VERSION (integer) : output version.
+    DATABASE_ENDPOINT (string) : RDS or postGreSQL endpoint.
+    DATABASE_NAME (string) : Database name.
+    TABLE_NAME_AREA_30SPFAF06 (string) : Table name used for areas. Must exist
+        on same database as used in rest of script.
+    S3_INPUT_PATH_RIVERDISCHARGE (string) : AWS S3 input path for 
+        riverdischarge.    
+    S3_INPUT_PATH_DEMAND (string) : AWS S3 input path for 
+        demand.    
+
+"""
+
+SCRIPT_NAME = "Y2017M08D25_RH_spatial_join_FAONames_V01"
+OUTPUT_VERSION = 7
+
+S3_INPUT_PATH_FAO = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Buffer_FAONames_V01/output_V02/"
+S3_INPUT_PATH_HYBAS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V02/output_V04/"
+
+INPUT_FILE_NAME_FAO = "hydrobasins_fao_fiona_merged_buffered_v01.shp"
+INPUT_FILE_NAME_HYBAS = "hybas_lev06_v1c_merged_fiona_V04.shp"
+
+OUTPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_withFAO_V%0.2d" %(OUTPUT_VERSION)
+
+ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("Input ec2: " + ec2_input_path,
+      "\nInput s3 FAO: " + S3_INPUT_PATH_FAO,
+      "\nInput s3 Hybas: " + S3_INPUT_PATH_HYBAS,
+      "\nOutput ec2: " + ec2_output_path,
+      "\nOutput s3: " + s3_output_path)
+
+
+
+# In[2]:
+
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
@@ -19,45 +61,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[2]:
-
-OUTPUT_VERSION = 4
-SCRIPT_NAME = "Y2017M08D25_RH_spatial_join_FAONames_V01"
-
-S3_INPUT_PATH_FAO = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Buffer_FAONames_V01/output/"
-S3_INPUT_PATH_HYBAS = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V01/output/"
-
-S3_OUTPUT_PATH = "s3://wri-projects/Aqueduct30/processData/%s/output/" %(SCRIPT_NAME)
-
-EC2_INPUT_PATH = "/volumes/data/%s/input/" %(SCRIPT_NAME)
-EC2_OUTPUT_PATH = "/volumes/data/%s/output/" %(SCRIPT_NAME)
-
-INPUT_FILE_NAME_FAO = "hydrobasins_fao_fiona_merged_buffered_v01.shp"
-INPUT_FILE_NAME_HYBAS = "hybas_lev06_v1c_merged_fiona_V01.shp"
-
-OUTPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_withFAO_V%0.2d" %(OUTPUT_VERSION)
-
-
 # In[3]:
-
-get_ipython().system('rm -r {EC2_INPUT_PATH}')
-get_ipython().system('rm -r {EC2_OUTPUT_PATH}')
-
-get_ipython().system('mkdir -p {EC2_INPUT_PATH}')
-get_ipython().system('mkdir -p {EC2_OUTPUT_PATH}')
-
-
-# In[4]:
-
-get_ipython().system('aws s3 cp {S3_INPUT_PATH_FAO} {EC2_INPUT_PATH} --recursive ')
-
-
-# In[5]:
-
-get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYBAS} {EC2_INPUT_PATH} --recursive --exclude *.tif')
-
-
-# In[6]:
 
 import os
 if 'GDAL_DATA' not in os.environ:
@@ -72,9 +76,28 @@ import time
 get_ipython().magic('matplotlib notebook')
 
 
+# In[4]:
+
+get_ipython().system('rm -r {ec2_input_path}')
+get_ipython().system('rm -r {ec2_output_path}')
+
+get_ipython().system('mkdir -p {ec2_input_path}')
+get_ipython().system('mkdir -p {ec2_output_path}')
+
+
+# In[5]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_FAO} {ec2_input_path} --recursive ')
+
+
+# In[6]:
+
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_HYBAS} {ec2_input_path} --recursive --exclude *.tif')
+
+
 # In[7]:
 
-gdfFAO = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_FAO))
+gdfFAO = gpd.read_file(os.path.join(ec2_input_path,INPUT_FILE_NAME_FAO))
 
 
 # In[8]:
@@ -84,7 +107,7 @@ list(gdfFAO)
 
 # In[9]:
 
-gdfHybas = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_HYBAS))
+gdfHybas = gpd.read_file(os.path.join(ec2_input_path,INPUT_FILE_NAME_HYBAS))
 
 
 # In[10]:
@@ -235,12 +258,12 @@ df_out.dtypes
 
 # In[38]:
 
-df_out.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"),encoding="UTF-8")
+df_out.to_csv(os.path.join(ec2_output_path,OUTPUT_FILE_NAME+".csv"),encoding="UTF-8")
 
 
 # In[39]:
 
-df_out.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".pkl"))
+df_out.to_pickle(os.path.join(ec2_output_path,OUTPUT_FILE_NAME+".pkl"))
 
 
 # ## Linking table
@@ -252,17 +275,17 @@ df_link = gdfJoined[["PFAF_ID","FAOid_copy"]]
 
 # In[41]:
 
-print(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+".csv"))
+print(os.path.join(ec2_output_path,OUTPUT_FILE_NAME+".csv"))
 
 
 # In[42]:
 
-df_link.to_csv(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+"_link.csv"),encoding="UTF-8")
+df_link.to_csv(os.path.join(ec2_output_path,OUTPUT_FILE_NAME+"_link.csv"),encoding="UTF-8")
 
 
 # In[43]:
 
-df_link.to_pickle(os.path.join(EC2_OUTPUT_PATH,OUTPUT_FILE_NAME+"_link.pkl"))
+df_link.to_pickle(os.path.join(ec2_output_path,OUTPUT_FILE_NAME+"_link.pkl"))
 
 
 # In[44]:
@@ -272,7 +295,7 @@ df_link.head()
 
 # In[45]:
 
-get_ipython().system('aws s3 cp {EC2_OUTPUT_PATH} {S3_OUTPUT_PATH} --recursive')
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
 # In[46]:
@@ -281,6 +304,9 @@ end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
+
+# Previous Runs:  
+# 0:06:43.013521
 
 # In[ ]:
 

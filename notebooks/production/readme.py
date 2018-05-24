@@ -19,7 +19,7 @@
 # ### HydroBasins and FAO names
 #     
 # 1. **Y2017M08D02_RH_Merge_HydroBasins_V02**  
-#     copy hydrobasin files from S3 and merge in pyhton using Fiona. 
+#     copy hydrobasin files from S3 and merge in python using Fiona. 
 # 1. **Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01**  
 #     Ingest hydrobasin rasters in earthengine.
 # 1. **Y2017M08D22_RH_Upstream_V01**  
@@ -32,14 +32,15 @@
 #     Create a negative buffer for the FAO basins to avoid sliver polygons.
 # 1. **Y2017M08D25_RH_spatial_join_FAONames_V01**  
 #     Add the FAO Names to the HydroBasins shapefile.
-# 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01**  
+# 1. **Y2017M08D29_RH_Merge_FAONames_Upstream_V01** (Archive!, uses old list based database format.)
 #     Join the tables with the FAO names and the upstream / downstream relations.
+#     
 # 1. **Y2017M11D15_RH_Add_HydroBasins_postGIS_V01**  
-#     Add hdyrobasins geometry and table to postGIS database.    
+#     Add hydrobasins geometry and table to postGIS database.    
 # 1. **Y2017M11D22_RH_FAO_To_Database_V01**    
 #     Store FAO data in AWS RDS database.
 # 1. **Y2017M11D23_RH_Upstream_Downstream_Basin_To_Database_V01**  
-#     Sdd upstream pfaf ID to postgis database.  
+#     Add upstream pfaf ID to postgis database.  
 # 
 # 
 # ### Group Delta Region in HydroBasin level 6

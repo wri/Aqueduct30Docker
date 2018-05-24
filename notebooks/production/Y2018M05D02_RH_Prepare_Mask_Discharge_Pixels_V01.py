@@ -30,7 +30,7 @@ There are several subbasin types:
 6) Small basin with a confluence within basin. Stream_order increases in most 
     downstream cell but is part of basin. 
     e.g.: 172521.
-7) Basin with an endorheac basin in one of its upstream cells.
+7) Basin with an endorheic basin in one of its upstream cells.
     e.g.: 172144.
 8) Large basin with main stream and other stream with large flow but lower 
     stream order.

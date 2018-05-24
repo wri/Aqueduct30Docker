@@ -29,12 +29,12 @@ Args:
 
 """
 SCRIPT_NAME = "Y2017M08D23_RH_Downstream_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D22_RH_Upstream_V01/output_V04/"
 
 INPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_V01.csv"
-OUTPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_V01.csv"
+OUTPUT_FILENAME = "hybas_lev06_v1c_merged_fiona_upstream_downstream_V01"
 
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -108,6 +108,11 @@ df["Upstream_PFAF_IDs"] = df["Upstream_PFAF_IDs"].apply(lambda x: stringToList(x
 
 # In[9]:
 
+outputLocation = "{}/{}".format(ec2_output_path,OUTPUT_FILENAME)
+
+
+# In[10]:
+
 header = df.dtypes
 
 df["HYBAS_ID2"] = df["HYBAS_ID"]
@@ -156,49 +161,45 @@ for id in df.index:
     df_out.set_value(writeID, 'NEXT_SINK_PFAF', sinkPfafID )
 
 
-df_out.to_csv(outputLocation)
+df_out.to_csv(outputLocation+".csv")
+df_out.to_pickle(outputLocation+".pkl")
 
 print("done")
 
 
-# In[ ]:
+# In[11]:
 
 def concatenateHybas(row):
     return row["Downstream_HYBAS_IDs"] + row["Upstream_HYBAS_IDs"] + [row["HYBAS_ID"]]
 
 
-# In[ ]:
+# In[12]:
 
 df_out['Basin_HYBAS_IDs'] = df_out.apply(concatenateHybas, axis=1)
 
 
-# In[ ]:
+# In[13]:
 
 def concatenatePFAF(row):
     return row["Downstream_PFAF_IDs"] + row["Upstream_PFAF_IDs"] + [row["PFAF_ID"]]
 
 
-# In[ ]:
+# In[14]:
 
 df_out['Basin_PFAF_IDs'] = df_out.apply(concatenatePFAF, axis=1)
 
 
-# In[ ]:
+# In[15]:
 
 df_out.tail()
 
 
-# In[ ]:
-
-df_out.to_csv(os.path.join(ec2_output_path,OUTPUT_FILENAME))
-
-
-# In[ ]:
+# In[16]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[17]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -206,4 +207,4 @@ print(elapsed)
 
 
 # Previous Runs:  
-# 
+# 0:01:42.263048

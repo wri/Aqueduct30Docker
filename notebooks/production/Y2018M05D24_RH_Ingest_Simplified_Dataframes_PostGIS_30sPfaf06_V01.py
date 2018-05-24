@@ -97,7 +97,7 @@ if TESTING:
     file_names = file_names[0:3]
 
 
-# In[ ]:
+# In[6]:
 
 i = 0 
 start_time = time.time()
@@ -114,14 +114,17 @@ for file_name in file_names:
     
 
 
-# In[ ]:
+# In[7]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
+# Previous Runs:  
+# 3:25:08.538574
+
 # In[ ]:
 
-Previous Runs:  
+
 
