@@ -6,6 +6,10 @@
 """ Store merged and simplified pandas dataframes in postGIS database. 
 -------------------------------------------------------------------------------
 
+Author: Rutger Hofste
+Date: 20180524
+Kernel: python35
+Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
     TESTING (Boolean) : Toggle testing case.

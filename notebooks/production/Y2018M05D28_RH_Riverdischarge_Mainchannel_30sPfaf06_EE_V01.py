@@ -204,7 +204,7 @@ geometry_client_side = geometry_server_side.getInfo()['coordinates']
 crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
 
 
-# In[ ]:
+# In[11]:
 
 i_processed = 0
 start_time = time.time()
@@ -272,12 +272,12 @@ for temporal_resolution in temporal_resolutions:
         
 
 
-# In[ ]:
+# In[12]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -286,6 +286,8 @@ print(elapsed)
 
 # Previous runs:  
 # 1:16:24.123932
+# 3:12:13.285734
+# 
 # 
 
 # In[ ]:

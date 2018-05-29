@@ -301,8 +301,7 @@ print(elapsed)
 
 
 # Previous runs:  
-# 1:16:24.123932
-# 
+# 0:19:00.638685
 
 # In[ ]:
 

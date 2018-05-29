@@ -114,7 +114,8 @@
 #     Combine and simplify demand and riverdischarge dataframes.
 # 1. **Y2018M05D24_RH_Ingest_Simplified_Dataframes_PostGIS_30sPfaf06_V01**   
 #     Store merged and simplified pandas dataframes in postGIS database. 
-#      
+# 1. **Y2018M05D29_RH_Total_Demand_PostGIS_30sPfaf06_V01**  
+#     Create total WW and total WN columns in simplified table.
 #      
 # 
 #     
