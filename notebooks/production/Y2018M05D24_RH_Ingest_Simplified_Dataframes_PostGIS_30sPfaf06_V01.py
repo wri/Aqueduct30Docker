@@ -26,13 +26,13 @@ Args:
 
 """
 
-TESTING = 1
+TESTING = 0
 SCRIPT_NAME = "Y2018M05D24_RH_Ingest_Simplified_Dataframes_PostGIS_30sPfaf06_V01"
 OVERWRITE_INPUT = 1
 OVERWRITE_OUTPUT = 1
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 1
 
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V03/output_V08"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V03/output_V01"
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -116,14 +116,19 @@ for file_name in file_names:
     
     file_path = "{}/{}".format(ec2_input_path,file_name)
     df = pd.read_pickle(file_path)
+    
+    # Add debug info
     df["input_file_name"] = file_name
+    now = datetime.datetime.now()
+    df["datetime_stamp"] = pd.Timestamp(now)
+    
     df.to_sql(name=OUTPUT_TABLE_NAME,
               con=connection,
               if_exists = "append" )
     
 
 
-# In[7]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start

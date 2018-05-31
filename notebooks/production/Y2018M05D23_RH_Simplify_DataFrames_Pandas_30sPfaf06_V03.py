@@ -26,10 +26,10 @@ Args:
 """
 
 TESTING = 0
-OVERWRITE_INPUT = 0
+OVERWRITE_INPUT = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = "Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V03"
-OUTPUT_VERSION = 8
+OUTPUT_VERSION = 1
 NODATA_VALUE = -9999
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -353,11 +353,6 @@ for temporal_resolution in temporal_resolutions:
 
 # In[ ]:
 
-
-
-
-# In[ ]:
-
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
@@ -374,8 +369,3 @@ print(elapsed)
 # 0:47:08.975392  
 # 0:31:06.810078
 # 
-
-# In[ ]:
-
-
-

@@ -1,11 +1,12 @@
 
 # coding: utf-8
 
-# In[41]:
+# In[1]:
 
 import pandas as pd
 import numpy as np
 from sqlalchemy import *
+import datetime
 
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -36,12 +37,30 @@ result = engine.execute(sql)
 
 
 df_raw = pd.DataFrame(d)
-df_raw.to_sql(TABLE_NAME_RAW,connection)
-df_modified = df_raw.fillna(NODATA_VALUE)
-df_modified["integer_with_nan"] = df_modified["integer_with_nan"].astype(np.int64)
-df_modified.to_sql(TABLE_NAME_MODIFIED,connection)
 
+df_modified = df_raw.copy()
+now = datetime.datetime.now()
+df_modified["datetime_stamp"] = pd.Timestamp(now)
+df_modified.to_sql(TABLE_NAME_MODIFIED,connection)
 print("df_raw datatypes: \n", df_raw.dtypes)
 
-print("\n \n df_modified datatypes: \n",df_modified.dtypes)
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
