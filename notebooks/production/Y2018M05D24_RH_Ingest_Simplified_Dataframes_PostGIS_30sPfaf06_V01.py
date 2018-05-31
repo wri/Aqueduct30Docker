@@ -26,12 +26,13 @@ Args:
 
 """
 
-TESTING = 0
-OVERWRITE = 1
+TESTING = 1
 SCRIPT_NAME = "Y2018M05D24_RH_Ingest_Simplified_Dataframes_PostGIS_30sPfaf06_V01"
-OUTPUT_VERSION = 3
+OVERWRITE_INPUT = 1
+OVERWRITE_OUTPUT = 1
+OUTPUT_VERSION = 6
 
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V02/output_V06"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V03/output_V08"
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -61,12 +62,15 @@ sys.version
 
 # In[3]:
 
-if OVERWRITE:
+if OVERWRITE_INPUT:
     get_ipython().system('rm -r {ec2_input_path}')
-    get_ipython().system('rm -r {ec2_output_path}')
     get_ipython().system('mkdir -p {ec2_input_path}')
-    get_ipython().system('mkdir -p {ec2_output_path}')
     get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive --exclude="*" --include="*.pkl"')
+
+if OVERWRITE_OUTPUT:
+    get_ipython().system('rm -r {ec2_output_path}')
+    get_ipython().system('mkdir -p {ec2_output_path}')
+    
 
 
 # In[4]:
@@ -91,7 +95,7 @@ F.close()
 engine = create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
 connection = engine.connect()
 
-if OVERWRITE:
+if OVERWRITE_OUTPUT:
     sql = text("DROP TABLE IF EXISTS {};".format(OUTPUT_TABLE_NAME))
     result = engine.execute(sql)
 
@@ -112,6 +116,7 @@ for file_name in file_names:
     
     file_path = "{}/{}".format(ec2_input_path,file_name)
     df = pd.read_pickle(file_path)
+    df["input_file_name"] = file_name
     df.to_sql(name=OUTPUT_TABLE_NAME,
               con=connection,
               if_exists = "append" )
@@ -127,8 +132,3 @@ print(elapsed)
 
 # Previous Runs:  
 # 3:25:08.538574
-
-# In[ ]:
-
-
-

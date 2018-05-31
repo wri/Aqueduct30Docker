@@ -1,11 +1,12 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 """ Combine riverdischarge in main channel and sinks. 
 -------------------------------------------------------------------------------
 Updated to get rid of the extra flow accumulation step.
+Updated to remove NaNs from dataframe and replace by NoDataValue.
 
 If a sub-basin contains one or more sinks (coastal and endorheic), the sum 
 of riverdischarge at those sinks will be used. If a subbasin does not contain
@@ -26,9 +27,10 @@ Args:
 
 """
 
-TESTING = 1
+TESTING = 0
 SCRIPT_NAME = "Y2018M05D16_RH_Final_Riverdischarge_30sPfaf06_V01"
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 6
+OVERWRITE = 1
 
 EXTRA_PROPERTIES = {"nodata_value":-9999,
                     "ingested_by" : "RutgerHofste",
@@ -56,7 +58,6 @@ SCHEMA =["geographic_range",
          "reduced_spatial_resolution",
          "reducer_type"]
 
-
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -68,7 +69,7 @@ print("Input ec2: " + ec2_input_path,
       "\nInput s3 sinks: " + S3_INPUT_PATH_SINKS)
 
 
-# In[3]:
+# In[2]:
 
 import time, datetime, sys, logging
 dateString = time.strftime("Y%YM%mD%d")
@@ -78,38 +79,39 @@ print(dateString,timeString)
 sys.version
 
 
-# In[4]:
+# In[3]:
 
 ec2_input_path_mainchannel = "{}/mainchannel".format(ec2_input_path)
 ec2_input_path_sinks = "{}/sinks".format(ec2_input_path)
 
 
-# In[5]:
+# In[4]:
 
 print(ec2_input_path_sinks)
 print(ec2_input_path_mainchannel)
 
 
+# In[5]:
+
+if OVERWRITE:
+    get_ipython().system('rm -r {ec2_input_path}')
+    get_ipython().system('rm -r {ec2_output_path}')
+    get_ipython().system('mkdir -p {ec2_input_path_mainchannel}')
+    get_ipython().system('mkdir -p {ec2_input_path_sinks}')
+    get_ipython().system('mkdir -p {ec2_output_path}')
+
+
 # In[6]:
-
-get_ipython().system('rm -r {ec2_input_path}')
-get_ipython().system('rm -r {ec2_output_path}')
-get_ipython().system('mkdir -p {ec2_input_path_mainchannel}')
-get_ipython().system('mkdir -p {ec2_input_path_sinks}')
-get_ipython().system('mkdir -p {ec2_output_path}')
-
-
-# In[7]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_MAINCHANNEL} {ec2_input_path_mainchannel} --recursive --exclude="*" --include="*.pkl"')
 
 
-# In[8]:
+# In[7]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_SINKS} {ec2_input_path_sinks} --recursive --exclude="*" --include="*.pkl"')
 
 
-# In[11]:
+# In[8]:
 
 # Open Mainchannel dataframe
 
@@ -126,7 +128,7 @@ temporal_resolutions = ["year","month"]
 mainchannel_file_names = os.listdir(ec2_input_path_mainchannel)
 
 
-# In[18]:
+# In[9]:
 
 def read_mainchannel(mainchannel_path):
     df_mainchannel = pd.read_pickle(mainchannel_path)
@@ -165,13 +167,13 @@ def combine_riverdischarge(df):
     
 
 
-# In[16]:
+# In[10]:
 
 if TESTING:
     mainchannel_file_names = mainchannel_file_names[0:10]
 
 
-# In[19]:
+# In[11]:
 
 for mainchannel_file_name in mainchannel_file_names:
     mainchannel_path = "{}/{}".format(ec2_input_path_mainchannel,mainchannel_file_name)
@@ -201,12 +203,12 @@ for mainchannel_file_name in mainchannel_file_names:
     
 
 
-# In[ ]:
+# In[12]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -214,4 +216,6 @@ print(elapsed)
 
 
 # Previous Runs:  
-# 0:06:01.370454
+# 0:06:01.370454  
+# 0:05:18.924077
+# 

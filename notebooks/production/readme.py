@@ -110,7 +110,7 @@
 #     Combine riverdischarge in main channel and sinks.     
 # 1. **Y2018M05D17_RH_Store_Riverdischarge_PostGIS_30sPfaf06_V02**  (might get archived)  
 #     Store combined riverdischarge data in postGIS database.     
-# 1. **Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V02**  
+# 1. **Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V03**  
 #     Combine and simplify demand and riverdischarge dataframes.
 # 1. **Y2018M05D24_RH_Ingest_Simplified_Dataframes_PostGIS_30sPfaf06_V01**   
 #     Store merged and simplified pandas dataframes in postGIS database. 
