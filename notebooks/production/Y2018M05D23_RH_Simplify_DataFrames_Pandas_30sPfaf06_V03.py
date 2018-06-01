@@ -306,7 +306,7 @@ def process_matchingfilenames(matching_file_names,df_area,ec2_input_path):
     
 
 
-# In[ ]:
+# In[12]:
 
 i = 0
 start_time = time.time()
@@ -351,12 +351,12 @@ for temporal_resolution in temporal_resolutions:
             
 
 
-# In[ ]:
+# In[13]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[14]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -367,5 +367,12 @@ print(elapsed)
 # 0:39:39.668227  
 # 0:42:53.025204  
 # 0:47:08.975392  
-# 0:31:06.810078
+# 0:31:06.810078  
+# 0:27:35.551408
 # 
+# 
+
+# In[ ]:
+
+
+

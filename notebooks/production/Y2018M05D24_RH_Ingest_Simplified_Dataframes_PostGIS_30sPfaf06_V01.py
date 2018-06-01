@@ -128,7 +128,7 @@ for file_name in file_names:
     
 
 
-# In[ ]:
+# In[7]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -137,3 +137,5 @@ print(elapsed)
 
 # Previous Runs:  
 # 3:25:08.538574
+# 1:57:41.018510
+# 
