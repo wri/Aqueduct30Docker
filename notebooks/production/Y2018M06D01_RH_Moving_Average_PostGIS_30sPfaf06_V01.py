@@ -26,7 +26,7 @@ Args:
 
 """
 
-TESTING = 1
+TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D01_RH_Moving_Average_PostGIS_30sPfaf06_V01'
 OUTPUT_VERSION = 1
@@ -168,6 +168,11 @@ FROM temp_table
 """
 
 
+# In[ ]:
+
+engine.dispose()
+
+
 # In[11]:
 
 end = datetime.datetime.now()
@@ -176,6 +181,7 @@ print(elapsed)
 
 
 # Previous runs:  
+# 0:04:02.980766
 
 # In[ ]:
 

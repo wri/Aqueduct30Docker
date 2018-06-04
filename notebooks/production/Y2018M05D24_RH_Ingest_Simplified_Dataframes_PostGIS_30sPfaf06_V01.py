@@ -128,6 +128,11 @@ for file_name in file_names:
     
 
 
+# In[ ]:
+
+engine.dispose()
+
+
 # In[7]:
 
 end = datetime.datetime.now()

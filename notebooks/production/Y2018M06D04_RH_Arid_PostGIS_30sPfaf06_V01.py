@@ -1,13 +1,13 @@
 
 # coding: utf-8
 
-# In[14]:
+# In[1]:
 
-""" Create total WW and total WN columns in simplified table.
+""" Add column for arid subbasins. 
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20180524
+Date: 20180604
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -24,22 +24,26 @@ Args:
     S3_INPUT_PATH_DEMAND (string) : AWS S3 input path for 
         demand.     
 
+
+
 """
 
-TESTING = 0
+TESTING = 1
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = "Y2018M05D29_RH_Total_Demand_PostGIS_30sPfaf06_V01"
+SCRIPT_NAME = 'Y2018M06D04_RH_Arid_PostGIS_30sPfaf06_V01'
 OUTPUT_VERSION = 1
+
+THRESHOLD_ARID_YEAR = 0.03 #units are m/year, threshold defined by Aqueduct 2.1
+THRESHOLD_LOW_WATER_USE_YEAR = 0.012 #units are m/year, threshold defined by Aqueduct 2.1 
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = "global_historical_all_multiple_m_30spfaf06_v01"
+
+INPUT_TABLE_NAME = "y2018m06d01_rh_moving_average_postgis_30spfaf06_v01_v01"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
       "\nOutput Table: " , OUTPUT_TABLE_NAME)
-
-
 
 
 # In[2]:
@@ -82,53 +86,39 @@ if OVERWRITE_OUTPUT:
 # In[5]:
 
 if TESTING:
-    # Appr 6 s
-    sql = text("CREATE TABLE {} AS SELECT * FROM {} LIMIT 100000".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME))
+    sql = "CREATE TABLE {} AS SELECT * FROM {} WHERE pfafid_30spfaf06 < 130000 ;".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME)
 else:
-    # Appr 10 min
-    sql = text("CREATE TABLE {} AS SELECT * FROM {}".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME))
+    sql = "CREATE TABLE {} AS SELECT * FROM {};".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME)
 result = engine.execute(sql)
 
 
-# In[7]:
+# In[6]:
 
-sql = "ALTER TABLE {} ADD COLUMN ptotwn_m_30spfaf06 double precision".format(OUTPUT_TABLE_NAME)
+sql = "ALTER TABLE {} ADD COLUMN arid_boolean_30spfaf06 integer DEFAULT 0".format(OUTPUT_TABLE_NAME)
 result = engine.execute(sql)
-
-
-# In[8]:
-
-sql = "ALTER TABLE {} ADD COLUMN ptotww_m_30spfaf06 double precision".format(OUTPUT_TABLE_NAME)
-result = engine.execute(sql)
-
-
-# In[9]:
-
-sql = "UPDATE {}     SET ptotwn_m_30spfaf06 = pdomwn_m_30spfaf06 + pindwn_m_30spfaf06 + pirrwn_m_30spfaf06 + plivwn_m_30spfaf06;".format(OUTPUT_TABLE_NAME)
-result = engine.execute(sql)
-
-
-# In[10]:
-
-sql = "UPDATE {}     SET ptotww_m_30spfaf06 = pdomww_m_30spfaf06 + pindww_m_30spfaf06 + pirrww_m_30spfaf06 + plivww_m_30spfaf06;".format(OUTPUT_TABLE_NAME)
-result = engine.execute(sql)
-
-
-# In[ ]:
-
-engine.dispose()
 
 
 # In[11]:
 
-end = datetime.datetime.now()
-elapsed = end - start
-print(elapsed)
+threshold_arid_month = THRESHOLD_ARID_YEAR / 12
+threshold_low_water_use_month = THRESHOLD_LOW_WATER_USE_YEAR / 12
+
+print(threshold_arid_month)
 
 
-# Previous runs:  
-# 0:09:28.268020
-# 
+# In[10]:
+
+# Set Arid for monthly columns
+sql = "UPDATE y2018m06d04_rh_arid_postgis_30spfaf06_v01_v01     SET arid_boolean_30spfaf06 = 1     WHERE temporal_resolution = 'month' AND ma10_riverdischarge_m_30spfaf06 < {};".format(threshold_arid_month)
+result = engine.execute(sql)
+
+
+# In[13]:
+
+# Set Arid for year columns
+sql = "UPDATE y2018m06d04_rh_arid_postgis_30spfaf06_v01_v01     SET arid_boolean_30spfaf06 = 1     WHERE temporal_resolution = 'year' AND ma10_riverdischarge_m_30spfaf06 < {};".format(THRESHOLD_ARID_YEAR)
+result = engine.execute(sql)
+
 
 # In[ ]:
 

@@ -1,13 +1,13 @@
 
 # coding: utf-8
 
-# In[14]:
+# In[1]:
 
-""" Create total WW and total WN columns in simplified table.
+""" Calculate water stress at subbasin level.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20180524
+Date: 20180604
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -28,18 +28,16 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = "Y2018M05D29_RH_Total_Demand_PostGIS_30sPfaf06_V01"
+SCRIPT_NAME = 'Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V01'
 OUTPUT_VERSION = 1
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = "global_historical_all_multiple_m_30spfaf06_v01"
+INPUT_TABLE_NAME = 'y2018m06d04_rh_arid_lowwateruse_postgis_30spfaf06_v01_v01'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
       "\nOutput Table: " , OUTPUT_TABLE_NAME)
-
-
 
 
 # In[2]:
@@ -74,52 +72,46 @@ F.close()
 engine = create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
 connection = engine.connect()
 
-if OVERWRITE_OUTPUT:
-    sql = text("DROP TABLE IF EXISTS {};".format(OUTPUT_TABLE_NAME))
-    result = engine.execute(sql)
+sqls = []
 
+
+if OVERWRITE_OUTPUT:
+    sqls.append("DROP TABLE IF EXISTS {};".format(OUTPUT_TABLE_NAME))
+
+
+# Water Stress = ptotww / (riverdischarge + ptotwn)
 
 # In[5]:
 
 if TESTING:
-    # Appr 6 s
-    sql = text("CREATE TABLE {} AS SELECT * FROM {} LIMIT 100000".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME))
+    sqls.append("CREATE TABLE {} AS SELECT * FROM {} WHERE pfafid_30spfaf06 < 130000 ;".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME))
 else:
-    # Appr 10 min
-    sql = text("CREATE TABLE {} AS SELECT * FROM {}".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME))
-result = engine.execute(sql)
+    sqls.append("CREATE TABLE {} AS SELECT * FROM {};".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME))
+
+
+# In[6]:
+
+sqls.append("ALTER TABLE {} ADD COLUMN waterstress_dimensionless_30spfaf06 double precision".format(OUTPUT_TABLE_NAME))
 
 
 # In[7]:
 
-sql = "ALTER TABLE {} ADD COLUMN ptotwn_m_30spfaf06 double precision".format(OUTPUT_TABLE_NAME)
-result = engine.execute(sql)
+sqls.append("UPDATE {}     SET waterstress_dimensionless_30spfaf06 = ma10_ptotww_m_30spfaf06 / (ma10_riverdischarge_m_30spfaf06 + ma10_ptotwn_m_30spfaf06)     WHERE aridandlowwateruse_boolean_30spfaf06 != 1;".format(OUTPUT_TABLE_NAME))
 
 
 # In[8]:
 
-sql = "ALTER TABLE {} ADD COLUMN ptotww_m_30spfaf06 double precision".format(OUTPUT_TABLE_NAME)
-result = engine.execute(sql)
+sqls
 
 
 # In[9]:
 
-sql = "UPDATE {}     SET ptotwn_m_30spfaf06 = pdomwn_m_30spfaf06 + pindwn_m_30spfaf06 + pirrwn_m_30spfaf06 + plivwn_m_30spfaf06;".format(OUTPUT_TABLE_NAME)
-result = engine.execute(sql)
+for sql in sqls:
+    print(sql)
+    result = engine.execute(sql)   
 
 
 # In[10]:
-
-sql = "UPDATE {}     SET ptotww_m_30spfaf06 = pdomww_m_30spfaf06 + pindww_m_30spfaf06 + pirrww_m_30spfaf06 + plivww_m_30spfaf06;".format(OUTPUT_TABLE_NAME)
-result = engine.execute(sql)
-
-
-# In[ ]:
-
-engine.dispose()
-
-
-# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -127,7 +119,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:09:28.268020
+# 0:02:51.356640
+# 
 # 
 
 # In[ ]:
