@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[15]:
 
 """ Store sample demand and riverdischarge geotiffs in S3 folder. 
 -------------------------------------------------------------------------------
@@ -23,29 +23,37 @@ print("\nInput S3: " + S3_INPUT_PATH +
       "\nOutput S3: " +  s3_output_path)
 
 
-# In[2]:
+# In[21]:
 
-indicator = "riverdischarge"
+indicator = "*" #options: ["riverdischarge","PDomWW, "*" wildcard]
 temporal_resolution = "month"
+unit = "*" # option:  ["m3second" or "milliom3" to limit to supply or demand.]
 year = 1970
 month = 1 
 
 
-# In[3]:
+# In[22]:
 
 import re
 import os
 
 
-# In[4]:
+# In[23]:
 
-filename = "global_historical_{}_{}_m3second_5min_1960_2014_I*Y{:04.0f}M{:02.0f}.tif".format(indicator,temporal_resolution,year,month)
+filename = "global_historical_{}_{}_{}_5min_1960_2014_I*Y{:04.0f}M{:02.0f}.tif".format(indicator,temporal_resolution,unit,year,month)
 
 
-# In[5]:
+# In[24]:
+
+filename
+
+
+# In[25]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH} {s3_output_path} --recursive --exclude "*" --include {filename}')
 
+
+# https://code.earthengine.google.com/6da1c9ab09c4296ebf814ca720cfee54
 
 # In[ ]:
 

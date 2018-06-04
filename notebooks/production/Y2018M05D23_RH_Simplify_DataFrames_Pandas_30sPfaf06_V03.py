@@ -29,7 +29,7 @@ TESTING = 0
 OVERWRITE_INPUT = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = "Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V03"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 NODATA_VALUE = -9999
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -39,7 +39,7 @@ DATABASE_NAME = "database01"
 TABLE_NAME_AREA_30SPFAF06 = "area_m2_30spfaf06"
 
 # Riverdischarge
-S3_INPUT_PATH_RIVERDISCHARGE = "s3://wri-projects/Aqueduct30/processData/Y2018M05D16_RH_Final_Riverdischarge_30sPfaf06_V01/output_V06"
+S3_INPUT_PATH_RIVERDISCHARGE = "s3://wri-projects/Aqueduct30/processData/Y2018M05D16_RH_Final_Riverdischarge_30sPfaf06_V01/output_V07"
 
 # Demand
 S3_INPUT_PATH_DEMAND = "s3://wri-projects/Aqueduct30/processData/Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01/output_V01"
@@ -368,7 +368,9 @@ print(elapsed)
 # 0:42:53.025204  
 # 0:47:08.975392  
 # 0:31:06.810078  
-# 0:27:35.551408
+# 0:27:35.551408  
+# 0:27:40.751845
+# 
 # 
 # 
 

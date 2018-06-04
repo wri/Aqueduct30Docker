@@ -30,9 +30,9 @@ TESTING = 0
 SCRIPT_NAME = "Y2018M05D24_RH_Ingest_Simplified_Dataframes_PostGIS_30sPfaf06_V01"
 OVERWRITE_INPUT = 1
 OVERWRITE_OUTPUT = 1
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V03/output_V01"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M05D23_RH_Simplify_DataFrames_Pandas_30sPfaf06_V03/output_V02"
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -105,7 +105,7 @@ if TESTING:
     file_names = file_names[0:3]
 
 
-# In[6]:
+# In[ ]:
 
 i = 0 
 start_time = time.time()
@@ -133,7 +133,7 @@ for file_name in file_names:
 engine.dispose()
 
 
-# In[7]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -141,6 +141,6 @@ print(elapsed)
 
 
 # Previous Runs:  
-# 3:25:08.538574
+# 3:25:08.538574  
 # 1:57:41.018510
 # 

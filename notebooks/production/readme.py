@@ -94,14 +94,11 @@
 # 1. **Y2018M05D02_RH_Prepare_Mask_Discharge_Pixels_V01**  
 #     Create area and streamorder images that can be used to mask riverdischarge.
 # 1. **Y2018M05D03_RH_Mask_Discharge_Pixels_V01**  
-#     Mask pixels based on area and streamorder.
-#     
+#     Mask pixels based on area and streamorder.    
 # 1. **Y2018M05D28_RH_Riverdischarge_Mainchannel_30sPfaf06_EE_V01** (client side, pick 1)  
 #     Apply the combined mask and calculate the max discharge per 30spfaf06 zone.  
 # 1. **Y2018M05D28_RH_Riverdischarge_Mainchannel_30sPfaf06_EE_V02** (Server side, pick 1)  
 #     Apply the combined mask and calculate the max discharge per 30spfaf06 zone.
-# 
-# 
 # 1. **Y2018M05D15_RH_Sum_Sinks_5min_EE_V01**  
 #     Calculate sum of sinks at 5min zones.
 # 1. **Y2018M05D15_RH_Sum_Riverdischarge_Sinks_5min_EE_V01**  

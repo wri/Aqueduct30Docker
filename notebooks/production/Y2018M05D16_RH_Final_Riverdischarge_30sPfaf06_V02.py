@@ -29,7 +29,7 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2018M05D16_RH_Final_Riverdischarge_30sPfaf06_V01"
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 7
 OVERWRITE = 1
 
 EXTRA_PROPERTIES = {"nodata_value":-9999,
@@ -160,7 +160,9 @@ def combine_riverdischarge(df):
     """
     
     df_out = df.copy()
-    df_out['riverdischarge_millionm3'] = np.where(df_out['count_sinks']>0, df_out["sum"], df["max"])
+    # Replaced on 2018 06 04 to fix basins like 172111
+    #df_out['riverdischarge_millionm3'] = np.where(df_out['count_sinks']>0, df_out["sum"], df["max"])
+    df_out['riverdischarge_millionm3'] = df_out[["sum", "max"]].max(axis=1)
     df_out.sort_index(axis=1,inplace=True)
     return df_out
     
@@ -218,4 +220,6 @@ print(elapsed)
 # Previous Runs:  
 # 0:06:01.370454  
 # 0:05:18.924077
+# 0:05:37.241160
+# 
 # 
