@@ -105,7 +105,7 @@ if TESTING:
     file_names = file_names[0:3]
 
 
-# In[ ]:
+# In[6]:
 
 i = 0 
 start_time = time.time()
@@ -128,12 +128,12 @@ for file_name in file_names:
     
 
 
-# In[ ]:
+# In[7]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[8]:
 
 end = datetime.datetime.now()
 elapsed = end - start

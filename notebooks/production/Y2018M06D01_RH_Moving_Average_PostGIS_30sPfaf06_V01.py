@@ -29,11 +29,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D01_RH_Moving_Average_PostGIS_30sPfaf06_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m05d29_rh_total_demand_postgis_30spfaf06_v01_v01'
+INPUT_TABLE_NAME = 'y2018m05d29_rh_total_demand_postgis_30spfaf06_v01_v02'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -126,7 +126,7 @@ def create_ma_query(ma_window,con,input_table_name,output_table_name,input_colum
     for input_column in input_columns:
         sql = sql + " {},".format(input_column)
     for ma_column in ma_columns:
-        sql = sql + " AVG({}) OVER(PARTITION BY month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS ma{:02.0f}_{},".format(ma_column,ma_window-1,ma_window,ma_column)
+        sql = sql + " AVG({}) OVER(PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS ma{:02.0f}_{},".format(ma_column,ma_window-1,ma_window,ma_column)
     
     sql = sql[:-1]
     sql = sql + " FROM {}".format(input_table_name)
@@ -168,12 +168,12 @@ FROM temp_table
 """
 
 
-# In[ ]:
+# In[11]:
 
 engine.dispose()
 
 
-# In[11]:
+# In[12]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -181,7 +181,11 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:04:02.980766
+# 0:04:02.980766  
+# 0:06:26.539338  
+# 0:03:44.809997
+# 
+# 
 
 # In[ ]:
 

@@ -3,6 +3,8 @@
 
 # # QA Steps for Aqueduct 
 # 
+# 1. **Y2018M06D05_RH_QA_Sample_Raster_Hydrobasins_V01**  
+#     Create rasterized zones at 30s and 5min resolution. 
 # 
 # 1. **Y2018M06D04_RH_QA_download_sample_geotiffs_5min_V01**  
 #     Store sample demand and riverdischarge geotiffs in S3 folder. 
@@ -12,6 +14,8 @@
 #     Download pickled dataframes and convert to csv of sum sinks. 
 # 1. **Y2018M06D04_RH_QA_ptot_riverdischarge_PostGIS_V01**  
 #     Create a table with sample data from the ptot and riverdischarge results.
+# 1. **Y2018M06D05_RH_QA_Total_Demand_PostGIS_30sPfaf06_V01**
+#     For a specific sub basin, query a 10y series for demand and supply to check input for ma10.
 # 1. **Y2018M06D04_RH_QA_ma10_results_PostGIS_V01**  
 #     Create a table with sample data from the ma 10 results.
 #    

@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[14]:
+# In[1]:
 
 """ Create total WW and total WN columns in simplified table.
 -------------------------------------------------------------------------------
@@ -29,11 +29,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = "Y2018M05D29_RH_Total_Demand_PostGIS_30sPfaf06_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = "global_historical_all_multiple_m_30spfaf06_v01"
+INPUT_TABLE_NAME = "global_historical_all_multiple_m_30spfaf06_v02"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -90,31 +90,31 @@ else:
 result = engine.execute(sql)
 
 
-# In[7]:
+# In[6]:
 
 sql = "ALTER TABLE {} ADD COLUMN ptotwn_m_30spfaf06 double precision".format(OUTPUT_TABLE_NAME)
 result = engine.execute(sql)
 
 
-# In[8]:
+# In[7]:
 
 sql = "ALTER TABLE {} ADD COLUMN ptotww_m_30spfaf06 double precision".format(OUTPUT_TABLE_NAME)
 result = engine.execute(sql)
 
 
-# In[9]:
+# In[8]:
 
 sql = "UPDATE {}     SET ptotwn_m_30spfaf06 = pdomwn_m_30spfaf06 + pindwn_m_30spfaf06 + pirrwn_m_30spfaf06 + plivwn_m_30spfaf06;".format(OUTPUT_TABLE_NAME)
 result = engine.execute(sql)
 
 
-# In[10]:
+# In[9]:
 
 sql = "UPDATE {}     SET ptotww_m_30spfaf06 = pdomww_m_30spfaf06 + pindww_m_30spfaf06 + pirrww_m_30spfaf06 + plivww_m_30spfaf06;".format(OUTPUT_TABLE_NAME)
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[10]:
 
 engine.dispose()
 
@@ -127,7 +127,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:09:28.268020
+# 0:09:28.268020  
+# 0:09:49.300355
 # 
 
 # In[ ]:

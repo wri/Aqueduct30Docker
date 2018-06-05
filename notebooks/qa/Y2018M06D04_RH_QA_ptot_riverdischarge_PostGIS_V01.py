@@ -16,7 +16,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 1
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M06D04_RH_QA_ptot_riverdischarge_PostGIS_V0'
+SCRIPT_NAME = 'Y2018M06D04_RH_QA_ptot_riverdischarge_PostGIS_V01'
 OUTPUT_VERSION = 1
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"

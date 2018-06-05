@@ -29,11 +29,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m06d04_rh_arid_lowwateruse_postgis_30spfaf06_v01_v01'
+INPUT_TABLE_NAME = 'y2018m06d04_rh_arid_lowwateruse_postgis_30spfaf06_v01_v04'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -104,14 +104,14 @@ sqls.append("UPDATE {}     SET waterstress_dimensionless_30spfaf06 = ma10_ptotww
 sqls
 
 
-# In[9]:
+# In[ ]:
 
 for sql in sqls:
     print(sql)
     result = engine.execute(sql)   
 
 
-# In[10]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -119,7 +119,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:02:51.356640
+# 0:02:51.356640  
+# 0:03:09.128359
 # 
 # 
 

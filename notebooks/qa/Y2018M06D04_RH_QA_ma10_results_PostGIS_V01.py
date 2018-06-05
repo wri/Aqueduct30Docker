@@ -21,12 +21,12 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D04_RH_QA_ma10_results_PostGIS_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 INPUT_TABLE_LEFT_NAME = 'hybas06_v04'
-INPUT_TABLE_RIGHT_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v01_v01'
+INPUT_TABLE_RIGHT_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v01_v02'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 OUTPUT_SCHEMA = "test"
 
@@ -148,11 +148,13 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:03.647104
+# 0:00:03.647104  
+# 0:01:37.677627
+# 
 # 
 # 
 
-# In[11]:
+# In[10]:
 
 engine.dispose()
 

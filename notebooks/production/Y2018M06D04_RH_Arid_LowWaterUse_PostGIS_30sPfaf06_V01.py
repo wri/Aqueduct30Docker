@@ -31,7 +31,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D04_RH_Arid_LowWaterUse_PostGIS_30sPfaf06_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 4
 
 THRESHOLD_ARID_YEAR = 0.03 #units are m/year, threshold defined by Aqueduct 2.1
 THRESHOLD_LOW_WATER_USE_YEAR = 0.012 #units are m/year, threshold defined by Aqueduct 2.1 Withdrawal
@@ -39,7 +39,7 @@ THRESHOLD_LOW_WATER_USE_YEAR = 0.012 #units are m/year, threshold defined by Aqu
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m06d01_rh_moving_average_postgis_30spfaf06_v01_v01"
+INPUT_TABLE_NAME = "y2018m06d01_rh_moving_average_postgis_30spfaf06_v01_v03"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -155,7 +155,11 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:09:22.668061
+# 0:09:22.668061  
+# 0:09:36.313159  
+# 0:10:52.997894
+# 
+# 
 # 
 # 
 
