@@ -104,5 +104,11 @@ print(elapsed)
 
 
 # Previous runs:  
+# 0:01:24.514917
 # 
 # 
+
+# In[ ]:
+
+
+

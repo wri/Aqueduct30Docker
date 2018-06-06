@@ -104,14 +104,14 @@ sqls.append("UPDATE {}     SET waterstress_dimensionless_30spfaf06 = ma10_ptotww
 sqls
 
 
-# In[ ]:
+# In[9]:
 
 for sql in sqls:
     print(sql)
     result = engine.execute(sql)   
 
 
-# In[ ]:
+# In[10]:
 
 end = datetime.datetime.now()
 elapsed = end - start

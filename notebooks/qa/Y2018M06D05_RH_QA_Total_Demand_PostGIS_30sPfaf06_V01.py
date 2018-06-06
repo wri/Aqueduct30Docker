@@ -17,7 +17,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D05_RH_QA_Total_Demand_PostGIS_30sPfaf06_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -28,10 +28,11 @@ OUTPUT_SCHEMA = "test"
 
 
 # Filter 
-PFAF_ID = 172111
+#PFAF_ID =  158904   
+PFAF_ID =  172111
 TEMPORAL_RESOLUTION = "month"
-YEAR = 1970 #final year i.e. ma starting for year-9
-MONTH = 1
+YEAR = 2010 #final year i.e. ma starting for year-9
+MONTH = 4
 
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -107,6 +108,16 @@ end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
+
+# In[9]:
+
+engine.dispose()
+
+
+# Previous runs:  
+# 0:01:27.113494
+# 
+# 
 
 # In[ ]:
 

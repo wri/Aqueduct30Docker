@@ -119,9 +119,6 @@
 #     Add column for arid, lowwateruse and aridandlowwateruse for each subbasin. 
 # 1. **Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V01**  
 #     Calculate water stress at subbasin level.
-# 
-#      
-# 
 #     
 #   
 # 
@@ -159,9 +156,7 @@
 #     Download ESI (Evaporative Stress Index) to Instance, Google Cloud Services and Amazon S3.
 #     
 #     
-# ### QA
-# 1.  **Y2018M05D02_RH_Convert_Area_Raster_EE_GCS_S3_V01**
-#     Area rasters were created in ee, storing in gcs and s3.
+# 
 # 
 #     
 # 

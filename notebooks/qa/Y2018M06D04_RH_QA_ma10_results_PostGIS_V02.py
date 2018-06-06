@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[14]:
 
 """ QA for water stress in several basin
 -------------------------------------------------------------------------------
@@ -25,8 +25,9 @@ OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_LEFT_NAME = 'hybas06_v04'
-INPUT_TABLE_RIGHT_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v01_v03'
+
+INPUT_TABLE_LEFT_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v01_v03'
+INPUT_TABLE_RIGHT_NAME = 'hybas06_v04'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 OUTPUT_SCHEMA = "test"
 
@@ -45,7 +46,7 @@ print("Input Table Left: " , INPUT_TABLE_LEFT_NAME,
 
 
 
-# In[2]:
+# In[15]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -55,7 +56,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[3]:
+# In[16]:
 
 # imports
 import re
@@ -67,7 +68,7 @@ from sqlalchemy import *
 pd.set_option('display.max_columns', 500)
 
 
-# In[4]:
+# In[17]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -80,29 +81,25 @@ sqls = []
 
 if OVERWRITE_OUTPUT:
     sqls.append("DROP TABLE IF EXISTS {}.{};".format(OUTPUT_SCHEMA,OUTPUT_TABLE_NAME))
-    sqls.append("DROP TABLE IF EXISTS {}.temp_right".format(OUTPUT_SCHEMA))
+    sqls.append("DROP TABLE IF EXISTS {}.temp_left".format(OUTPUT_SCHEMA))
 
 
-# In[5]:
+# In[18]:
 
 sqls.append(
-"CREATE TABLE {}.temp_right AS "
+"CREATE TABLE {}.temp_left AS "
 "SELECT * FROM {} "
 "WHERE "
 "pfafid_30spfaf06 > {} AND "
 "pfafid_30spfaf06 < {} AND "
 "temporal_resolution = '{}' AND "
 "year = {} AND "
-"month = {};".format(OUTPUT_SCHEMA ,INPUT_TABLE_RIGHT_NAME,PFAFID_RANGE_MIN,PFAFID_RANGE_MAX,TEMPORAL_RESOLUTION,YEAR,MONTH))
+"month = {};".format(OUTPUT_SCHEMA ,INPUT_TABLE_LEFT_NAME,PFAFID_RANGE_MIN,PFAFID_RANGE_MAX,TEMPORAL_RESOLUTION,YEAR,MONTH))
 
 
-# In[6]:
+# In[ ]:
 
-# Add indices? 
-
-
-# In[7]:
-
+# old sqls
 sqls.append(
 "CREATE TABLE {}.{} AS "   
 "SELECT "
@@ -133,14 +130,32 @@ sqls.append(
 )
 
 
-# In[8]:
+# In[ ]:
+
+SELEC
+
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[13]:
+
+sqls
+
+
+# In[6]:
 
 for sql in sqls:
     print(sql)
     result = engine.execute(sql)   
 
 
-# In[9]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -154,7 +169,7 @@ print(elapsed)
 # 
 # 
 
-# In[10]:
+# In[ ]:
 
 engine.dispose()
 

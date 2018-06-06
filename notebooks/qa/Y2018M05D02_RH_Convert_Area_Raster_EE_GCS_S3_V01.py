@@ -30,20 +30,25 @@ Returns:
 
 
 """
-TESTING = 1
+TESTING = 0
 SCRIPT_NAME = "Y2018M05D02_RH_Convert_Area_Raster_EE_GCS_S3_V01"
 EE_INPUT_PATH = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V02/"
 INPUT_FILE_NAMES = [ "global_area_m2_5min_V05",
                      "global_area_m2_30s_V05"]
 OUTPUT_GCS_BUCKET = "aqueduct30_v01"
-OUTPUT_VERSION = 5
+OUTPUT_VERSION = 7
+
+# Nile Delta
+XMIN = 28
+YMIN = 27
+XMAX = 33
+YMAX = 32
 
 # ETL
 gcs_output_path = "gs://{}/{}/output_V{:02.0f}/".format(OUTPUT_GCS_BUCKET,SCRIPT_NAME,OUTPUT_VERSION)
-s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+
 
 print("Input ee : " +  EE_INPUT_PATH +
-      "\nOutput s3 : " + s3_output_path +
       "\nOutput gcs : " + gcs_output_path)
 
 
@@ -66,6 +71,9 @@ ee.Initialize()
 
 
 def main():
+    
+    geometry = ee.Geometry.Polygon(coords=[[XMIN, YMIN], [XMAX,  YMIN], [XMAX, YMAX], [XMIN,YMAX]], proj= ee.Projection('EPSG:4326'),geodesic=False )
+    
     for file_name in INPUT_FILE_NAMES:
         input_asset_id = EE_INPUT_PATH + file_name
         if file_name == "global_area_m2_5min_V05":
@@ -87,7 +95,6 @@ def main():
         print(output_file_name_prefix)
         crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
         dimensions = aqueduct3.earthengine.get_dimensions(spatial_resolution)
-        geometry = aqueduct3.earthengine.get_global_geometry(test=TESTING)
         # Weird legacy stuff: 
         # https://groups.google.com/d/msg/google-earth-engine-developers/TViMuO3ObeM/cpNNg-eMDAAJ
         geometry_client_side = geometry.getInfo()['coordinates']

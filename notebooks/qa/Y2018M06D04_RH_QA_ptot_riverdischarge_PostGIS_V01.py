@@ -28,11 +28,11 @@ OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 OUTPUT_SCHEMA = "test"
 
 # Filter 
-TEMPORAL_RESOLUTION = "month"
-YEAR = 1970
-MONTH = 1
+TEMPORAL_RESOLUTION = "year"
+YEAR = 2010
+MONTH = 12
 PFAFID_RANGE_MIN = 1
-PFAFID_RANGE_MAX = 200000
+PFAFID_RANGE_MAX = 999999
 
 print("Input Table Left: " , INPUT_TABLE_LEFT_NAME, 
       "\nInput Table Right: " , INPUT_TABLE_RIGHT_NAME, 
@@ -132,7 +132,9 @@ elapsed = end - start
 print(elapsed)
 
 
-# Previous runs:
+# Previous runs:  
+# 0:01:27.029253
+# 
 
 # In[9]:
 
