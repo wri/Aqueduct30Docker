@@ -23,16 +23,19 @@
 #     Create a table with sample data from the ptot and riverdischarge results.
 # 1. **Y2018M06D05_RH_QA_Total_Demand_PostGIS_30sPfaf06_V01**  
 #     For a specific sub basin, query a 10y series for demand and supply to check input for ma10.
-# 1. **Y2018M06D04_RH_QA_ma10_results_PostGIS_V01**  
+# 1. **Y2018M06D04_RH_QA_ma10_results_PostGIS_V02**  
 #     Create a table with sample data from the ma 10 results.
-# 
-# 1. **Y2018M06D07_RH_QA_Shapefile_Based_On_Result_V01**
 # 
 # 
 # ## Comparing AQ2.1
 #     
 # 1. **Y2018M06D05_RH_QA_Aqueduct21_Flux_Shapefile_V01**  
 #     Create Aqueduct 2.1 shapefile with fluxes. 
+# 1. **Y2018M06D08_RH_QA_Aqueduct21_Demand_Ingest_EE_V01**
+#     Convert Aqueduct 2.1 demand to geotiff. 
+#     
+#    
+#     
 #     
 # 
 #    
