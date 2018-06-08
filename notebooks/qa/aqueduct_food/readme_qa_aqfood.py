@@ -7,6 +7,8 @@
 # a couple of scripts to make QA for Aqueduct Food Easier. The scripts will store 
 # relevant data in one place without the need to touch raw input data. 
 # 
+# The main clean up script written by Alicia can be found [here](https://github.com/resource-watch/notebooks/blob/develop/Aqueduct/lab/water_risk_cleanup.ipynb)
+# 
 # 
 # ## Groundwater Table Declining Trend
 # 
@@ -24,7 +26,22 @@
 # 
 # 
 # 
+# 
+# 
 # ## IFPRI IMPACT
+# 
+# Shared over email. Ask Vizzuality / Sara for version used.
+# 
+# ## SPAM 
+# Vizzuality downloaded the data directly:  
+# http://spam05.harvestchoice.org/v2r0/csv/  
+# sample data script:  
+# https://github.com/resource-watch/notebooks/blob/develop/Aqueduct/lab/data_download.ipynb
+# complete download:  
+# https://github.com/resource-watch/notebooks/blob/develop/Aqueduct/lab/
+# 
+# 
+# 
 # 
 # 
 # 
