@@ -10,6 +10,7 @@ Create postGIS table for selected basins with all ma_10 indicators
 
 
 
+
 Author: Rutger Hofste
 Date: 20180604
 Kernel: python35
@@ -21,7 +22,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D04_RH_QA_ma10_results_PostGIS_V02'
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -36,7 +37,7 @@ OUTPUT_SCHEMA = "test"
 
 # Filter 
 TEMPORAL_RESOLUTION = None  # Option [ "year", "month"]
-YEAR_RANGE = [2010,2014] # Options [1960:2014]
+YEAR_RANGE = [1960,2014] # Options [1960:2014]
 MONTH_RANGE = [1,12] # Options [1:12]
 PFAFID_RANGE = [111011,914900] # Options, list [111011:914900], includes 0 and end.
 
@@ -140,10 +141,10 @@ if SIMPLIFY_COLUMN_NAMES == 0:
     "l.waterstress_dimensionless_30spfaf06, "
     "r.pfaf_id, "
     "r.coast, "
-    "r.geom "
+    "r.geom ) "
     "FROM {}.temp_left AS l "
     "INNER JOIN {} AS r ON "
-    "r.pfaf_id = l.pfafid_30spfaf06 ".format(OUTPUT_SCHEMA,OUTPUT_TABLE_NAME,OUTPUT_SCHEMA,INPUT_TABLE_RIGHT_NAME))
+    "r.pfaf_id = l.pfafid_30spfaf06 ".format(OUTPUT_SCHEMA,OUTPUT_TABLE_NAME,SIMPLIFY_TOLERANCE,OUTPUT_SCHEMA,INPUT_TABLE_RIGHT_NAME))
 elif SIMPLIFY_COLUMN_NAMES == 1:
     sqls.append(
     "CREATE TABLE {}.{} AS "
@@ -179,45 +180,37 @@ elif SIMPLIFY_COLUMN_NAMES == 1:
     
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
 # In[7]:
 
 sqls.append(
 "ALTER TABLE {}.{} ADD id BIGSERIAL PRIMARY KEY;".format(OUTPUT_SCHEMA,OUTPUT_TABLE_NAME))
 
 
-# In[ ]:
-
-
-
-
 # In[8]:
+
+sqls.append(
+"ALTER TABLE {}.{} ADD arcmap_bs INTEGER;".format(OUTPUT_SCHEMA,OUTPUT_TABLE_NAME))
+
+
+# In[9]:
+
+sqls.append(
+"CREATE INDEX pfafid_index ON {}.{} (pfafid);".format(OUTPUT_SCHEMA,OUTPUT_TABLE_NAME))
+
+
+# In[10]:
 
 sqls
 
 
-# In[ ]:
+# In[11]:
 
 for sql in sqls:
     print(sql)
     result = engine.execute(sql)   
 
 
-# In[ ]:
+# In[12]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -227,13 +220,17 @@ print(elapsed)
 # Previous runs:  
 # 0:00:03.647104  
 # 0:01:37.677627  
-# 0:05:18.544848
+# 0:05:18.544848  
+# 0:01:52.671324
+# 3:26:07.110533
+# 
+# 
 # 
 # 
 # 
 # 
 
-# In[ ]:
+# In[13]:
 
 engine.dispose()
 

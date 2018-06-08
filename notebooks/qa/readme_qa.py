@@ -3,6 +3,10 @@
 
 # # QA Steps for Aqueduct 
 # 
+# 1. **Y2018M06D07_RH_QA_Create_Users_PostGIS_V01**  
+#     Create users and manage permissions in database.
+# 
+# 
 # 1. **Y2018M06D05_RH_QA_Sample_Raster_Hydrobasins_V01**  
 #     Create rasterized zones at 30s and 5min resolution.
 # 1. **Y2018M05D02_RH_Convert_Area_Raster_EE_GCS_S3_V01**  
@@ -22,12 +26,15 @@
 # 1. **Y2018M06D04_RH_QA_ma10_results_PostGIS_V01**  
 #     Create a table with sample data from the ma 10 results.
 # 
+# 1. **Y2018M06D07_RH_QA_Shapefile_Based_On_Result_V01**
 # 
 # 
 # ## Comparing AQ2.1
 #     
 # 1. **Y2018M06D05_RH_QA_Aqueduct21_Flux_Shapefile_V01**  
 #     Create Aqueduct 2.1 shapefile with fluxes. 
+#     
+# 
 #    
 
 # In[ ]:
