@@ -234,7 +234,7 @@ for spatial_resolution in SPATIAL_RESOLUTIONS:
         
 
 
-# In[17]:
+# In[2]:
 
 get_ipython().system('gsutil -m cp {ec2_output_path}/* {gcs_output_path}')
 

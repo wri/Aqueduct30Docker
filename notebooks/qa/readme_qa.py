@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# # QA Steps for Aqueduct 
+# ### QA Steps for Aqueduct 
 # 
 # 1. **Y2018M06D07_RH_QA_Create_Users_PostGIS_V01**  
 #     Create users and manage permissions in database.
@@ -30,9 +30,17 @@
 # ## Comparing AQ2.1
 #     
 # 1. **Y2018M06D05_RH_QA_Aqueduct21_Flux_Shapefile_V01**  
-#     Create Aqueduct 2.1 shapefile with fluxes. 
-# 1. **Y2018M06D08_RH_QA_Aqueduct21_Demand_Ingest_EE_V01**
+#     Create Aqueduct 2.1 shapefile with fluxes. Store on S3 and GCS.
+# 1. **Y2018M06D11_RH_QA_Ingest_Aq21_Flux_Shapefile_V01**  
+#     Ingest aqueduct 2.1 shapefile with fluxes into earthengine. 
+# 1. **Y2018M06D18_RH_QA_IngestAq30_Shapefile_V01**   (Move to main repo?)  
+#     Ingest aqueduct 3.0 shapefile into earthengine. 
+# 1. **Y2018M06D08_RH_QA_Aqueduct21_Demand_Ingest_GCS_EE_V01**  
 #     Convert Aqueduct 2.1 demand to geotiff. 
+# 1. **Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01**  
+#     Zonal statistics with Aq21 basins as zones and AQ 2.1 and AQ 3.0 as values. 
+#     
+#  
 #     
 #    
 #     

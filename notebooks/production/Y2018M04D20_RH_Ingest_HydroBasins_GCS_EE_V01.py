@@ -6,6 +6,7 @@
 """ Ingest hydrobasin rasters in earthengine.
 -------------------------------------------------------------------------------
 Ingests rasterized hydrobasin geotiffs in earthengine.
+Ingests shapefile hydrobasin in earthengine.
 
 
 Author: Rutger Hofste
@@ -152,6 +153,59 @@ def main():
 
 if __name__ == "__main__":
     df,df_errors = main()
+
+
+# # Ingest Shapefile
+# 
+# This part has been added later for QA purposes only. 20180618 
+# The option to ingest shapefiles using CLI was not available during the first 
+# ingestion phase of Aqueduct 3.0
+
+# In[19]:
+
+def property_dict_to_ee_command(d):
+    """ Converts a dictionary of properties to earthengine upload command.
+    
+    Warning: will store all properties as strings.
+    
+    TODO
+    
+    Args:
+        dictje (Dictionary) : Dictionary with properties
+    
+    Returns:
+        None
+    
+    """
+    
+    command = ""
+    
+    for key, value in d.items():
+            command += " --p {}={}".format(key,value)
+       
+    return command
+    
+
+
+# In[6]:
+
+keys = aqueduct3.get_GCS_keys(gcs_input_path)
+keys = list(filter(lambda x: x.endswith('.shp'), keys))
+
+
+# In[24]:
+
+for key in keys:
+    input_path = key
+    output_filename_ext = key.split("/")[-1]
+    output_filename = output_filename_ext.split(".")[-2]
+    output_path = ee_output_path + "/" + output_filename    
+    command = "earthengine upload table --asset_id={} {} ".format(output_path,input_path)
+    extra_command = property_dict_to_ee_command(EXTRA_PROPERTIES)
+    command = command + extra_command
+    print(command)
+    response = subprocess.check_output(command, shell=True)
+    
 
 
 # In[5]:

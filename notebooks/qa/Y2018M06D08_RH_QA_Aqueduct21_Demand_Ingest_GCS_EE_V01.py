@@ -136,4 +136,5 @@ print(elapsed)
 
 
 # Previous runs:  
+# 0:00:37.967053
 # 
