@@ -32,7 +32,11 @@
 # 1. **Y2018M06D05_RH_QA_Aqueduct21_Flux_Shapefile_V01**  
 #     Create Aqueduct 2.1 shapefile with fluxes. Store on S3 and GCS.
 # 1. **Y2018M06D11_RH_QA_Ingest_Aq21_Flux_Shapefile_V01**  
-#     Ingest aqueduct 2.1 shapefile with fluxes into earthengine. 
+#     Ingest aqueduct 2.1 shapefile with fluxes into earthengine.
+# 1. **Y2018M06D19_RH_QA_Download_Aq21projection_Shapefile_V01**
+#     Download Aqueduct 2.1 projection shapefile and upload to S3 and GCS.
+# 1. **Y2018M06D19_RH_QA_Ingest_Aq21projection_Shapefile_V01**  
+#     Ingest aqueduct 2.1 projection shapefile with fluxes into earthengine.    
 # 1. **Y2018M06D18_RH_QA_IngestAq30_Shapefile_V01**   (Move to main repo?)  
 #     Ingest aqueduct 3.0 shapefile into earthengine. 
 # 1. **Y2018M06D08_RH_QA_Aqueduct21_Demand_Ingest_GCS_EE_V01**  
@@ -42,12 +46,7 @@
 # 1. **Y2018M06D19_RH_QA_AQ21_AQ30_Demand_Cleanup_V01**  
 #     Combine zonal statistics of different indicators and calculate flux.
 #  
-#     
-#    
-#     
-#     
 # 
-#    
 
 # In[ ]:
 

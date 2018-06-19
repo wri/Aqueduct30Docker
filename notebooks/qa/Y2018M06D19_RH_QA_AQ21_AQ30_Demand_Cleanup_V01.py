@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[17]:
 
 """ Combine zonal statistics of different indicators and calculate flux. 
 -------------------------------------------------------------------------------
@@ -20,18 +20,19 @@ Args:
 OVERWRITE = 1
 TESTING = 0
 SCRIPT_NAME = "Y2018M06D19_RH_QA_AQ21_AQ30_Demand_Cleanup_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01/output_V02"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01/output_V03"
 
 AQ21_SHAPEFILE_S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/qaData/Y2018M06D05_RH_QA_Aqueduct21_Flux_Shapefile_V01/output_V05"
 AQ30_SHAPEFILE_S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V02/output_V04/"
+AQ21PROJ_SHAPEFILE_S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/qaData/Y2018M06D19_RH_QA_Download_Aq21projection_Shapefile_V01/output_V01"
 
 AQ21_INPUT_FILE_NAME = "aqueduct21_flux"
 AQ30_INPUT_FILE_NAME = "hybas_lev06_v1c_merged_fiona_V04"
+AQ21PROJ_INPUT_FILE_NAME = "aqueduct21projection_flux"
 
 ECKERT_IV_PROJ4_STRING = "+proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"
-
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
@@ -43,7 +44,7 @@ print("Input GCS : " + GCS_INPUT_PATH +
       "\nOutput s3: " + ec2_output_path)
 
 
-# In[ ]:
+# In[2]:
 
 import time, datetime, sys, logging
 dateString = time.strftime("Y%YM%mD%d")
@@ -53,13 +54,13 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
+# In[3]:
 
 import geopandas as gpd
 import pandas as pd
 
 
-# In[ ]:
+# In[4]:
 
 if OVERWRITE:
     get_ipython().system('rm -r {ec2_input_path}')
@@ -71,28 +72,34 @@ else:
     get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[ ]:
+# In[5]:
 
 # Aq 21 shapefile
 get_ipython().system('aws s3 cp {AQ21_SHAPEFILE_S3_INPUT_PATH} {ec2_input_path} --recursive')
 
 
-# In[ ]:
+# In[6]:
 
 # Aq 30 shapefile
 get_ipython().system('aws s3 cp {AQ30_SHAPEFILE_S3_INPUT_PATH} {ec2_input_path} --recursive --exclude "*" --include "hybas_lev06_v1c_merged_fiona_V04*"')
 
 
-# In[ ]:
+# In[7]:
+
+# Aq 21 proj shapefile
+get_ipython().system('aws s3 cp {AQ21PROJ_SHAPEFILE_S3_INPUT_PATH} {ec2_input_path} --recursive')
+
+
+# In[18]:
 
 # Zonal Stats
 
 get_ipython().system('gsutil cp {GCS_INPUT_PATH}/* {ec2_input_path}')
 
 
-# In[ ]:
+# In[14]:
 
-# Read Shapefiles of Aqueduct 2.1 and 3.0
+# Read Shapefiles of Aq2.1 Aq3.0 and Aq21proj
 
 aq21_input_file_path = "{}/{}.shp".format(ec2_input_path,AQ21_INPUT_FILE_NAME)
 gdf_aq21 = gpd.read_file(aq21_input_file_path )
@@ -106,10 +113,16 @@ gdf_aq30["area_m2"] = gdf_aq30_eckert4.geometry.area
 gdf_aq30 = gdf_aq30.set_index("PFAF_ID")
 
 
+# In[15]:
+
+aq21proj_input_file_path = "{}/{}.shp".format(ec2_input_path,AQ21PROJ_INPUT_FILE_NAME)
+gdf_aq21proj = gpd.read_file(aq21proj_input_file_path )
+gdf_aq21proj = gdf_aq21proj.set_index("BasinID")
+
 
 # In[ ]:
 
-aqueduct_versions = ["aq21","aq30"]
+aqueduct_versions = ["aq21","aq30","aq21proj"]
 sectors = ["a","d","i","t"]
 demand_types = ["c","u"]
 
@@ -121,6 +134,10 @@ for aqueduct_version in aqueduct_versions:
     elif aqueduct_version == "aq30":
         gdf_left = gdf_aq30.copy()
         index_name = "PFAF_ID"
+    elif aqueduct_version == "aq21proj":
+        gdf_left = gdf_aq21proj.copy()
+        index_name = "BasinID"        
+        
     else:
         break
     
@@ -136,13 +153,17 @@ for aqueduct_version in aqueduct_versions:
             
             df_out = df_out.rename(columns={"sum":"sum_{}{}_m3".format(demand_type,sector),
                                             "count":"count_{}{}_dimensionless".format(demand_type,sector)})
+            
             gdf_left  = gdf_left.merge(right=df_out,
                                    how="left",
                                    left_index = True,
                                    right_index = True)
+            gdf_left["sum_{}{}_m".format(demand_type,sector)] = gdf_left["sum_{}{}_m3".format(demand_type,sector)]/gdf_left["area_m2"]
+            
+            
     gdf_out = gdf_left
     df_out = pd.DataFrame(gdf_out.drop("geometry",1))
-    output_file_path_no_ext = "{}{}".format(ec2_output_path,aqueduct_version)
+    output_file_path_no_ext = "{}/{}".format(ec2_output_path,aqueduct_version)
     
     gdf_left.to_file(driver='ESRI Shapefile', filename=output_file_path_no_ext+".shp")
     df_out.to_csv(output_file_path_no_ext+".csv")

@@ -22,9 +22,10 @@ TESTING = 0
 OVERWRITE_INPUT = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = "Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 INPUT_PATH_ZONES_AQ21 = "projects/WRI-Aquaduct/Y2018M06D11_RH_QA_Ingest_Aq21_Flux_Shapefile_V01/output_V03/aqueduct21_flux"
+INPUT_PATH_ZONES_AQ21PROJ = "projects/WRI-Aquaduct/Y2018M06D19_RH_QA_Ingest_Aq21projection_Shapefile_V01/output_V01/aqueduct21projection_flux"
 INPUT_PATH_ZONES_AQ30 = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_V04"
 INPUT_PATH_VALUES_AQ21 = "projects/WRI-Aquaduct/Y2018M06D08_RH_QA_Aqueduct21_Demand_Ingest_GCS_EE_V01/output_V02/"
 
@@ -40,7 +41,8 @@ CRS_TRANSFORM_AQ21 = [
     74.99583666666666
   ]
 
-print("\Input_path_zones_aq21: " + INPUT_PATH_ZONES_AQ21,
+print("\Input_path_zones_aq21: " + INPUT_PATH_ZONES_AQ21 +
+      "\Input_path_zones_aq21Projection: " + INPUT_PATH_ZONES_AQ21PROJ +
       "\nInput_path_zones_aq30: " + INPUT_PATH_ZONES_AQ30 +
       "\nInput_path_values_aq21: " + INPUT_PATH_VALUES_AQ21 + 
       "\nOutput_path_gcs: " + BUCKET)
@@ -89,12 +91,17 @@ fc_aq21_zones = ee.FeatureCollection(INPUT_PATH_ZONES_AQ21)
 
 # In[6]:
 
-fc_aq30_zones = ee.FeatureCollection(INPUT_PATH_ZONES_AQ30)
+fc_aq21proj_zones = ee.FeatureCollection(INPUT_PATH_ZONES_AQ21PROJ)
 
 
 # In[7]:
 
-aqueduct_versions = ["aq21","aq30"]
+fc_aq30_zones = ee.FeatureCollection(INPUT_PATH_ZONES_AQ30)
+
+
+# In[8]:
+
+aqueduct_versions = ["aq21","aq30","aq21proj"]
 sectors = ["a","d","i","t"]
 demand_types = ["c","u"]
 reducer = ee.Reducer.count().combine(ee.Reducer.sum(),"",True)
@@ -102,15 +109,17 @@ reducer = ee.Reducer.count().combine(ee.Reducer.sum(),"",True)
 if TESTING:
     sectors = ["t"]
     demand_types = ["c","u"]
-    aqueduct_versions = ["aq21","aq30"]
+    aqueduct_versions = ["aq21","aq30","aq21proj"]
     
 
 
-# In[8]:
+# In[9]:
 
 for aqueduct_version in aqueduct_versions:    
     if aqueduct_version == "aq21":
         fc_zones = fc_aq21_zones
+    elif aqueduct_version == "aq21proj":
+        fc_zones = fc_aq21proj_zones
     elif aqueduct_version == "aq30":
         fc_zones = fc_aq30_zones
     else:
@@ -143,7 +152,7 @@ for aqueduct_version in aqueduct_versions:
         
 
 
-# In[9]:
+# In[10]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -151,7 +160,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:08.170403
+# 0:00:40.154716
+# 
 
 # In[ ]:
 
