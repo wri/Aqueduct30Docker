@@ -39,7 +39,8 @@
 #     Convert Aqueduct 2.1 demand to geotiff. 
 # 1. **Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01**  
 #     Zonal statistics with Aq21 basins as zones and AQ 2.1 and AQ 3.0 as values. 
-#     
+# 1. **Y2018M06D19_RH_QA_AQ21_AQ30_Demand_Cleanup_V01**  
+#     Combine zonal statistics of different indicators and calculate flux.
 #  
 #     
 #    

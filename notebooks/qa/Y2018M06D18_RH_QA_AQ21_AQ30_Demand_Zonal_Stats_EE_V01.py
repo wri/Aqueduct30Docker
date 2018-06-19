@@ -18,11 +18,11 @@ Args:
 
 """
 
-TESTING = 1
+TESTING = 0
 OVERWRITE_INPUT = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = "Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 INPUT_PATH_ZONES_AQ21 = "projects/WRI-Aquaduct/Y2018M06D11_RH_QA_Ingest_Aq21_Flux_Shapefile_V01/output_V03/aqueduct21_flux"
 INPUT_PATH_ZONES_AQ30 = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_V04"
@@ -64,12 +64,7 @@ import ee
 ee.Initialize()
 
 
-# In[ ]:
-
-
-
-
-# In[16]:
+# In[4]:
 
 def simplify_fc(f_in):
     """ Gets rid of unnecessary data before export
@@ -97,7 +92,7 @@ fc_aq21_zones = ee.FeatureCollection(INPUT_PATH_ZONES_AQ21)
 fc_aq30_zones = ee.FeatureCollection(INPUT_PATH_ZONES_AQ30)
 
 
-# In[12]:
+# In[7]:
 
 aqueduct_versions = ["aq21","aq30"]
 sectors = ["a","d","i","t"]
@@ -111,12 +106,7 @@ if TESTING:
     
 
 
-# In[ ]:
-
-
-
-
-# In[17]:
+# In[8]:
 
 for aqueduct_version in aqueduct_versions:    
     if aqueduct_version == "aq21":
@@ -128,7 +118,7 @@ for aqueduct_version in aqueduct_versions:
     
     for demand_type in demand_types:
         for sector in sectors:
-
+            print(aqueduct_version,demand_type,sector)
             input_file_name = demand_type + sector        
             i_demand = ee.Image(INPUT_PATH_VALUES_AQ21+input_file_name)
             fc_reduced = i_demand.reduceRegions(collection =fc_zones,
@@ -146,12 +136,22 @@ for aqueduct_version in aqueduct_versions:
                                                         description = file_name,
                                                         bucket = BUCKET,
                                                         fileNamePrefix = file_name_prefix,
-                                                        fileFormat = "GeoJSON"
+                                                        fileFormat = "CSV"
                                                         )
 
-            #task.start()
+            task.start()
         
 
+
+# In[9]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# Previous runs:  
+# 0:00:08.170403
 
 # In[ ]:
 
