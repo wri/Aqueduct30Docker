@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[14]:
+# In[1]:
 
 """ Combine zonal statistics of different indicators and calculate flux. 
 -------------------------------------------------------------------------------
@@ -20,11 +20,11 @@ Args:
 OVERWRITE = 1
 TESTING = 0
 SCRIPT_NAME = "Y2018M06D19_RH_QA_AQ21_AQ30_Demand_Cleanup_V01"
-OUTPUT_VERSION = 7
+OUTPUT_VERSION = 5
 
 EXCLUDE_BASIN = 353020
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01/output_V04"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01/output_V05"
 
 AQ21_SHAPEFILE_S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/qaData/Y2018M06D05_RH_QA_Aqueduct21_Flux_Shapefile_V01/output_V05"
 AQ30_SHAPEFILE_S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V02/output_V04/"
@@ -99,7 +99,7 @@ get_ipython().system('aws s3 cp {AQ21PROJ_SHAPEFILE_S3_INPUT_PATH} {ec2_input_pa
 get_ipython().system('gsutil cp {GCS_INPUT_PATH}/* {ec2_input_path}')
 
 
-# In[ ]:
+# In[9]:
 
 # Read Shapefiles of Aq2.1 
 
@@ -108,7 +108,7 @@ gdf_aq21 = gpd.read_file(aq21_input_file_path )
 gdf_aq21 = gdf_aq21.set_index("GU",drop=False)
 
 
-# In[17]:
+# In[10]:
 
 #Aq3.0 
 aq30_input_file_path = "{}/{}.shp".format(ec2_input_path,AQ30_INPUT_FILE_NAME)
@@ -119,7 +119,7 @@ gdf_aq30["area_m2"] = gdf_aq30_eckert4.geometry.area
 gdf_aq30 = gdf_aq30.set_index("PFAF_ID",drop=False)
 
 
-# In[ ]:
+# In[11]:
 
 #Aq21proj
 aq21proj_input_file_path = "{}/{}.shp".format(ec2_input_path,AQ21PROJ_INPUT_FILE_NAME)
@@ -127,27 +127,21 @@ gdf_aq21proj = gpd.read_file(aq21proj_input_file_path )
 gdf_aq21proj = gdf_aq21proj.set_index("BasinID",drop=False)
 
 
-# In[ ]:
+# In[12]:
 
 assert gdf_aq21proj.shape[0] == 15006
 
 
-# In[18]:
+# In[13]:
 
 assert gdf_aq30.shape[0]== 16397-2 #(There is one basin with a shared PFAF_ID)
 
 
-# In[ ]:
-
-
-
-
-# In[28]:
+# In[14]:
 
 aqueduct_versions = ["aq21","aq30","aq21proj"]
 sectors = ["a","d","i","t"]
 demand_types = ["c","u"]
-
 
 for aqueduct_version in aqueduct_versions:  
     if aqueduct_version == "aq21":
@@ -184,26 +178,25 @@ for aqueduct_version in aqueduct_versions:
                                          right_on = index_name,
                                          validate = "one_to_one")
             gdf_merge["sum_{}{}_m".format(demand_type,sector)] = gdf_merge["sum_{}{}_m3".format(demand_type,sector)]/gdf_merge["area_m2"]
-            print(df_merge.shape)
-            
+    
+    
     gdf_to_disk = gdf_merge.copy()
-    #gdf_to_disk_geom_only = gdf_to_disk[[index_name,"geometry"]]
-    #df_to_disk = pd.DataFrame(gdf_to_disk.drop("geometry",1))
-    #output_file_path_no_ext = "{}/{}".format(ec2_output_path,aqueduct_version)
+    gdf_to_disk_geom_only = gdf_to_disk[[index_name,"geometry"]]
+    df_to_disk = pd.DataFrame(gdf_to_disk.drop("geometry",1))
     
+    output_file_path_no_ext = "{}/{}".format(ec2_output_path,aqueduct_version)
     #gdf_to_disk.to_file(driver='ESRI Shapefile', filename=output_file_path_no_ext+".shp")
-    #gdf_to_disk_geom_only.to_file(driver='ESRI Shapefile', filename=output_file_path_no_ext+"_geom_only.shp")
-    #df_to_disk.to_csv(output_file_path_no_ext+".csv")
-    
+    gdf_to_disk_geom_only.to_file(driver='ESRI Shapefile', filename=output_file_path_no_ext+"_geom_only.shp")
+    df_to_disk.to_csv(output_file_path_no_ext+".csv")
     
 
 
-# In[ ]:
+# In[15]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -211,7 +204,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:08:42.263441
+# 0:08:42.263441  
+# 0:11:35.338066
 
 # In[ ]:
 

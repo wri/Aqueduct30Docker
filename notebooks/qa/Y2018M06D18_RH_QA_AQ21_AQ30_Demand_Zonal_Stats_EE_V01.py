@@ -22,7 +22,7 @@ TESTING = 0
 OVERWRITE_INPUT = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = "Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01"
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 5
 
 EXCLUDE_BASIN = 353020
 
@@ -96,10 +96,11 @@ fc_aq21_zones = ee.FeatureCollection(INPUT_PATH_ZONES_AQ21)
 fc_aq21proj_zones = ee.FeatureCollection(INPUT_PATH_ZONES_AQ21PROJ)
 
 
-# In[7]:
+# In[12]:
 
 fc_aq30_zones_all = ee.FeatureCollection(INPUT_PATH_ZONES_AQ30)
 fc_aq30_zones = fc_aq30_zones_all.filterMetadata("PFAF_ID","not_equals",EXCLUDE_BASIN)
+assert fc_aq30_zones.size().getInfo() == 16395
 
 
 # In[8]:
