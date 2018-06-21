@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[14]:
 
 """ Combine zonal statistics of different indicators and calculate flux. 
 -------------------------------------------------------------------------------
@@ -20,9 +20,11 @@ Args:
 OVERWRITE = 1
 TESTING = 0
 SCRIPT_NAME = "Y2018M06D19_RH_QA_AQ21_AQ30_Demand_Cleanup_V01"
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 7
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01/output_V03"
+EXCLUDE_BASIN = 353020
+
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M06D18_RH_QA_AQ21_AQ30_Demand_Zonal_Stats_EE_V01/output_V04"
 
 AQ21_SHAPEFILE_S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/qaData/Y2018M06D05_RH_QA_Aqueduct21_Flux_Shapefile_V01/output_V05"
 AQ30_SHAPEFILE_S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D02_RH_Merge_HydroBasins_V02/output_V04/"
@@ -94,52 +96,58 @@ get_ipython().system('aws s3 cp {AQ21PROJ_SHAPEFILE_S3_INPUT_PATH} {ec2_input_pa
 # In[8]:
 
 # Zonal Stats
-
 get_ipython().system('gsutil cp {GCS_INPUT_PATH}/* {ec2_input_path}')
 
 
-# In[23]:
+# In[ ]:
 
-# Read Shapefiles of Aq2.1 Aq3.0 and Aq21proj
+# Read Shapefiles of Aq2.1 
 
 aq21_input_file_path = "{}/{}.shp".format(ec2_input_path,AQ21_INPUT_FILE_NAME)
 gdf_aq21 = gpd.read_file(aq21_input_file_path )
 gdf_aq21 = gdf_aq21.set_index("GU",drop=False)
 
+
+# In[17]:
+
+#Aq3.0 
 aq30_input_file_path = "{}/{}.shp".format(ec2_input_path,AQ30_INPUT_FILE_NAME)
 gdf_aq30 = gpd.read_file(aq30_input_file_path)
-gdf_aq30["PFAF_ID_COPY"] = gdf_aq30["PFAF_ID"]
-gdf_aq30 = gdf_aq30.dissolve(by='PFAF_ID_COPY', aggfunc='first')
-
+gdf_aq30 = gdf_aq30[gdf_aq30["PFAF_ID"] != EXCLUDE_BASIN]
 gdf_aq30_eckert4 = gdf_aq30.to_crs(ECKERT_IV_PROJ4_STRING)
 gdf_aq30["area_m2"] = gdf_aq30_eckert4.geometry.area
 gdf_aq30 = gdf_aq30.set_index("PFAF_ID",drop=False)
 
 
-# In[21]:
+# In[ ]:
 
+#Aq21proj
 aq21proj_input_file_path = "{}/{}.shp".format(ec2_input_path,AQ21PROJ_INPUT_FILE_NAME)
 gdf_aq21proj = gpd.read_file(aq21proj_input_file_path )
 gdf_aq21proj = gdf_aq21proj.set_index("BasinID",drop=False)
 
 
-# In[11]:
+# In[ ]:
 
 assert gdf_aq21proj.shape[0] == 15006
 
 
-# In[24]:
+# In[18]:
 
-assert gdf_aq30.shape[0]== 16397-1 #(There is one basin with a shared PFAF_ID)
+assert gdf_aq30.shape[0]== 16397-2 #(There is one basin with a shared PFAF_ID)
 
 
-# In[27]:
+# In[ ]:
+
+
+
+
+# In[28]:
 
 aqueduct_versions = ["aq21","aq30","aq21proj"]
 sectors = ["a","d","i","t"]
 demand_types = ["c","u"]
 
-aqueduct_versions = ["aq30"]
 
 for aqueduct_version in aqueduct_versions:  
     if aqueduct_version == "aq21":
@@ -153,17 +161,10 @@ for aqueduct_version in aqueduct_versions:
         index_name = "BasinID"        
     else:
         break
-    df_merge = pd.DataFrame(gdf_left[index_name])
     
     
+    gdf_merge = gdf_left.copy()    
     
-    input_file_name = "zonal_stats_ct_aq30ee_export.csv"
-    input_file_path = ec2_input_path + "/" + input_file_name
-    df_right = pd.read_csv(input_file_path)
-    
-    
-    
-    """
     for demand_type in demand_types:
         for sector in sectors:
             print(aqueduct_version,demand_type,sector)
@@ -177,14 +178,15 @@ for aqueduct_version in aqueduct_versions:
             df_right = df_right.rename(columns={"sum":"sum_{}{}_m3".format(demand_type,sector),
                                                 "count":"count_{}{}_dimensionless".format(demand_type,sector)})
             
-            df_merge  = df_merge.merge(right=df_right,
-                                       how="left",
-                                       left_on = index_name,
-                                       right_on = index_name)
-            #gdf_left["sum_{}{}_m".format(demand_type,sector)] = gdf_left["sum_{}{}_m3".format(demand_type,sector)]/gdf_left["area_m2"]
+            gdf_merge  = gdf_merge.merge(right=df_right,
+                                         how="left",
+                                         left_on = index_name,
+                                         right_on = index_name,
+                                         validate = "one_to_one")
+            gdf_merge["sum_{}{}_m".format(demand_type,sector)] = gdf_merge["sum_{}{}_m3".format(demand_type,sector)]/gdf_merge["area_m2"]
             print(df_merge.shape)
             
-    #gdf_to_disk = gdf_left.copy()
+    gdf_to_disk = gdf_merge.copy()
     #gdf_to_disk_geom_only = gdf_to_disk[[index_name,"geometry"]]
     #df_to_disk = pd.DataFrame(gdf_to_disk.drop("geometry",1))
     #output_file_path_no_ext = "{}/{}".format(ec2_output_path,aqueduct_version)
@@ -192,42 +194,8 @@ for aqueduct_version in aqueduct_versions:
     #gdf_to_disk.to_file(driver='ESRI Shapefile', filename=output_file_path_no_ext+".shp")
     #gdf_to_disk_geom_only.to_file(driver='ESRI Shapefile', filename=output_file_path_no_ext+"_geom_only.shp")
     #df_to_disk.to_csv(output_file_path_no_ext+".csv")
-    """
     
-
-
-# In[28]:
-
-
-
-
-# In[ ]:
-
-for aqueduct_version in aqueduct_versions:  
     
-    if aqueduct_version == "aq21":
-        gdf_left = gdf_aq21.copy()
-        index_name = "GU"
-    elif aqueduct_version == "aq30":
-        gdf_left = gdf_aq30.copy()
-        index_name = "PFAF_ID"
-    elif aqueduct_version == "aq21proj":
-        gdf_left = gdf_aq21proj.copy()
-        index_name = "BasinID"        
-        
-    else:
-        break
-    
-
-
-# In[ ]:
-
-gdf_left.shape
-
-
-# In[ ]:
-
-df_right.shape
 
 
 # In[ ]:
