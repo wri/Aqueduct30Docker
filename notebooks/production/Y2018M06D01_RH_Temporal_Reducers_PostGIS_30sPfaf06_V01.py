@@ -3,7 +3,7 @@
 
 # In[1]:
 
-""" Create total WW and total WN columns in simplified table.
+""" Determine moving average, min max and linear regression.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
@@ -28,7 +28,7 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M06D01_RH_Moving_Average_PostGIS_30sPfaf06_V01'
+SCRIPT_NAME = 'Y2018M06D01_RH_Temporal_Reducers_PostGIS_30sPfaf06_V01'
 OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -96,8 +96,8 @@ for sector in sectors:
         demand_column_name = "p{}{}_m_30spfaf06".format(sector,demand_type)
         demand_column_names.append(demand_column_name)
 supply_column_names = ["{}_m_30spfaf06".format(supply[0])]
-ma_columns = demand_column_names + supply_column_names
-ma_columns
+stat_columns = demand_column_names + supply_column_names
+stat_columns
 
 
 # In[6]:
@@ -126,11 +126,15 @@ def create_query(window,con,input_table_name,output_table_name,input_columns, st
     for input_column in input_columns:
         sql = sql + " {},".format(input_column)
     for stat_column in stat_columns:
-        sql = sql + " AVG({}) OVER(PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS ma{:02.0f}_{},".format(stat_column,ma_window-1,ma_window,ma_column)
-        sql = sql + " regr_slope({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS slope{:02.0f}_{},".format(ols_column,ols_window-1,ols_window,ols_column)
-        sql = sql + " regr_intercept({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS intercept{:02.0f}_{},".format(ols_column,ols_window-1,ols_window,ols_column)
+        sql = sql + " {},".format(stat_column)
+    for stat_column in stat_columns:
+        sql = sql + " AVG({}) OVER(PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS ma{:02.0f}_{},".format(stat_column,window-1,window,stat_column)
+        sql = sql + " MIN({}) OVER(PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS min{:02.0f}_{},".format(stat_column,window-1,window,stat_column)
+        sql = sql + " MAX({}) OVER(PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS max{:02.0f}_{},".format(stat_column,window-1,window,stat_column)
+        sql = sql + " regr_slope({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS slope{:02.0f}_{},".format(stat_column,window-1,window,stat_column)
+        sql = sql + " regr_intercept({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS intercept{:02.0f}_{},".format(stat_column,window-1,window,stat_column)
         sql = sql + (" regr_slope({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) * year "
-                     "+ regr_intercept({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS ols{:02.0f}_{},".format(ols_column,ols_window-1,ols_column,ols_window-1,ols_window,ols_column))
+                     "+ regr_intercept({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS ols{:02.0f}_{},".format(stat_column,window-1,stat_column,window-1,window,stat_column))
     
     
     sql = sql[:-1]
@@ -141,20 +145,26 @@ def create_query(window,con,input_table_name,output_table_name,input_columns, st
 
 # In[7]:
 
-sql = create_ma_query( 10 ,connection ,INPUT_TABLE_NAME,OUTPUT_TABLE_NAME,input_columns, ma_columns)
+sql = create_query( 10 ,connection ,INPUT_TABLE_NAME,OUTPUT_TABLE_NAME,input_columns, stat_columns)
 
 
 # In[8]:
 
-print(sql)
+if TESTING:
+    sql = sql + " WHERE pfafid_30spfaf06 = 231607 AND month = 5"
 
 
 # In[9]:
 
-result = engine.execute(sql)
+print(sql)
 
 
 # In[10]:
+
+result = engine.execute(sql)
+
+
+# In[11]:
 
 # Based on https://www.compose.com/articles/metrics-maven-calculating-a-moving-average-in-postgresql/
 
@@ -173,12 +183,27 @@ FROM temp_table
 """
 
 
-# In[11]:
+# In[12]:
+
+sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
+
+
+# In[13]:
+
+sql_index
+
+
+# In[14]:
+
+result = engine.execute(sql_index)
+
+
+# In[15]:
 
 engine.dispose()
 
 
-# In[12]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -188,8 +213,9 @@ print(elapsed)
 # Previous runs:  
 # 0:04:02.980766  
 # 0:06:26.539338  
-# 0:03:44.809997
-# 
+# 0:03:44.809997  
+# 0:10:00.541835  
+# 0:16:03.866893
 # 
 
 # In[ ]:

@@ -34,19 +34,18 @@ OUTPUT_VERSION = 1
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_RAW = 'y2018m05d29_rh_total_demand_postgis_30spfaf06_v01_v02'
-INPUT_TABLE_NAME_MA = 'y2018m06d01_rh_moving_average_postgis_30spfaf06_v01_v03'
+INPUT_TABLE_NAME = 'y2018m06d01_rh_temporal_reducers_postgis_30spfaf06_v01_v01'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 OUTPUT_SCHEMA_NAME = "test"
+
+INPUT_TABLE_HYBAS = "hybas06_v04"
 
 TEST_BASIN_PFAF_ID = 231607
 MONTH = 5
 TEMPORAL_RESOLUTION = "month"
 
-
-
-print("Input Table RAW: " , INPUT_TABLE_NAME_RAW, 
-      "\nInput Table MA: ", INPUT_TABLE_NAME_MA,
+print("Input Table: " , INPUT_TABLE_NAME, 
+      "\nInout Table Hybas: ", INPUT_TABLE_HYBAS,
       "\nOutput Table: " , OUTPUT_TABLE_NAME)
 
 
@@ -60,13 +59,14 @@ print(dateString,timeString)
 sys.version
 
 
-# In[3]:
+# In[91]:
 
 # imports
 import re
 import os
 import numpy as np
 import pandas as pd
+import geopandas as gpd
 import matplotlib.pyplot as plt
 import aqueduct3
 from datetime import timedelta
@@ -75,11 +75,6 @@ pd.set_option('display.max_columns', 500)
 
 from sklearn import linear_model
 get_ipython().magic('matplotlib inline')
-
-
-# In[ ]:
-
-
 
 
 # In[4]:
@@ -96,56 +91,56 @@ connection = engine.connect()
 
 # In[5]:
 
-sql_raw = ("SELECT * FROM {} "
-           "WHERE pfafid_30spfaf06 = {} AND "
-           "month = {} AND "
-           "temporal_resolution = '{}'".format(INPUT_TABLE_NAME_RAW,TEST_BASIN_PFAF_ID,MONTH,TEMPORAL_RESOLUTION))
+sql = ("SELECT * FROM {} "
+       "WHERE pfafid_30spfaf06 = {} AND "
+       "month = {} AND "
+       "temporal_resolution = '{}'".format(INPUT_TABLE_NAME,TEST_BASIN_PFAF_ID,MONTH,TEMPORAL_RESOLUTION))
 
 
 # In[6]:
 
-print(sql_raw)
+print(sql)
 
 
 # In[7]:
 
-df_raw = pd.read_sql(sql_raw,connection)
+df_og = pd.read_sql(sql,connection)
 
 
 # In[8]:
 
-df_raw.head()
+df_og.head()
 
 
-# In[9]:
+# In[12]:
 
 def simplify_df_raw(df):
     df_out = df[["year","ptotww_m_30spfaf06","ptotwn_m_30spfaf06","riverdischarge_m_30spfaf06"]]
     return df_out
 
 
-# In[10]:
+# In[13]:
 
-df_raw = simplify_df_raw(df_raw)
+df_raw = simplify_df_raw(df_og)
 
 
-# In[11]:
+# In[14]:
 
 df_raw.head()
 
 
-# In[12]:
+# In[15]:
 
 df_raw = df_raw.sort_values(by=["year"])
 
 
-# In[13]:
+# In[16]:
 
 ax1 = df_raw.plot.scatter("year","ptotww_m_30spfaf06")
 ax1.set_ylim(df_raw["ptotww_m_30spfaf06"].min(),df_raw["ptotww_m_30spfaf06"].max())
 
 
-# In[14]:
+# In[17]:
 
 ax1 = df_raw.plot.scatter("year","riverdischarge_m_30spfaf06")
 ax1.set_ylim(df_raw["riverdischarge_m_30spfaf06"].min(),df_raw["riverdischarge_m_30spfaf06"].max())
@@ -153,58 +148,35 @@ ax1.set_ylim(df_raw["riverdischarge_m_30spfaf06"].min(),df_raw["riverdischarge_m
 
 # # Moving Average
 
-# In[15]:
-
-sql_ma = ("SELECT * FROM {} "
-           "WHERE pfafid_30spfaf06 = {} AND "
-           "month = {} AND "
-           "temporal_resolution = '{}'".format(INPUT_TABLE_NAME_MA,TEST_BASIN_PFAF_ID,MONTH,TEMPORAL_RESOLUTION))
-
-
-# In[16]:
-
-print(sql_ma)
-
-
-# In[17]:
-
-df_ma = pd.read_sql(sql_ma,connection)
-
-
-# In[18]:
-
-df_ma.head()
-
-
-# In[19]:
+# In[22]:
 
 def simplify_df_ma(df):
     df_out = df[["year","ma10_ptotww_m_30spfaf06","ma10_ptotwn_m_30spfaf06","ma10_riverdischarge_m_30spfaf06"]]
     return df_out
 
 
-# In[20]:
+# In[23]:
 
-df_ma = simplify_df_ma(df_ma)
+df_ma = simplify_df_ma(df_og)
 
 
-# In[21]:
+# In[24]:
 
 df_ma.head()
 
 
-# In[22]:
+# In[25]:
 
 df_ma = df_ma.sort_values(by=["year"])
 
 
-# In[23]:
+# In[26]:
 
 ax1 = df_ma.plot.scatter("year","ma10_ptotww_m_30spfaf06")
 ax1.set_ylim(df_ma["ma10_ptotww_m_30spfaf06"].min(),df_ma["ma10_ptotww_m_30spfaf06"].max())
 
 
-# In[24]:
+# In[27]:
 
 ax1 = df_ma.plot.scatter("year","ma10_riverdischarge_m_30spfaf06")
 ax1.set_ylim(df_ma["ma10_riverdischarge_m_30spfaf06"].min(),df_ma["ma10_riverdischarge_m_30spfaf06"].max())
@@ -212,35 +184,147 @@ ax1.set_ylim(df_ma["ma10_riverdischarge_m_30spfaf06"].min(),df_ma["ma10_riverdis
 
 # # Combined
 
-# In[25]:
+# In[94]:
 
 from bokeh.plotting import figure 
 from bokeh.io import output_notebook, show
 from bokeh.models import HoverTool
+import random
+import bokeh.palettes
 
 
-# In[26]:
+# In[97]:
+
+palette = bokeh.palettes.Category20
+
+
+# In[104]:
+
+
+
+
+# In[29]:
 
 output_notebook()
 
 
-# In[27]:
+# In[ ]:
 
-p = figure(width=800, height=500)
-p.line(x = df_raw["year"], y = df_raw['ptotww_m_30spfaf06'],line_color="#349e17",legend="ptotww_m_30spfaf06")
-p.line(x = df_raw["year"], y = df_raw['ptotwn_m_30spfaf06'],line_color="#af4c1d",legend="ptotwn_m_30spfaf06")
-p.line(x = df_raw["year"], y = df_raw['riverdischarge_m_30spfaf06'],line_color="#003baa",legend="riverdischarge_m_30spfaf06")
-p.line(x = df_ma["year"], y = df_ma['ma10_ptotww_m_30spfaf06'],line_color="#3fea10",legend="ma10_ptotww_m_30spfaf06")
-p.line(x = df_ma["year"], y = df_ma['ma10_ptotwn_m_30spfaf06'],line_color="#f4570e",legend="ma10_ptotwn_m_30spfaf06")
-p.line(x = df_ma["year"], y = df_ma['ma10_riverdischarge_m_30spfaf06'],line_color="#01a8b7",legend="ma10_riverdischarge_m_30spfaf06")
-p.legend.location = "top_left"
-p.legend.click_policy="hide"
 
-hover = HoverTool(tooltips = [('year', '@x'),
+
+
+# In[115]:
+
+def plot(indicators,df_og,raw_values=True,ma10_values=True,ols_values=True):
+    """ For a given basin, plots multiple results the same chart.    
+    -------------------------------------------------------------------------------
+    
+    df_og can be obtained from table 
+    y2018m06d01_rh_temporal_reducers_postgis_30spfaf06_v01_v01 in the postGreSQL
+    Database
+    
+    maximum number of lines supported is 20 due to colorscheme.
+    
+    Args:
+        indicators (list) : list of string of indicators. Use basenames.
+            options include a.o. : ['ptotww','riverdischarge']
+        df_og (pd.DataFrame) : DataFrame with values.
+        raw_values (boolean) : Plot raw, monthly and yearly values.
+            defaults to True.
+        ma10_values (boolean) : Plot moving average values.
+            defaults to True.
+        ols_values (boolean) : Plot values based on regression.
+            defaults to True.
+
+    Returns:
+        p (Bokeh Plot): Bokeh plot. Use show(p)
+    
+    """
+    p = figure(width=900, height=800)
+    
+    number_of_lines = len(indicators)*(raw_values+ma10_values+ols_values)
+    print(number_of_lines)
+    
+    i=0
+    
+    if raw_values:
+        for indicator in indicators:
+            p.line(x = df_og["year"], y = df_og[indicator+'_m_30spfaf06'],line_color=palette[number_of_lines][i],legend= indicator+"_m_30spfaf06")
+            i += 1
+    if ma10_values:
+        for indicator in indicators:
+            p.line(x = df_og["year"], y = df_og['ma10_'+indicator+'_m_30spfaf06'],line_color=palette[number_of_lines][i],legend="ma10_"+indicator+"_m_30spfaf06")
+            i += 1
+    if ols_values:
+        for indicator in indicators:
+            p.line(x = df_og["year"], y = df_og['ols10_'+indicator+'_m_30spfaf06'],line_color=palette[number_of_lines][i],legend="ols10_"+indicator+"_m_30spfaf06")
+            i += 1
+    p.legend.location = "top_left"
+    p.legend.click_policy="hide"
+    hover = HoverTool(tooltips = [('year', '@x'),
                              ('value',  '@y')])
+    p.add_tools(hover)
+    
+    return p
+    
 
-p.add_tools(hover)
+
+# In[116]:
+
+sectors = ["dom","ind","irr","liv","tot"]
+demand_types = ["ww","wn"]
+supply = ["riverdischarge"]
+
+indicators = []
+for sector in sectors:
+    for demand_type in demand_types:
+        demand_column_name = "p{}{}".format(sector,demand_type)
+        indicators.append(demand_column_name)
+supply_column_names = ["{}".format(supply[0])]   
+indicators = indicators + supply_column_names
+
+
+# In[117]:
+
+indicators
+
+
+# In[124]:
+
+indicators_filtered = ["pirrww","pirrwn","riverdischarge"]
+
+
+# In[125]:
+
+# number of lines =< 20
+
+p = plot(indicators_filtered,df_og,1,1,1)
 show(p)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
 
 # # Regression
@@ -256,7 +340,7 @@ show(p)
 # 
 # 
 
-# In[42]:
+# In[ ]:
 
 sql_reg = ("SELECT year,month,pfafid_30spfaf06, temporal_resolution,ptotww_m_30spfaf06 "
 "FROM y2018m05d29_rh_total_demand_postgis_30spfaf06_v01_v02 " 
@@ -264,95 +348,182 @@ sql_reg = ("SELECT year,month,pfafid_30spfaf06, temporal_resolution,ptotww_m_30s
 "AND month = 5")
 
 
-# In[43]:
+# In[ ]:
 
 df_reg = pd.read_sql(sql_reg,connection)
 
 
-# In[46]:
+# In[ ]:
 
 df_reg = df_reg.sort_values(by=["year"])
 
 
-# In[47]:
+# In[ ]:
 
 df_reg.head()
 
 
-# In[38]:
+# In[ ]:
 
 lm = linear_model.LinearRegression()
 
 
-# In[52]:
+# In[ ]:
 
 # Fit line for year 1973 - 1982 (10 years)
 df_reg_selection = df_reg[(df_reg["year"] >= 1973) & (df_reg["year"] <= 1982)]
 
 
-# In[54]:
+# In[ ]:
 
 df_reg_selection
 
 
-# In[70]:
+# In[ ]:
 
 import os
 
 
-# In[73]:
+# In[ ]:
 
 print(os.getcwd())
 
 
-# In[69]:
+# In[ ]:
 
 df_reg_selection.to_csv("temp.csv")
 
 
-# In[59]:
+# In[ ]:
 
 # fit linear model. 
 
 
-# In[64]:
+# In[ ]:
 
 x = pd.DataFrame(df_reg_selection["year"])
 target = pd.DataFrame(df_reg_selection["ptotww_m_30spfaf06"])
 
 
-# In[65]:
+# In[ ]:
 
 lm.fit(x,target)
 
 
-# In[90]:
+# In[ ]:
 
 df_lm = pd.DataFrame()
 
 
-# In[97]:
+# In[ ]:
 
 coef = lm.coef_[0][0]
 
 
-# In[98]:
+# In[ ]:
 
 intercept = lm.intercept_[0]
 
 
-# In[99]:
+# In[ ]:
 
 # projected value for 1982
 y_p = 1982*coef + intercept
 
 
-# In[100]:
+# In[ ]:
 
 print(y_p,coef,intercept)
 
 
-# In[101]:
+# In[ ]:
+
+def create_ols_query(ols_window,con,input_table_name,output_table_name,input_columns, ols_columns):
+    """ Applies a moving average and saves the result in a new table. 
+    -------------------------------------------------------------------------------
+    
+    Designed to work with aqueduct table structure that includes a year, month and
+    temporal_resolution column. Will not work with other tables.     
+    
+    
+    
+    Args:
+        ols_window (integer) : Ordinary Leas Squares Regression length.
+        con (sqlAlchemy) : Database Connection. 
+        input_table_name (string) : Input table name.
+        output_table_name (string) : Output table name.
+        input_columns (list) : list of column names used in the query and saved to
+            output. e.g. year, month, pfafid etc. 
+        mols_columns (list) : list of column names to apply the ols to.
+            should be present in input table. 
+    
+    Returns:
+        sql (string) : SQL string in postgreSQL dialect.
+    
+    
+    """
+    sql = "CREATE TABLE {} AS ".format(output_table_name)
+    sql = sql + "SELECT"    
+    for input_column in input_columns:
+        sql = sql + " {},".format(input_column)
+    for ols_column in ols_columns:
+        sql = sql + " regr_slope({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS slope{:02.0f}_{},".format(ols_column,ols_window-1,ols_window,ols_column)
+        sql = sql + " regr_intercept({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS intercept{:02.0f}_{},".format(ols_column,ols_window-1,ols_window,ols_column)
+        sql = sql + (" regr_slope({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) * year "
+                     "+ regr_intercept({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN {:01.0f} PRECEDING AND CURRENT ROW) AS ols{:02.0f}_{},".format(ols_column,ols_window-1,ols_column,ols_window-1,ols_window,ols_column))
+    sql = sql[:-1]
+    sql = sql + " FROM {}".format(input_table_name)
+    return sql
+    
+
+
+# In[ ]:
+
+input_columns = ["pfafid_30spfaf06",
+                 "temporal_resolution",
+                 "year",
+                 "month",
+                 "area_m2_30spfaf06",
+                 "area_count_30spfaf06"]
+
+
+# In[ ]:
+
+sectors = ["dom","ind","irr","liv","tot"]
+demand_types = ["ww","wn"]
+supply = ["riverdischarge"]
+
+demand_column_names = []
+for sector in sectors:
+    for demand_type in demand_types:
+        demand_column_name = "p{}{}_m_30spfaf06".format(sector,demand_type)
+        demand_column_names.append(demand_column_name)
+supply_column_names = ["{}_m_30spfaf06".format(supply[0])]
+ols_columns = demand_column_names + supply_column_names
+ols_columns
+
+
+# In[ ]:
+
+sql = create_ols_query(ols_window=10,
+                       con=connection,
+                       input_table_name='y2018m05d29_rh_total_demand_postgis_30spfaf06_v01_v02',
+                       output_table_name= "test01",
+                       input_columns = input_columns,
+                       ols_columns=ols_columns)
+
+
+# In[ ]:
+
+sql = sql + " WHERE pfafid_30spfaf06 = 231607 AND month = 5"
+
+
+# In[ ]:
+
+print(sql)
+
+
+# In[ ]:
 
 # check if I can accomplish the same using SQL
 SELECT year,month,pfafid_30spfaf06, temporal_resolution,ptotww_m_30spfaf06,

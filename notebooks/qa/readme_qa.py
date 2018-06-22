@@ -23,11 +23,12 @@
 #     Create a table with sample data from the ptot and riverdischarge results.
 # 1. **Y2018M06D05_RH_QA_Total_Demand_PostGIS_30sPfaf06_V01**  
 #     For a specific sub basin, query a 10y series for demand and supply to check input for ma10.
-# 1. **Y2018M06D04_RH_QA_ma10_results_PostGIS_V02**  
-#     Create a table with sample data from the ma 10 results.
-#     
+# 1. **Y2018M06D04_RH_QA_ma10_results_PostGIS_V03**  
+#     Create a table with sample data from the ma 10 results.    
 # 1. **Y2018M06D21_RH_QA_Linear_Trend_PostGIS_V01**  
-#     Check if linear trend is implemented correctly.  
+#     Check if linear trend is implemented correctly. 
+# 1. **Y2018M06D22_RH_QA_result_PostGIS_V01**  
+#     Create table with result, raw ma10 and ols with geometries.
 # 
 # 
 # ## Comparing AQ2.1

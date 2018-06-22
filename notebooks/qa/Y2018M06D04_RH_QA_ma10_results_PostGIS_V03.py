@@ -9,8 +9,6 @@
 Create postGIS table for selected basins with all ma_10 indicators
 
 
-
-
 Author: Rutger Hofste
 Date: 20180604
 Kernel: python35

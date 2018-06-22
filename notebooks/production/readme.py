@@ -113,8 +113,8 @@
 #     Store merged and simplified pandas dataframes in postGIS database. 
 # 1. **Y2018M05D29_RH_Total_Demand_PostGIS_30sPfaf06_V01**  
 #     Create total WW and total WN columns in simplified table.
-# 1. **Y2018M06D01_RH_Moving_Average_PostGIS_30sPfaf06_V01**  
-#     Calculate moving average for demand and riverdischarge.
+# 1. **Y2018M06D01_RH_Temporal_Reducers_PostGIS_30sPfaf06_V01**  
+#     Determine moving average, min max and linear regression.
 # 1. **Y2018M06D21_RH_Linear_Trend_PostGIS_30sPfaf06_V01**  
 #     Calculate linear trend for demand and riverdischarge.
 #     
