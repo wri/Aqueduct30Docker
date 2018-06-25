@@ -23,6 +23,11 @@ OUTPUT_VERSION = 1
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
+INPUT_TABLE_LEFT_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v01_v03'
+INPUT_TABLE_RIGHT_NAME = 'hybas06_v04'
+OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
+OUTPUT_SCHEMA = "test"
+
 
 # In[3]:
 

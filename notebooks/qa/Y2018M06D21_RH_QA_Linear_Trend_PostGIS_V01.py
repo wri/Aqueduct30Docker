@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[102]:
 
 """ Check if linear trend is implemented correctly.
 -------------------------------------------------------------------------------
@@ -34,22 +34,22 @@ OUTPUT_VERSION = 1
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = 'y2018m06d01_rh_temporal_reducers_postgis_30spfaf06_v01_v01'
+INPUT_TABLE_NAME = 'y2018m06d01_rh_temporal_reducers_postgis_30spfaf06_v01_v03'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 OUTPUT_SCHEMA_NAME = "test"
 
 INPUT_TABLE_HYBAS = "hybas06_v04"
 
-TEST_BASIN_PFAF_ID = 231607
-MONTH = 5
-TEMPORAL_RESOLUTION = "month"
+TEST_BASIN_PFAF_ID = 157650
+MONTH = 12
+TEMPORAL_RESOLUTION = "year"
 
 print("Input Table: " , INPUT_TABLE_NAME, 
       "\nInout Table Hybas: ", INPUT_TABLE_HYBAS,
       "\nOutput Table: " , OUTPUT_TABLE_NAME)
 
 
-# In[2]:
+# In[103]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -59,7 +59,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[91]:
+# In[104]:
 
 # imports
 import re
@@ -77,7 +77,7 @@ from sklearn import linear_model
 get_ipython().magic('matplotlib inline')
 
 
-# In[4]:
+# In[105]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -89,7 +89,7 @@ connection = engine.connect()
 
 # # Raw Values
 
-# In[5]:
+# In[106]:
 
 sql = ("SELECT * FROM {} "
        "WHERE pfafid_30spfaf06 = {} AND "
@@ -97,50 +97,50 @@ sql = ("SELECT * FROM {} "
        "temporal_resolution = '{}'".format(INPUT_TABLE_NAME,TEST_BASIN_PFAF_ID,MONTH,TEMPORAL_RESOLUTION))
 
 
-# In[6]:
+# In[107]:
 
 print(sql)
 
 
-# In[7]:
+# In[108]:
 
 df_og = pd.read_sql(sql,connection)
 
 
-# In[8]:
+# In[109]:
 
 df_og.head()
 
 
-# In[12]:
+# In[110]:
 
 def simplify_df_raw(df):
     df_out = df[["year","ptotww_m_30spfaf06","ptotwn_m_30spfaf06","riverdischarge_m_30spfaf06"]]
     return df_out
 
 
-# In[13]:
+# In[111]:
 
 df_raw = simplify_df_raw(df_og)
 
 
-# In[14]:
+# In[112]:
 
-df_raw.head()
+df_raw.tail()
 
 
-# In[15]:
+# In[113]:
 
 df_raw = df_raw.sort_values(by=["year"])
 
 
-# In[16]:
+# In[114]:
 
 ax1 = df_raw.plot.scatter("year","ptotww_m_30spfaf06")
 ax1.set_ylim(df_raw["ptotww_m_30spfaf06"].min(),df_raw["ptotww_m_30spfaf06"].max())
 
 
-# In[17]:
+# In[115]:
 
 ax1 = df_raw.plot.scatter("year","riverdischarge_m_30spfaf06")
 ax1.set_ylim(df_raw["riverdischarge_m_30spfaf06"].min(),df_raw["riverdischarge_m_30spfaf06"].max())
@@ -148,35 +148,35 @@ ax1.set_ylim(df_raw["riverdischarge_m_30spfaf06"].min(),df_raw["riverdischarge_m
 
 # # Moving Average
 
-# In[22]:
+# In[116]:
 
 def simplify_df_ma(df):
     df_out = df[["year","ma10_ptotww_m_30spfaf06","ma10_ptotwn_m_30spfaf06","ma10_riverdischarge_m_30spfaf06"]]
     return df_out
 
 
-# In[23]:
+# In[117]:
 
 df_ma = simplify_df_ma(df_og)
 
 
-# In[24]:
+# In[118]:
 
 df_ma.head()
 
 
-# In[25]:
+# In[119]:
 
 df_ma = df_ma.sort_values(by=["year"])
 
 
-# In[26]:
+# In[120]:
 
 ax1 = df_ma.plot.scatter("year","ma10_ptotww_m_30spfaf06")
 ax1.set_ylim(df_ma["ma10_ptotww_m_30spfaf06"].min(),df_ma["ma10_ptotww_m_30spfaf06"].max())
 
 
-# In[27]:
+# In[121]:
 
 ax1 = df_ma.plot.scatter("year","ma10_riverdischarge_m_30spfaf06")
 ax1.set_ylim(df_ma["ma10_riverdischarge_m_30spfaf06"].min(),df_ma["ma10_riverdischarge_m_30spfaf06"].max())
@@ -184,7 +184,7 @@ ax1.set_ylim(df_ma["ma10_riverdischarge_m_30spfaf06"].min(),df_ma["ma10_riverdis
 
 # # Combined
 
-# In[94]:
+# In[122]:
 
 from bokeh.plotting import figure 
 from bokeh.io import output_notebook, show
@@ -193,27 +193,17 @@ import random
 import bokeh.palettes
 
 
-# In[97]:
+# In[123]:
 
 palette = bokeh.palettes.Category20
 
 
-# In[104]:
-
-
-
-
-# In[29]:
+# In[124]:
 
 output_notebook()
 
 
-# In[ ]:
-
-
-
-
-# In[115]:
+# In[125]:
 
 def plot(indicators,df_og,raw_values=True,ma10_values=True,ols_values=True):
     """ For a given basin, plots multiple results the same chart.    
@@ -269,7 +259,7 @@ def plot(indicators,df_og,raw_values=True,ma10_values=True,ols_values=True):
     
 
 
-# In[116]:
+# In[126]:
 
 sectors = ["dom","ind","irr","liv","tot"]
 demand_types = ["ww","wn"]
@@ -284,17 +274,20 @@ supply_column_names = ["{}".format(supply[0])]
 indicators = indicators + supply_column_names
 
 
-# In[117]:
+# In[127]:
 
 indicators
 
 
-# In[124]:
+# In[128]:
 
-indicators_filtered = ["pirrww","pirrwn","riverdischarge"]
+indicators_filtered = ["ptotww","ptotwn","riverdischarge"]
+#indicators_filtered = ["ptotww","pdomww","pindww","pirrww","plivww"]
+#indicators_filtered = ["ptotwn","pdomwn","pindwn","pirrwn","plivwn"]
+#indicators_filtered = ["ptotww","ptotwn","riverdischarge"]
 
 
-# In[125]:
+# In[129]:
 
 # number of lines =< 20
 

@@ -115,10 +115,9 @@
 #     Create total WW and total WN columns in simplified table.
 # 1. **Y2018M06D01_RH_Temporal_Reducers_PostGIS_30sPfaf06_V01**  
 #     Determine moving average, min max and linear regression.
-# 1. **Y2018M06D21_RH_Linear_Trend_PostGIS_30sPfaf06_V01**  
-#     Calculate linear trend for demand and riverdischarge.
-#     
-# 1. **Y2018M06D04_RH_Arid_LowWaterUse_PostGIS_30sPfaf06_V01**  
+# 1. **Y2018M06D25_RH_Cap_Linear_Trends_PostGis_30sPfaf06_V01**  
+#     Cap the results of the ols at the minmax of the moving window. 
+# 1. **Y2018M06D04_RH_Arid_LowWaterUse_PostGIS_30sPfaf06_V02**  
 #     Add column for arid, lowwateruse and aridandlowwateruse for each subbasin. 
 # 1. **Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V01**  
 #     Calculate water stress at subbasin level.
