@@ -29,7 +29,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V02'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 5
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -97,7 +97,7 @@ totww / (riverdischarge+totwn)
 
 Exceptions:
     when aridandlowwateruse 
-        water stress = -1
+        water stress = 1
     else 
         ws = totww / (riverdischarge+totwn)
 """
@@ -107,7 +107,7 @@ sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql +=  " SELECT *,"
 for temporal_reducer in temporal_reducers:   
     sql += " CASE "
-    sql += " WHEN {}aridandlowwateruse_boolean_30spfaf06 = 1 THEN -1 ".format(temporal_reducer)
+    sql += " WHEN {}aridandlowwateruse_boolean_30spfaf06 = 1 THEN 1 ".format(temporal_reducer)
     sql += " ELSE {}ptotww_m_30spfaf06 / ({}riverdischarge_m_30spfaf06 + {}ptotwn_m_30spfaf06) ".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " END"
     sql += " AS {}waterstress_dimensionless_30spfaf06 ,".format(temporal_reducer)
@@ -160,7 +160,8 @@ print(elapsed)
 # Previous runs:  
 # 0:02:51.356640  
 # 0:03:09.128359  
-# 0:08:57.643207
+# 0:08:57.643207  
+# 0:08:51.883693
 # 
 # 
 
