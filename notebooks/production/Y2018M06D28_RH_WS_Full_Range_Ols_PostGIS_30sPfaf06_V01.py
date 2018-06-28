@@ -33,11 +33,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D28_RH_WS_Full_Range_Ols_PostGIS_30sPfaf06_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v02_v04'
+INPUT_TABLE_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v02_v05'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -154,10 +154,40 @@ result = engine.execute(sql_index)
 
 # In[13]:
 
-engine.dispose()
+sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
 # In[14]:
+
+sql_index2
+
+
+# In[15]:
+
+result = engine.execute(sql_index2)
+
+
+# In[16]:
+
+sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
+
+
+# In[17]:
+
+sql_index3
+
+
+# In[18]:
+
+result = engine.execute(sql_index3)
+
+
+# In[19]:
+
+engine.dispose()
+
+
+# In[20]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -165,9 +195,10 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:19:28.891726
+# 0:19:28.891726  
+# 0:22:39.252233
 
-# In[15]:
+# In[21]:
 
 
 
