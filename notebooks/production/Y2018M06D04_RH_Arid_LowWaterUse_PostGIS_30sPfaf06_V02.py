@@ -9,6 +9,9 @@
 This script has been edited on 20180625 to take into account the newly
 columns based on stats such as moving averga and ols.
 
+The script will create arid and low water use columns for the 'raw' values,
+moving average values and linear regression.
+
 
 Author: Rutger Hofste
 Date: 20180604
@@ -33,7 +36,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D04_RH_Arid_LowWaterUse_PostGIS_30sPfaf06_V02'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 6
 
 THRESHOLD_ARID_YEAR = 0.03 #units are m/year, threshold defined by Aqueduct 2.1
 THRESHOLD_LOW_WATER_USE_YEAR = 0.012 #units are m/year, threshold defined by Aqueduct 2.1 Withdrawal
@@ -78,7 +81,7 @@ password = F.read().splitlines()[0]
 F.close()
 
 engine = create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
-connection = engine.connect()
+#connection = engine.connect()
 
 sqls = []
 
@@ -88,65 +91,86 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-if TESTING:
-    sqls.append("CREATE TABLE {} AS SELECT * FROM {} WHERE pfafid_30spfaf06 < 130000 ;".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME))
-else:
-    sqls.append("CREATE TABLE {} AS SELECT * FROM {};".format(OUTPUT_TABLE_NAME,INPUT_TABLE_NAME))
+threshold_arid_month = THRESHOLD_ARID_YEAR/12
+threshold_low_water_use_month = THRESHOLD_LOW_WATER_USE_YEAR/12
+
 
 
 # In[6]:
 
-sqls.append("ALTER TABLE {} ADD COLUMN arid_boolean_30spfaf06 integer DEFAULT 0".format(OUTPUT_TABLE_NAME))
-sqls.append("ALTER TABLE {} ADD COLUMN lowwateruse_boolean_30spfaf06 integer DEFAULT 0".format(OUTPUT_TABLE_NAME))
-sqls.append("ALTER TABLE {} ADD COLUMN aridandlowwateruse_boolean_30spfaf06 integer DEFAULT 0".format(OUTPUT_TABLE_NAME))
+threshold_arid_month
 
 
 # In[7]:
 
-threshold_arid_month = THRESHOLD_ARID_YEAR / 12
-threshold_low_water_use_month = THRESHOLD_LOW_WATER_USE_YEAR / 12
+threshold_low_water_use_month
 
 
 # In[8]:
 
-# Set Arid for monthly columns
-sqls.append("UPDATE {}     SET arid_boolean_30spfaf06 = 1     WHERE temporal_resolution = 'month' AND ma10_riverdischarge_m_30spfaf06 < {};".format(OUTPUT_TABLE_NAME,threshold_arid_month))
+temporal_reducers = ["","ma10_","ols10_"]
 
 
 # In[9]:
 
-# Set Arid for year columns
-sqls.append("UPDATE {}     SET arid_boolean_30spfaf06 = 1     WHERE temporal_resolution = 'year' AND ma10_riverdischarge_m_30spfaf06 < {};".format(OUTPUT_TABLE_NAME,THRESHOLD_ARID_YEAR))
+sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
+sql = sql + " SELECT *,"
+for temporal_reducer in temporal_reducers:
+    sql = sql + " CASE"
+    sql = sql + " WHEN {}riverdischarge_m_30spfaf06 < {} AND temporal_resolution = 'month' THEN 1".format(temporal_reducer,threshold_arid_month)
+    sql = sql + " WHEN {}riverdischarge_m_30spfaf06 < {} AND temporal_resolution = 'year' THEN 1".format(temporal_reducer,THRESHOLD_ARID_YEAR)
+    sql = sql + " ELSE 0 "
+    sql = sql + " END"
+    sql = sql + " AS {}arid_boolean_30spfaf06,".format(temporal_reducer)
+
+for temporal_reducer in temporal_reducers:
+    sql = sql + " CASE"
+    sql = sql + " WHEN {}ptotww_m_30spfaf06 < {} AND temporal_resolution = 'month' THEN 1".format(temporal_reducer,threshold_low_water_use_month)
+    sql = sql + " WHEN {}ptotww_m_30spfaf06 < {} AND temporal_resolution = 'year' THEN 1".format(temporal_reducer,THRESHOLD_LOW_WATER_USE_YEAR)
+    sql = sql + " ELSE 0 "
+    sql = sql + " END"
+    sql = sql + " AS {}lowwateruse_boolean_30spfaf06 ,".format(temporal_reducer)
+
+
+for temporal_reducer in temporal_reducers:    
+    sql = sql + " CASE"
+    sql = sql + " WHEN {}ptotww_m_30spfaf06 < {} AND temporal_resolution = 'month' AND {}riverdischarge_m_30spfaf06 < {} THEN 1".format(temporal_reducer, threshold_low_water_use_month, temporal_reducer,threshold_arid_month)
+    sql = sql + " WHEN {}ptotww_m_30spfaf06 < {} AND temporal_resolution = 'year' AND {}riverdischarge_m_30spfaf06 < {} THEN 1".format(temporal_reducer, THRESHOLD_LOW_WATER_USE_YEAR, temporal_reducer,THRESHOLD_ARID_YEAR)
+    sql = sql + " ELSE 0 "
+    sql = sql + " END"
+    sql = sql + " AS {}aridandlowwateruse_boolean_30spfaf06 ,".format(temporal_reducer)
+
+    
+sql = sql[:-1]
+sql = sql + " FROM {}".format(INPUT_TABLE_NAME)
+
+if TESTING:
+    sql = sql + " LIMIT 100"
 
 
 # In[10]:
 
-# Set lowwateruse for monthly columns
-sqls.append("UPDATE {}     SET lowwateruse_boolean_30spfaf06 = 1     WHERE temporal_resolution = 'month' AND ma10_ptotww_m_30spfaf06 < {};".format(OUTPUT_TABLE_NAME,threshold_low_water_use_month))
+print(sql)
 
 
 # In[11]:
 
-# Set lowwateruse for year columns
-sqls.append("UPDATE {}     SET lowwateruse_boolean_30spfaf06 = 1     WHERE temporal_resolution = 'year' AND ma10_ptotww_m_30spfaf06 < {};".format(OUTPUT_TABLE_NAME,THRESHOLD_LOW_WATER_USE_YEAR))
+result = engine.execute(sql)
 
 
 # In[12]:
 
-# Set aridandlowwateruse
-sqls.append("UPDATE {}     SET aridandlowwateruse_boolean_30spfaf06 = 1     WHERE lowwateruse_boolean_30spfaf06 =1 AND arid_boolean_30spfaf06 = 1;".format(OUTPUT_TABLE_NAME))
+sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
 # In[13]:
 
-print(len(sqls))
+result = engine.execute(sql_index)
 
 
 # In[14]:
 
-for sql in sqls:
-    print(sql)
-    result = engine.execute(sql)    
+engine.dispose()
 
 
 # In[15]:
@@ -159,16 +183,12 @@ print(elapsed)
 # Previous runs:  
 # 0:09:22.668061  
 # 0:09:36.313159  
-# 0:10:52.997894
+# 0:10:52.997894  
+# 0:13:31.296174
 # 
 # 
 # 
 # 
-
-# In[16]:
-
-engine.dispose()
-
 
 # In[ ]:
 

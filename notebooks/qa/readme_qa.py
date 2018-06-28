@@ -28,7 +28,7 @@
 # 1. **Y2018M06D21_RH_QA_Linear_Trend_PostGIS_V01**  
 #     Check if linear trend is implemented correctly. 
 # 1. **Y2018M06D22_RH_QA_result_PostGIS_V01**  
-#     Create table with result, raw ma10 and ols with geometries.
+#     Compare raw, ma and ols for demand, supply and water stress.
 # 
 # 
 # ## Comparing AQ2.1
