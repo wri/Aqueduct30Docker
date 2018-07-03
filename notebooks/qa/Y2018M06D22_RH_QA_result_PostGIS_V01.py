@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[9]:
 
 """ Create table with result, raw ma10 and ols with geometries.
 -------------------------------------------------------------------------------
@@ -31,7 +31,8 @@ OUTPUT_SCHEMA = "test"
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/qaData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
-print("\nOutput ec2: " + ec2_output_path,
+print("Input table: " + INPUT_TABLE_NAME,
+      "\nOutput ec2: " + ec2_output_path,
       "\nOutput s3: " + s3_output_path)
 
 
