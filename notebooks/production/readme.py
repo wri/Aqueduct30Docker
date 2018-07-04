@@ -40,7 +40,9 @@
 # 1. **Y2017M11D22_RH_FAO_To_Database_V01**    
 #     Store FAO data in AWS RDS database.
 # 1. **Y2017M11D23_RH_Upstream_Downstream_Basin_To_Database_V01**  
-#     Add upstream pfaf ID to postgis database.  
+#     Add upstream pfaf ID to postgis database.
+# 1. **Y2018M07D03_RH_Upload_Hydrobasin_Mapbox_V01**  
+#     Upload simplified hydrobasins to mapbox for visualization purposes.
 # 
 # 
 # ### Group Delta Region in HydroBasin level 6

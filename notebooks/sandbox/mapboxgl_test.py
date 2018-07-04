@@ -6,17 +6,21 @@
 import mapboxgl
 import pandas as pd
 import geopandas as gpd
+import json
 import geojson
 import getpass
+import os
 
 
 # In[2]:
 
-# public api token
-token = "pk.eyJ1IjoicnNiYXVtYW5uIiwiYSI6IjdiOWEzZGIyMGNkOGY3NWQ4ZTBhN2Y5ZGU2Mzg2NDY2In0.jycgv7qwF8MMIWt4cT0RaQ"
+F = open("/.mapbox","r")
+token = F.read().splitlines()[0]
+F.close()
+os.environ["MAPBOX_ACCESS_TOKEN"] = token
 
 
-# In[4]:
+# In[3]:
 
 # create choropleth from polygon features stored as GeoJSON
 viz = mapboxgl.viz.ChoroplethViz('https://raw.githubusercontent.com/mapbox/mapboxgl-jupyter/master/examples/data/us-states.geojson', 
@@ -35,7 +39,7 @@ viz = mapboxgl.viz.ChoroplethViz('https://raw.githubusercontent.com/mapbox/mapbo
 viz.show()
 
 
-# In[24]:
+# In[ ]:
 
 # adjust view angle
 viz.bearing = -15
@@ -50,7 +54,7 @@ viz.height_function_type = 'interpolate'
 viz.show()
 
 
-# In[27]:
+# In[ ]:
 
 # must be JSON object (need to extend to use referenced JSON file)
 data = [{"id": "01", "name": "Alabama", "density": 94.65}, {"id": "02", "name": "Alaska", "density": 1.264}, {"id": "04", "name": "Arizona", "density": 57.05}, {"id": "05", "name": "Arkansas", "density": 56.43}, {"id": "06", "name": "California", "density": 241.7}, {"id": "08", "name": "Colorado", "density": 49.33}, {"id": "09", "name": "Connecticut", "density": 739.1}, {"id": "10", "name": "Delaware", "density": 464.3}, {"id": "11", "name": "District of Columbia", "density": 10065}, {"id": "12", "name": "Florida", "density": 353.4}, {"id": "13", "name": "Georgia", "density": 169.5}, {"id": "15", "name": "Hawaii", "density": 214.1}, {"id": "16", "name": "Idaho", "density": 19.15}, {"id": "17", "name": "Illinois", "density": 231.5}, {"id": "18", "name": "Indiana", "density": 181.7}, {"id": "19", "name": "Iowa", "density": 54.81}, {"id": "20", "name": "Kansas", "density": 35.09}, {"id": "21", "name": "Kentucky", "density": 110}, {"id": "22", "name": "Louisiana", "density": 105}, {"id": "23", "name": "Maine", "density": 43.04}, {"id": "24", "name": "Maryland", "density": 596.3}, {"id": "25", "name": "Massachusetts", "density": 840.2}, {"id": "26", "name": "Michigan", "density": 173.9}, {"id": "27", "name": "Minnesota", "density": 67.14}, {"id": "28", "name": "Mississippi", "density": 63.5}, {"id": "29", "name": "Missouri", "density": 87.26}, {"id": "30", "name": "Montana", "density": 6.858}, {"id": "31", "name": "Nebraska", "density": 23.97}, {"id": "32", "name": "Nevada", "density": 24.8}, {"id": "33", "name": "New Hampshire", "density": 147}, {"id": "34", "name": "New Jersey", "density": 1189}, {"id": "35", "name": "New Mexico", "density": 17.16}, {"id": "36", "name": "New York", "density": 412.3}, {"id": "37", "name": "North Carolina", "density": 198.2}, {"id": "38", "name": "North Dakota", "density": 9.916}, {"id": "39", "name": "Ohio", "density": 281.9}, {"id": "40", "name": "Oklahoma", "density": 55.22}, {"id": "41", "name": "Oregon", "density": 40.33}, {"id": "42", "name": "Pennsylvania", "density": 284.3}, {"id": "44", "name": "Rhode Island", "density": 1006}, {"id": "45", "name": "South Carolina", "density": 155.4}, {"id": "46", "name": "South Dakota", "density": 98.07}, {"id": "47", "name": "Tennessee", "density": 88.08}, {"id": "48", "name": "Texas", "density": 98.07}, {"id": "49", "name": "Utah", "density": 34.3}, {"id": "50", "name": "Vermont", "density": 67.73}, {"id": "51", "name": "Virginia", "density": 204.5}, {"id": "53", "name": "Washington", "density": 102.6}, {"id": "54", "name": "West Virginia", "density": 77.06}, {"id": "55", "name": "Wisconsin", "density": 105.2}, {"id": "56", "name": "Wyoming", "density": 5.851}, {"id": "72", "name": "Puerto Rico", "density": 1082}]
@@ -82,39 +86,148 @@ viz.show()
 # Let's try with our own geojson file
 # 
 
-# In[5]:
+# In[ ]:
 
 # load a sample geodataframe
 gdf = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 
 
-# In[7]:
+# In[ ]:
+
+gdf.crs = None
 
 
+# In[ ]:
+
+gdf.drop("name",axis=1,inplace=True)
 
 
-# In[12]:
+# In[ ]:
 
-gdf.to_file("test.geojson",driver="GeoJSON",encoding = 'utf-8')
+gjson = gdf.to_json()
 
 
-# In[22]:
+# In[ ]:
+
+gjson_valid = geojson.loads(gjson)
+
+
+# In[ ]:
 
 # create choropleth from polygon features stored as GeoJSON
-viz2 = mapboxgl.viz.ChoroplethViz(data = 'test.geojson',
+viz2 = mapboxgl.viz.ChoroplethViz(data=gjson_valid,
+                     vector_layer_name='test',
+                     below_layer='waterway-label',
                      color_property='pop_est',
+                     color_stops= mapboxgl.utils.create_color_stops([0, 100000, 1e9], colors='YlOrRd'),
+                     color_function_type='interpolate',
                      opacity=0.8,
                      center=(-96, 37.8),
                      zoom=3,
-                     below_layer='waterway-label',
                      access_token = token
                     )
+viz2.style='mapbox://styles/mapbox/dark-v9?optimize=true'
 viz2.show()
 
 
-# In[19]:
+# # Tileset from Mapbox, properties from pandas
 
-help(mapboxgl.utils.df_to_geojson)
+# In[ ]:
+
+data_url = 'https://raw.githubusercontent.com/mapbox/mapboxgl-jupyter/master/examples/data/2010_us_population_by_postcode.csv'
+df = pd.read_csv(data_url).round(3)
+df.head(2)
+
+
+# In[ ]:
+
+# Group pandas dataframe by a value
+measure = '2010 Census Population'
+dimension = 'Zip Code ZCTA'
+
+data_temp = df[[dimension, measure]].groupby(dimension, as_index=False).mean()
+color_breaks = [round(data_temp[measure].quantile(q=x*0.1), 2) for x in range(2,11)]
+color_stops = mapboxgl.utils.create_color_stops(color_breaks, colors='PuRd')
+data = json.loads(data_temp.to_json(orient='records'))
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+# Create the viz
+viz3 = mapboxgl.viz.ChoroplethViz(data, 
+                                  vector_url='mapbox://rsbaumann.bv2k1pl2',
+                                  vector_layer_name='2016_us_census_postcode',
+                                  vector_join_property='postcode',
+                                  data_join_property=dimension,
+                                  color_property=measure,
+                                  color_stops=color_stops,
+                                  line_color = 'rgba(0,0,0,0.05)',
+                                  line_width = 0.5,
+                                  opacity=0.7,
+                                  center=(-95, 45),
+                                  zoom=2,
+                                  below_layer='waterway-label'
+                                  )
+viz3.show()
+
+
+# In[4]:
+
+# With my own vectortiles
+
+
+# In[5]:
+
+df_test = pd.read_csv("test.csv")
+
+
+# In[6]:
+
+df_test
+
+
+# In[7]:
+
+color_stops_test = mapboxgl.utils.create_color_stops([0, 2, 11], colors='YlOrRd')
+
+
+# In[8]:
+
+data_test = json.loads(df_test.to_json(orient='records'))
+
+
+# In[24]:
+
+# Create the viz
+viz4 = mapboxgl.viz.ChoroplethViz(data = data_test, 
+                                  vector_url='mapbox://rutgerhofste.cjj5r67uh09i32vpnj2jxcaql-4fd9h',
+                                  vector_layer_name='aq30_geom_only_NL', # Warning should match name on mapbox.
+                                  vector_join_property='PFAF_ID',
+                                  data_join_property="PFAF_ID",
+                                  color_property="valuez",
+                                  color_stops= color_stops_test,
+                                  line_color = 'rgba(0,0,0,0.05)',
+                                  line_width = 0.5,
+                                  opacity=0.7,
+                                  center=(5, 52),
+                                  zoom=4,
+                                  below_layer='waterway-label'
+                                  )
+# adjust view angle
+viz4.bearing = -15
+viz4.pitch = 45
+
+# add extrusion to viz using interpolation keyed on density in GeoJSON features
+viz4.height_property = 'valuez'
+viz4.height_stops = mapboxgl.utils.create_numeric_stops([0, 1, 3, 6, 7, 13], 0, 20000)
+viz4.height_function_type = 'interpolate'
+
+viz4.show()
 
 
 # In[ ]:
