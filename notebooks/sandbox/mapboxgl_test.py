@@ -14,7 +14,7 @@ import os
 
 # In[2]:
 
-F = open("/.mapbox","r")
+F = open("/.mapbox_public","r")
 token = F.read().splitlines()[0]
 F.close()
 os.environ["MAPBOX_ACCESS_TOKEN"] = token
@@ -86,28 +86,28 @@ viz.show()
 # Let's try with our own geojson file
 # 
 
-# In[ ]:
+# In[4]:
 
 # load a sample geodataframe
 gdf = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 
 
-# In[ ]:
+# In[5]:
 
 gdf.crs = None
 
 
-# In[ ]:
+# In[6]:
 
 gdf.drop("name",axis=1,inplace=True)
 
 
-# In[ ]:
+# In[7]:
 
 gjson = gdf.to_json()
 
 
-# In[ ]:
+# In[8]:
 
 gjson_valid = geojson.loads(gjson)
 
@@ -132,14 +132,14 @@ viz2.show()
 
 # # Tileset from Mapbox, properties from pandas
 
-# In[ ]:
+# In[9]:
 
 data_url = 'https://raw.githubusercontent.com/mapbox/mapboxgl-jupyter/master/examples/data/2010_us_population_by_postcode.csv'
 df = pd.read_csv(data_url).round(3)
 df.head(2)
 
 
-# In[ ]:
+# In[10]:
 
 # Group pandas dataframe by a value
 measure = '2010 Census Population'
@@ -176,61 +176,72 @@ viz3 = mapboxgl.viz.ChoroplethViz(data,
 viz3.show()
 
 
-# In[4]:
+# In[11]:
 
 # With my own vectortiles
 
 
-# In[5]:
+# In[12]:
 
 df_test = pd.read_csv("test.csv")
 
 
-# In[6]:
+# In[13]:
 
 df_test
 
 
-# In[7]:
+# In[14]:
+
+df_test = df_test.rename(columns={"PFAF_ID":"pfaf_id"})
+
+
+# In[ ]:
+
+
+
+
+# In[15]:
 
 color_stops_test = mapboxgl.utils.create_color_stops([0, 2, 11], colors='YlOrRd')
 
 
-# In[8]:
+# In[ ]:
+
+
+
+
+# In[16]:
 
 data_test = json.loads(df_test.to_json(orient='records'))
 
 
-# In[24]:
+# In[ ]:
+
+
+
+
+# In[19]:
 
 # Create the viz
 viz4 = mapboxgl.viz.ChoroplethViz(data = data_test, 
-                                  vector_url='mapbox://rutgerhofste.cjj5r67uh09i32vpnj2jxcaql-4fd9h',
-                                  vector_layer_name='aq30_geom_only_NL', # Warning should match name on mapbox.
-                                  vector_join_property='PFAF_ID',
-                                  data_join_property="PFAF_ID",
+                                  vector_url='mapbox://rutgerhofste.hybas06_v04_V04',
+                                  vector_layer_name='hybas06_v04', # Warning should match name on mapbox.
+                                  vector_join_property='pfaf_id',
+                                  data_join_property="pfaf_id",
                                   color_property="valuez",
                                   color_stops= color_stops_test,
                                   line_color = 'rgba(0,0,0,0.05)',
                                   line_width = 0.5,
                                   opacity=0.7,
                                   center=(5, 52),
-                                  zoom=4,
+                                  zoom=5,
                                   below_layer='waterway-label'
                                   )
-# adjust view angle
-viz4.bearing = -15
-viz4.pitch = 45
-
-# add extrusion to viz using interpolation keyed on density in GeoJSON features
-viz4.height_property = 'valuez'
-viz4.height_stops = mapboxgl.utils.create_numeric_stops([0, 1, 3, 6, 7, 13], 0, 20000)
-viz4.height_function_type = 'interpolate'
-
 viz4.show()
 
 
 # In[ ]:
 
-
+viz
 

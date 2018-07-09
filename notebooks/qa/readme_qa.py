@@ -31,6 +31,9 @@
 #     Compare raw, ma and ols for demand, supply and water stress.
 # 1. **Y2018M07D02_RH_QA_Arid_Low_Method_V01**  
 #     Compare several methods for setting arid and lowwateruse.
+# 1. **Y2018M07D09_RH_QA_Arid_Low_Method_Once_V01**  
+#     Apply thresholds once based on full range ols.
+#     
 # 
 # 
 # ## Comparing AQ2.1

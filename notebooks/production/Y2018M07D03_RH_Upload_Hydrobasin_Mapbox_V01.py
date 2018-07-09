@@ -1,12 +1,31 @@
 
 # coding: utf-8
 
-# In[11]:
+# In[19]:
 
 """ Upload simplified hydrobasins to mapbox for visualization purposes.
 -------------------------------------------------------------------------------
 
 Upload postgis table to mapbox via geopandas and geojson.
+
+Learned so far:
+
+- do not use mapbox datasets. Editing in browser is not useful for our
+purpose.
+- fid needs to be in string format and match the id in the features.
+- when using the mapbox uploads sdk, minimum zoom level is 5
+- use tippecanoe to create vector tiles with custom zoom levels. 
+
+install tippecanoe
+
+cd /opt
+git clone git@github.com:mapbox/tippecanoe.git
+cd tippecanoe
+apt-get install update
+apt-get install build-essential libsqlite3-dev zlib1g-dev
+make
+make install
+
 
 Author: Rutger Hofste
 Date: 20180703
@@ -27,7 +46,10 @@ Returns:
 
 SCRIPT_NAME = "Y2018M07D03_RH_Upload_Hydrobasin_Mapbox_V01"
 INPUT_VERSION = 1
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
+
+MIN_ZOOM_LIMIT = 1
+MAX_ZOOM_LIMIT = 12
 
 EXCLUDE_BASIN = 353020
 
@@ -45,11 +67,6 @@ print("Input table: " + INPUT_TABLE_NAME +
       "\nOutput table: " + output_dataset_name)
 
 
-# In[20]:
-
-
-
-
 # In[2]:
 
 import time, datetime, sys
@@ -60,23 +77,24 @@ print(dateString,timeString)
 sys.version
 
 
-# In[24]:
+# In[22]:
 
 import os
 import mapbox
 import geojson
 import sqlalchemy
 import time
+import subprocess
 import geopandas as gpd
 
 
-# In[13]:
+# In[4]:
 
 get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[4]:
+# In[5]:
 
 F = open("/.mapbox","r")
 token = F.read().splitlines()[0]
@@ -91,94 +109,124 @@ engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".form
 #connection = engine.connect()
 
 
-# In[5]:
+# In[6]:
 
 sql = "select * from {}".format(INPUT_TABLE_NAME)
 
 
-# In[6]:
+# In[7]:
 
 # load geodataframe from postGIS
 gdf =gpd.GeoDataFrame.from_postgis(sql,engine,geom_col='geom' )
 
 
-# In[7]:
+# In[8]:
 
 gdf_out = gdf[["pfaf_id","geom"]]
 
 
-# In[8]:
+# In[9]:
 
 gdf_out_clean = gdf_out[gdf_out["pfaf_id"] != EXCLUDE_BASIN]
 
 
-# In[9]:
+# In[10]:
 
 assert gdf_out_clean.shape[0] == 16395
 
 
-# In[10]:
+# In[11]:
 
 assert gdf_out.crs == None
 
 
-# In[16]:
+# In[12]:
 
-output_file_path = "{}/{}.geojson".format(ec2_output_path,INPUT_TABLE_NAME)
+output_file_path = "{}/{}".format(ec2_output_path,INPUT_TABLE_NAME)
 
 
-# In[17]:
+# In[13]:
 
 print(output_file_path)
 
 
-# In[18]:
+# In[14]:
 
-gdf_out_clean.to_file(output_file_path,driver="GeoJSON",encoding="UTF-8")
-
-
-# In[19]:
-
-service = mapbox.Uploader()
+gdf_out_clean.to_file(output_file_path+".geojson",driver="GeoJSON",encoding="UTF-8")
 
 
-# In[21]:
+# In[ ]:
 
-mapid = output_dataset_name
+# convert to vectortiles using tippecanoe
 
 
-# In[22]:
+# In[15]:
 
-with open(output_file_path, 'rb') as src:
-    upload_resp = service.upload(src, mapid)
+output_file_path_tiles = "{}.mbtiles".format(output_file_path)
+
+
+# In[16]:
+
+print(output_file_path_tiles)
+
+
+# In[20]:
+
+command = "tippecanoe -o {} -Z {} -z {} {}.geojson".format(output_file_path_tiles,MIN_ZOOM_LIMIT,MAX_ZOOM_LIMIT,output_file_path)
 
 
 # In[23]:
 
-upload_resp.status_code
+result =subprocess.check_output(command,shell=True)
+
+
+# In[24]:
+
+service = mapbox.Uploader()
+
+
+# In[25]:
+
+mapid = output_dataset_name
 
 
 # In[26]:
 
-upload_id = upload_resp.json()['id']
+print(mapid)
 
 
 # In[27]:
 
-upload_id
+with open(output_file_path_tiles, 'rb') as src:
+    upload_resp = service.upload(src, mapid)
+
+
+# In[28]:
+
+upload_resp.status_code
 
 
 # In[29]:
 
-# Upload is processed on the server.
+upload_id = upload_resp.json()['id']
 
 
 # In[30]:
 
-engine.dispose()
+upload_id
 
 
 # In[31]:
+
+# Upload is processed on the server.
+
+
+# In[32]:
+
+engine.dispose()
+
+
+# In[33]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -186,4 +234,10 @@ print(elapsed)
 
 
 # Previous runs:  
+# 0:17:41.230438
 # 
+
+# In[ ]:
+
+
+

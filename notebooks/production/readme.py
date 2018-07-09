@@ -123,8 +123,13 @@
 #     Add column for arid, lowwateruse and aridandlowwateruse for each subbasin. 
 # 1. **Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V02**  
 #     Calculate water stress with raw, ma10 and ols10 at subbasin level.
-# 1. **Y2018M06D28_RH_WS_Full_Range_Ols_PostGIS_30sPfaf06_V01**  
+# 1. **Y2018M06D28_RH_WS_Full_Range_Ols_PostGIS_30sPfaf06_V02**  
 #     Fit linear trend and average on 1969-2014 timeseries of linear trends.
+# 1. **Y2018M07D09_RH_Arid_LowWaterUse_Full_Ols_PostGIS_V01**  
+#     Using the full range ols_ols10, apply the arid and lowwateruse thresholds.
+# 1. **Y2018M07D09_RH_Apply_AridLowOnce_Mask_PostGIS_V01**  
+#     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
+#     
 #   
 # 
 #     

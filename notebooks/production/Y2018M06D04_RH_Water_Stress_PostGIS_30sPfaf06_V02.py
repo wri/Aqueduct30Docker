@@ -6,6 +6,11 @@
 """ Calculate water stress with raw, ma10 and ols10 at subbasin level.
 -------------------------------------------------------------------------------
 
+The tresholds per month will be used to set waterstress to 1 before doing a
+regression. In order to determine if a subbasin is arid and lowwater use, 
+a full range regression ols1960-2014 for riverdischarge and ptotww and ptotwn
+will be used. 
+
 Author: Rutger Hofste
 Date: 20180604
 Kernel: python35
