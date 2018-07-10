@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 """ Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 -------------------------------------------------------------------------------
@@ -44,6 +44,10 @@ INPUT_TABLE_NAME_RIGHT = "y2018m07d09_rh_arid_lowwateruse_full_ols_postgis_v01_v
 INPUT_TABLE_NAME_LEFT = 'y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v03'
 
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
+
+print("Input Table Left: " , INPUT_TABLE_NAME_LEFT, 
+      "Input Table Right: " , INPUT_TABLE_NAME_RIGHT, 
+      "\nOutput Table: " , OUTPUT_TABLE_NAME)
 
 
 # In[2]:
@@ -109,40 +113,37 @@ sql += " WHERE r.year = 2014"
 print(sql)
 
 
-# In[ ]:
+# In[8]:
 
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[9]:
 
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[ ]:
+# In[10]:
 
 sql_index
 
 
-# In[ ]:
+# In[11]:
 
 result = engine.execute(sql_index)
 
 
-# In[ ]:
+# In[12]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# In[ ]:
-
-Previous runs:  
-0:19:28.891726  
-
+# Previous runs:  
+# 0:19:28.891726  

@@ -129,6 +129,10 @@
 #     Using the full range ols_ols10, apply the arid and lowwateruse thresholds.
 # 1. **Y2018M07D09_RH_Apply_AridLowOnce_Mask_PostGIS_V01**  
 #     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
+# 1. **Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01**  
+#     Create columns for ws_r and ws_s with aridlowwateruse_once mask.  
+#     
+#     
 #     
 #   
 # 
