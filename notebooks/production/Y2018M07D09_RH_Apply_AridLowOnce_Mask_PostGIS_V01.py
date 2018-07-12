@@ -102,8 +102,8 @@ sql += " SELECT l.*,"
 for column_to_keep in columns_to_keep:
     sql += " r.{},".format(column_to_keep)
 sql = sql[:-1]
-sql += " FROM y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v03 l"
-sql += " INNER JOIN y2018m07d09_rh_arid_lowwateruse_full_ols_postgis_v01_v03 r ON"
+sql += " FROM {} l".format(INPUT_TABLE_NAME_LEFT)
+sql += " INNER JOIN {} r ON".format(INPUT_TABLE_NAME_RIGHT)
 sql += " l.pfafid_30spfaf06 = r.pfafid_30spfaf06"
 sql += " WHERE r.year = 2014"
 

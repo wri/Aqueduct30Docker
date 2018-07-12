@@ -87,7 +87,7 @@ if OVERWRITE_OUTPUT:
     result = engine.execute(sql)
 
 
-# In[5]:
+# In[16]:
 
 sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql += " SELECT *,"
@@ -95,12 +95,21 @@ sql += " SELECT *,"
 
 # water stress raw
 sql += " CASE"
-sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql += " THEN ols_ols10_waterstress_dimensionless_30spfaf06"        
-sql += " ELSE 1"
-sql += " END "
-sql += " AS waterstress_raw_dimensionless_30spfaf06, "
-
+sql +=     " WHEN temporal_resolution = 'month'"
+sql +=     " THEN"
+sql +=         " CASE"
+sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
+sql +=             " THEN ols_ols10_waterstress_dimensionless_30spfaf06"        
+sql +=      " ELSE 1"
+sql +=      " END "
+sql +=    " WHEN temporal_resolution = 'year'"
+sql +=    " THEN"
+sql +=         " CASE"
+sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
+sql +=             " THEN avg1y_ols_ols10_waterstress_dimensionless_30spfaf06"        
+sql +=      " ELSE 1"
+sql +=      " END "
+sql +=    " AS waterstress_raw_dimensionless_30spfaf06, "
 
 # water stress scores
 sql += " CASE"
@@ -117,7 +126,7 @@ sql = sql[:-1]
 sql += " FROM {}".format(INPUT_TABLE_NAME)
 
 
-# In[6]:
+# In[17]:
 
 sql
 
@@ -171,7 +180,7 @@ print(elapsed)
 
 # Previous runs:  
 # 0:07:37.073694  
-# 0:30:07.728971
+# 0:30:07.728971  
 # 0:22:31.547347
 
 # In[ ]:

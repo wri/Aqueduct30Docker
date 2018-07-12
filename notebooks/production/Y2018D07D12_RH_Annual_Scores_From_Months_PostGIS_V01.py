@@ -29,7 +29,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018D07D12_RH_Annual_Scores_From_Months_PostGIS_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -106,47 +106,46 @@ sql += " ORDER BY pfafid_30spfaf06, year"
 sql
 
 
-# In[ ]:
+# In[8]:
 
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[9]:
 
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[ ]:
+# In[10]:
 
 result = engine.execute(sql_index)
 
 
-# In[ ]:
+# In[11]:
 
 sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
-# In[ ]:
+# In[12]:
 
 result = engine.execute(sql_index2)
 
 
-# In[ ]:
+# In[13]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[14]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# In[ ]:
-
-Previous runs:  
-
+# Previous runs:  
+# 0:02:42.553314
+# 
 
 # In[ ]:
 

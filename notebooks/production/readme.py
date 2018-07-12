@@ -130,10 +130,14 @@
 # 1. **Y2018M07D09_RH_Apply_AridLowOnce_Mask_PostGIS_V01**  
 #     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 # 1. **Y2018D07D12_RH_Annual_Scores_From_Months_PostGIS_V01**  
-#     Calculate Annual Scores by averaging monthly values.  
+#     Calculate Annual Scores by averaging monthly values.
+# 1. **Y2018D07D12_RH_Merge_Simplify_Tables_PostGIS_V01**  
+#     Merge and simplify master table and annual scores based on months. 
+#     
+#     
+# ## Needs updated input scripts:    
 # 1. **Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01**  
 #     Create columns for ws_r and ws_s with aridlowwateruse_once mask. 
-#   
 # 1. **Y2018M07D12_RH_WS_Categorization_Label_PostGIS_V01**  
 #     Add category and label for water stress. 
 #     
