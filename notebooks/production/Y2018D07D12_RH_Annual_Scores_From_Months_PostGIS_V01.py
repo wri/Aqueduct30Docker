@@ -3,17 +3,11 @@
 
 # In[1]:
 
-""" Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
+""" Calculate Annual Scores by averaging monthly values.
 -------------------------------------------------------------------------------
 
-Join the results of the arid and lowwater use mask based on annual values (ols)
-(ols_ols10_**) and the master table. 
-
-The script uses the 2014 value for the right table. 
-
-
 Author: Rutger Hofste
-Date: 20180710
+Date: 20180712
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -34,19 +28,18 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01'
-OUTPUT_VERSION = 3
+SCRIPT_NAME = 'Y2018D07D12_RH_Annual_Scores_From_Months_PostGIS_V01'
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-
-INPUT_TABLE_NAME = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v01"
-
+INPUT_TABLE_NAME = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v01" 
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
       "\nOutput Table: " , OUTPUT_TABLE_NAME)
+
 
 
 # In[2]:
@@ -89,90 +82,71 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
-sql += " SELECT *,"
-
-
-# water stress raw
-sql += " CASE"
-sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql += " THEN ols_ols10_waterstress_dimensionless_30spfaf06"        
-sql += " ELSE 1"
-sql += " END "
-sql += " AS waterstress_raw_dimensionless_30spfaf06, "
-
-
-# water stress scores
-sql += " CASE"
-sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND ols_ols10_waterstress_dimensionless_30spfaf06 > 0"
-sql +=     " THEN GREATEST(0,LEAST(((LN(ols_ols10_waterstress_dimensionless_30spfaf06) - LN(0.1))/LN(2))+1,5))" 
-sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND ols_ols10_waterstress_dimensionless_30spfaf06 <= 0"
-sql +=     " THEN -1"
-sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 1 "
-sql +=     " THEN 5"
-sql += " ELSE -9999 "
-sql += " END AS waterstress_score_dimensionless_30spfaf06,"
-
-sql = sql[:-1]
-sql += " FROM {}".format(INPUT_TABLE_NAME)
+selection_columns = ["pfafid_30spfaf06",
+                     "year",
+                     "temporal_resolution"]
+aggregate_column = "ols_ols10_waterstress_dimensionless_30spfaf06"
 
 
 # In[6]:
 
-sql
+sql =  "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
+sql += " SELECT "
+for selection_column in selection_columns:
+    sql += " {},".format(selection_column)
+sql +=     " AVG({}) AS avg1y_ols_ols10_waterstress_dimensionless_30spfaf06".format(aggregate_column)
+sql += " FROM {}".format(INPUT_TABLE_NAME)
+sql += " WHERE temporal_resolution = 'month'" 
+sql += " GROUP BY pfafid_30spfaf06, year, temporal_resolution"
+sql += " ORDER BY pfafid_30spfaf06, year"
 
 
 # In[7]:
 
+sql
+
+
+# In[ ]:
+
 result = engine.execute(sql)
 
 
-# In[8]:
+# In[ ]:
 
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[9]:
+# In[ ]:
 
 result = engine.execute(sql_index)
 
 
-# In[10]:
+# In[ ]:
 
 sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
-# In[11]:
+# In[ ]:
 
 result = engine.execute(sql_index2)
 
 
-# In[12]:
-
-sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
-
-
-# In[13]:
-
-result = engine.execute(sql_index3)
-
-
-# In[14]:
+# In[ ]:
 
 engine.dispose()
 
 
-# In[15]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# Previous runs:  
-# 0:07:37.073694  
-# 0:30:07.728971
-# 0:22:31.547347
+# In[ ]:
+
+Previous runs:  
+
 
 # In[ ]:
 
