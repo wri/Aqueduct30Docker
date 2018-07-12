@@ -131,7 +131,8 @@
 #     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 # 1. **Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01**  
 #     Create columns for ws_r and ws_s with aridlowwateruse_once mask.  
-#     
+# 1. **Y2018M07D12_RH_WS_Categorization_Label_PostGIS_V01**  
+#     Add category and label for water stress. 
 #     
 #     
 #   

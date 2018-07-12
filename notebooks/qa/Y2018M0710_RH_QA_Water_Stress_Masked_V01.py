@@ -21,8 +21,9 @@ max(0,min(5,((np.log(r)-np.log(0.1))/np.log(2))+1))
 raw values are converted to scores and can result to scores in range [0-5] 
 including start and endpoint. To go from scores to categories (binned) 
 
-
-
+from score to category
+0.0 need to become 1
+5.0 needs to become 5
 
 
 
@@ -384,6 +385,11 @@ viz = mapboxgl.viz.ChoroplethViz(data = safename,
 # In[ ]:
 
 viz.show()
+
+
+# In[15]:
+
+
 
 
 # In[ ]:

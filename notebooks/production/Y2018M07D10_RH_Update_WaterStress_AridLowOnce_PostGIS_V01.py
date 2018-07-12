@@ -13,7 +13,7 @@ The script uses the 2014 value for the right table.
 
 
 Author: Rutger Hofste
-Date: 20180628
+Date: 20180710
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -35,7 +35,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -107,13 +107,18 @@ sql += " CASE"
 sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND ols_ols10_waterstress_dimensionless_30spfaf06 > 0"
 sql +=     " THEN GREATEST(0,LEAST(((LN(ols_ols10_waterstress_dimensionless_30spfaf06) - LN(0.1))/LN(2))+1,5))" 
 sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND ols_ols10_waterstress_dimensionless_30spfaf06 <= 0"
-sql +=     " THEN 0"
+sql +=     " THEN -1"
 sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 1 "
 sql +=     " THEN 5"
 sql += " ELSE -9999 "
-sql += " END AS waterstress_score_dimensionless_30spfaf06"
-# Adding one additional GREATEST to prevent ln(negative)
-#sql += " LN(ols_ols10_waterstress_dimensionless_30spfaf06) - LN(0.1))/LN(2)+1))"
+sql += " END AS waterstress_score_dimensionless_30spfaf06, "
+
+
+# water stress category
+sql += " CASE "
+
+
+
 sql += " FROM {}".format(INPUT_TABLE_NAME)
 
 
