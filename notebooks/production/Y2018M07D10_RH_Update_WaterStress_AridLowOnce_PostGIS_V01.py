@@ -35,7 +35,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01'
-OUTPUT_VERSION = 5
+OUTPUT_VERSION = 6
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -120,9 +120,9 @@ sql += " CASE"
 sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND waterstress_raw_dimensionless_30spfaf06 > 0"
 sql +=     " THEN GREATEST(0,LEAST(((LN(waterstress_raw_dimensionless_30spfaf06) - LN(0.1))/LN(2))+1,5))" 
 sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND waterstress_raw_dimensionless_30spfaf06 <= 0"
-sql +=     " THEN -1"
+sql +=     " THEN 0"
 sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 1 "
-sql +=     " THEN 5"
+sql +=     " THEN -1"
 sql += " ELSE -9999 "
 sql += " END AS waterstress_score_dimensionless_30spfaf06,"
 sql = sql[:-1]
@@ -185,7 +185,8 @@ print(elapsed)
 # 0:07:37.073694  
 # 0:30:07.728971  
 # 0:22:31.547347  
-# 0:19:47.178844
+# 0:19:47.178844  
+# 0:19:43.276432
 
 # In[ ]:
 
