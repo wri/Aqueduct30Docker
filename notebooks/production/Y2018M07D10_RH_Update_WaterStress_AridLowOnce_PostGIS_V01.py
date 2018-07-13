@@ -35,14 +35,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 5
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-
-INPUT_TABLE_NAME = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v01"
-
+INPUT_TABLE_NAME = "y2018m07d12_rh_merge_simplify_tables_postgis_v01_v04"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -87,46 +85,51 @@ if OVERWRITE_OUTPUT:
     result = engine.execute(sql)
 
 
-# In[16]:
+# In[5]:
 
 sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
+
+sql += " WITH cte AS ( "
 sql += " SELECT *,"
 
-
-# water stress raw
+# Water Stress Raw
 sql += " CASE"
 sql +=     " WHEN temporal_resolution = 'month'"
-sql +=     " THEN"
+sql +=     " THEN ("
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
 sql +=             " THEN ols_ols10_waterstress_dimensionless_30spfaf06"        
-sql +=      " ELSE 1"
-sql +=      " END "
+sql +=         " ELSE 1"
+sql +=         " END )"
 sql +=    " WHEN temporal_resolution = 'year'"
-sql +=    " THEN"
+sql +=    " THEN ( "
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
 sql +=             " THEN avg1y_ols_ols10_waterstress_dimensionless_30spfaf06"        
-sql +=      " ELSE 1"
-sql +=      " END "
-sql +=    " AS waterstress_raw_dimensionless_30spfaf06, "
+sql +=         " ELSE 1"
+sql +=         " END )"
+sql +=    " ELSE -9999"
+sql +=    " END"
+sql +=    " AS waterstress_raw_dimensionless_30spfaf06"
+sql += " FROM {}".format(INPUT_TABLE_NAME)
+sql += " )"
 
-# water stress scores
+# Water Stress Scores
+sql += " SELECT *,"
 sql += " CASE"
-sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND ols_ols10_waterstress_dimensionless_30spfaf06 > 0"
-sql +=     " THEN GREATEST(0,LEAST(((LN(ols_ols10_waterstress_dimensionless_30spfaf06) - LN(0.1))/LN(2))+1,5))" 
-sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND ols_ols10_waterstress_dimensionless_30spfaf06 <= 0"
+sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND waterstress_raw_dimensionless_30spfaf06 > 0"
+sql +=     " THEN GREATEST(0,LEAST(((LN(waterstress_raw_dimensionless_30spfaf06) - LN(0.1))/LN(2))+1,5))" 
+sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND waterstress_raw_dimensionless_30spfaf06 <= 0"
 sql +=     " THEN -1"
 sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 1 "
 sql +=     " THEN 5"
 sql += " ELSE -9999 "
 sql += " END AS waterstress_score_dimensionless_30spfaf06,"
-
 sql = sql[:-1]
-sql += " FROM {}".format(INPUT_TABLE_NAME)
+sql += " FROM cte"
 
 
-# In[17]:
+# In[6]:
 
 sql
 
@@ -181,7 +184,8 @@ print(elapsed)
 # Previous runs:  
 # 0:07:37.073694  
 # 0:30:07.728971  
-# 0:22:31.547347
+# 0:22:31.547347  
+# 0:19:47.178844
 
 # In[ ]:
 

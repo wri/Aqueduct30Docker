@@ -34,7 +34,7 @@ OUTPUT_VERSION = 1
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d10_rh_update_waterstress_aridlowonce_postgis_v01_v02"
+INPUT_TABLE_NAME = "y2018m07d10_rh_update_waterstress_aridlowonce_postgis_v01_v05"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -226,7 +226,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:25:34.359384 
+# 0:25:34.359384  
+# 0:19:55.641388
 
 # In[ ]:
 

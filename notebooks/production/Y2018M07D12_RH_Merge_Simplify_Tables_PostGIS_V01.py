@@ -28,8 +28,8 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018D07D12_RH_Merge_Simplify_Tables_PostGIS_V01'
-OUTPUT_VERSION = 3
+SCRIPT_NAME = 'Y2018M07D12_RH_Merge_Simplify_Tables_PostGIS_V01'
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"

@@ -131,7 +131,7 @@
 #     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 # 1. **Y2018D07D12_RH_Annual_Scores_From_Months_PostGIS_V01**  
 #     Calculate Annual Scores by averaging monthly values.
-# 1. **Y2018D07D12_RH_Merge_Simplify_Tables_PostGIS_V01**  
+# 1. **Y2018M07D12_RH_Merge_Simplify_Tables_PostGIS_V01**  
 #     Merge and simplify master table and annual scores based on months. 
 #     
 #     
