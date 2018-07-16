@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[32]:
 
 """ Inspect waters stress after applying the aridlowwateruse once mask.
 -------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ print("Input table: " + INPUT_TABLE_NAME,
       "\nOutput table: " + OUTPUT_SCHEMA +"."+ OUTPUT_TABLE_NAME)
 
 
-# In[3]:
+# In[33]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -58,7 +58,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[4]:
+# In[34]:
 
 # imports
 import os
@@ -80,7 +80,7 @@ get_ipython().magic('matplotlib inline')
 pd.set_option('display.max_columns', 500)
 
 
-# In[5]:
+# In[35]:
 
 F = open("/.mapbox_public","r")
 token = F.read().splitlines()[0]
@@ -95,7 +95,7 @@ engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".form
 #connection = engine.connect()
 
 
-# In[ ]:
+# In[94]:
 
 def create_viz(case):
     viz = mapboxgl.viz.ChoroplethViz(data = case["json"], 
@@ -109,19 +109,20 @@ def create_viz(case):
                                       line_color = 'rgba(0,0,0,0.05)',
                                       line_width = 0.5,
                                       opacity=0.7,
-                                      center=(5, 52),
+                                      center=(0, 0),
                                       zoom=4,
                                       below_layer='waterway-label'
                                       )
     return viz
 
 
-# In[6]:
+# In[119]:
 
 columns = ["pfafid_30spfaf06",
            "temporal_resolution",
            "year",
            "month",
+           "ols10_waterstress_dimensionless_30spfaf06",
            "ols_ols10_aridandlowwateruse_boolean_30spfaf06",
            "ols_ols10_waterstress_dimensionless_30spfaf06",
            "avg1y_ols_ols10_waterstress_dimensionless_30spfaf06",
@@ -131,12 +132,12 @@ columns = ["pfafid_30spfaf06",
            "waterstress_label_dimensionless_30spfaf06"]
 
 
-# In[ ]:
+# In[38]:
 
 # Inspecting Annual results
 
 
-# In[7]:
+# In[39]:
 
 sql = "SELECT"
 for column in columns:
@@ -148,17 +149,17 @@ sql += " WHERE pfafid_30spfaf06 = 161180"
 #sql += " WHERE year= 2014 AND temporal_resolution = 'year'"
 
 
-# In[8]:
+# In[40]:
 
 sql
 
 
-# In[ ]:
+# In[41]:
 
-#df = pd.read_sql(sql,engine)
+df = pd.read_sql(sql,engine)
 
 
-# In[ ]:
+# In[66]:
 
 color_stops_category = [[-9999,'rgb(241,12,249)'],
                         [-1,'rgb(128,128,128)'],
@@ -170,46 +171,157 @@ color_stops_category = [[-9999,'rgb(241,12,249)'],
                         [4,'rgb(153,0,0)']]  # Extremely High
 
 
-# In[10]:
+color_stops_raw = [[-0.0001,'rgb(241,12,249)'],
+                  #[-0.001,'rgb(255,0,84)'], 
+                   [0,'rgb(255,255,153)'], # low
+                   [0.1,'rgb(255,230,0)'], # low to medium
+                   [0.2,'rgb(255,153,0)'], # Medium to High
+                   [0.4,'rgb(255,25,0)'], # High
+                   [0.8,'rgb(153,0,0)']]  # Extremely High
+
+
+# In[43]:
 
 cases = {}
 
 
 # ## Visualize Annual Results
 
-# In[ ]:
+# In[44]:
 
 sql = "SELECT"
 for column in columns:
     sql += " {},".format(column)
 sql = sql[:-1]
 sql += " FROM {}".format(INPUT_TABLE_NAME)
-sql += " WHERE temporal_resolution = 'year"
+sql += " WHERE temporal_resolution = 'year' AND year = 2014"
 
 
-# In[ ]:
+# In[45]:
 
-data = json.loads(df_small.to_json(orient='records'))
+df_annual = pd.read_sql(sql,engine)
 
 
-# In[ ]:
+# In[46]:
+
+df_annual.shape
+
+
+# In[47]:
+
+data_annual = json.loads(df_annual.to_json(orient='records'))
+
+
+# ## Annual Category
+
+# In[96]:
 
 case = {}
 case["description"] = "Arid"
-case["id"] = "annual_aridandlowateruse"
+case["id"] = "annual_waterstress_cat"
 case["df"] = df.copy()
-case["measure"] = "ols_ols10_aridandlowwateruse_boolean_30spfaf06"
+case["measure"] = "waterstress_category_dimensionless_30spfaf06"
 case["dimension"] = "pfafid_30spfaf06"
 
-df_temp = case["df"][[case["dimension"],case["measure"]]]
+case["json"] = data_annual
 
-case["json"] = json.loads(df_temp.to_json(orient='records'))
-
-case["color_stops"] = color_stops = [[0,'rgb(255,255,255)'],
-                                     [1,'rgb(0,255,0)']]
+case["color_stops"] = color_stops_category
 case["viz"] = create_viz(case)
 
 cases[case["id"]] = case
+
+
+# In[97]:
+
+viz = cases["annual_waterstress_cat"]["viz"]
+viz.show()
+
+
+# ## Annual Raw
+
+# In[69]:
+
+case = {}
+case["description"] = "Arid"
+case["id"] = "annual_waterstress_ols_ols10"
+case["df"] = df.copy()
+case["measure"] = "ols_ols10_waterstress_dimensionless_30spfaf06"
+case["dimension"] = "pfafid_30spfaf06"
+
+case["json"] = data
+
+case["color_stops"] = color_stops_raw
+case["viz"] = create_viz(case)
+
+cases[case["id"]] = case
+
+
+# In[70]:
+
+viz = cases["annual_waterstress_ols_ols10"]["viz"]
+viz.show()
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[71]:
+
+# How many basins have a negative waterstress score and are not arid?  
+
+df_annual_negative = df_annual.loc[df_annual["ols_ols10_waterstress_dimensionless_30spfaf06"] < 0]
+
+
+# In[72]:
+
+df_annual_negative.shape
+
+
+# In[80]:
+
+df_annual_negative.describe()
+
+
+# In[110]:
+
+df_annual_negative_non_arid = df_annual_negative.loc[df_annual_negative["ols_ols10_aridandlowwateruse_boolean_30spfaf06"] == 0]
+
+
+# In[111]:
+
+df_annual_negative_non_arid.shape
+
+
+# In[ ]:
+
+# conclusion: Arid thresholds do not mask subbasins with negative waterstress scores. 
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
 
 # In[ ]:
@@ -222,93 +334,71 @@ cases[case["id"]] = case
 #           
 # The annual results are the average of the monthly (ols_ols10) water values. 
 
-# In[ ]:
+# In[103]:
+
+sql = "SELECT"
+for column in columns:
+    sql += " {},".format(column)
+sql = sql[:-1]
+sql += " FROM {}".format(INPUT_TABLE_NAME)
+sql += " WHERE temporal_resolution = 'month' AND year = 2014 AND month = 11"
 
 
+# In[104]:
+
+df_month = pd.read_sql(sql,engine)
 
 
-# In[ ]:
+# In[105]:
+
+data_month = json.loads(df_month.to_json(orient='records'))
 
 
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
+# In[106]:
 
 case = {}
 case["description"] = "Arid"
-case["id"] = "annual_aridandlowateruse"
+case["id"] = "monthly_waterstress_cat"
 case["df"] = df.copy()
-case["measure"] = "ols_ols10_aridandlowwateruse_boolean_30spfaf06"
+case["measure"] = "waterstress_category_dimensionless_30spfaf06"
 case["dimension"] = "pfafid_30spfaf06"
 
 df_temp = case["df"][[case["dimension"],case["measure"]]]
 
-case["json"] = json.loads(df_temp.to_json(orient='records'))
+case["json"] = data_month
 
-case["color_stops"] = color_stops = [[0,'rgb(255,255,255)'],
-                                     [1,'rgb(0,255,0)']]
+case["color_stops"] = color_stops_category
 case["viz"] = create_viz(case)
 
 cases[case["id"]] = case
 
 
-# In[ ]:
+# In[107]:
 
-viz = cases["annual_aridandlowateruse"]["viz"]
+viz = cases["monthly_waterstress_cat"]["viz"]
 viz.show()
 
 
-# In[ ]:
+# # subbasin deep dive
 
-def ws_r_to_s(r):
-    # Convert raw water stress value to score; Equation from Aqueduct 2.1.
-    return max(0,min(5,((np.log(r)-np.log(0.1))/np.log(2))+1))
+# In[121]:
 
-
-# ws categories 
-# 
-# low [0 - 0.1)  
-# low-medium [0.1 - 0.2)  
-# medium-high [0.2 - 0.4)  
-# high [0.4 - 0.8)  
-# very high [0.8 - inf]  
-#     
-# 
-# 
-
-# In[ ]:
-
-labels_raw = ["low [0 - 0.1)",
-          "low-medium [0.1 - 0.2)",
-          "medium-high [0.2 - 0.4)",
-          "high [0.4 - 0.8)",
-          "very high [0.8 - inf]"]
-
-labels_scores = ["low [0 - 1)",
-                  "low-medium [1 - 2)",
-                  "medium-high [2 - 3)",
-                  "high [3 - 4)",
-                  "very high [4 - 5]"]
+sql = "SELECT"
+for column in columns:
+    sql += " {},".format(column)
+sql = sql[:-1]
+sql += " FROM {}".format(INPUT_TABLE_NAME)
+sql += " WHERE pfafid_30spfaf06 = 172111"
 
 
-bins_raw=[0,0.1,0.2,0.4,0.8,9999]
-bins_scores = [0,1,2,3,4,5]
-          
+# In[122]:
+
+df_basin = pd.read_sql(sql,engine)
+
+
+# In[123]:
+
+df_basin_selection = df_basin.loc[df_basin["temporal_resolution"] == 'year']
 
 
 # In[ ]:
@@ -316,86 +406,27 @@ bins_scores = [0,1,2,3,4,5]
 
 
 
-# In[ ]:
+# In[125]:
 
-df["ws_cat"] = pd.cut(df["waterstress_score_dimensionless_30spfaf06"],bins=bins_scores,right=False,labels=labels_scores)
-df["ws_cat"] = np.where(df["ols_ols10_aridandlowwateruse_boolean_30spfaf06"] == 1, "arid and lowwateruse", df["ws_cat"])
-    
-
-
-# In[ ]:
-
-df.head()
+output_notebook()
+p = figure(width=900, height=600)
+p.line(x = df_basin_selection["year"], y = df_basin_selection["ols10_waterstress_dimensionless_30spfaf06"],color="red",legend= "ols10_aridandlowwateruse_boolean_30spfaf06")
+p.line(x = df_basin_selection["year"], y = df_basin_selection["ols_ols10_waterstress_dimensionless_30spfaf06"],color="black",legend= "aridandlowwateruse_boolean_30spfaf06")
+p.line(x = df_basin_selection["year"], y = df_basin_selection["waterstress_raw_dimensionless_30spfaf06"],color="blue",legend= "aridandlowwateruse_boolean_30spfaf06")
 
 
-# In[ ]:
+p.legend.location = "top_left"
+p.legend.click_policy="hide"
+hover = HoverTool(tooltips = [('year', '@x'),
+                             ('value',  '@y')])
+p.add_tools(hover)
 
-case = {}
-case["description"] = "water stress"
-case["id"] = "annual_waterstress"
-case["df"] = df.copy()
-case["measure"] = "ws_cat"
-case["dimension"] = "pfafid_30spfaf06"
-
-#df_temp = case["df"][[case["dimension"],case["measure"]]]
-df_temp = case["df"][[case["dimension"],case["measure"],'year']]
-
-case["json"] = json.loads(df_temp.to_json(orient='records'))
-
-
-case["color_stops"] = color_stops = [[-1,'rgb(128,128,128)'],
-                                     #[-0.001,'rgb(255,0,84)'], 
-                                     [0,'rgb(255,255,153)'], # low
-                                     [0.2,'rgb(255,230,0)'], # low to medium
-                                     [0.4,'rgb(255,153,0)'], # Medium to High
-                                     [0.8,'rgb(255,25,0)'], # High
-                                     [1,'rgb(153,0,0)']]  # Extremely High
-
-case["color_stops"] = color_stops = [["arid and lowwateruse",'rgb(128,128,128)'],
-                                     ["low [0 - 0.1)",'rgb(255,255,153)'], # low
-                                     ["low-medium [0.1 - 0.2)",'rgb(255,230,0)'], # low to medium
-                                     ["medium-high [0.2 - 0.4)",'rgb(255,153,0)'], # Medium to High
-                                     ["high [0.4 - 0.8)",'rgb(255,25,0)'], # High
-                                     ["very high [0.8 - inf]",'rgb(153,0,0)']]  # Extremely High
-
-
-case["viz"] = create_viz(case)
-
-cases[case["id"]] = case
+show(p)
 
 
 # In[ ]:
 
-case["json"]
 
-
-# In[ ]:
-
-safename = json.loads(df_temp.to_json(orient='records'))
-
-
-# In[ ]:
-
-viz = mapboxgl.viz.ChoroplethViz(data = safename, 
-                                  vector_url='mapbox://rutgerhofste.hybas06_v04_V04',
-                                  vector_layer_name='hybas06_v04', # Warning should match name on mapbox.
-                                  vector_join_property='pfaf_id',
-                                  data_join_property=case["dimension"],
-                                  color_property=case["measure"],
-                                  color_function_type='match',
-                                  color_stops= case["color_stops"],
-                                  line_color = 'rgba(0,0,0,0.05)',
-                                  line_width = 0.5,
-                                  opacity=0.7,
-                                  center=(5, 52),
-                                  zoom=4,
-                                  below_layer='waterway-label'
-                                  )
-
-
-# In[ ]:
-
-viz.show()
 
 
 # In[ ]:
@@ -406,13 +437,7 @@ viz.show()
 # In[ ]:
 
 # Mapbox Settings
-color_stops_raw = [[-1,'rgb(128,128,128)'],
-                  #[-0.001,'rgb(255,0,84)'], 
-                   [0,'rgb(255,255,153)'], # low
-                   [0.2,'rgb(255,230,0)'], # low to medium
-                   [0.4,'rgb(255,153,0)'], # Medium to High
-                   [0.8,'rgb(255,25,0)'], # High
-                   [1,'rgb(153,0,0)']]  # Extremely High
+
 
 color_stops_scores = [[-1,'rgb(128,128,128)'],
                   #[-0.001,'rgb(255,0,84)'], 

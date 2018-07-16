@@ -29,7 +29,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018D07D12_RH_Annual_Scores_From_Months_PostGIS_V01'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -94,7 +94,12 @@ sql =  "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql += " SELECT "
 for selection_column in selection_columns:
     sql += " {},".format(selection_column)
-sql +=     " AVG({}) AS avg1y_ols_ols10_waterstress_dimensionless_30spfaf06".format(aggregate_column)
+sql +=     " AVG({}) AS avg1y_ols_ols10_waterstress_dimensionless_30spfaf06,".format(aggregate_column)
+sql +=     " CASE WHEN SUM (ols_ols10_ptotww_m_30spfaf06) >0 "
+sql +=         " THEN SUM(ols_ols10_waterstress_dimensionless_30spfaf06 * ols_ols10_ptotww_m_30spfaf06) / SUM (ols_ols10_ptotww_m_30spfaf06) "
+sql +=     " ELSE AVG(ols_ols10_waterstress_dimensionless_30spfaf06)"
+sql +=     " END"
+sql +=     " AS avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06"
 sql += " FROM {}".format(INPUT_TABLE_NAME)
 sql += " WHERE temporal_resolution = 'month'" 
 sql += " GROUP BY pfafid_30spfaf06, year, temporal_resolution"
@@ -144,7 +149,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:02:42.553314
+# 0:02:42.553314  
+# 0:02:33.060358
 # 
 
 # In[ ]:

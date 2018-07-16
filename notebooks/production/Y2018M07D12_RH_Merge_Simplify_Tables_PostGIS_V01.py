@@ -29,13 +29,13 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D12_RH_Merge_Simplify_Tables_PostGIS_V01'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 5
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
 INPUT_TABLE_NAME_LEFT = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v01"
-INPUT_TABLE_NAME_RIGHT = "y2018d07d12_rh_annual_scores_from_months_postgis_v01_v03"
+INPUT_TABLE_NAME_RIGHT = "y2018m07d12_rh_annual_scores_from_months_postgis_v01_v04"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table Left: " , INPUT_TABLE_NAME_LEFT, 
@@ -338,7 +338,8 @@ missing_columns = set(all_columns) - set(columns_to_keep_left)
 
 # In[29]:
 
-columns_to_keep_right = ["avg1y_ols_ols10_waterstress_dimensionless_30spfaf06"]
+columns_to_keep_right = ["avg1y_ols_ols10_waterstress_dimensionless_30spfaf06",
+                         "avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06"]
 
 
 # In[30]:
@@ -361,47 +362,47 @@ sql += " CONCAT(l.pfafid_30spfaf06,l.year) = CONCAT(r.pfafid_30spfaf06,r.year)"
 sql
 
 
-# In[ ]:
+# In[32]:
 
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[33]:
 
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[ ]:
+# In[34]:
 
 result = engine.execute(sql_index)
 
 
-# In[ ]:
+# In[35]:
 
 sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
-# In[ ]:
+# In[36]:
 
 result = engine.execute(sql_index2)
 
 
-# In[ ]:
+# In[37]:
 
 sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
 
 
-# In[ ]:
+# In[38]:
 
 result = engine.execute(sql_index3)
 
 
-# In[ ]:
+# In[39]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[40]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -409,3 +410,9 @@ print(elapsed)
 
 
 # Previous runs:  
+# 0:21:34.564407
+
+# In[ ]:
+
+
+

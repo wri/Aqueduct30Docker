@@ -29,6 +29,7 @@
 #     Check if linear trend is implemented correctly. 
 # 1. **Y2018M06D22_RH_QA_result_PostGIS_V01**  
 #     Compare raw, ma and ols for demand, supply and water stress.
+# 1. **Y2018M06D22_RH_QA_Annual_Weighted_Unweighted_V01
 # 
 #     
 # ## Comparing AQ2.1

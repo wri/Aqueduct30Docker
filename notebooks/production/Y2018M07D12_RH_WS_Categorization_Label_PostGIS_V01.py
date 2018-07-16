@@ -29,12 +29,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D12_RH_WS_Categorization_Label_PostGIS_V01'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d10_rh_update_waterstress_aridlowonce_postgis_v01_v06"
+INPUT_TABLE_NAME = "y2018m07d10_rh_update_waterstress_aridlowonce_postgis_v01_v07"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -227,7 +227,9 @@ print(elapsed)
 
 # Previous runs:  
 # 0:25:34.359384  
-# 0:19:55.641388
+# 0:19:55.641388  
+# 0:19:58.862378  
+# 0:20:12.699107
 
 # In[ ]:
 

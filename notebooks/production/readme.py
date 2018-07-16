@@ -84,11 +84,9 @@
 # 1. **Y2018M04D18_RH_Demand_Fluxes_5min_EE_V01**  
 #     Demand data is provided as volumes. Calculate Fluxes.
 # 1. **Y2018M04D22_RH_Zonal_Stats_Demand_EE_V01**  
-#     Zonal statistics for basin demand. ExportArea rasters were created in ee, storing in gcs and s3.t in table format.
-#     
+#     Zonal statistics for basin demand. ExportArea rasters were created in ee, storing in gcs and s3.t in table format.    
 # 1. **Y2018M05D21_RH_Store_Demand_PostGIS_30sPfaf06_V01**  (might get archived)
-#     Store demand data in postGIS database.    
-#     
+#     Store demand data in postGIS database.        
 # 1. **Y2018M04D19_RH_Supply_Discharge_Volume_5min_EE_V01**  
 #     Supply and discharge data is provided as m3second. Convert to millionm3.
 # 1. **Y2018M05D01_RH_Supply_Fluxes_5min_EE_V01**  
@@ -129,13 +127,11 @@
 #     Using the full range ols_ols10, apply the arid and lowwateruse thresholds.
 # 1. **Y2018M07D09_RH_Apply_AridLowOnce_Mask_PostGIS_V01**  
 #     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
-# 1. **Y2018D07D12_RH_Annual_Scores_From_Months_PostGIS_V01**  
+# 1. **Y2018M07D12_RH_Annual_Scores_From_Months_PostGIS_V01**  
 #     Calculate Annual Scores by averaging monthly values.
+#  
 # 1. **Y2018M07D12_RH_Merge_Simplify_Tables_PostGIS_V01**  
 #     Merge and simplify master table and annual scores based on months. 
-#     
-#     
-# ## Needs updated input scripts:    
 # 1. **Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01**  
 #     Create columns for ws_r and ws_s with aridlowwateruse_once mask. 
 # 1. **Y2018M07D12_RH_WS_Categorization_Label_PostGIS_V01**  
