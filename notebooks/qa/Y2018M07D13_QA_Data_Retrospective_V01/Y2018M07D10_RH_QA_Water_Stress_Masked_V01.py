@@ -80,6 +80,11 @@ get_ipython().magic('matplotlib inline')
 pd.set_option('display.max_columns', 500)
 
 
+# In[ ]:
+
+
+
+
 # In[35]:
 
 F = open("/.mapbox_public","r")

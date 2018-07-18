@@ -136,6 +136,8 @@
 #     Create columns for ws_r and ws_s with aridlowwateruse_once mask. 
 # 1. **Y2018M07D12_RH_WS_Categorization_Label_PostGIS_V01**  
 #     Add category and label for water stress. 
+# 1. **Y2018M07D17_RH_RDS_To_S3_V01**  
+#     Convert PostgreSQL RDS to CSV files on S3 and GCP.
 #     
 #     
 #   

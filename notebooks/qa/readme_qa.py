@@ -29,7 +29,11 @@
 #     Check if linear trend is implemented correctly. 
 # 1. **Y2018M06D22_RH_QA_result_PostGIS_V01**  
 #     Compare raw, ma and ols for demand, supply and water stress.
-# 1. **Y2018M06D22_RH_QA_Annual_Weighted_Unweighted_V01
+# 1. **Y2018M07D18_RH_QA_Annual_Weighted_Unweighted_OneBasin_V01**  
+#     Compare weighted and unweighted annual results for one basin.
+# 1. **Y2018M07D18_RH_QA_Annual_Weighted_Unweighted_AllBasins_V01**  
+#     Compare weighted and unweighted annual results for all basins.
+#     
 # 
 #     
 # ## Comparing AQ2.1
