@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 """ Compare weighted and unweighted annual results for all basins.
 -------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ COLUMNS_OF_INTEREST = ["pfafid_30spfaf06",
                        "ols_ols10_ptotww_m_30spfaf06"]
 
 
-# In[ ]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -70,7 +70,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
+# In[6]:
 
 get_ipython().magic('matplotlib inline')
 import os
@@ -85,26 +85,27 @@ from cartoframes.contrib import vector
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
 
 
-# In[ ]:
+# In[8]:
 
 F = open("/.carto","r")
 carto_api_key = F.read().splitlines()[0]
 F.close()
-
-
-# In[ ]:
-
 creds = Credentials(key=carto_api_key, 
                     username='wri-01')
 cc = CartoContext(creds=creds)
 
 
-# In[ ]:
+# In[9]:
+
+
+
+
+# In[10]:
 
 # Query postGIS table from RDS
 
 
-# In[ ]:
+# In[11]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -113,27 +114,22 @@ F.close()
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
+# In[12]:
 
 sql = "SELECT pfaf_id, sub_area, geom FROM {}".format(POSTGIS_INPUT_TABLE_NAME)
 
 
-# In[ ]:
+# In[29]:
 
 gdf =gpd.GeoDataFrame.from_postgis(sql,engine,geom_col='geom' )
 
 
-# In[ ]:
+# In[14]:
 
 # Query result table from Bigquery
 
 
-# In[ ]:
+# In[15]:
 
 sql = "SELECT"
 for column_of_interest in COLUMNS_OF_INTEREST:
@@ -145,29 +141,29 @@ sql += " AND month = {}".format(MONTH_OF_INTEREST)
 sql += " AND temporal_resolution = '{}'".format(TEMPORAL_RESOLUTION_OF_INTEREST)
 
 
-# In[ ]:
+# In[16]:
 
 print(sql)
 
 
-# In[ ]:
+# In[17]:
 
 df = pd.read_gbq(query=sql,
                  project_id=PROJECT_ID,
                  dialect="standard")
 
 
-# In[ ]:
+# In[18]:
 
 # Join results (11 tiny basins have noData)
 
 
-# In[ ]:
+# In[19]:
 
 gdf.shape[0]-df.shape[0]
 
 
-# In[ ]:
+# In[20]:
 
 gdf2 = gdf.merge(df,
                  how= "left",
@@ -175,27 +171,22 @@ gdf2 = gdf.merge(df,
                  right_on="pfafid_30spfaf06")
 
 
-# In[ ]:
+# In[21]:
 
 test = gdf2.loc[pd.isna(gdf2["pfafid_30spfaf06"])]
 
 
-# In[ ]:
+# In[22]:
 
 test
 
 
-# In[ ]:
+# ### 1. Upload to Carto
+# 
+# lessons learned: Writing to carto takes way too long. Not a viable option for quick data inspection. 
+# 
 
-# 1. Upload to Carto
-
-
-# In[ ]:
-
-gdf2_small = gdf2[0:1000]
-
-
-# In[ ]:
+# In[24]:
 
 cc.write(gdf2,
          encode_geom=True,
@@ -203,9 +194,23 @@ cc.write(gdf2,
          overwrite=True)
 
 
+# In[26]:
+
+df_nogeom = gdf2.drop("geom",axis=1)
+
+
+# In[28]:
+
+# this is much much faster... 
+cc.write(df_nogeom,
+         encode_geom=False,
+         table_name='cartoframes_pandas',
+         overwrite=True)
+
+
 # In[ ]:
 
-
+# Approach... keep the geom layer in carto. Upload data layer. Create query layer
 
 
 # In[ ]:

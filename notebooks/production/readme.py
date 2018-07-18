@@ -16,6 +16,7 @@
 #     create postgis database using AWS RDS.  
 # 
 # 
+# 
 # ### HydroBasins and FAO names
 #     
 # 1. **Y2017M08D02_RH_Merge_HydroBasins_V02**  
@@ -43,7 +44,8 @@
 #     Add upstream pfaf ID to postgis database.
 # 1. **Y2018M07D03_RH_Upload_Hydrobasin_Mapbox_V01**  
 #     Upload simplified hydrobasins to mapbox for visualization purposes.
-# 
+# 1. **Y2018M07D18_RH_Upload_Hydrobasin_Carto_V01**
+#     Upload simplified hydrobasins to carto for visualization purposes.
 # 
 # ### Group Delta Region in HydroBasin level 6
 # Delta basins grouped manually 
