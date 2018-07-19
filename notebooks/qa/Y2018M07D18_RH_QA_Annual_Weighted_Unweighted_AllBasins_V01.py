@@ -6,16 +6,17 @@
 """ Compare weighted and unweighted annual results for all basins.
 -------------------------------------------------------------------------------
 
-Issue: Mapbox GL does not support tooltips with multiple items when the data 
-is joined locally yet. Exploring the cartoframes option. For cartoframes 
-I need to send the data to carto before visualizing. 
+Issue: Mapbox GL does not (yet) support tooltips with multiple items when the 
+data is joined locally thereby limiting performance for larger tables.
+This script will therefore use the cartoframes option. Note that this repo is 
+in active developement so this code will likely break in the future.
 
 Steps:
 
 1. Query postGIS table from RDS
 1. Query result table from Bigquery
-1. Join results
-1. Upload to Carto
+1. Upload result data to Carto
+1. Join data in Carto
 1. Define tooltip
 1. Define plotting
 1. Plot. 
@@ -33,14 +34,14 @@ OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D18_RH_QA_Annual_Weighted_Unweighted_OneBasin_V01'
 OUTPUT_VERSION = 1
 
-DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
-DATABASE_NAME = "database01"
+RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
+RDS_DATABASE_NAME = "database01"
 
-PROJECT_ID = "aqueduct30"
-INPUT_TABLE_NAME = "Y2018M07D17_RH_RDS_To_S3_V01"
-INPUT_DATASET_NAME = "aqueduct30v01"
+BQ_PROJECT_ID = "aqueduct30"
+BQ_INPUT_TABLE_NAME = "Y2018M07D17_RH_RDS_To_S3_V01"
+BQ_INPUT_DATASET_NAME = "aqueduct30v01"
 
-POSTGIS_INPUT_TABLE_NAME = "hybas06_v04"
+CARTO_INPUT_TABLE_NAME_LEFT = "y2018m07d18_rh_upload_hydrobasin_carto_v01_v01"
 
 YEAR_OF_INTEREST = 2014
 MONTH_OF_INTEREST = 12
@@ -59,6 +60,12 @@ COLUMNS_OF_INTEREST = ["pfafid_30spfaf06",
                        "ols_ols10_waterstress_dimensionless_30spfaf06",
                        "ols_ols10_ptotww_m_30spfaf06"]
 
+carto_output_table_name = "{}_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
+
+print("carto_output_table_name: ",carto_output_table_name)
+
+
+
 
 # In[2]:
 
@@ -70,7 +77,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[6]:
+# In[3]:
 
 get_ipython().magic('matplotlib inline')
 import os
@@ -79,91 +86,233 @@ import mapboxgl
 import sqlalchemy
 import pandas as pd
 import geopandas as gpd
-from cartoframes import CartoContext, Credentials
+
+import cartoframes
 from cartoframes.contrib import vector
+
+#from cartoframes import CartoContext, Credentials
+
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
 
 
-# In[8]:
+# In[4]:
 
 F = open("/.carto","r")
 carto_api_key = F.read().splitlines()[0]
 F.close()
-creds = Credentials(key=carto_api_key, 
+
+
+# In[5]:
+
+creds = cartoframes.Credentials(key=carto_api_key, 
                     username='wri-01')
-cc = CartoContext(creds=creds)
+cc = cartoframes.CartoContext(creds=creds)
 
 
-# In[9]:
+# In[6]:
+
+# Query postGIS table from RDS (already on Carto)
 
 
-
-
-# In[10]:
-
-# Query postGIS table from RDS
-
-
-# In[11]:
+# In[7]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
 F.close()
 
-engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
+engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
-# In[12]:
-
-sql = "SELECT pfaf_id, sub_area, geom FROM {}".format(POSTGIS_INPUT_TABLE_NAME)
-
-
-# In[29]:
-
-gdf =gpd.GeoDataFrame.from_postgis(sql,engine,geom_col='geom' )
-
-
-# In[14]:
+# In[8]:
 
 # Query result table from Bigquery
 
 
-# In[15]:
+# In[9]:
 
 sql = "SELECT"
 for column_of_interest in COLUMNS_OF_INTEREST:
     sql += " {},".format(column_of_interest)
 sql = sql[:-1]
-sql += " FROM {}.{}".format(INPUT_DATASET_NAME,INPUT_TABLE_NAME)
+sql += " FROM {}.{}".format(BQ_INPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
 sql += " WHERE year = 2014"
 sql += " AND month = {}".format(MONTH_OF_INTEREST)
 sql += " AND temporal_resolution = '{}'".format(TEMPORAL_RESOLUTION_OF_INTEREST)
 
 
-# In[16]:
+# In[10]:
 
 print(sql)
 
 
-# In[17]:
+# In[12]:
 
 df = pd.read_gbq(query=sql,
-                 project_id=PROJECT_ID,
+                 project_id=BQ_PROJECT_ID,
                  dialect="standard")
+
+
+# In[14]:
+
+# Upload result data to Carto
+cc.write(df=df,
+         table_name=carto_output_table_name,
+         overwrite=True,
+         privacy="link")
+
+
+# In[15]:
+
+# There are now two tables on carto. One with the geometries, one with the results from BigQuery. Combining both
+columns_to_keep_left = ["pfaf_id",
+                        "the_geom",
+                        "the_geom_webmercator", #This column is a reprojection of the 'the_geom' column.
+                        "cartodb_id"]
+
+columns_to_keep_right = COLUMNS_OF_INTEREST # Same as for BigQuery
+
+left_on = "pfaf_id"
+right_on = "pfafid_30spfaf06"
 
 
 # In[18]:
 
-# Join results (11 tiny basins have noData)
+sql= "SELECT" 
+for column_to_keep_left in columns_to_keep_left:
+    sql += " l.{},".format(column_to_keep_left)
+for column_to_keep_right in columns_to_keep_right:
+    sql += " r.{},".format(column_to_keep_right)
+sql = sql[:-1]    
+sql+= " FROM {} l, {} r".format(CARTO_INPUT_TABLE_NAME_LEFT,carto_output_table_name)
+sql+= " WHERE l.{} = r.{}".format(left_on,right_on)
+
+
 
 
 # In[19]:
 
+print(sql)
+
+
+# In[31]:
+
+int_dict = {"event":'click',
+            "cols":['pfaf_id'] +
+                    COLUMNS_OF_INTEREST}
+
+
+# In[32]:
+
+int_dict
+
+
+# In[33]:
+
+vl_01 = vector.QueryLayer(query=sql,
+                          color="#9e9e9e",
+                          size=None,
+                          time=None,
+                          strokeColor="#000000",
+                          strokeWidth=None,
+                          interactivity=int_dict)
+
+
+# In[34]:
+
+vector.vmap([vl_01],context=cc)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+carto_sql = "SELECT * FROM y2018m07d18_rh_upload_hydrobasin_carto_v01_v01"
+
+
+# In[ ]:
+
+v0 = vector.QueryLayer(query=carto_sql)
+
+
+# In[ ]:
+
+vector.vmap([v0 ], context=cc)
+
+
+# In[ ]:
+
+cc.map()
+
+
+# In[ ]:
+
+from cartoframes.examples import read_taxi
+
+
+# In[ ]:
+
+cc.write(
+    read_taxi(),
+    'taxi_50k',
+    lnglat=('pickup_longitude', 'pickup_latitude')
+)
+
+
+# In[ ]:
+
+cc.map(
+    QueryLayer('''
+        SELECT
+            ST_Transform(the_geom, 3857) AS the_geom_webmercator,
+            the_geom,
+            cartodb_id,
+            ST_Length(the_geom::geography) AS distance
+        FROM (
+            SELECT
+                ST_MakeLine(
+                    CDB_LatLng(pickup_latitude, pickup_longitude),
+                    CDB_LatLng(dropoff_latitude, dropoff_longitude)
+                ) AS the_geom,
+                cartodb_id
+            FROM taxi_50k
+            WHERE pickup_latitude <> 0 AND dropoff_latitude <> 0
+        ) AS _w
+        ORDER BY 4 DESC''',
+        color='distance'),
+    zoom=11, lng=-73.9442, lat=40.7473,
+    interactive=False)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
 gdf.shape[0]-df.shape[0]
 
 
-# In[20]:
+# In[ ]:
 
 gdf2 = gdf.merge(df,
                  how= "left",
@@ -171,22 +320,27 @@ gdf2 = gdf.merge(df,
                  right_on="pfafid_30spfaf06")
 
 
-# In[21]:
+# In[ ]:
 
 test = gdf2.loc[pd.isna(gdf2["pfafid_30spfaf06"])]
 
 
-# In[22]:
+# In[ ]:
 
 test
 
 
-# ### 1. Upload to Carto
-# 
-# lessons learned: Writing to carto takes way too long. Not a viable option for quick data inspection. 
-# 
+# In[ ]:
 
-# In[24]:
+# 1. Upload to Carto
+
+
+# In[ ]:
+
+gdf2_small = gdf2[0:1000]
+
+
+# In[ ]:
 
 cc.write(gdf2,
          encode_geom=True,
@@ -194,23 +348,9 @@ cc.write(gdf2,
          overwrite=True)
 
 
-# In[26]:
-
-df_nogeom = gdf2.drop("geom",axis=1)
-
-
-# In[28]:
-
-# this is much much faster... 
-cc.write(df_nogeom,
-         encode_geom=False,
-         table_name='cartoframes_pandas',
-         overwrite=True)
-
-
 # In[ ]:
 
-# Approach... keep the geom layer in carto. Upload data layer. Create query layer
+
 
 
 # In[ ]:
