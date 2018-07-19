@@ -54,11 +54,11 @@ from cartoframes.contrib import vector
 
 # In[4]:
 
-F = open("/.carto","r")
+F = open("/.carto_builder","r")
 carto_api_key = F.read().splitlines()[0]
 F.close()
 creds = Credentials(key=carto_api_key, 
-                    username='wri-01')
+                    username='wri-playground')
 cc = CartoContext(creds=creds)
 
 

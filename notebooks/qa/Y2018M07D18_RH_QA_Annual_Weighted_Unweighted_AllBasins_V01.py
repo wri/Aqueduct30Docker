@@ -21,6 +21,13 @@ Steps:
 1. Define plotting
 1. Plot. 
 
+Unfortunately the plot area is very small and the tooltip's font size is huge.
+Visualizing using the webtool might be an alternative. 
+
+Expected result: A Carto Map with 13 layers. An Annual layer and 12 months, 
+stylized.
+
+
 
 Author: Rutger Hofste
 Date: 20180718
@@ -44,8 +51,6 @@ BQ_INPUT_DATASET_NAME = "aqueduct30v01"
 CARTO_INPUT_TABLE_NAME_LEFT = "y2018m07d18_rh_upload_hydrobasin_carto_v01_v01"
 
 YEAR_OF_INTEREST = 2014
-MONTH_OF_INTEREST = 12
-TEMPORAL_RESOLUTION_OF_INTEREST = 'year' #If year, then use month 12
 
 COLUMNS_OF_INTEREST = ["pfafid_30spfaf06",
                        "temporal_resolution",
@@ -59,6 +64,15 @@ COLUMNS_OF_INTEREST = ["pfafid_30spfaf06",
                        "avg1y_ols_ols10_waterstress_dimensionless_30spfaf06",
                        "ols_ols10_waterstress_dimensionless_30spfaf06",
                        "ols_ols10_ptotww_m_30spfaf06"]
+
+# tooltips are not scrollable so pick a limited number of items to visualize.
+COLUMNS_TO_VISUALIZE = ["pfafid_30spfaf06",
+                        "waterstress_score_dimensionless_30spfaf06",
+                        "avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06",
+                        "avg1y_ols_ols10_waterstress_dimensionless_30spfaf06"]
+
+COLOR_COLUMN = "waterstress_score_dimensionless_30spfaf06"
+
 
 carto_output_table_name = "{}_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
@@ -98,7 +112,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
 
 # In[4]:
 
-F = open("/.carto","r")
+F = open("/.carto_builder","r")
 carto_api_key = F.read().splitlines()[0]
 F.close()
 
@@ -106,7 +120,7 @@ F.close()
 # In[5]:
 
 creds = cartoframes.Credentials(key=carto_api_key, 
-                    username='wri-01')
+                    username='wri-playground')
 cc = cartoframes.CartoContext(creds=creds)
 
 
@@ -137,8 +151,8 @@ for column_of_interest in COLUMNS_OF_INTEREST:
 sql = sql[:-1]
 sql += " FROM {}.{}".format(BQ_INPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
 sql += " WHERE year = 2014"
-sql += " AND month = {}".format(MONTH_OF_INTEREST)
-sql += " AND temporal_resolution = '{}'".format(TEMPORAL_RESOLUTION_OF_INTEREST)
+# sql += " AND month = {}".format(MONTH_OF_INTEREST)
+# sql += " AND temporal_resolution = '{}'".format(TEMPORAL_RESOLUTION_OF_INTEREST)
 
 
 # In[10]:
@@ -146,14 +160,19 @@ sql += " AND temporal_resolution = '{}'".format(TEMPORAL_RESOLUTION_OF_INTEREST)
 print(sql)
 
 
-# In[12]:
+# In[11]:
 
 df = pd.read_gbq(query=sql,
                  project_id=BQ_PROJECT_ID,
                  dialect="standard")
 
 
-# In[14]:
+# In[12]:
+
+df.shape
+
+
+# In[13]:
 
 # Upload result data to Carto
 cc.write(df=df,
@@ -162,7 +181,7 @@ cc.write(df=df,
          privacy="link")
 
 
-# In[15]:
+# In[ ]:
 
 # There are now two tables on carto. One with the geometries, one with the results from BigQuery. Combining both
 columns_to_keep_left = ["pfaf_id",
@@ -176,49 +195,97 @@ left_on = "pfaf_id"
 right_on = "pfafid_30spfaf06"
 
 
-# In[18]:
+# In[ ]:
 
-sql= "SELECT" 
-for column_to_keep_left in columns_to_keep_left:
-    sql += " l.{},".format(column_to_keep_left)
-for column_to_keep_right in columns_to_keep_right:
-    sql += " r.{},".format(column_to_keep_right)
-sql = sql[:-1]    
-sql+= " FROM {} l, {} r".format(CARTO_INPUT_TABLE_NAME_LEFT,carto_output_table_name)
-sql+= " WHERE l.{} = r.{}".format(left_on,right_on)
+def create_query(temporal_resolution,year,month):
+    sql= "SELECT" 
+    for column_to_keep_left in columns_to_keep_left:
+        sql += " l.{},".format(column_to_keep_left)
+    for column_to_keep_right in columns_to_keep_right:
+        sql += " r.{},".format(column_to_keep_right)
+    sql = sql[:-1]    
+    sql+= " FROM {} l, {} r".format(CARTO_INPUT_TABLE_NAME_LEFT,carto_output_table_name)
+    sql+= " WHERE l.{} = r.{}".format(left_on,right_on)
+    sql+= " AND r.year = {}".format(year)
+    sql+= " AND r.temporal_resolution = '{}'".format(temporal_resolution)
+    return sql
+
+
+
+# In[ ]:
+
+temporal_resolutions = ["year","month"]
+year = YEAR_OF_INTEREST
+
+
+# In[ ]:
+
+for temporal_resolution in temporal_resolutions:
+    if temporal_resolution == "year":
+        month = 12
+        print(temporal_resolution,year,month)
+        sql = create_query(temporal_resolution,year,month)
+        #cc.query(query=sql,
+        #         table_name="test")
+        
+    else:
+        for month in range(1,12+1):
+            print(temporal_resolution,year,month)
+            sql = create_query(temporal_resolution,year,month)
+            #cc.query(query=sql,
+            #         table_name="test")
+            
+
+
+# In[ ]:
+
+sql
+
+
+# In[ ]:
 
 
 
 
-# In[19]:
+# In[ ]:
 
 print(sql)
 
 
-# In[31]:
+# In[ ]:
 
-int_dict = {"event":'click',
-            "cols":['pfaf_id'] +
-                    COLUMNS_OF_INTEREST}
-
-
-# In[32]:
-
-int_dict
+interactivity_dict = {"event":'click',
+                      "cols": COLUMNS_TO_VISUALIZE}
 
 
-# In[33]:
+# In[ ]:
+
+interactivity_dict
+
+
+# In[ ]:
+
+cartoframes.styling.sunset(7)
+
+
+# In[ ]:
+
+color_dict = {"column": "pfafid_30spfaf06",
+              "scheme": cartoframes.styling.sunset(3)}
+
+
+# In[ ]:
 
 vl_01 = vector.QueryLayer(query=sql,
-                          color="#9e9e9e",
+                          color=color_dict,
                           size=None,
                           time=None,
                           strokeColor="#000000",
                           strokeWidth=None,
-                          interactivity=int_dict)
+                          interactivity=interactivity_dict)
 
 
-# In[34]:
+# In[ ]:
 
 vector.vmap([vl_01],context=cc)
 
