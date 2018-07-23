@@ -27,6 +27,8 @@ Visualizing using the webtool might be an alternative.
 Expected result: A Carto Map with 13 layers. An Annual layer and 12 months, 
 stylized.
 
+using carto: Reaching account limits within notime. Probably easiest to switch 
+back to shapefile plus csv files method. pff 
 
 
 Author: Rutger Hofste
@@ -38,7 +40,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 1
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M07D18_RH_QA_Annual_Weighted_Unweighted_OneBasin_V01'
+SCRIPT_NAME = 'Y2018M07D18_RH_QA_Annual_Weighted_Unweighted_AllBasins_V01'
 OUTPUT_VERSION = 1
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -181,7 +183,7 @@ cc.write(df=df,
          privacy="link")
 
 
-# In[ ]:
+# In[14]:
 
 # There are now two tables on carto. One with the geometries, one with the results from BigQuery. Combining both
 columns_to_keep_left = ["pfaf_id",
@@ -195,7 +197,7 @@ left_on = "pfaf_id"
 right_on = "pfafid_30spfaf06"
 
 
-# In[ ]:
+# In[15]:
 
 def create_query(temporal_resolution,year,month):
     sql= "SELECT" 
@@ -207,342 +209,48 @@ def create_query(temporal_resolution,year,month):
     sql+= " FROM {} l, {} r".format(CARTO_INPUT_TABLE_NAME_LEFT,carto_output_table_name)
     sql+= " WHERE l.{} = r.{}".format(left_on,right_on)
     sql+= " AND r.year = {}".format(year)
+    sql+= " AND r.month ={}".format(month)
     sql+= " AND r.temporal_resolution = '{}'".format(temporal_resolution)
+    
     return sql
 
 
 
-# In[ ]:
+# In[16]:
 
 temporal_resolutions = ["year","month"]
 year = YEAR_OF_INTEREST
 
 
-# In[ ]:
+# In[17]:
 
 for temporal_resolution in temporal_resolutions:
     if temporal_resolution == "year":
         month = 12
-        print(temporal_resolution,year,month)
-        sql = create_query(temporal_resolution,year,month)
-        #cc.query(query=sql,
-        #         table_name="test")
+        
+        sql = create_query(temporal_resolution,year,month)     
+        table_name = "temp_table_{}_y{}m{}".format(temporal_resolution,year,month)
+        print(temporal_resolution,year,month,table_name)
+        cc.query(query=sql,
+                 table_name=table_name)
+        
         
     else:
         for month in range(1,12+1):
-            print(temporal_resolution,year,month)
             sql = create_query(temporal_resolution,year,month)
-            #cc.query(query=sql,
-            #         table_name="test")
+            table_name = "temp_table_{}_y{}m{}".format(temporal_resolution,year,month)
+            print(temporal_resolution,year,month,table_name)
+            cc.query(query=sql,
+                     table_name=table_name)
+            
             
 
 
 # In[ ]:
 
-sql
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-print(sql)
-
-
-# In[ ]:
-
-interactivity_dict = {"event":'click',
-                      "cols": COLUMNS_TO_VISUALIZE}
-
-
-# In[ ]:
-
-interactivity_dict
-
-
-# In[ ]:
-
-cartoframes.styling.sunset(7)
-
-
-# In[ ]:
-
-color_dict = {"column": "pfafid_30spfaf06",
-              "scheme": cartoframes.styling.sunset(3)}
-
-
-# In[ ]:
-
-vl_01 = vector.QueryLayer(query=sql,
-                          color=color_dict,
-                          size=None,
-                          time=None,
-                          strokeColor="#000000",
-                          strokeWidth=None,
-                          interactivity=interactivity_dict)
-
-
-# In[ ]:
-
-vector.vmap([vl_01],context=cc)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-carto_sql = "SELECT * FROM y2018m07d18_rh_upload_hydrobasin_carto_v01_v01"
-
-
-# In[ ]:
-
-v0 = vector.QueryLayer(query=carto_sql)
-
-
-# In[ ]:
-
-vector.vmap([v0 ], context=cc)
-
-
-# In[ ]:
-
-cc.map()
-
-
-# In[ ]:
-
-from cartoframes.examples import read_taxi
-
-
-# In[ ]:
-
-cc.write(
-    read_taxi(),
-    'taxi_50k',
-    lnglat=('pickup_longitude', 'pickup_latitude')
-)
-
-
-# In[ ]:
-
-cc.map(
-    QueryLayer('''
-        SELECT
-            ST_Transform(the_geom, 3857) AS the_geom_webmercator,
-            the_geom,
-            cartodb_id,
-            ST_Length(the_geom::geography) AS distance
-        FROM (
-            SELECT
-                ST_MakeLine(
-                    CDB_LatLng(pickup_latitude, pickup_longitude),
-                    CDB_LatLng(dropoff_latitude, dropoff_longitude)
-                ) AS the_geom,
-                cartodb_id
-            FROM taxi_50k
-            WHERE pickup_latitude <> 0 AND dropoff_latitude <> 0
-        ) AS _w
-        ORDER BY 4 DESC''',
-        color='distance'),
-    zoom=11, lng=-73.9442, lat=40.7473,
-    interactive=False)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-gdf.shape[0]-df.shape[0]
-
-
-# In[ ]:
-
-gdf2 = gdf.merge(df,
-                 how= "left",
-                 left_on="pfaf_id",
-                 right_on="pfafid_30spfaf06")
-
-
-# In[ ]:
-
-test = gdf2.loc[pd.isna(gdf2["pfafid_30spfaf06"])]
-
-
-# In[ ]:
-
-test
-
-
-# In[ ]:
-
-# 1. Upload to Carto
-
-
-# In[ ]:
-
-gdf2_small = gdf2[0:1000]
-
-
-# In[ ]:
-
-cc.write(gdf2,
-         encode_geom=True,
-         table_name='cartoframes_geopandas',
-         overwrite=True)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-F = open("/.mapbox_public","r")
-token = F.read().splitlines()[0]
-F.close()
-os.environ["MAPBOX_ACCESS_TOKEN"] = token
-
-
-# In[ ]:
-
-df.head()
-
-
-# In[ ]:
-
-df["diff_weighted_nonweighted"] = df["avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06"] - df["avg1y_ols_ols10_waterstress_dimensionless_30spfaf06"]
-
-
-# In[ ]:
-
-data = json.loads(df.to_json(orient='records'))
-
-
-# In[ ]:
-
-color_stops_raw = [[-0.0001,'rgb(241,12,249)'],
-                  #[-0.001,'rgb(255,0,84)'], 
-                   [0,'rgb(255,255,153)'], # low
-                   [0.1,'rgb(255,230,0)'], # low to medium
-                   [0.2,'rgb(255,153,0)'], # Medium to High
-                   [0.4,'rgb(255,25,0)'], # High
-                   [0.8,'rgb(153,0,0)']]  # Extremely High
-
-
-# In[ ]:
-
-viz = mapboxgl.viz.ChoroplethViz(data = data, 
-                                 vector_url='mapbox://rutgerhofste.hybas06_v04_V04',
-                                 vector_layer_name='hybas06_v04', # Warning should match name on mapbox.
-                                 vector_join_property='pfaf_id',
-                                 data_join_property= "pfafid_30spfaf06",
-                                 color_property= "avg1y_ols_ols10_waterstress_dimensionless_30spfaf06",
-                                 color_stops= color_stops_raw,
-                                 line_color = 'rgba(0,0,0,0.05)',
-                                 line_width = 0.5,
-                                 opacity=0.7,
-                                 center=(5, 52),
-                                 zoom=4,
-                                 below_layer='waterway-label'
-                                 )
-
-
-# In[ ]:
-
-viz.show()
-
-
-# In[ ]:
-
-viz2 = mapboxgl.viz.ChoroplethViz(data = data, 
-                                 vector_url='mapbox://rutgerhofste.hybas06_v04_V04',
-                                 vector_layer_name='hybas06_v04', # Warning should match name on mapbox.
-                                 vector_join_property='pfaf_id',
-                                 data_join_property= "pfafid_30spfaf06",
-                                 color_property= "avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06",
-                                 color_stops= color_stops_raw,
-                                 line_color = 'rgba(0,0,0,0.05)',
-                                 line_width = 0.5,
-                                 opacity=0.7,
-                                 center=(5, 52),
-                                 zoom=4,
-                                 below_layer='waterway-label'
-                                 )
-
-
-# In[ ]:
-
-viz2.show()
-
-
-# In[ ]:
-
-color_stops_dif = [[-1,'rgb(255,0,0)'],
-                   [0,'rgb(255,255,255)'], 
-                   [1,'rgb(0,255,0)']]
-
-
-# In[ ]:
-
-viz3 = mapboxgl.viz.ChoroplethViz(data = data, 
-                                 vector_url='mapbox://rutgerhofste.hybas06_v04_V04',
-                                 vector_layer_name='hybas06_v04', # Warning should match name on mapbox.
-                                 vector_join_property='pfaf_id',
-                                 data_join_property= "pfafid_30spfaf06",
-                                 color_property= "diff_weighted_nonweighted",
-                                 color_stops= color_stops_dif,
-                                 line_color = 'rgba(0,0,0,0.05)',
-                                 line_width = 0.5,
-                                 opacity=0.7,
-                                 center=(5, 52),
-                                 zoom=4,
-                                 below_layer='waterway-label'
-                                 )
-
-
-# In[ ]:
-
-viz3.show()
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
 
 # In[ ]:

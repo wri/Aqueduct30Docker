@@ -86,7 +86,7 @@ gdf =gpd.GeoDataFrame.from_postgis(sql,engine,geom_col='geom' )
 gdf.head()
 
 
-# In[ ]:
+# In[9]:
 
 cc.write(gdf,
          encode_geom=True,
@@ -94,7 +94,7 @@ cc.write(gdf,
          overwrite=True)
 
 
-# In[ ]:
+# In[10]:
 
 end = datetime.datetime.now()
 elapsed = end - start
