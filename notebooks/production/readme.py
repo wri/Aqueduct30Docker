@@ -48,13 +48,18 @@
 #     Upload simplified hydrobasins to carto for visualization purposes.
 # 
 # ### Group Delta Region in HydroBasin level 6
-# Delta basins grouped manually 
+# 
 # 1. **Y2018M03D09_RH_Delta_Regions_Manual_V01**  
 #     Several manual steps to create a list of delta sub-basins.
 # 1. **Y2018M02D15_RH_GDBD_Merge_V01**  
 #     This script will reproject GDBD basins and streams and merge them.
 # 1. **Y2018M02D16_RH_Number_Streams_Per_Basin_V01**  
-#     Determine the number of streams per GDBD basin. 
+#     Determine the number of streams per GDBD basin.
+# 1. **Y2018M07D25_RH_Basin_Manual_Step_V01**  
+#     Manual step to create hydrobasin equivalent of GDBD deltas. 
+# 1. **Y2018M07D25_RH_Delta_Lookup_Table_PostGIS_V01**  
+#     Store gdbd and hybas deltas in postgis in lookup table.
+# 
 #     
 # 
 # 
@@ -113,6 +118,12 @@
 #     Combine and simplify demand and riverdischarge dataframes.
 # 1. **Y2018M05D24_RH_Ingest_Simplified_Dataframes_PostGIS_30sPfaf06_V01**   
 #     Store merged and simplified pandas dataframes in postGIS database. 
+#     
+# #### Individual Subbasins  
+# this is where the workflow splits up. Delta subbasins are grouped and 
+# handled in a separate branch. See section Grouped Delta Regions for
+# these scripts.  
+# 
 # 1. **Y2018M05D29_RH_Total_Demand_PostGIS_30sPfaf06_V01**  
 #     Create total WW and total WN columns in simplified table.
 # 1. **Y2018M06D01_RH_Temporal_Reducers_PostGIS_30sPfaf06_V01**  
@@ -142,7 +153,17 @@
 #     Convert PostgreSQL RDS to CSV files on S3 and GCP.
 #     
 #     
-#   
+# #### Grouped Delta Regions  
+# 
+# 1. **Y2018M07D25_RH_Join_Deltas_Values_V01**  
+#     Join delta_ids, supply and demand tables.
+#     
+#     #####Continue here on 26th
+# 1. **Y2018M07D25_RH_Group_Delta_Basins_V01**  
+#     Group Delta basins and calculate supple and demand. 
+# 
+# 1. **Y2018M07D26_RH_Deltas_Total_Demand_V01**  
+#     Group Deltas and Create total WW and total WN columns in simplified table 
 # 
 #     
 # 

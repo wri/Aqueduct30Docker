@@ -3,9 +3,9 @@ Grouping of delta regions
 
 Background
 
-The standard hydrobasin level 6 sub-basins assume a scrictly convergent flow. This creates issues in delta regions such as the Nile Delta, Huang He and Rhine delta's where the entire river is channelled through one line of connected cells. The previous version of Aqueduct (v2.1) uses different sub-basins based on the Global Drainage Basin Database that has 68 delta regions grouped. 
+The standard hydrobasin level 6 sub-basins assume a scrictly convergent flow. This creates issues in delta regions such as the Nile Delta, Huang He (Yellow River) and Rhine delta's where the entire river is channelled through one line of connected cells. The previous version of Aqueduct (v2.1) uses different sub-basins based on the Global Drainage Basin Database that has 68 delta regions grouped. 
 
-According to the authors of GDBD it is not possible to replicate the method for GDBD with Hydrobasin level 6. Therefore a semi-automatic approach was developed by Rutger Hofste. 
+According to the authors of GDBD it is not possible to replicate the method for GDBD with Hydrobasin level 6. Therefore a semi-automatic approach was developed. 
 
 The semi-automatic approach first uses a list of basins from email correspondence with Yuji Masutomi, author of GDBD. The list is copied below. 
 
