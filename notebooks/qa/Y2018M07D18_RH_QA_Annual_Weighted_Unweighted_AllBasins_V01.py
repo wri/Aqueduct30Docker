@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[22]:
 
 """ Compare weighted and unweighted annual results for all basins.
 -------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 1
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D18_RH_QA_Annual_Weighted_Unweighted_AllBasins_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
@@ -50,7 +50,7 @@ BQ_PROJECT_ID = "aqueduct30"
 BQ_INPUT_TABLE_NAME = "Y2018M07D17_RH_RDS_To_S3_V01"
 BQ_INPUT_DATASET_NAME = "aqueduct30v01"
 
-CARTO_INPUT_TABLE_NAME_LEFT = "y2018m07d18_rh_upload_hydrobasin_carto_v01_v01"
+CARTO_INPUT_TABLE_NAME_LEFT = "y2018m07d18_rh_upload_hydrobasin_carto_v01_v02"
 
 YEAR_OF_INTEREST = 2014
 
@@ -83,7 +83,7 @@ print("carto_output_table_name: ",carto_output_table_name)
 
 
 
-# In[2]:
+# In[23]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -93,7 +93,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[3]:
+# In[24]:
 
 get_ipython().magic('matplotlib inline')
 import os
@@ -112,26 +112,26 @@ from cartoframes.contrib import vector
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
 
 
-# In[4]:
+# In[25]:
 
 F = open("/.carto_builder","r")
 carto_api_key = F.read().splitlines()[0]
 F.close()
 
 
-# In[5]:
+# In[26]:
 
 creds = cartoframes.Credentials(key=carto_api_key, 
                     username='wri-playground')
 cc = cartoframes.CartoContext(creds=creds)
 
 
-# In[6]:
+# In[27]:
 
 # Query postGIS table from RDS (already on Carto)
 
 
-# In[7]:
+# In[28]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -140,12 +140,12 @@ F.close()
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
-# In[8]:
+# In[29]:
 
 # Query result table from Bigquery
 
 
-# In[9]:
+# In[30]:
 
 sql = "SELECT"
 for column_of_interest in COLUMNS_OF_INTEREST:
@@ -157,24 +157,24 @@ sql += " WHERE year = 2014"
 # sql += " AND temporal_resolution = '{}'".format(TEMPORAL_RESOLUTION_OF_INTEREST)
 
 
-# In[10]:
+# In[31]:
 
 print(sql)
 
 
-# In[11]:
+# In[32]:
 
 df = pd.read_gbq(query=sql,
                  project_id=BQ_PROJECT_ID,
                  dialect="standard")
 
 
-# In[12]:
+# In[33]:
 
 df.shape
 
 
-# In[13]:
+# In[34]:
 
 # Upload result data to Carto
 cc.write(df=df,
@@ -183,7 +183,64 @@ cc.write(df=df,
          privacy="link")
 
 
-# In[14]:
+# In[35]:
+
+index_columns = ["pfafid_30spfaf06","year","month","temporal_resolution"]
+
+
+# In[38]:
+
+# Create indices
+
+for index_column in index_columns:
+    sql_index = "CREATE INDEX idx_allbasin_v{:02.0f}_{} ON {} ({})".format(OUTPUT_VERSION,index_column,carto_output_table_name,index_column)
+    print(sql_index )
+    cc.query(sql_index)
+
+
+# In[ ]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
 
 # There are now two tables on carto. One with the geometries, one with the results from BigQuery. Combining both
 columns_to_keep_left = ["pfaf_id",
@@ -197,7 +254,7 @@ left_on = "pfaf_id"
 right_on = "pfafid_30spfaf06"
 
 
-# In[15]:
+# In[ ]:
 
 def create_query(temporal_resolution,year,month):
     sql= "SELECT" 
@@ -216,13 +273,13 @@ def create_query(temporal_resolution,year,month):
 
 
 
-# In[16]:
+# In[ ]:
 
 temporal_resolutions = ["year","month"]
 year = YEAR_OF_INTEREST
 
 
-# In[17]:
+# In[ ]:
 
 for temporal_resolution in temporal_resolutions:
     if temporal_resolution == "year":
