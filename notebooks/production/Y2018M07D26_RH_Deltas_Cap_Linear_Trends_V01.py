@@ -3,7 +3,7 @@
 
 # In[1]:
 
-""" Cap the results of the ols at the minmax of the moving window.
+""" Cap the results of the ols at the minmax of the moving window for deltas.
 -------------------------------------------------------------------------------
 
 Linear Trends work very well when the data has a few valid values. For some
@@ -14,7 +14,7 @@ the minimum and maximum values of the moving window.
 
 
 Author: Rutger Hofste
-Date: 20180625
+Date: 20180726
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -35,13 +35,13 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M06D25_RH_Cap_Linear_Trends_PostGis_30sPfaf06_V01'
+SCRIPT_NAME = 'Y2018M07D26_RH_Deltas_Cap_Linear_Trends_V01'
 OUTPUT_VERSION = 1
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = 'y2018m06d01_rh_temporal_reducers_postgis_30spfaf06_v01_v03'
+INPUT_TABLE_NAME = "y2018m07d26_rh_deltas_temporal_reducers_v01_v01"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -101,7 +101,6 @@ def create_query(input_table_name, output_table_name,stat_columns):
     sql = sql[:-1]    
     sql = sql + " FROM {}".format(input_table_name)
     return sql
-    
 
 
 # In[6]:
@@ -120,7 +119,7 @@ stat_columns = demand_column_names + supply_column_names
 stat_columns
 
 
-# In[1]:
+# In[7]:
 
 sql = create_query(INPUT_TABLE_NAME, OUTPUT_TABLE_NAME,stat_columns)
 
@@ -132,7 +131,7 @@ result = engine.execute(sql)
 
 # In[9]:
 
-sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
+sql_index = "CREATE INDEX {}delta_id ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"delta_id")
 
 
 # In[10]:
@@ -153,9 +152,4 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:08:28.266176
-
-# In[ ]:
-
-
-
+# 0:00:01.721272

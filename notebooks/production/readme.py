@@ -156,14 +156,17 @@
 # #### Grouped Delta Regions  
 # 
 # 1. **Y2018M07D25_RH_Join_Deltas_Values_V01**  
-#     Join delta_ids, supply and demand tables.
-#     
-#     #####Continue here on 26th
+#     Join delta_ids, supply and demand tables.    
 # 1. **Y2018M07D25_RH_Group_Delta_Basins_V01**  
 #     Group Delta basins and calculate supple and demand. 
-# 
 # 1. **Y2018M07D26_RH_Deltas_Total_Demand_V01**  
-#     Group Deltas and Create total WW and total WN columns in simplified table 
+#     Create total WW and total WN columns in simplified table for deltas.
+# 1. **Y2018M07D26_RH_Deltas_Temporal_Reducers_V01**  
+#     Determine moving average, min max and linear regression for deltas.
+# 1. **Y2018M07D26_RH_Deltas_Cap_Linear_Trends_V01**  
+#     Cap the results of the ols at the minmax of the moving window for deltas.
+# 1. **Y2018M07D26_RH_Deltas_Arid_LowWaterUse_V02**  
+#     Add column for arid, lowwateruse and aridandlowwateruse for each subbasin for deltas. 
 # 
 #     
 # 
