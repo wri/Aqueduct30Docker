@@ -166,7 +166,23 @@
 # 1. **Y2018M07D26_RH_Deltas_Cap_Linear_Trends_V01**  
 #     Cap the results of the ols at the minmax of the moving window for deltas.
 # 1. **Y2018M07D26_RH_Deltas_Arid_LowWaterUse_V02**  
-#     Add column for arid, lowwateruse and aridandlowwateruse for each subbasin for deltas. 
+#     Add column for arid, lowwateruse and aridandlowwateruse for each subbasin for deltas.  
+# 1. **Y2018M07D26_RH_Deltas_Water_Stress_V01**  
+#     Calculate water stress with raw, ma10 and ols10 at subbasin level for deltas.  
+# 1. **Y2018M07D26_RH_Deltas_WS_Full_Range_Ols_V01**  
+#     Fit linear trend and average on 1969-2014 timeseries of linear trends for deltas.
+# 1. **Y2018M07D27_RH_Deltas_Arid_LowWaterUse_Full_Ols_V01**  
+#     Using the full range ols_ols10, apply the arid and lowwateruse thresholds for deltas.
+# 1. **Y2018M07D27_RH_Deltas_Apply_AridLowOnce_Mask_V01**  
+#     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once) for deltas.
+# 1. **Y2018M07D27_RH_Deltas_Annual_Scores_From_Months_V01**  
+#     Calculate Annual Scores by averaging monthly values for deltas.
+# 1. **Y2018M07D27_RH_Deltas_Merge_Simplify_Tables_V01**  
+#     Merge and simplify master table and annual scores based on months for deltas. 
+# 1. **Y2018M07D27_RH_Deltas_Update_WaterStress_AridLowOnce_V01**  
+#     Create columns for ws_r and ws_s with aridlowwateruse_once mask for deltas. 
+# 1. **Y2018M07D27_RH_Deltas_WS_Categorization_Label_V01**  
+#     Add category and label for water stress for deltas. 
 # 
 #     
 # 
