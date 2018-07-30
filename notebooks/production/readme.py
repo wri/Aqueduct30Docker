@@ -141,16 +141,14 @@
 # 1. **Y2018M07D09_RH_Apply_AridLowOnce_Mask_PostGIS_V01**  
 #     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 # 1. **Y2018M07D12_RH_Annual_Scores_From_Months_PostGIS_V01**  
-#     Calculate Annual Scores by averaging monthly values.
-#  
+#     Calculate Annual Scores by averaging monthly values. 
 # 1. **Y2018M07D12_RH_Merge_Simplify_Tables_PostGIS_V01**  
 #     Merge and simplify master table and annual scores based on months. 
 # 1. **Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01**  
 #     Create columns for ws_r and ws_s with aridlowwateruse_once mask. 
 # 1. **Y2018M07D12_RH_WS_Categorization_Label_PostGIS_V01**  
 #     Add category and label for water stress. 
-# 1. **Y2018M07D17_RH_RDS_To_S3_V01**  
-#     Convert PostgreSQL RDS to CSV files on S3 and GCP.
+# 
 #     
 #     
 # #### Grouped Delta Regions  
@@ -184,6 +182,17 @@
 # 1. **Y2018M07D27_RH_Deltas_WS_Categorization_Label_V01**  
 #     Add category and label for water stress for deltas. 
 # 
+#     
+# #### Merge subbasins and deltas.
+# 1. **Y2018M07D30_RH_Add_DeltaID_Subbasins_V01**  
+#     Add delta id column to subbasin results. 
+# 1. **Y2018M07D30_RH_Merge_Subbasins_Deltas_V01**  
+#     Merge subbasin results and delta results.
+# 1. **Y2018M07D30_RH_Coalesce_Columns_V01**  
+#     Use first valid of delta or subbasin column. 
+# 1. **Y2018M07D17_RH_RDS_To_S3_V01**  
+#     Convert PostgreSQL RDS to CSV files on S3 and GCP.
+#     
 #     
 # 
 # ### Groundwater Branch

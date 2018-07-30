@@ -176,3 +176,9 @@ end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
+
+# In[ ]:
+
+Previous runs:  
+0:00:02.641575
+
