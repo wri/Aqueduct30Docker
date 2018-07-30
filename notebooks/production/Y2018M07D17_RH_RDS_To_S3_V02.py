@@ -58,13 +58,13 @@ print(dateString,timeString)
 sys.version
 
 
-# In[4]:
+# In[3]:
 
 get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[5]:
+# In[4]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -73,44 +73,44 @@ F.close()
 engine = create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
 
 
-# In[6]:
+# In[5]:
 
 cpu_count = multiprocessing.cpu_count()
 print("Power to the maxxx:", cpu_count)
 
 
-# In[ ]:
+# In[6]:
 
 sql = "SELECT DISTINCT pfafid_30spfaf06 FROM {} ORDER BY pfafid_30spfaf06".format(INPUT_TABLE_NAME)
 
 
-# In[ ]:
+# In[7]:
 
 df = pd.read_sql(sql,engine)
 
 
-# In[ ]:
+# In[8]:
 
 df.shape
 
 
-# In[ ]:
+# In[9]:
 
 df.head()
 
 
-# In[ ]:
+# In[10]:
 
 if TESTING:
     df = df[0:10]
 
 
-# In[ ]:
+# In[11]:
 
 df_split = np.array_split(df, cpu_count*100)
 
 
-# In[ ]:
+# In[12]:
 
 def basin_to_csv(df):
     for index, row in df.iterrows():
@@ -127,6 +127,7 @@ def basin_to_csv(df):
 
 # In[ ]:
 
+# cleared output to save space
 p= multiprocessing.Pool()
 results_buffered = p.map(basin_to_csv,df_split)
 p.close()
@@ -135,11 +136,12 @@ p.join()
 
 # In[ ]:
 
-get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet')
 
 
 # In[ ]:
 
+# cleared output to save space
 get_ipython().system('gsutil -m cp {ec2_output_path}/*.csv {gcs_output_path}')
 
 
@@ -148,4 +150,9 @@ get_ipython().system('gsutil -m cp {ec2_output_path}/*.csv {gcs_output_path}')
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+
 
