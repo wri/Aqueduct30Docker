@@ -181,8 +181,7 @@
 #     Create columns for ws_r and ws_s with aridlowwateruse_once mask for deltas. 
 # 1. **Y2018M07D27_RH_Deltas_WS_Categorization_Label_V01**  
 #     Add category and label for water stress for deltas. 
-# 
-#     
+#   
 # #### Merge subbasins and deltas.
 # 1. **Y2018M07D30_RH_Add_DeltaID_Subbasins_V01**  
 #     Add delta id column to subbasin results. 
@@ -190,9 +189,23 @@
 #     Merge subbasin results and delta results.
 # 1. **Y2018M07D30_RH_Coalesce_Columns_V01**  
 #     Use first valid of delta or subbasin column. 
+# 1. **Y2018M07D30_RH_Replace_Null_Deltas_V01**  
+#     Replace Null values with numbers to prepare for bigquery. 
 # 1. **Y2018M07D17_RH_RDS_To_S3_V02**  
 #     Convert PostgreSQL RDS to CSV files on S3 and GCP.
-#     
+# 1. **Y2018M07D30_RH_GCS_To_BQ_V01**  
+#     Store Cloudstorage CSV files into bigquery table.
+# 
+# #### Inter Annual Variability (between year)  
+# 1. **Y2018M07D31_RH_Inter_Annual_Varibility_Average_STD_V01**  
+#     Calculate inter annual variability.  
+# 1. **Y2018M07D31_RH_Inter_Annual_Variability_Coef_Var_V01**  
+#     Calculate coefficient of variation.
+# 
+# #### Intra Annual Variability (within year)  
+# 1. **Y2018M07D31_RH_Intra_Annual_Variability_Average_STD_V01**  
+#     Calculate intra annual variability intermediate results.  
+# 
 #     
 # 
 # ### Groundwater Branch

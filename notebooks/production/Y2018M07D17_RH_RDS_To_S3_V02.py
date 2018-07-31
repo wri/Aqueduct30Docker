@@ -6,8 +6,6 @@
 """ Convert RDS table to csv files on S3 and GCS
 -------------------------------------------------------------------------------
 
-After the files are stored on GCS, use the BigQuery Web UI to load the csv 
-files in a table. 
 
 Author: Rutger Hofste
 Date: 20180712
@@ -27,16 +25,14 @@ pd.set_option('display.max_columns', 500)
 import multiprocessing
 
 SCRIPT_NAME = 'Y2018M07D17_RH_RDS_To_S3_V02'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 6
 
 TESTING = 0
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v01"
-
-
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v02"
 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -121,11 +117,13 @@ def basin_to_csv(df):
         df_basin["processed_timestamp"] = pd.Timestamp(now)  
         output_file_name = "{}_V{:02.0f}.csv".format(pfafid,OUTPUT_VERSION)
         output_file_path = "{}/{}".format(ec2_output_path,output_file_name)
-        df_basin.to_csv(output_file_path)
+        # Added on Y2018M07D30, convert to numeric type if possible
+        df_basin2 = df_basin.apply(pd.to_numeric,errors='ignore')
+        df_basin2.to_csv(output_file_path)
         print(output_file_path)
 
 
-# In[ ]:
+# In[13]:
 
 # cleared output to save space
 p= multiprocessing.Pool()
@@ -134,23 +132,27 @@ p.close()
 p.join()
 
 
-# In[ ]:
+# In[14]:
 
-get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet')
+#!aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet
 
 
-# In[ ]:
+# In[15]:
 
 # cleared output to save space
 get_ipython().system('gsutil -m cp {ec2_output_path}/*.csv {gcs_output_path}')
 
 
-# In[ ]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
+
+# Previous runs:  
+# 0:42:01.416597
+# 
 
 # In[ ]:
 

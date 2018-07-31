@@ -1,9 +1,9 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[10]:
 
-""" Use first valid of delta or subbasin column. 
+""" Replace Null values with numbers to prepare for bigquery. 
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
@@ -27,17 +27,16 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M07D30_RH_Coalesce_Columns_V01'
-OUTPUT_VERSION = 2
+SCRIPT_NAME = 'Y2018M07D30_RH_Replace_Null_Deltas_V01'
+OUTPUT_VERSION = 1
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_merge_subbasins_deltas_v01_v01"
-OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v02"
 
-print("Input Table: " , INPUT_TABLE_NAME,
-      "\nOutput Table: " , OUTPUT_TABLE_NAME)
+
+print("Input Table: " , INPUT_TABLE_NAME)
 
 
 # In[2]:
@@ -79,63 +78,42 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-columns_of_interest = ["waterstress_raw_dimensionless_30spfaf06",
-                       "waterstress_score_dimensionless_30spfaf06",
-                       "waterstress_category_dimensionless_30spfaf06",
-                       "waterstress_label_dimensionless_30spfaf06"]
+sql = "UPDATE {}".format(INPUT_TABLE_NAME)
+sql += " SET waterstress_raw_dimensionless_delta = -1,"
+sql += " waterstress_score_dimensionless_delta = -1,"
+sql += " waterstress_category_dimensionless_delta = -1,"
+sql += " waterstress_label_dimensionless_delta = 'NoData',"
+sql += " delta_id = -1"
+sql += " WHERE delta_id IS NULL"
 
 
 # In[6]:
 
-sql =  "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
-sql += " SELECT *,"
-for column_of_interest in columns_of_interest:
-    subbasin_column = column_of_interest
-    delta_column = column_of_interest.replace("30spfaf06","delta")
-    final_column = column_of_interest.replace("30spfaf06","coalesced")
-    print(final_column)
-    sql += " CASE WHEN delta_id >= 0 THEN {}  ELSE {}".format(delta_column,subbasin_column)
-    sql += " END AS {},".format(final_column)
-    
-sql = sql[:-1]   
-sql += " FROM {}".format(INPUT_TABLE_NAME)
-
-if TESTING:
-    sql += " ORDER BY waterstress_label_dimensionless_coalesced"
-    sql += " LIMIT 10"
+sql
 
 
 # In[7]:
 
-sql
+result = engine.execute(sql)
+
+
+# In[ ]:
+
+sql = "ALTER TABLE {} ALTER COLUMN delta_id SET DATA TYPE INT;".format(INPUT_TABLE_NAME)
+
+
+# In[ ]:
+
+# will take 20 min to run.
+result = engine.execute(sql)
 
 
 # In[8]:
 
-result = engine.execute(sql)
-
-
-# In[9]:
-
-sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
-
-
-# In[10]:
-
-result = engine.execute(sql_index)
-
-
-# In[11]:
-
-# update delta_id columns so bigquery will auto-detect as integer/float
-
-
-# In[12]:
-
 engine.dispose()
 
 
-# In[13]:
+# In[9]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -143,6 +121,9 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:13:48.316626  
-# 0:18:03.935109
-# 
+# 0:21:14.401220
+
+# In[ ]:
+
+
+
