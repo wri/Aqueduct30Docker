@@ -201,10 +201,16 @@
 #     Calculate inter annual variability.  
 # 1. **Y2018M07D31_RH_Inter_Annual_Variability_Coef_Var_V01**  
 #     Calculate coefficient of variation.
+# 1. **Y2018M07D31_RH_Inter_AV_Cat_label_V01**  
+#     Categorize and label inter annual variability.
 # 
 # #### Intra Annual Variability (within year)  
 # 1. **Y2018M07D31_RH_Intra_Annual_Variability_Average_STD_V01**  
-#     Calculate intra annual variability intermediate results.  
+#     Calculate intra annual variability intermediate results.
+# 1. **Y2018M08D01_RH_Intra_Annual_Variability_Coef_Var_V01**  
+#     Calculate coefficient of variation. 
+# 1. **Y2018M08D02_RH_Intra_Annual_Variability_Cat_Label_V01**  
+#     Categorize and label intra annual variability.
 # 
 #     
 # 

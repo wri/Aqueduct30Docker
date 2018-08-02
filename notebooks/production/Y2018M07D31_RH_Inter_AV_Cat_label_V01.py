@@ -3,11 +3,13 @@
 
 # In[1]:
 
-""" Calculate inter annual variability. 
+""" Categorize and label inter annual variability.
 -------------------------------------------------------------------------------
 
+IAV value to score calculation
+
 Author: Rutger Hofste
-Date: 20180731
+Date: 20180801
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -27,13 +29,12 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M07D31_RH_Inter_Annual_Variability_Coef_Var_V01'
+SCRIPT_NAME = 'Y2018M07D31_RH_Inter_AV_Cat_label_V01'
 OUTPUT_VERSION = 1
-
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m07d31_rh_inter_annual_varibility_average_std_v01_v01"
+BQ_INPUT_TABLE_NAME = "y2018m07d31_rh_inter_annual_variability_coef_var_v01_v01"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 print("bq dataset name: ", BQ_OUTPUT_DATASET_NAME,
@@ -104,15 +105,43 @@ sql +=  " pfafid_30spfaf06,"
 sql +=  " temporal_resolution,"
 sql +=  " month,"
 sql +=  " year,"
-sql +=  " stddev_riverdischarge_m_30spfaf06/ nullif(avg_riverdischarge_m_30spfaf06,0) AS iav_riverdischarge_m_30spfaf06"
+sql +=  " iav_riverdischarge_m_30spfaf06,"
+sql +=  " iav_riverdischarge_score_30spfaf06,"
+sql +=  " CASE"
+sql +=  " WHEN iav_riverdischarge_score_30spfaf06 = -1"
+sql +=    " THEN -1 "
+sql +=  " WHEN iav_riverdischarge_score_30spfaf06 < 5 AND iav_riverdischarge_score_30spfaf06 >= 0"
+sql +=    " THEN FLOOR(iav_riverdischarge_score_30spfaf06)"
+sql +=  " WHEN iav_riverdischarge_score_30spfaf06 = 5"
+sql +=    " THEN 4"
+sql +=  " ELSE -9999"
+sql +=  " END"
+sql +=  " AS iav_riverdischarge_category_30spfaf06"
 sql +=" FROM"
 sql +=  " `{}.{}`".format(BQ_OUTPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
 sql += " )"
 sql +=" SELECT"
 sql +=  " *,"
-sql +=  " GREATEST(0,LEAST(5,4*iav_riverdischarge_m_30spfaf06)) AS iav_riverdischarge_score_30spfaf06"
+sql +=     " CASE"
+sql +=     " WHEN iav_riverdischarge_category_30spfaf06 = -9999"
+sql +=         " THEN 'NoData' "
+sql +=     " WHEN iav_riverdischarge_category_30spfaf06 = -1"
+sql +=         " THEN 'Arid and Low Water Use' "
+sql +=     " WHEN iav_riverdischarge_category_30spfaf06 = 0"
+sql +=         " THEN 'Low' "
+sql +=     " WHEN iav_riverdischarge_category_30spfaf06 = 1"
+sql +=         " THEN 'Low - Medium' "
+sql +=     " WHEN iav_riverdischarge_category_30spfaf06 = 2"
+sql +=         " THEN 'Medium - High' "
+sql +=     " WHEN iav_riverdischarge_category_30spfaf06 = 3"
+sql +=         " THEN 'High' "
+sql +=     " WHEN iav_riverdischarge_category_30spfaf06 = 4"
+sql +=         " THEN 'Extremely High' "
+sql +=     " ELSE 'error, check score'"
+sql +=     " END AS waterstress_label_dimensionless_30spfaf06"
 sql +=" FROM"
 sql +=" cte"
+
 
 
 # In[7]:
@@ -151,15 +180,9 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:33.578092  
-# 0:00:44.333372
+# 0:00:39.601059  
+# 0:00:44.055266
 # 
-# 
-
-# In[ ]:
-
-
-
 
 # In[ ]:
 
