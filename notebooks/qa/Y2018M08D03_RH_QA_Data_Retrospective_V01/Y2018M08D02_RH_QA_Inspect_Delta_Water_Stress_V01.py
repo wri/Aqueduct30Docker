@@ -21,7 +21,9 @@ BQ_OUTPUT_DATASET_NAME = "Y2018M08D03_RH_QA_Data_Retrospective_V01"
 BQ_INPUT_TABLE_NAME = "y2018m08d01_rh_intra_annual_variability_coef_var_v01_v01"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
-
+RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
+RDS_DATABASE_NAME = "database01"
+RDS_INPUT_TABLE_NAME = "hybas06_v04"
 
 
 print("\nBQ_INPUT_DATASET_NAME: ", BQ_INPUT_DATASET_NAME,
@@ -43,6 +45,7 @@ sys.version
 # In[24]:
 
 import os
+import sqlalchemy
 import pandas as pd
 import geopandas as gpd
 from google.cloud import bigquery
@@ -51,6 +54,15 @@ get_ipython().magic('load_ext google.cloud.bigquery')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
 os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
 client = bigquery.Client(project=BQ_PROJECT_ID)
+
+
+# In[25]:
+
+F = open("/.password","r")
+password = F.read().splitlines()[0]
+F.close()
+
+engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
 # In[5]:
@@ -148,5 +160,17 @@ df.head()
 
 # In[ ]:
 
+sql = """
+SELECT
+  pfaf_id,
+  geom
+FROM
+  {}
+""".format(RDS_INPUT_TABLE_NAME)
 
+
+# In[ ]:
+
+gdf = gpd.read_postgis(sql=sql,
+                       con=engine)
 
