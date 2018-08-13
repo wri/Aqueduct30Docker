@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[10]:
+# In[1]:
 
 """ Replace Null values with numbers to prepare for bigquery. 
 -------------------------------------------------------------------------------
@@ -28,12 +28,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Replace_Null_Deltas_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v02"
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v04"
 
 
 print("Input Table: " , INPUT_TABLE_NAME)
@@ -70,16 +70,12 @@ F.close()
 engine = create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
 #connection = engine.connect()
 
-if OVERWRITE_OUTPUT:
-    sql = "DROP TABLE IF EXISTS {};".format(OUTPUT_TABLE_NAME)
-    print(sql)
-    result = engine.execute(sql)
-
 
 # In[5]:
 
 sql = "UPDATE {}".format(INPUT_TABLE_NAME)
-sql += " SET waterstress_raw_dimensionless_delta = -1,"
+sql += " SET riverdischarge_m_30spfaf06 = -1,"
+sql += " waterstress_raw_dimensionless_delta = -1,"
 sql += " waterstress_score_dimensionless_delta = -1,"
 sql += " waterstress_category_dimensionless_delta = -1,"
 sql += " waterstress_label_dimensionless_delta = 'NoData',"
@@ -97,23 +93,23 @@ sql
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[8]:
 
 sql = "ALTER TABLE {} ALTER COLUMN delta_id SET DATA TYPE INT;".format(INPUT_TABLE_NAME)
 
 
-# In[ ]:
+# In[9]:
 
 # will take 20 min to run.
 result = engine.execute(sql)
 
 
-# In[8]:
+# In[10]:
 
 engine.dispose()
 
 
-# In[9]:
+# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -121,7 +117,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:21:14.401220
+# 0:21:14.401220  
+# 0:42:08.612665
 
 # In[ ]:
 

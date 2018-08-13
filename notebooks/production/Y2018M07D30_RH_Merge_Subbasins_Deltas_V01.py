@@ -29,7 +29,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Merge_Subbasins_Deltas_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -60,7 +60,6 @@ import re
 import os
 import numpy as np
 import pandas as pd
-import aqueduct3
 from datetime import timedelta
 from sqlalchemy import *
 pd.set_option('display.max_columns', 500)
@@ -83,7 +82,8 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-columns_to_keep_right = ["waterstress_raw_dimensionless_30spfaf06",
+columns_to_keep_right = ["riverdischarge_m_30spfaf06", #added 20180808 to calculate sv and iav in deltas 
+                         "waterstress_raw_dimensionless_30spfaf06",
                          "waterstress_score_dimensionless_30spfaf06",
                          "waterstress_category_dimensionless_30spfaf06",
                          "waterstress_label_dimensionless_30spfaf06"]
@@ -124,42 +124,48 @@ result = engine.execute(sql)
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[ ]:
+# In[10]:
 
 result = engine.execute(sql_index)
 
 
-# In[ ]:
+# In[11]:
 
 sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
-# In[ ]:
+# In[12]:
 
 result = engine.execute(sql_index2)
 
 
-# In[ ]:
+# In[13]:
 
 sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
 
 
-# In[ ]:
+# In[14]:
 
 result = engine.execute(sql_index3)
 
 
-# In[ ]:
+# In[15]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# Previous runs:  
+# Previous runs: 
+# 0:36:29.186526
 # 
+
+# In[ ]:
+
+
+

@@ -28,12 +28,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Coalesce_Columns_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_merge_subbasins_deltas_v01_v01"
+INPUT_TABLE_NAME = "y2018m07d30_rh_merge_subbasins_deltas_v01_v02"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME,
@@ -79,7 +79,8 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-columns_of_interest = ["waterstress_raw_dimensionless_30spfaf06",
+columns_of_interest = ["riverdischarge_m_30spfaf06",
+                       "waterstress_raw_dimensionless_30spfaf06",
                        "waterstress_score_dimensionless_30spfaf06",
                        "waterstress_category_dimensionless_30spfaf06",
                        "waterstress_label_dimensionless_30spfaf06"]
@@ -144,5 +145,6 @@ print(elapsed)
 
 # Previous runs:  
 # 0:13:48.316626  
-# 0:18:03.935109
+# 0:18:03.935109  
+# 0:13:57.855760
 # 

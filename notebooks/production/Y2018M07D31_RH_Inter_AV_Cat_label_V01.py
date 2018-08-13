@@ -138,7 +138,7 @@ sql +=         " THEN 'High' "
 sql +=     " WHEN iav_riverdischarge_category_30spfaf06 = 4"
 sql +=         " THEN 'Extremely High' "
 sql +=     " ELSE 'error, check score'"
-sql +=     " END AS waterstress_label_dimensionless_30spfaf06"
+sql +=     " END AS iav_riverdischarge_label_30spfaf06"
 sql +=" FROM"
 sql +=" cte"
 

@@ -156,7 +156,7 @@
 # 1. **Y2018M07D25_RH_Join_Deltas_Values_V01**  
 #     Join delta_ids, supply and demand tables.    
 # 1. **Y2018M07D25_RH_Group_Delta_Basins_V01**  
-#     Group Delta basins and calculate supple and demand. 
+#     Group Delta basins and calculate supply and demand. 
 # 1. **Y2018M07D26_RH_Deltas_Total_Demand_V01**  
 #     Create total WW and total WN columns in simplified table for deltas.
 # 1. **Y2018M07D26_RH_Deltas_Temporal_Reducers_V01**  
@@ -185,7 +185,7 @@
 # #### Merge subbasins and deltas.
 # 1. **Y2018M07D30_RH_Add_DeltaID_Subbasins_V01**  
 #     Add delta id column to subbasin results. 
-# 1. **Y2018M07D30_RH_Merge_Subbasins_Deltas_V01**  
+# 1. **Y2018M07D30_RH_Merge_Subbasins_Deltas_V01**  (rerun 20180808, version increase)
 #     Merge subbasin results and delta results.
 # 1. **Y2018M07D30_RH_Coalesce_Columns_V01**  
 #     Use first valid of delta or subbasin column. 

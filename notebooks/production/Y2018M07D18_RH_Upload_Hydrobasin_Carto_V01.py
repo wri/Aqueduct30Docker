@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[45]:
+# In[1]:
 
 """ Upload simplified hydrobasins to mapbox for visualization purposes.
 -------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2018M07D18_RH_Upload_Hydrobasin_Carto_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -89,6 +89,16 @@ gdf.head()
 
 # In[9]:
 
+gdf.dtypes
+
+
+# In[10]:
+
+gdf.shape
+
+
+# In[11]:
+
 cc.write(gdf,
          encode_geom=True,
          table_name= OUTPUT_TABLE_NAME,
@@ -96,42 +106,52 @@ cc.write(gdf,
          overwrite=True)
 
 
-# In[10]:
+# In[12]:
 
 # Create index
 
 
-# In[16]:
+# In[13]:
 
 sql_index = "CREATE INDEX idx_{}_pfaf_id ON {} (pfaf_id)".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME)
 
 
-# In[17]:
+# In[14]:
 
 cc.query(sql_index)
 
 
-# In[ ]:
+# In[15]:
 
 # Create a version with simplified geometries
 
 
-# In[54]:
+# In[16]:
 
 sql_simplified = "SELECT pfaf_id, ST_Simplify(geom, 0.01) as geom FROM {}".format(POSTGIS_INPUT_TABLE_NAME)
 
 
-# In[55]:
+# In[17]:
 
 gdf_simplified =gpd.GeoDataFrame.from_postgis(sql_simplified,engine,geom_col='geom' )
 
 
-# In[56]:
+# In[18]:
 
 gdf_simplified.head()
 
 
-# In[57]:
+# In[19]:
+
+gdf.dtypes
+
+
+# In[20]:
+
+gdf.shape
+
+
+# In[21]:
 
 cc.write(gdf_simplified,
          encode_geom=True,
@@ -140,17 +160,17 @@ cc.write(gdf_simplified,
          overwrite=True)
 
 
-# In[58]:
+# In[22]:
 
 sql_index = "CREATE INDEX idx_{}_pfaf_id ON {} (pfaf_id)".format(OUTPUT_TABLE_NAME_SIMPLIFIED,OUTPUT_TABLE_NAME_SIMPLIFIED)
 
 
-# In[59]:
+# In[23]:
 
 print(sql_index)
 
 
-# In[60]:
+# In[24]:
 
 cc.query(sql_index)
 
@@ -160,7 +180,7 @@ cc.query(sql_index)
 
 
 
-# In[18]:
+# In[25]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -169,7 +189,8 @@ print(elapsed)
 
 # Previous runs:  
 # 0:16:48.651013  
-# 0:17:37.825289
+# 0:17:37.825289  
+# 0:07:32.631313
 
 # In[ ]:
 
