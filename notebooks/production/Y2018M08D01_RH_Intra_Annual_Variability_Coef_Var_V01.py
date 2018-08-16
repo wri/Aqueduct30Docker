@@ -28,11 +28,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M08D01_RH_Intra_Annual_Variability_Coef_Var_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m07d31_rh_intra_annual_variability_average_std_v01_v01"
+BQ_INPUT_TABLE_NAME = "y2018m07d31_rh_intra_annual_variability_average_std_v01_v02"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 print("bq dataset name: ", BQ_OUTPUT_DATASET_NAME,
@@ -99,15 +99,27 @@ pre_process_table(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME,overwrite=True)
 sql  = "WITH cte AS ("
 sql +=" SELECT"
 sql +=  " pfafid_30spfaf06,"
+sql +=  " delta_id,"
 sql +=  " avg_riverdischarge_m_30spfaf06,"
 sql +=  " stddev_riverdischarge_m_30spfaf06,"
-sql +=  " stddev_riverdischarge_m_30spfaf06/ nullif(avg_riverdischarge_m_30spfaf06,0) AS sv_riverdischarge_m_30spfaf06"
+sql +=  " stddev_riverdischarge_m_30spfaf06/ nullif(avg_riverdischarge_m_30spfaf06,0) AS sv_riverdischarge_m_30spfaf06,"
+
+sql +=  " avg_riverdischarge_m_delta,"
+sql +=  " stddev_riverdischarge_m_delta,"
+sql +=  " stddev_riverdischarge_m_delta/ nullif(avg_riverdischarge_m_delta,0) AS sv_riverdischarge_m_delta,"
+
+sql +=  " avg_riverdischarge_m_coalesced,"
+sql +=  " stddev_riverdischarge_m_coalesced,"
+sql +=  " stddev_riverdischarge_m_coalesced/ nullif(avg_riverdischarge_m_coalesced,0) AS sv_riverdischarge_m_coalesced"
+
 sql +=" FROM"
 sql +=  " `{}.{}`".format(BQ_OUTPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
 sql += " )"
 sql +=" SELECT"
 sql +=  " *,"
-sql +=  " GREATEST(0,LEAST(5,3*sv_riverdischarge_m_30spfaf06)) AS sv_riverdischarge_score_30spfaf06"
+sql +=  " GREATEST(0,LEAST(5,3*sv_riverdischarge_m_30spfaf06)) AS sv_riverdischarge_score_30spfaf06,"
+sql +=  " GREATEST(0,LEAST(5,3*sv_riverdischarge_m_delta)) AS sv_riverdischarge_score_delta,"
+sql +=  " GREATEST(0,LEAST(5,3*sv_riverdischarge_m_coalesced)) AS sv_riverdischarge_score_coalesced"
 sql +=" FROM"
 sql +=" cte"
 

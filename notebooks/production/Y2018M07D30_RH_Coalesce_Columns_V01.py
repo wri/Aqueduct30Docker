@@ -28,7 +28,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Coalesce_Columns_V01'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 5
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -146,5 +146,11 @@ print(elapsed)
 # Previous runs:  
 # 0:13:48.316626  
 # 0:18:03.935109  
-# 0:13:57.855760
+# 0:13:57.855760  
+# 0:14:04.354594
 # 
+
+# In[ ]:
+
+
+

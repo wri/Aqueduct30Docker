@@ -13,11 +13,11 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M07D30_RH_GCS_To_BQ_V01'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 OVERWRITE_OUTPUT = 1 
 
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M07D17_RH_RDS_To_S3_V02/output_V07/"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M07D17_RH_RDS_To_S3_V02/output_V08/"
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"

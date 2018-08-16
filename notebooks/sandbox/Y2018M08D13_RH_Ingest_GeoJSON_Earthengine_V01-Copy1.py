@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[21]:
+# In[1]:
 
 """
 Data needs to be stored in geoJSON file format. The type should be featureCollection.
@@ -11,10 +11,10 @@ Files are quite large so will have to come up with retrying
 
 """
 
-INPUT_FILE_NAME = "/volumes/data/Y2018M08D13_RH_Process_Basisregistratie_Gewaspercelen_V01/output_V05/BRP_Gewaspercelen_2015.json"
+INPUT_FILE_NAME = "/volumes/data/Y2018M08D13_RH_Process_Basisregistratie_Gewaspercelen_V01/output_V01/BRP_Gewaspercelen_2015.json"
 
 
-# In[22]:
+# In[2]:
 
 import geojson
 import json
@@ -23,66 +23,38 @@ import ee
 ee.Initialize()
 
 
-# In[23]:
+# In[3]:
 
 ee.__version__
 
 
-# In[ ]:
-
-command = "earthengine create folder users/rutgerhofste/Y2018M08D13_RH_Ingest_GeoJSON_Earthengine_V01"
-response = subprocess.check_output(command,shell=True)
-command = "earthengine create featurecollection users/rutgerhofste/Y2018M08D13_RH_Ingest_GeoJSON_Earthengine_V01/output_V01"
-response = subprocess.check_output(command,shell=True)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[24]:
+# In[4]:
 
 with open(INPUT_FILE_NAME, encoding="utf-8") as f:
     data = geojson.load(f)
 
 
-# In[25]:
+# In[5]:
 
 type(data)
 
 
-# In[26]:
+# In[10]:
 
 data.crs
 
 
-# In[27]:
+# In[6]:
 
 len(data["features"])
 
 
-# In[18]:
-
-def fix_datatype(properties):
-    properties["GWS_GEWASCODE"] = int(properties["GWS_GEWASCODE"])
-    return properties
-
-
-# In[19]:
+# In[7]:
 
 batch_size = 5
 features = []
 for index , feature in enumerate(data["features"]):
     properties = feature.properties
-    
-    new_properties = fix_datatype(properties)
-    
     geometry = feature.geometry
     geoJSONfeature = geojson.Feature(geometry=geometry,
                                      properties=properties)
@@ -94,11 +66,6 @@ for index , feature in enumerate(data["features"]):
                                              assetId = "users/rutgerhofste/test/test02")
                                              
         break
-
-
-# In[20]:
-
-properties
 
 
 # In[8]:

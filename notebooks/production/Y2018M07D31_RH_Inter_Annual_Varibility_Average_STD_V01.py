@@ -28,12 +28,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D31_RH_Inter_Annual_Varibility_Average_STD_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m07d30_rh_gcs_to_bq_v01_v02"
+BQ_INPUT_TABLE_NAME = "y2018m07d30_rh_gcs_to_bq_v01_v04"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 print("bq dataset name: ", BQ_OUTPUT_DATASET_NAME,
@@ -104,8 +104,13 @@ sql = (
   ' temporal_resolution,'
   ' month,'
   ' year,'
+  ' delta_id,'
   ' STDDEV(riverdischarge_m_30spfaf06) OVER(PARTITION BY pfafid_30spfaf06, temporal_resolution, month ORDER BY year) AS stddev_riverdischarge_m_30spfaf06,'
-  ' AVG(riverdischarge_m_30spfaf06) OVER(PARTITION BY pfafid_30spfaf06, temporal_resolution, month ORDER BY year) AS avg_riverdischarge_m_30spfaf06'
+  ' AVG(riverdischarge_m_30spfaf06) OVER(PARTITION BY pfafid_30spfaf06, temporal_resolution, month ORDER BY year) AS avg_riverdischarge_m_30spfaf06,'
+  ' STDDEV(riverdischarge_m_delta) OVER(PARTITION BY pfafid_30spfaf06, temporal_resolution, month ORDER BY year) AS stddev_riverdischarge_m_delta,'
+  ' AVG(riverdischarge_m_delta) OVER(PARTITION BY pfafid_30spfaf06, temporal_resolution, month ORDER BY year) AS avg_riverdischarge_m_delta,'
+  ' STDDEV(riverdischarge_m_coalesced) OVER(PARTITION BY pfafid_30spfaf06, temporal_resolution, month ORDER BY year) AS stddev_riverdischarge_m_coalesced,'
+  ' AVG(riverdischarge_m_coalesced) OVER(PARTITION BY pfafid_30spfaf06, temporal_resolution, month ORDER BY year) AS avg_riverdischarge_m_coalesced'
 ' FROM'
   ' `aqueduct30.{}.{}`'.format(BQ_OUTPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
 )
@@ -142,12 +147,12 @@ query_job.state
 query_job.total_bytes_processed
 
 
-# In[13]:
+# In[12]:
 
 query_job.result(timeout=120)
 
 
-# In[14]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start

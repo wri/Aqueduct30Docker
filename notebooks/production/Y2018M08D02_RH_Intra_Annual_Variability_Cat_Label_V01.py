@@ -30,11 +30,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M08D02_RH_Intra_Annual_Variability_Cat_Label_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m08d01_rh_intra_annual_variability_coef_var_v01_v01"
+BQ_INPUT_TABLE_NAME = "y2018m08d01_rh_intra_annual_variability_coef_var_v01_v02"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 print("bq dataset name: ", BQ_OUTPUT_DATASET_NAME,
@@ -102,8 +102,16 @@ pre_process_table(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME,OVERWRITE_OUTPUT)
 sql  = "WITH cte AS ("
 sql +=" SELECT"
 sql +=  " pfafid_30spfaf06,"
+sql +=  " delta_id,"
 sql +=  " sv_riverdischarge_m_30spfaf06,"
 sql +=  " sv_riverdischarge_score_30spfaf06,"
+
+sql +=  " sv_riverdischarge_m_delta,"
+sql +=  " sv_riverdischarge_score_delta,"
+
+sql +=  " sv_riverdischarge_m_coalesced,"
+sql +=  " sv_riverdischarge_score_coalesced,"
+
 sql +=  " CASE"
 sql +=  " WHEN sv_riverdischarge_score_30spfaf06 = -1"
 sql +=    " THEN -1 "
@@ -113,7 +121,30 @@ sql +=  " WHEN sv_riverdischarge_score_30spfaf06 = 5"
 sql +=    " THEN 4"
 sql +=  " ELSE -9999"
 sql +=  " END"
-sql +=  " AS sv_riverdischarge_category_30spfaf06"
+sql +=  " AS sv_riverdischarge_category_30spfaf06,"
+
+sql +=  " CASE"
+sql +=  " WHEN sv_riverdischarge_score_delta = -1"
+sql +=    " THEN -1 "
+sql +=  " WHEN sv_riverdischarge_score_delta < 5 AND sv_riverdischarge_score_delta >= 0"
+sql +=    " THEN FLOOR(sv_riverdischarge_score_delta)"
+sql +=  " WHEN sv_riverdischarge_score_delta = 5"
+sql +=    " THEN 4"
+sql +=  " ELSE -9999"
+sql +=  " END"
+sql +=  " AS sv_riverdischarge_category_delta,"
+
+sql +=  " CASE"
+sql +=  " WHEN sv_riverdischarge_score_coalesced = -1"
+sql +=    " THEN -1 "
+sql +=  " WHEN sv_riverdischarge_score_coalesced < 5 AND sv_riverdischarge_score_coalesced >= 0"
+sql +=    " THEN FLOOR(sv_riverdischarge_score_coalesced)"
+sql +=  " WHEN sv_riverdischarge_score_coalesced = 5"
+sql +=    " THEN 4"
+sql +=  " ELSE -9999"
+sql +=  " END"
+sql +=  " AS sv_riverdischarge_category_coalesced"
+
 sql +=" FROM"
 sql +=  " `{}.{}`".format(BQ_OUTPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
 sql += " )"
@@ -135,7 +166,44 @@ sql +=         " THEN 'High' "
 sql +=     " WHEN sv_riverdischarge_category_30spfaf06 = 4"
 sql +=         " THEN 'Extremely High' "
 sql +=     " ELSE 'error, check score'"
-sql +=     " END AS sv_label_dimensionless_30spfaf06"
+sql +=     " END AS sv_label_dimensionless_30spfaf06,"
+
+sql +=     " CASE"
+sql +=     " WHEN sv_riverdischarge_category_delta = -9999"
+sql +=         " THEN 'NoData' "
+sql +=     " WHEN sv_riverdischarge_category_delta = -1"
+sql +=         " THEN 'Arid and Low Water Use' "
+sql +=     " WHEN sv_riverdischarge_category_delta = 0"
+sql +=         " THEN 'Low' "
+sql +=     " WHEN sv_riverdischarge_category_delta = 1"
+sql +=         " THEN 'Low - Medium' "
+sql +=     " WHEN sv_riverdischarge_category_delta = 2"
+sql +=         " THEN 'Medium - High' "
+sql +=     " WHEN sv_riverdischarge_category_delta = 3"
+sql +=         " THEN 'High' "
+sql +=     " WHEN sv_riverdischarge_category_delta = 4"
+sql +=         " THEN 'Extremely High' "
+sql +=     " ELSE 'error, check score'"
+sql +=     " END AS sv_label_dimensionless_delta,"
+
+sql +=     " CASE"
+sql +=     " WHEN sv_riverdischarge_category_coalesced = -9999"
+sql +=         " THEN 'NoData' "
+sql +=     " WHEN sv_riverdischarge_category_coalesced = -1"
+sql +=         " THEN 'Arid and Low Water Use' "
+sql +=     " WHEN sv_riverdischarge_category_coalesced = 0"
+sql +=         " THEN 'Low' "
+sql +=     " WHEN sv_riverdischarge_category_coalesced = 1"
+sql +=         " THEN 'Low - Medium' "
+sql +=     " WHEN sv_riverdischarge_category_coalesced = 2"
+sql +=         " THEN 'Medium - High' "
+sql +=     " WHEN sv_riverdischarge_category_coalesced = 3"
+sql +=         " THEN 'High' "
+sql +=     " WHEN sv_riverdischarge_category_coalesced = 4"
+sql +=         " THEN 'Extremely High' "
+sql +=     " ELSE 'error, check score'"
+sql +=     " END AS sv_label_dimensionless_coalesced"
+
 sql +=" FROM"
 sql +=" cte"
 

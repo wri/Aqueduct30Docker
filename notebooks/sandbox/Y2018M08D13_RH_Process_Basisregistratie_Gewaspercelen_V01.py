@@ -23,12 +23,13 @@ earthengine currently only supports shapefile. Rewrite for geopackage / geosjon 
 
 
 SCRIPT_NAME = "Y2018M08D13_RH_Process_Basisregistratie_Gewaspercelen_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 8
 
 GCS_OUTPUT_PATH = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_process_path = "/volumes/data/{}/process_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_process2_path = "/volumes/data/{}/process2_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 
@@ -54,6 +55,7 @@ import subprocess
 
 get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('rm -r {ec2_process_path}')
+get_ipython().system('rm -r {ec2_process2_path}')
 get_ipython().system('rm -r {ec2_input_path}')
 
 
@@ -61,6 +63,7 @@ get_ipython().system('rm -r {ec2_input_path}')
 
 get_ipython().system('mkdir -p {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_process_path}')
+get_ipython().system('mkdir -p {ec2_process2_path}')
 get_ipython().system('mkdir -p {ec2_input_path}')
 
 
@@ -120,19 +123,44 @@ gdb_files = os.listdir(ec2_process_path)
 for gdb_file in gdb_files:
     if gdb_file.endswith('.gdb'):
         filename, extension = gdb_file.split(".")
-        command = "/opt/anaconda3/envs/python35/bin/ogr2ogr -f 'ESRI Shapefile' {}{}.shp {}{}".format(ec2_output_path,filename,ec2_process_path,gdb_file)
+        command = "/opt/anaconda3/envs/python35/bin/ogr2ogr -f 'ESRI Shapefile' {}{}.shp {}{}".format(ec2_process2_path,filename,ec2_process_path,gdb_file)
         print(command)
         response = subprocess.check_output(command,shell=True)
 
 
 # In[14]:
 
-get_ipython().system('gsutil -m cp {ec2_output_path}/* {GCS_OUTPUT_PATH}')
+files = os.listdir(ec2_process2_path)
 
 
 # In[15]:
 
+files
+
+
+# In[ ]:
+
+for one_file in files:
+    if one_file.endswith('.shp'):
+        filename, extension = one_file.split(".")
+        command = "/opt/anaconda3/envs/python35/bin/ogr2ogr -t_srs EPSG:4326 -s_srs EPSG:28992 {}{} {}{}".format(ec2_output_path,one_file,ec2_process2_path,one_file)
+        print(command)
+        response = subprocess.check_output(command,shell=True)
+
+
+# In[ ]:
+
+get_ipython().system('gsutil -m cp {ec2_output_path}* {GCS_OUTPUT_PATH}')
+
+
+# In[ ]:
+
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# In[ ]:
+
+
 

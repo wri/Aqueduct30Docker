@@ -185,9 +185,9 @@
 # #### Merge subbasins and deltas.
 # 1. **Y2018M07D30_RH_Add_DeltaID_Subbasins_V01**  
 #     Add delta id column to subbasin results. 
-# 1. **Y2018M07D30_RH_Merge_Subbasins_Deltas_V01**  (rerun 20180808, version increase)
+# 1. **Y2018M07D30_RH_Merge_Subbasins_Deltas_V01**  (rerun 20180808, version increase)  
 #     Merge subbasin results and delta results.
-# 1. **Y2018M07D30_RH_Coalesce_Columns_V01**  
+# 1. **Y2018M07D30_RH_Coalesce_Columns_V01** (typo, rerunning 20180814 version increase)
 #     Use first valid of delta or subbasin column. 
 # 1. **Y2018M07D30_RH_Replace_Null_Deltas_V01**  
 #     Replace Null values with numbers to prepare for bigquery. 

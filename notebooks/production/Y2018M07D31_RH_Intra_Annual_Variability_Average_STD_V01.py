@@ -42,12 +42,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D31_RH_Intra_Annual_Variability_Average_STD_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m07d30_rh_gcs_to_bq_v01_v02"
+BQ_INPUT_TABLE_NAME = "y2018m07d30_rh_gcs_to_bq_v01_v04"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 print("bq dataset name: ", BQ_OUTPUT_DATASET_NAME,
@@ -114,8 +114,11 @@ pre_process_table(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME,overwrite=True)
 sql =  "WITH cte AS ("
 sql +=" SELECT"
 sql +=  " pfafid_30spfaf06,"
+sql +=  " AVG(delta_id) as delta_id,"
 sql +=  " month,"
-sql +=  " AVG(riverdischarge_m_30spfaf06) AS avg_riverdischarge_m_30spfaf06"
+sql +=  " AVG(riverdischarge_m_30spfaf06) AS avg_riverdischarge_m_30spfaf06,"
+sql +=  " AVG(riverdischarge_m_delta) AS avg_riverdischarge_m_delta,"
+sql +=  " AVG(riverdischarge_m_coalesced) AS avg_riverdischarge_m_coalesced"
 sql +=" FROM"
 sql +=  " `aqueduct30.{}.{}`".format(BQ_OUTPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME) 
 sql +=" WHERE"
@@ -125,8 +128,16 @@ sql +=  " pfafid_30spfaf06,"
 sql +=  " month"   
 sql +=" )"
 sql +=" SELECT pfafid_30spfaf06,"
+sql +=  " AVG(delta_id) as delta_id,"
 sql +=  " AVG(avg_riverdischarge_m_30spfaf06) AS avg_riverdischarge_m_30spfaf06,"
-sql +=  " STDDEV(avg_riverdischarge_m_30spfaf06) AS stddev_riverdischarge_m_30spfaf06"
+sql +=  " STDDEV(avg_riverdischarge_m_30spfaf06) AS stddev_riverdischarge_m_30spfaf06,"
+
+sql +=  " AVG(avg_riverdischarge_m_delta) AS avg_riverdischarge_m_delta,"
+sql +=  " STDDEV(avg_riverdischarge_m_delta) AS stddev_riverdischarge_m_delta,"
+
+sql +=  " AVG(avg_riverdischarge_m_coalesced) AS avg_riverdischarge_m_coalesced,"
+sql +=  " STDDEV(avg_riverdischarge_m_coalesced) AS stddev_riverdischarge_m_coalesced"
+
 sql +=" FROM cte"
 sql +=" GROUP BY "
 sql +=  " pfafid_30spfaf06"

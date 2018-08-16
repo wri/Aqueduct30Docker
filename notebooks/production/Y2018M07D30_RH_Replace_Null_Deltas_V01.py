@@ -33,7 +33,7 @@ OUTPUT_VERSION = 2
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v04"
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v05"
 
 
 print("Input Table: " , INPUT_TABLE_NAME)
@@ -74,7 +74,7 @@ engine = create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password
 # In[5]:
 
 sql = "UPDATE {}".format(INPUT_TABLE_NAME)
-sql += " SET riverdischarge_m_30spfaf06 = -1,"
+sql += " SET riverdischarge_m_delta = -1,"
 sql += " waterstress_raw_dimensionless_delta = -1,"
 sql += " waterstress_score_dimensionless_delta = -1,"
 sql += " waterstress_category_dimensionless_delta = -1,"
@@ -118,7 +118,8 @@ print(elapsed)
 
 # Previous runs:  
 # 0:21:14.401220  
-# 0:42:08.612665
+# 0:42:08.612665  
+# 0:42:04.108612
 
 # In[ ]:
 

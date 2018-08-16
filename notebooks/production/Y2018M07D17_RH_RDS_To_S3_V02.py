@@ -25,14 +25,14 @@ pd.set_option('display.max_columns', 500)
 import multiprocessing
 
 SCRIPT_NAME = 'Y2018M07D17_RH_RDS_To_S3_V02'
-OUTPUT_VERSION = 7
+OUTPUT_VERSION = 8
 
 TESTING = 0
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v04"
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v05"
 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -152,7 +152,8 @@ print(elapsed)
 
 # Previous runs:  
 # 0:42:01.416597  
-# 0:42:14.565295
+# 0:42:14.565295  
+# 0:31:40.728932
 # 
 # 
 
