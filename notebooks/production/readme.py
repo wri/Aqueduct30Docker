@@ -132,6 +132,10 @@
 #     Cap the results of the ols at the minmax of the moving window. 
 # 1. **Y2018M06D04_RH_Arid_LowWaterUse_PostGIS_30sPfaf06_V02**  
 #     Add column for arid, lowwateruse and aridandlowwateruse for each subbasin. 
+# 
+# 
+# #### Water Stress hydrobasin 6
+# 
 # 1. **Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V02**  
 #     Calculate water stress with raw, ma10 and ols10 at subbasin level.
 # 1. **Y2018M06D28_RH_WS_Full_Range_Ols_PostGIS_30sPfaf06_V02**  
@@ -151,7 +155,7 @@
 # 
 #     
 #     
-# #### Grouped Delta Regions  
+# #### Water Stress Deltas
 # 
 # 1. **Y2018M07D25_RH_Join_Deltas_Values_V01**  
 #     Join delta_ids, supply and demand tables.    
@@ -204,13 +208,26 @@
 # 1. **Y2018M07D31_RH_Inter_AV_Cat_label_V01**  
 #     Categorize and label inter annual variability.
 # 
-# #### Intra Annual Variability (within year)  
+# #### Intra Annual Variability (within year) .
 # 1. **Y2018M07D31_RH_Intra_Annual_Variability_Average_STD_V01**  
 #     Calculate intra annual variability intermediate results.
 # 1. **Y2018M08D01_RH_Intra_Annual_Variability_Coef_Var_V01**  
 #     Calculate coefficient of variation. 
 # 1. **Y2018M08D02_RH_Intra_Annual_Variability_Cat_Label_V01**  
 #     Categorize and label intra annual variability.
+#     
+# #### Water Depletion.
+# 1. **Y2018M08D21_RH_Water_Depletion_30sPfaf06_V01**  
+#     Water Depletion at hydrobasin level 6.  
+# 1. **Y2018M06D21_RH_WD_Full_Range_Ols_30sPfaf06_V01**  
+#     Fit linear trend and average on 1969-2014 timeseries of linear trends.
+# 1. **Y2018M08D21_RH_Apply_AridLowOnce_Mask_V01**  
+#     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
+# 
+# 
+# 
+# 
+# 
 # 
 #     
 # 
