@@ -41,7 +41,7 @@ DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
 INPUT_TABLE_NAME_RIGHT = "y2018m07d09_rh_arid_lowwateruse_full_ols_postgis_v01_v03"
-INPUT_TABLE_NAME_LEFT = 'y2018m08d21_rh_wd_full_range_ols_30spfaf06_v01_v01'
+INPUT_TABLE_NAME_LEFT = 'y2018m06d21_rh_wd_full_range_ols_30spfaf06_v01_v01'
 
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
@@ -60,7 +60,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
+# In[3]:
 
 # imports
 import re
@@ -73,7 +73,7 @@ from sqlalchemy import *
 pd.set_option('display.max_columns', 500)
 
 
-# In[ ]:
+# In[4]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -88,14 +88,14 @@ if OVERWRITE_OUTPUT:
     result = engine.execute(sql)
 
 
-# In[ ]:
+# In[5]:
 
 columns_to_keep = ["ols_ols10_arid_boolean_30spfaf06",
                    "ols_ols10_lowwateruse_boolean_30spfaf06",
                    "ols_ols10_aridandlowwateruse_boolean_30spfaf06"]
 
 
-# In[ ]:
+# In[6]:
 
 sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql += " SELECT l.*,"
@@ -108,44 +108,47 @@ sql += " l.pfafid_30spfaf06 = r.pfafid_30spfaf06"
 sql += " WHERE r.year = 2014"
 
 
-# In[ ]:
+# In[7]:
 
 print(sql)
 
 
-# In[ ]:
+# In[8]:
 
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[9]:
 
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[ ]:
+# In[10]:
 
 sql_index
 
 
-# In[ ]:
+# In[11]:
 
 result = engine.execute(sql_index)
 
 
-# In[ ]:
+# In[12]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
+# Previous runs:  
+# 0:13:49.391503
+
 # In[ ]:
 
-Previous runs:  
+
 

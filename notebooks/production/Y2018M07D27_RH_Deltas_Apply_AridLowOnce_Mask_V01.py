@@ -35,13 +35,13 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D27_RH_Deltas_Apply_AridLowOnce_Mask_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_arid_lowwateruse_full_ols_v01_v01"
-INPUT_TABLE_NAME_LEFT = 'y2018m07d26_rh_deltas_ws_full_range_ols_v01_v01'
+INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_arid_lowwateruse_full_ols_v01_v02"
+INPUT_TABLE_NAME_LEFT = 'y2018m07d26_rh_deltas_ws_full_range_ols_v01_v02'
 
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 

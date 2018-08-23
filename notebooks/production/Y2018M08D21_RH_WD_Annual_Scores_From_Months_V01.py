@@ -3,11 +3,11 @@
 
 # In[1]:
 
-""" Using the full range ols_ols10, apply the arid and lowwateruse thresholds.
+""" Calculate Annual Scores by averaging monthly values.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20180709
+Date: 20180821
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -28,16 +28,14 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M07D09_RH_Arid_LowWaterUse_Full_Ols_PostGIS_V01'
-OUTPUT_VERSION = 4
+SCRIPT_NAME = 'Y2018M08D21_RH_WD_Annual_Scores_From_Months_V01'
+OUTPUT_VERSION = 1
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v04'
-OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
-THRESHOLD_ARID_YEAR = 0.03 #units are m/year, threshold defined by Aqueduct 2.1
-THRESHOLD_LOW_WATER_USE_YEAR = 0.012 #units are m/year, threshold defined by Aqueduct 2.1 Withdrawal
+INPUT_TABLE_NAME = "y2018m08d21_rh_apply_aridlowonce_mask_v01_v01" 
+OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
       "\nOutput Table: " , OUTPUT_TABLE_NAME)
@@ -83,37 +81,28 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-temporal_reducers = ["ols_ols10_"]
+selection_columns = ["pfafid_30spfaf06",
+                     "year",
+                     "temporal_resolution"]
+aggregate_column = "ols_ols10_waterdepletion_dimensionless_30spfaf06"
 
 
 # In[6]:
 
-sql = "CREATE TABLE {} AS ".format(OUTPUT_TABLE_NAME)
-sql = sql + "SELECT pfafid_30spfaf06, ols_ols10_riverdischarge_m_30spfaf06, ols_ols10_ptotww_m_30spfaf06, ols_ols10_ptotwn_m_30spfaf06, year, "
-
-# arid
-sql = sql + " CASE"
-sql = sql + " WHEN (ols_ols10_riverdischarge_m_30spfaf06 + ols_ols10_ptotwn_m_30spfaf06) < {} THEN 1".format(THRESHOLD_ARID_YEAR)
-sql = sql + " ELSE 0 "
-sql = sql + " END"
-sql = sql + " AS ols_ols10_arid_boolean_30spfaf06,"
-
-#lowwateruse
-sql = sql + " CASE"
-sql = sql + " WHEN ols_ols10_ptotww_m_30spfaf06 < {} THEN 1".format(THRESHOLD_LOW_WATER_USE_YEAR)
-sql = sql + " ELSE 0 "
-sql = sql + " END"
-sql = sql + " AS ols_ols10_lowwateruse_boolean_30spfaf06,"
-
-# Arid AND Lowwateruse  
-sql = sql + " CASE"
-sql = sql + " WHEN ols_ols10_ptotww_m_30spfaf06 < {} AND (ols_ols10_riverdischarge_m_30spfaf06 + ols_ols10_ptotwn_m_30spfaf06)  < {} THEN 1".format(THRESHOLD_LOW_WATER_USE_YEAR, THRESHOLD_ARID_YEAR)
-sql = sql + " ELSE 0 "
-sql = sql + " END"
-sql = sql + " AS ols_ols10_aridandlowwateruse_boolean_30spfaf06 ,"
-sql = sql[:-1]
-sql = sql + " FROM {}".format(INPUT_TABLE_NAME)
-sql = sql + " WHERE temporal_resolution = 'year' "
+sql =  "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
+sql += " SELECT "
+for selection_column in selection_columns:
+    sql += " {},".format(selection_column)
+sql +=     " AVG({}) AS avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06,".format(aggregate_column)
+sql +=     " CASE WHEN SUM (ols_ols10_ptotww_m_30spfaf06) >0 "
+sql +=         " THEN SUM(ols_ols10_waterdepletion_dimensionless_30spfaf06 * ols_ols10_ptotww_m_30spfaf06) / SUM (ols_ols10_ptotww_m_30spfaf06) "
+sql +=     " ELSE AVG(ols_ols10_waterdepletion_dimensionless_30spfaf06)"
+sql +=     " END"
+sql +=     " AS avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06"
+sql += " FROM {}".format(INPUT_TABLE_NAME)
+sql += " WHERE temporal_resolution = 'month'" 
+sql += " GROUP BY pfafid_30spfaf06, year, temporal_resolution"
+sql += " ORDER BY pfafid_30spfaf06, year"
 
 
 # In[7]:
@@ -128,16 +117,38 @@ result = engine.execute(sql)
 
 # In[9]:
 
+sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
+
+
+# In[10]:
+
+result = engine.execute(sql_index)
+
+
+# In[11]:
+
+sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
+
+
+# In[12]:
+
+result = engine.execute(sql_index2)
+
+
+# In[13]:
+
+engine.dispose()
+
+
+# In[14]:
+
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
 # Previous runs:  
-# 0:02:11.888964  
-# 0:02:12.255110  
-# 0:01:56.781839
-# 
+# 0:02:05.215392
 
 # In[ ]:
 

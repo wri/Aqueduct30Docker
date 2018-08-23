@@ -29,12 +29,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Merge_Subbasins_Deltas_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_ws_categorization_label_v01_v01"
+INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_ws_categorization_label_v01_v02"
 INPUT_TABLE_NAME_LEFT = "y2018m07d30_rh_add_deltaid_subbasins_v01_v01"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
@@ -86,7 +86,11 @@ columns_to_keep_right = ["riverdischarge_m_30spfaf06", #added 20180808 to calcul
                          "waterstress_raw_dimensionless_30spfaf06",
                          "waterstress_score_dimensionless_30spfaf06",
                          "waterstress_category_dimensionless_30spfaf06",
-                         "waterstress_label_dimensionless_30spfaf06"]
+                         "waterstress_label_dimensionless_30spfaf06",
+                         "waterdepletion_raw_dimensionless_30spfaf06",
+                         "waterdepletion_score_dimensionless_30spfaf06",
+                         "waterdepletion_category_dimensionless_30spfaf06",
+                         "waterdepletion_label_dimensionless_30spfaf06"]
 
 
 # In[6]:
@@ -161,9 +165,9 @@ elapsed = end - start
 print(elapsed)
 
 
-# Previous runs: 
+# Previous runs:   
 # 0:36:29.186526
-# 
+# 0:44:46.288626
 
 # In[ ]:
 

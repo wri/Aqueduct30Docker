@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 """ Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 -------------------------------------------------------------------------------
@@ -35,13 +35,13 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D09_RH_Apply_AridLowOnce_Mask_PostGIS_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_RIGHT = "y2018m07d09_rh_arid_lowwateruse_full_ols_postgis_v01_v03"
-INPUT_TABLE_NAME_LEFT = 'y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v03'
+INPUT_TABLE_NAME_RIGHT = "y2018m07d09_rh_arid_lowwateruse_full_ols_postgis_v01_v04"
+INPUT_TABLE_NAME_LEFT = 'y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v04'
 
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
@@ -147,3 +147,4 @@ print(elapsed)
 
 # Previous runs:  
 # 0:19:28.891726  
+# 0:15:14.704501

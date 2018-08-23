@@ -29,12 +29,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D27_RH_Deltas_Annual_Scores_From_Months_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d27_rh_deltas_apply_aridlowonce_mask_v01_v01" 
+INPUT_TABLE_NAME = "y2018m07d27_rh_deltas_apply_aridlowonce_mask_v01_v02" 
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -93,12 +93,21 @@ sql =  "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql += " SELECT "
 for selection_column in selection_columns:
     sql += " {},".format(selection_column)
-sql +=     " AVG({}) AS avg1y_ols_ols10_waterstress_dimensionless_30spfaf06,".format(aggregate_column)
+sql +=     " AVG(ols_ols10_waterstress_dimensionless_30spfaf06) AS avg1y_ols_ols10_waterstress_dimensionless_30spfaf06,"
 sql +=     " CASE WHEN SUM (ols_ols10_ptotww_m_30spfaf06) >0 "
 sql +=         " THEN SUM(ols_ols10_waterstress_dimensionless_30spfaf06 * ols_ols10_ptotww_m_30spfaf06) / SUM (ols_ols10_ptotww_m_30spfaf06) "
 sql +=     " ELSE AVG(ols_ols10_waterstress_dimensionless_30spfaf06)"
 sql +=     " END"
-sql +=     " AS avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06"
+sql +=     " AS avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06,"
+
+sql +=     " AVG(ols_ols10_waterdepletion_dimensionless_30spfaf06) AS avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06,"
+sql +=     " CASE WHEN SUM (ols_ols10_ptotww_m_30spfaf06) >0 "
+sql +=         " THEN SUM(ols_ols10_waterdepletion_dimensionless_30spfaf06 * ols_ols10_ptotww_m_30spfaf06) / SUM (ols_ols10_ptotww_m_30spfaf06) "
+sql +=     " ELSE AVG(ols_ols10_waterdepletion_dimensionless_30spfaf06)"
+sql +=     " END"
+sql +=     " AS avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06"
+
+
 sql += " FROM {}".format(INPUT_TABLE_NAME)
 sql += " WHERE temporal_resolution = 'month'" 
 sql += " GROUP BY delta_id, year, temporal_resolution"
@@ -148,5 +157,6 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:02.071149
+# 0:00:02.071149  
+# 0:00:01.251781
 # 

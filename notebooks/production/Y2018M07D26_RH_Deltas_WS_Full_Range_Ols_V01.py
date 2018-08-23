@@ -33,11 +33,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D26_RH_Deltas_WS_Full_Range_Ols_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m07d26_rh_deltas_water_stress_v01_v01'
+INPUT_TABLE_NAME = 'y2018m07d26_rh_deltas_water_stress_v01_v02'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -100,7 +100,7 @@ input_columns = ["delta_id",
 
 # In[7]:
 
-indicators = ["waterstress_dimensionless","riverdischarge_m","ptotww_m","ptotwn_m"]
+indicators = ["waterstress_dimensionless","waterdepletion_dimensionless","riverdischarge_m","ptotww_m","ptotwn_m"]
 
 
 # In[8]:

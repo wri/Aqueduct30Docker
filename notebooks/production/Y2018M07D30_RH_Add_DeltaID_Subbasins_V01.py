@@ -33,7 +33,7 @@ OUTPUT_VERSION = 1
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_LEFT = "y2018m07d12_rh_ws_categorization_label_postgis_v01_v04"
+INPUT_TABLE_NAME_LEFT = "y2018m07d12_rh_ws_categorization_label_postgis_v01_v05"
 INPUT_TABLE_NAME_RIGHT = "y2018m07d25_rh_delta_lookup_table_postgis_v01_v01"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
@@ -132,7 +132,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:13:15.582667
+# 0:13:15.582667  
+# 0:17:09.497583
 # 
 
 # In[ ]:

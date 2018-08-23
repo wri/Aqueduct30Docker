@@ -134,7 +134,7 @@
 #     Add column for arid, lowwateruse and aridandlowwateruse for each subbasin. 
 # 
 # 
-# #### Water Stress hydrobasin 6
+# #### Water Stress and Depletion hydrobasin 6
 # 
 # 1. **Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V02**  
 #     Calculate water stress with raw, ma10 and ols10 at subbasin level.
@@ -186,7 +186,7 @@
 # 1. **Y2018M07D27_RH_Deltas_WS_Categorization_Label_V01**  
 #     Add category and label for water stress for deltas. 
 #   
-# #### Merge subbasins and deltas.
+# #### Water Stress and Depletion merge subbasins and deltas.
 # 1. **Y2018M07D30_RH_Add_DeltaID_Subbasins_V01**  
 #     Add delta id column to subbasin results. 
 # 1. **Y2018M07D30_RH_Merge_Subbasins_Deltas_V01**  (rerun 20180808, version increase)  
@@ -223,9 +223,9 @@
 #     Fit linear trend and average on 1969-2014 timeseries of linear trends.
 # 1. **Y2018M08D21_RH_Apply_AridLowOnce_Mask_V01**  
 #     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
-# 
-# 
-# 
+# 1. **Y2018M08D21_RH_WD_Annual_Scores_From_Months_V01**  
+#     Calculate Annual Scores by averaging monthly values.
+# 1. **Y2018M08D21_RH_WD_Merge_Simplify_Tables_V01**
 # 
 # 
 # 

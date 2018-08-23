@@ -33,11 +33,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D28_RH_WS_Full_Range_Ols_PostGIS_30sPfaf06_V02'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v02_v05'
+INPUT_TABLE_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v02_v06'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -103,7 +103,7 @@ input_columns = ["pfafid_30spfaf06",
 
 # In[7]:
 
-indicators = ["waterstress_dimensionless","riverdischarge_m","ptotww_m","ptotwn_m"]
+indicators = ["waterstress_dimensionless","waterdepletion_dimensionless","riverdischarge_m","ptotww_m","ptotwn_m"]
 
 
 # In[8]:
@@ -205,7 +205,8 @@ print(elapsed)
 # 0:19:28.891726  
 # 0:22:39.252233  
 # 0:31:26.302268  
-# 0:29:30.630927
+# 0:29:30.630927  
+# 0:26:08.090470
 
 # In[ ]:
 

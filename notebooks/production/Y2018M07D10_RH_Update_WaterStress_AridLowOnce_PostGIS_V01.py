@@ -11,6 +11,22 @@ Join the results of the arid and lowwater use mask based on annual values (ols)
 
 The script uses the 2014 value for the right table. 
 
+Water Depletion Scores
+
+
+if x < 0.05 
+
+y = max(20x,0)
+
+if 0.05 <= x < 0.25 
+
+y = 5x + 3/4
+
+if x >= 0.25
+
+y = min(5,4x+1)
+
+
 
 Author: Rutger Hofste
 Date: 20180710
@@ -35,12 +51,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01'
-OUTPUT_VERSION = 7
+OUTPUT_VERSION = 9
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d12_rh_merge_simplify_tables_postgis_v01_v05"
+INPUT_TABLE_NAME = "y2018m07d12_rh_merge_simplify_tables_postgis_v01_v06"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -110,9 +126,32 @@ sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " ELSE -9999"
 sql +=    " END"
-sql +=    " AS waterstress_raw_dimensionless_30spfaf06"
+sql +=    " AS waterstress_raw_dimensionless_30spfaf06,"
+
+# Water Depletion Raw
+sql += " CASE"
+sql +=     " WHEN temporal_resolution = 'month'"
+sql +=     " THEN ("
+sql +=         " CASE"
+sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
+sql +=             " THEN ols_ols10_waterdepletion_dimensionless_30spfaf06"        
+sql +=         " ELSE 1"
+sql +=         " END )"
+sql +=    " WHEN temporal_resolution = 'year'"
+sql +=    " THEN ( "
+sql +=         " CASE"
+sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
+sql +=             " THEN avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06"        
+sql +=         " ELSE 1"
+sql +=         " END )"
+sql +=    " ELSE -9999"
+sql +=    " END"
+sql +=    " AS waterdepletion_raw_dimensionless_30spfaf06"
+
 sql += " FROM {}".format(INPUT_TABLE_NAME)
 sql += " )"
+
+
 
 # Water Stress Scores
 sql += " SELECT *,"
@@ -125,6 +164,21 @@ sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 1 "
 sql +=     " THEN -1"
 sql += " ELSE -9999 "
 sql += " END AS waterstress_score_dimensionless_30spfaf06,"
+
+# Water Depletion Scores
+sql += " CASE"
+sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND waterdepletion_raw_dimensionless_30spfaf06 > 0 AND waterdepletion_raw_dimensionless_30spfaf06 < 0.05"
+sql +=     " THEN GREATEST(0,waterdepletion_raw_dimensionless_30spfaf06 *20)"  
+sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND waterdepletion_raw_dimensionless_30spfaf06 >= 0.05 AND waterdepletion_raw_dimensionless_30spfaf06 < 0.25"
+sql +=     " THEN 5*waterdepletion_raw_dimensionless_30spfaf06 + 0.75"  
+sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND waterdepletion_raw_dimensionless_30spfaf06 >= 0.25"
+sql +=     " THEN LEAST(5,4*waterdepletion_raw_dimensionless_30spfaf06 + 1)"  
+sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0 AND waterdepletion_raw_dimensionless_30spfaf06 <= 0"
+sql +=     " THEN 0"
+sql += " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 1 "
+sql +=     " THEN -1"
+sql += " ELSE -9999 "
+sql += " END AS waterdepletion_score_dimensionless_30spfaf06,"
 sql = sql[:-1]
 sql += " FROM cte"
 
@@ -187,7 +241,8 @@ print(elapsed)
 # 0:22:31.547347  
 # 0:19:47.178844  
 # 0:19:43.276432  
-# 0:19:55.676521
+# 0:19:55.676521  
+# 0:24:25.935893
 
 # In[ ]:
 

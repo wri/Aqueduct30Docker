@@ -29,12 +29,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D27_RH_Deltas_WS_Categorization_Label_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d27_rh_deltas_update_waterstress_aridlowonce_v01_v01"
+INPUT_TABLE_NAME = "y2018m07d27_rh_deltas_update_waterstress_aridlowonce_v01_v02"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -141,7 +141,19 @@ sql +=         " WHEN waterstress_score_dimensionless_30spfaf06 = 5"
 sql +=             " THEN 4"
 sql +=         " ELSE -9999"
 sql +=     " END"
-sql +=     " AS waterstress_category_dimensionless_30spfaf06"
+sql +=     " AS waterstress_category_dimensionless_30spfaf06,"
+
+sql +=     " CASE "
+sql +=         " WHEN waterdepletion_score_dimensionless_30spfaf06 = -1"
+sql +=             " THEN -1 "
+sql +=         " WHEN waterdepletion_score_dimensionless_30spfaf06 < 5 AND waterdepletion_score_dimensionless_30spfaf06 >= 0"
+sql +=             " THEN FLOOR(waterdepletion_score_dimensionless_30spfaf06)"
+sql +=         " WHEN waterdepletion_score_dimensionless_30spfaf06 = 5"
+sql +=             " THEN 4"
+sql +=         " ELSE -9999"
+sql +=     " END"
+sql +=     " AS waterdepletion_category_dimensionless_30spfaf06"
+
 sql += " FROM {}".format(INPUT_TABLE_NAME)
 sql += " )"
 # Create labels
@@ -163,7 +175,26 @@ sql +=         " THEN 'High' "
 sql +=     " WHEN waterstress_category_dimensionless_30spfaf06 = 4"
 sql +=         " THEN 'Extremely High' "
 sql +=     " ELSE 'error, check score'"
-sql +=     " END AS waterstress_label_dimensionless_30spfaf06"
+sql +=     " END AS waterstress_label_dimensionless_30spfaf06,"
+
+sql +=     " CASE"
+sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = -9999"
+sql +=         " THEN 'NoData' "
+sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = -1"
+sql +=         " THEN 'Arid and Low Water Use' "
+sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 0"
+sql +=         " THEN 'Low' "
+sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 1"
+sql +=         " THEN 'Low - Medium' "
+sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 2"
+sql +=         " THEN 'Medium - High' "
+sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 3"
+sql +=         " THEN 'High' "
+sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 4"
+sql +=         " THEN 'Extremely High' "
+sql +=     " ELSE 'error, check score'"
+sql +=     " END AS waterdepletion_label_dimensionless_30spfaf06"
+
 sql += " FROM cte;"
 
 
@@ -215,4 +246,9 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:25:34.35938
+# 0:00:02.116257
+
+# In[ ]:
+
+
+

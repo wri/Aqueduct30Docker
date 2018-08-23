@@ -34,7 +34,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D26_RH_Deltas_Water_Stress_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -112,6 +112,12 @@ for temporal_reducer in temporal_reducers:
     sql += " ELSE {}ptotww_m_30spfaf06 / ({}riverdischarge_m_30spfaf06 + {}ptotwn_m_30spfaf06) ".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " END"
     sql += " AS {}waterstress_dimensionless_30spfaf06 ,".format(temporal_reducer)
+    
+    sql += " CASE "
+    sql += " WHEN {}aridandlowwateruse_boolean_30spfaf06 = 1 THEN 1 ".format(temporal_reducer)
+    sql += " ELSE {}ptotwn_m_30spfaf06 / ({}riverdischarge_m_30spfaf06 + {}ptotwn_m_30spfaf06) ".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " END"
+    sql += " AS {}waterdepletion_dimensionless_30spfaf06 ,".format(temporal_reducer)
 
 sql = sql[:-1]
 sql += " FROM {}".format(INPUT_TABLE_NAME)

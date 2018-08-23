@@ -3,11 +3,11 @@
 
 # In[1]:
 
-""" Replace Null values with numbers to prepare for bigquery. 
+""" Merge and simplify master table and annual scores based on months.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20180730
+Date: 20180821
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -22,21 +22,25 @@ Args:
     S3_INPUT_PATH_RIVERDISCHARGE (string) : AWS S3 input path for 
         riverdischarge.    
     S3_INPUT_PATH_DEMAND (string) : AWS S3 input path for 
-        demand.  
+        demand.     
+
 """
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M07D30_RH_Replace_Null_Deltas_V01'
-OUTPUT_VERSION = 2
+SCRIPT_NAME = 'Y2018M08D21_RH_WD_Merge_Simplify_Tables_V01'
+OUTPUT_VERSION = 1
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v07"
+INPUT_TABLE_NAME_LEFT = "y2018m08d21_rh_apply_aridlowonce_mask_v01_v01"
+INPUT_TABLE_NAME_RIGHT = "y2018m08d21_rh_wd_annual_scores_from_months_v01_v01"
+OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
-
-print("Input Table: " , INPUT_TABLE_NAME)
+print("Input Table Left: " , INPUT_TABLE_NAME_LEFT, 
+      "Input Table Right: " , INPUT_TABLE_NAME_RIGHT, 
+      "\nOutput Table: " , OUTPUT_TABLE_NAME)
 
 
 # In[2]:
@@ -56,6 +60,7 @@ import re
 import os
 import numpy as np
 import pandas as pd
+import aqueduct3
 from datetime import timedelta
 from sqlalchemy import *
 pd.set_option('display.max_columns', 500)
@@ -70,61 +75,26 @@ F.close()
 engine = create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
 #connection = engine.connect()
 
+if OVERWRITE_OUTPUT:
+    sql = "DROP TABLE IF EXISTS {};".format(OUTPUT_TABLE_NAME)
+    print(sql)
+    result = engine.execute(sql)
+
 
 # In[5]:
 
-sql = "UPDATE {}".format(INPUT_TABLE_NAME)
-sql += " SET riverdischarge_m_delta = -1,"
-sql += " waterstress_raw_dimensionless_delta = -1,"
-sql += " waterstress_score_dimensionless_delta = -1,"
-sql += " waterstress_category_dimensionless_delta = -1,"
-sql += " waterstress_label_dimensionless_delta = 'NoData',"
-sql += " waterdepletion_raw_dimensionless_delta = -1,"
-sql += " waterdepletion_score_dimensionless_delta = -1,"
-sql += " waterdepletion_category_dimensionless_delta = -1,"
-sql += " waterdepletion_label_dimensionless_delta = 'NoData',"
-sql += " delta_id = -1"
-sql += " WHERE delta_id IS NULL"
+columns_to_keep_left = ["pfafid_30spfaf06",
+                        "temporal_resolution",
+                        "year",
+                        "month",
+                        "area_m2_30spfaf06",
+                        "area_count_30spfaf06"]
 
 
 # In[6]:
 
-sql
+columns_to_keep_right = []
 
-
-# In[7]:
-
-result = engine.execute(sql)
-
-
-# In[8]:
-
-sql = "ALTER TABLE {} ALTER COLUMN delta_id SET DATA TYPE INT;".format(INPUT_TABLE_NAME)
-
-
-# In[9]:
-
-# will take 20 min to run.
-result = engine.execute(sql)
-
-
-# In[10]:
-
-engine.dispose()
-
-
-# In[11]:
-
-end = datetime.datetime.now()
-elapsed = end - start
-print(elapsed)
-
-
-# Previous runs:  
-# 0:21:14.401220  
-# 0:42:08.612665  
-# 0:42:04.108612  
-# 0:52:44.430636
 
 # In[ ]:
 
