@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[15]:
+# In[1]:
 
 """Queries delta basins and stores results in csv files and stores in Carto
 -------------------------------------------------------------------------------
@@ -11,11 +11,11 @@
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M08D06_RH_QA_Delta_IDs_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_INPUT_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m07d30_rh_gcs_to_bq_v01_v02"
+BQ_INPUT_TABLE_NAME = "y2018m07d30_rh_gcs_to_bq_v01_v06"
 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
 s3_output_path = "s3://wri-projects/Aqueduct30/qaData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -77,7 +77,7 @@ SELECT
   pfafid_30spfaf06,
   temporal_resolution,
   year,
-  month,
+  month,  
   waterstress_label_dimensionless_coalesced,
   waterstress_category_dimensionless_coalesced,
   waterstress_score_dimensionless_coalesced,
@@ -91,7 +91,21 @@ SELECT
   waterstress_score_dimensionless_30spfaf06,
   waterstress_raw_dimensionless_30spfaf06,
   avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06,
-  avg1y_ols_ols10_waterstress_dimensionless_30spfaf06
+  avg1y_ols_ols10_waterstress_dimensionless_30spfaf06,
+  waterdepletion_label_dimensionless_coalesced,
+  waterdepletion_category_dimensionless_coalesced,
+  waterdepletion_score_dimensionless_coalesced,
+  waterdepletion_raw_dimensionless_coalesced,
+  waterdepletion_label_dimensionless_delta,
+  waterdepletion_category_dimensionless_delta,
+  waterdepletion_score_dimensionless_delta,
+  waterdepletion_raw_dimensionless_delta,
+  waterdepletion_label_dimensionless_30spfaf06,
+  waterdepletion_category_dimensionless_30spfaf06,
+  waterdepletion_score_dimensionless_30spfaf06,
+  waterdepletion_raw_dimensionless_30spfaf06,
+  avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06,
+  avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06  
 FROM
   `aqueduct30.{}.{}`
 WHERE
@@ -146,7 +160,7 @@ for temporal_resolution in temporal_resolutions:
             df_selected .to_csv(output_file_path)
 
 
-# In[14]:
+# In[12]:
 
 # Upload result data to Carto
 cc.write(df=df,
@@ -155,12 +169,12 @@ cc.write(df=df,
          privacy="public")
 
 
-# In[ ]:
+# In[13]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[14]:
 
 end = datetime.datetime.now()
 elapsed = end - start

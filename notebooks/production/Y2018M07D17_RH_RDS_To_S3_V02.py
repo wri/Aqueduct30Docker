@@ -80,33 +80,33 @@ print("Power to the maxxx:", cpu_count)
 sql = "SELECT DISTINCT pfafid_30spfaf06 FROM {} ORDER BY pfafid_30spfaf06".format(INPUT_TABLE_NAME)
 
 
-# In[ ]:
+# In[7]:
 
 df = pd.read_sql(sql,engine)
 
 
-# In[ ]:
+# In[8]:
 
 df.shape
 
 
-# In[ ]:
+# In[9]:
 
 df.head()
 
 
-# In[ ]:
+# In[10]:
 
 if TESTING:
     df = df[0:10]
 
 
-# In[ ]:
+# In[11]:
 
 df_split = np.array_split(df, cpu_count*100)
 
 
-# In[ ]:
+# In[12]:
 
 def basin_to_csv(df):
     for index, row in df.iterrows():
@@ -123,7 +123,7 @@ def basin_to_csv(df):
         print(output_file_path)
 
 
-# In[ ]:
+# In[13]:
 
 # cleared output to save space
 p= multiprocessing.Pool()
@@ -132,18 +132,18 @@ p.close()
 p.join()
 
 
-# In[ ]:
+# In[14]:
 
 #!aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet
 
 
-# In[ ]:
+# In[15]:
 
 # cleared output to save space
 get_ipython().system('gsutil -m cp {ec2_output_path}/*.csv {gcs_output_path}')
 
 
-# In[ ]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -153,7 +153,8 @@ print(elapsed)
 # Previous runs:  
 # 0:42:01.416597  
 # 0:42:14.565295  
-# 0:31:40.728932
+# 0:31:40.728932  
+# 0:23:35.132388
 # 
 # 
 

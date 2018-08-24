@@ -217,14 +217,10 @@
 #     Categorize and label intra annual variability.
 #     
 # #### Water Depletion.
-# 1. **Y2018M08D21_RH_Water_Depletion_30sPfaf06_V01**  
-#     Water Depletion at hydrobasin level 6.  
-# 1. **Y2018M06D21_RH_WD_Full_Range_Ols_30sPfaf06_V01**  
-#     Fit linear trend and average on 1969-2014 timeseries of linear trends.
-# 1. **Y2018M08D21_RH_Apply_AridLowOnce_Mask_V01**  
-#     Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
-# 1. **Y2018M08D21_RH_WD_Annual_Scores_From_Months_V01**  
-#     Calculate Annual Scores by averaging monthly values.
+# 
+# 
+# 
+# 
 # 1. **Y2018M08D21_RH_WD_Merge_Simplify_Tables_V01**
 # 
 # 
