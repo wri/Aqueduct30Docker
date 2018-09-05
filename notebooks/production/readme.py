@@ -217,17 +217,22 @@
 #     Categorize and label intra annual variability.
 #     
 # #### Water Depletion.
-# 
-# 
-# 
-# 
 # 1. **Y2018M08D21_RH_WD_Merge_Simplify_Tables_V01**
 # 
 # 
 # 
 #     
 # 
-# ### Groundwater Branch
+# #### Groundwater
+# 1. **Y2018M09D03_RH_GWS_Tables_To_BQ_V01**  
+#     Ingest tabular results to BigQuery.
+# 1. **Y2018M09D03_RH_GWS_Cat_Label_V01**  
+#     Add category and Label for groundwater stress and trend.
+# 
+# #### Drought Severity
+# 1. **Y2018M09D05_RH_DS_Zonal_Stats_V01**  
+#     Zonal stats for drought severity soil moisture and streamflow.
+# 
 # 
 # ### Flood Risk Branch
 # 
