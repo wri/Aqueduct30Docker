@@ -216,12 +216,6 @@
 # 1. **Y2018M08D02_RH_Intra_Annual_Variability_Cat_Label_V01**  
 #     Categorize and label intra annual variability.
 #     
-# #### Water Depletion.
-# 1. **Y2018M08D21_RH_WD_Merge_Simplify_Tables_V01**
-# 
-# 
-# 
-#     
 # 
 # #### Groundwater
 # 1. **Y2018M09D03_RH_GWS_Tables_To_BQ_V01**  
@@ -232,6 +226,8 @@
 # #### Drought Severity
 # 1. **Y2018M09D05_RH_DS_Zonal_Stats_V01**  
 #     Zonal stats for drought severity soil moisture and streamflow.
+# 1. **Y2018M09D05_RH_DS_Cat_Label_V01**  
+#     Add category and Label for drought severity.
 # 
 # 
 # ### Flood Risk Branch

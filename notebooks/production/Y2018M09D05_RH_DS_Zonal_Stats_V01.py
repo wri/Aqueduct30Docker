@@ -8,6 +8,10 @@
 
 Hydrobasin level 6
 
+WARNING: replaces null values with zeros to avoid missing basins. Based on 
+visual inspection this is fine. Areas in Norway and Argentinia would
+otherwise have null values.
+
 
 Author: Rutger Hofste
 Date: 20180905
@@ -30,9 +34,9 @@ Returns:
 
 """
 
-TESTING = 1
+TESTING = 0
 SCRIPT_NAME = "Y2018M09D05_RH_DS_Zonal_Stats_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 4
 
 ZONES_EE_PATH = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_V04"
 
@@ -73,6 +77,7 @@ geometry = aqueduct3.earthengine.get_global_geometry(TESTING)
 
 def reduce_region_soilmoisture(feature):
     i_value = ee.Image(EE_PATH_SOIL)
+    i_value = i_value.unmask(0) 
     geometry= feature.geometry()
     d = i_value.reduceRegion(reducer=ee.Reducer.mean(),
                              geometry=geometry,
@@ -82,11 +87,12 @@ def reduce_region_soilmoisture(feature):
                              tileScale=1)
     feature_out = ee.Feature(feature)
     mean = d.get("b1") 
-    feature_out = feature_out.set("droughtseveritysoilmoisture",mean)
+    feature_out = feature_out.set("droughtseveritysoilmoisture_dimensionless",mean)
     return feature_out
 
 def reduce_region_streamflow(feature):
     i_value = ee.Image(EE_PATH_STREAM)
+    i_value = i_value.unmask(0) 
     geometry= feature.geometry()
     d = i_value.reduceRegion(reducer=ee.Reducer.mean(),
                              geometry=geometry,
@@ -96,7 +102,7 @@ def reduce_region_streamflow(feature):
                              tileScale=1)
     feature_out = ee.Feature(feature)
     mean = d.get("b1") 
-    feature_out = feature_out.set("droughtseveritystreamflow",mean)
+    feature_out = feature_out.set("droughtseveritystreamflow_dimensionless",mean)
     return feature_out
 
 
@@ -117,38 +123,55 @@ fc_reduced_stream = fc_zones.map(reduce_region_streamflow)
 
 # In[9]:
 
-output_file_path_soil= "{}/droughtseveritysoilmoisture.csv".format(GCS_OUTPUT_PATH)
+print(fc_zones.size().getInfo())
+
+
+# In[10]:
+
+print(fc_reduced_soil.size().getInfo())
+
+
+# In[11]:
+
+print(fc_reduced_stream.size().getInfo())
+
+
+# In[12]:
+
+output_file_path_soil= "{}/droughtseveritysoilmoisture".format(GCS_OUTPUT_PATH)
 print(output_file_path_soil)
 task_soil = ee.batch.Export.table.toCloudStorage(collection=fc_reduced_soil,
                                                  description="droughtseveritysoilmoisture",
                                                  bucket=GCS_BUCKET,
                                                  fileNamePrefix=output_file_path_soil,
-                                                 fileFormat="CSV")
+                                                 fileFormat="CSV",
+                                                 selectors=["droughtseveritysoilmoisture_dimensionless","PFAF_ID","SUB_AREA"])
                                               
 
 
-# In[10]:
+# In[13]:
 
 task_soil.start()
 
 
-# In[11]:
+# In[14]:
 
-output_file_path_stream= "{}/droughtseveritystreamflow.csv".format(GCS_OUTPUT_PATH)
+output_file_path_stream= "{}/droughtseveritystreamflow".format(GCS_OUTPUT_PATH)
 print(output_file_path_stream)
 task_stream = ee.batch.Export.table.toCloudStorage(collection=fc_reduced_stream,
                                                  description="droughtseveritystreamflow",
                                                  bucket=GCS_BUCKET,
                                                  fileNamePrefix=output_file_path_stream,
-                                                 fileFormat="CSV")
+                                                 fileFormat="CSV",
+                                                 selectors=["droughtseveritystreamflow_dimensionless","PFAF_ID","SUB_AREA"])
 
 
-# In[12]:
+# In[15]:
 
 task_stream.start()
 
 
-# In[13]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -156,7 +179,7 @@ print(elapsed)
 
 
 # Previous runs:  
-# 
+# 0:00:08.025985
 
 # In[ ]:
 
