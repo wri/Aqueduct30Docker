@@ -155,7 +155,7 @@
 # 
 #     
 #     
-# #### Water Stress Deltas
+# #### Water Stress and Depletion Deltas
 # 
 # 1. **Y2018M07D25_RH_Join_Deltas_Values_V01**  
 #     Join delta_ids, supply and demand tables.    
@@ -223,12 +223,17 @@
 # 1. **Y2018M09D03_RH_GWS_Cat_Label_V01**  
 #     Add category and Label for groundwater stress and trend.
 # 
-# #### Drought Severity
+# #### Drought Severity (not used)
 # 1. **Y2018M09D05_RH_DS_Zonal_Stats_V01**  
 #     Zonal stats for drought severity soil moisture and streamflow.
 # 1. **Y2018M09D05_RH_DS_Cat_Label_V01**  
 #     Add category and Label for drought severity.
 # 
+# #### Drought Risk
+# 1. **Y2018M09D28_RH_DR_Ingest_EE_V01**
+#     Ingest drought risk data in earthengine. 
+# 1. **Y2018M98D28_RH_DR_Zonal_Stats_EE_V01**  
+#     Drought Risk zonal stats in earthengine.
 # 
 # ### Flood Risk Branch
 # 

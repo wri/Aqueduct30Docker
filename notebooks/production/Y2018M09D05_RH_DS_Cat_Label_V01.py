@@ -6,14 +6,15 @@
 """ Add category and Label for drought severity.
 -------------------------------------------------------------------------------
 
-Drought Severity Soil Moisture 
+Using Yoshi's Thresholds
 
+Drought Severity Soil Moisture 
 
 0- 0.1 Low
 0.1 - 0.25 Low - Medium
 0.25 - 0.5 Medium - High
 0.5 - 0.75 High
-0.75 - 0 Extremely High
+0.75 - 1.0 Extremely High
 
 
 Using Linear Interpolation
@@ -24,6 +25,113 @@ elif 0.1<x<0.25
     y = (20/3)*x + (1/3)
 else
     y = min(5,4*x+1)
+
+
+Drought Severity Streamflow (alternative option)
+
+0 - 0.2 Low
+0.2 - 0.5 Low - Medium 
+0.5 - 1.0 Medium - High
+1.0 - 1.5 High
+1.5 - 2.0 Extremely High
+
+if x < 0.2
+    y = max(0,5x)
+elif 0.2<x<0.5
+    y = (3 1/3)*x + (1/3)
+elif 0.5<x<1
+    y = min(5, (2)*x + 1) 
+
+
+Quantile Based Thresholds:
+
+Soilmoisture:
+
+0 - 0.05 Low
+0.05 - 0.09 Low - Medium
+0.09 - 0.15 Medium - High
+0.15 - 0.28 High
+0.28 - 1 Extremely High
+
+
+if x < 0.05
+    y = max(0,20x)
+elif 0.05<x<0.09
+    y = (1/0.04)*x - (1/4)
+elif 0.09<x<0.15
+    y = (1/0.06)*x - (1/2)
+elif 0.15<x<0.28
+    y = (1/0.13)*x - (0.24/0.13)
+elif 0.28<x<1
+    y = min(5, (1/0.72)*x+(2.6/0.72)) 
+
+
+
+Streamflow
+
+0 - 0.35 Low
+0.35 - 0.49 Low - Medium
+0.49 - 0.69 Medium - High
+0.69 - 1.19 High
+1.19 - 2 Extremely High
+
+if x < 0.35
+    y = max(0,(1/0.35)x)
+elif 0.35<x<0.49
+    y = (1/0.14)*x - (1,5)
+elif 0.49<x<0.69
+    y = (5*x -0.45)
+elif 0.69<x<1.19
+    y = (2)*x + 1.62
+elif 1.19<x<2
+    y = min(5, (1/0.81)*x+(2.53)) 
+
+
+
+Quantile Based Thresholds After Masking:
+
+Soilmoisture after mask:
+
+0 - 0.05 Low
+0.05 - 0.08 Low - Medium
+0.08 - 0.12 Medium - High
+0.12 - 0.22 High
+0.22 - 1 Extremely High
+
+
+if x < 0.05
+    y = max(0,20x)
+elif 0.05<x<0.08
+    y = (1/0.03)*x - (2/3)
+elif 0.08<x<0.12
+    y = (1/0.04)*x 
+elif 0.12<x<0.22
+    y = (10)*x +1.8
+elif 0.22<x<1
+    y = min(5, (1/0.78)*x+(2.90/0.78)) 
+
+
+
+Streamflow after mask
+
+0 - 0.35 Low
+0.35 - 0.46 Low - Medium
+0.46 - 0.61 Medium - High
+0.61 - 0.90 High
+0.90 - 1.00 Extremely High
+
+if x < 0.35
+    y = max(0,(1/0.35)x)
+elif 0.35<x<0.46
+    y = (1/0.11)*x - (2,1818)
+elif 0.46<x<0.61
+    y = (x/0.15 + (-0.16/0.15)
+elif 0.61<x<0.90
+    y = (1/0.29)*x + (0.26/0.29)
+elif 0.90<x<1
+    y = min(5, (10)*x-(5)) 
+
+
 
 Author: Rutger Hofste
 Date: 20180905
@@ -46,14 +154,21 @@ Result:
 """
 
 SCRIPT_NAME = "Y2018M09D05_RH_DS_Cat_Label_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 4 
+
+#Version 1 is with soilmoisture categories.
+#Version 2 with quantile data. 
+# Version 3 with masked quantile data
+# Version 4 with masked Yoshi categories
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M09D05_RH_DS_Zonal_Stats_V01/output_V04/"
-
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
+
+# used for masking out arid and lowwateruse
+BQ_INPUT_TABLE_NAME = "y2018m07d30_rh_gcs_to_bq_v01_v06"
 
 ec2_input_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
 
@@ -61,7 +176,8 @@ ec2_input_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_V
 print("GCS_INPUT_PATH: ",GCS_INPUT_PATH,
       "\nec2_input_path: ",ec2_input_path,
       "\nBQ_OUTPUT_DATASET_NAME: ", BQ_OUTPUT_DATASET_NAME,
-      "\nBQ_OUTPUT_TABLE_NAME: ",BQ_OUTPUT_TABLE_NAME
+      "\nBQ_OUTPUT_TABLE_NAME: ",BQ_OUTPUT_TABLE_NAME,
+      "\nBQ_INPUT_TABLE_NAME: ",BQ_INPUT_TABLE_NAME
       )
 
 
@@ -100,7 +216,90 @@ client = bigquery.Client(project=BQ_PROJECT_ID)
 
 # In[6]:
 
-def raw_value_to_score_droughtseverity(x):
+def raw_value_to_score_droughtseveritysoilmoisture_quantile(x):
+    """ Quantile Based Thresholds After Masking:
+
+    Soilmoisture after mask:
+
+    0 - 0.05 Low
+    0.05 - 0.08 Low - Medium
+    0.08 - 0.12 Medium - High
+    0.12 - 0.22 High
+    0.22 - 1 Extremely High
+
+
+    if x < 0.05
+        y = max(0,20x)
+    elif 0.05<x<0.08
+        y = (1/0.03)*x - (2/3)
+    elif 0.08<x<0.12
+        y = (1/0.04)*x 
+    elif 0.12<x<0.22
+        y = (10)*x +1.8
+    elif 0.22<x<1
+        y = min(5, (1/0.78)*x+(2.90/0.78)) 
+    
+    """
+    if x == -9999:
+        y = -9999
+    elif x<0.05:
+        y = max(20*x,0)
+    elif (x >= 0.05) and ( x < 0.08):
+        y = (1/0.03)*x - (2/3)
+    elif (x >= 0.08) and ( x < 0.12):
+        y = (1/0.04)*x 
+    elif (x >= 0.12) and ( x < 0.22):
+        y = (10)*x +1.8
+    elif (x >= 0.22):
+        y = min(5, (1/0.78)*x+(2.90/0.78)) 
+    return y
+
+
+
+# In[7]:
+
+def raw_value_to_score_droughtseveritystreamflow_quantile(x):
+    """ Linear interpolation
+    
+    Streamflow after mask
+
+    0 - 0.35 Low
+    0.35 - 0.46 Low - Medium
+    0.46 - 0.61 Medium - High
+    0.61 - 0.90 High
+    0.90 - 1.00 Extremely High
+
+    if x < 0.35
+        y = max(0,(1/0.35)x)
+    elif 0.35<x<0.46
+        y = (1/0.11)*x - (2,1818)
+    elif 0.46<x<0.61
+        y = (x/0.15 + (-0.16/0.15)
+    elif 0.61<x<0.90
+        y = (1/0.29)*x + (0.26/0.29)
+    elif 0.90<x<1
+        y = min(5, (10)*x-(5)) 
+
+
+    """
+    if x == -9999:
+        y = -9999
+    elif x<0.35:
+        y = max((1/0.35)*x,0)
+    elif (x >= 0.35) and ( x < 0.46):
+        y = (1/0.11)*x - (2.1818)
+    elif (x >= 0.46) and ( x < 0.61):
+        y = (x/0.15) - (0.16/0.15)
+    elif (x >= 0.61) and ( x < 0.90):
+        y = (1/0.29)*x + (0.26/0.29)
+    elif (x >= 0.90):
+         y = min(5, (10)*x-(5)) 
+    return y
+
+
+# In[8]:
+
+def raw_value_to_score_droughtseveritysoilmoisture(x):
     """ Linear interpolation
     
     thresholds set by Yoshi
@@ -125,6 +324,118 @@ def raw_value_to_score_droughtseverity(x):
         y = (20/3)*x + 1/3
     elif (x >= 0.25):
         y = min(4*x + 1,5)
+    return y
+
+
+
+
+def raw_value_to_score_droughtseveritysoilmoisture_quantile_old(x):
+    """ Linear interpolation
+    
+    thresholds by quantiles (QGIS)
+    
+    Soilmoisture:
+    
+    0 - 0.05 Low
+    0.05 - 0.09 Low - Medium
+    0.09 - 0.15 Medium - High
+    0.15 - 0.28 High
+    0.28 - 1 Extremely High
+
+
+    if x < 0.05
+        y = max(0,20x)
+    elif 0.05<x<0.09
+        y = (1/0.04)*x - (1/4)
+    elif 0.09<x<0.15
+        y = (1/0.06)*x - (1/2)
+    elif 0.15<x<0.28
+        y = (1/0.13)*x - (0.24/0.13)
+    elif 0.28<x<1
+        y = min(5, (1/0.72)*x+(2.6/0.72)) 
+    
+    """
+    if x == -9999:
+        y = -9999
+    elif x<0.05:
+        y = max(20*x,0)
+    elif (x >= 0.05) and ( x < 0.09):
+        y = (1/0.04)*x - 1/4
+    elif (x >= 0.09) and ( x < 0.15):
+        y = (1/0.06)*x + 1/2
+    elif (x >= 0.15) and ( x < 0.28):
+        y = (1/0.13)*x + (0.24/0.13)
+    elif (x >= 0.28):
+        y = min((1/0.72)*x+(2.6/0.72) + 1,5)
+    return y
+
+def raw_value_to_score_droughtseveritystreamflow_quantile_old(x):
+    """ Linear interpolation
+    
+    thresholds by quantiles (QGIS)
+    
+    Streamflow:    
+   
+    0 - 0.35 Low
+    0.35 - 0.49 Low - Medium
+    0.49 - 0.69 Medium - High
+    0.69 - 1.19 High
+    1.19 - 2 Extremely High
+
+    if x < 0.35
+        y = max(0,(1/0.35)x)
+    elif 0.35<x<0.49
+        y = (1/0.14)*x - (1,5)
+    elif 0.49<x<0.69
+        y = (5*x -0.45)
+    elif 0.69<x<1.19
+        y = (2)*x + 1.62
+    elif 1.19<x<2
+        y = min(5, (1/0.81)*x+(2.53)) 
+
+    """
+    if x == -9999:
+        y = -9999
+    elif x < 0.35:
+        y = max((1/0.35)*x,0)
+    elif (x >= 0.35) and ( x < 0.49):
+        y = (1/0.14)*x - 1.5
+    elif (x >= 0.49) and ( x < 0.69):
+        y = (5)*x -0.45
+    elif (x >= 0.69) and ( x < 1.19):
+        y = (2)*x + 1.62
+    elif (x >= 1.19):
+        y = min((1/0.81)*x+(2.53) + 1,5)
+    return y
+
+
+
+def raw_value_to_score_droughtseveritystreamflow(x):
+    """ Linear interpolation
+    
+    thresholds set by Yoshi and multiplied by two to create a better distribution.
+    
+    Using Linear Interpolation
+
+    if x < 0.2
+        y = max(0,5x)
+    elif 0.2<x<0.5
+        y = (3 1/3)*x + (1/3)
+    elif 0.5<x<1
+        y = min(5, (2)*x + 1) 
+
+    
+    """
+    
+    
+    if x == -9999:
+        y = -9999
+    elif x<0.2:
+        y = max(5*x,0)
+    elif (x >= 0.2) and ( x < 0.5):
+        y = (3 +(1/3))*x + 1/3
+    elif (x >= 0.5):
+        y = min(2*x + 1,5)
     return y
 
 
@@ -157,29 +468,29 @@ def category_to_label(cat):
     return label
 
 def process_droughtseveritysoilmoisture(df):
-    df["droughtseveritysoilmoisture_score"] = df["droughtseveritysoilmoisture_dimensionless"].apply(raw_value_to_score_droughtseverity)
+    df["droughtseveritysoilmoisture_score"] = df["droughtseveritysoilmoisture_dimensionless"].apply(raw_value_to_score_droughtseveritysoilmoisture)
     df["droughtseveritysoilmoisture_cat"] = df["droughtseveritysoilmoisture_score"].apply(score_to_category)
     df["droughtseveritysoilmoisture_label"] = df["droughtseveritysoilmoisture_cat"].apply(category_to_label)
     return df
     
 def process_droughtseveritystreamflow(df):
-    df["droughtseveritystreamflow_score"] = df["droughtseveritystreamflow_dimensionless"].apply(raw_value_to_score_droughtseverity)
+    df["droughtseveritystreamflow_score"] = df["droughtseveritystreamflow_dimensionless"].apply(raw_value_to_score_droughtseveritystreamflow)
     df["droughtseveritystreamflow_cat"] = df["droughtseveritystreamflow_score"].apply(score_to_category)
     df["droughtseveritystreamflow_label"] = df["droughtseveritystreamflow_cat"].apply(category_to_label)
     return df
 
 
-# In[7]:
+# In[9]:
 
 files = os.listdir(ec2_input_path)
 
 
-# In[8]:
+# In[10]:
 
 files
 
 
-# In[9]:
+# In[11]:
 
 def  group_basins(pfaf_id):
     """ Returns pfaf_id unless part of the complex -180 degree meridian crossing
@@ -249,13 +560,16 @@ def process_duplicate_pfafid(df,value_column_name,weight_column_name,group_by_at
     return df_temp_sums
 
 
-# In[10]:
+# In[12]:
 
 d_out = {}
 for one_file in files:
     print(one_file)
     input_file_path = "{}/{}".format(ec2_input_path,one_file)
     df = pd.read_csv(input_file_path)
+    
+
+    
     df = df.fillna(-9999)
     df["PFAF_ID_GROUPING"] = df["PFAF_ID"].apply(group_basins)
     
@@ -279,29 +593,98 @@ for one_file in files:
         pass
 
 
-# In[11]:
+# In[13]:
 
 df_merged = d_out["droughtseveritysoilmoistureee_export.csv"].merge(right=d_out["droughtseveritystreamflowee_export.csv"],
                                                                     how="left",
                                                                     on="PFAF_ID")
 
 
-# In[12]:
+# In[14]:
 
 df_merged.head()
 
 
-# In[13]:
+# In[15]:
 
-df_merged.shape
+# Addded later
 
 
-# In[14]:
+# In[16]:
+
+sql = """
+SELECT
+  pfafid_30spfaf06,
+  temporal_resolution,
+  month,
+  aridandlowwateruse_boolean_30spfaf06
+FROM
+  `{}.{}.{}`
+WHERE
+  temporal_resolution = "year" and year = 2014""".format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
+
+
+# In[17]:
+
+# added later, mask out arid and lowwater use.
+df_aridlow = pd.read_gbq(query=sql,
+                         dialect="standard")
+
+
+# In[18]:
+
+df_merged = df_merged.merge(right=df_aridlow,
+                            how="left",
+                            right_on = "pfafid_30spfaf06",
+                            left_on="PFAF_ID")
+
+
+# In[19]:
+
+df_merged["droughtseveritysoilmoisture_score"] = np.where(df_merged["aridandlowwateruse_boolean_30spfaf06"] ==1, -1,df_merged["droughtseveritysoilmoisture_score"])
+df_merged["droughtseveritystreamflow_score"] = np.where(df_merged["aridandlowwateruse_boolean_30spfaf06"] ==1, -1,df_merged["droughtseveritystreamflow_score"])
+df_merged["droughtseveritysoilmoisture_cat"] = np.where(df_merged["aridandlowwateruse_boolean_30spfaf06"] ==1, -1,df_merged["droughtseveritysoilmoisture_cat"])
+df_merged["droughtseveritystreamflow_cat"] = np.where(df_merged["aridandlowwateruse_boolean_30spfaf06"] ==1, -1,df_merged["droughtseveritystreamflow_cat"])
+
+
+df_merged["droughtseveritysoilmoisture_label"] = np.where(df_merged["aridandlowwateruse_boolean_30spfaf06"] ==1, "Arid and Low Wateruse",df_merged["droughtseveritysoilmoisture_label"])
+df_merged["droughtseveritystreamflow_label"] = np.where(df_merged["aridandlowwateruse_boolean_30spfaf06"] ==1, "Arid and Low Wateruse",df_merged["droughtseveritystreamflow_label"])
+
+
+
+# In[20]:
+
+df_valid = df_merged.loc[df_merged["aridandlowwateruse_boolean_30spfaf06"] != 1]
+
+
+# In[21]:
+
+q_stream = df_valid["droughtseveritystreamflow_dimensionless"].quantile(q=[0,0.2,0.4,0.6,0.8,1])
+
+
+# In[22]:
+
+q_soil = df_valid["droughtseveritysoilmoisture_dimensionless"].quantile(q=[0,0.2,0.4,0.6,0.8,1])
+
+
+# ## Quantiles
+
+# In[23]:
+
+print(q_stream)
+
+
+# In[24]:
+
+print(q_soil)
+
+
+# In[25]:
 
 destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 
-# In[15]:
+# In[26]:
 
 df_merged.to_gbq(destination_table=destination_table,
                  project_id=BQ_PROJECT_ID,
@@ -309,7 +692,7 @@ df_merged.to_gbq(destination_table=destination_table,
                  if_exists="replace")
 
 
-# In[16]:
+# In[27]:
 
 end = datetime.datetime.now()
 elapsed = end - start

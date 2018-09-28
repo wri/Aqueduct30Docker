@@ -10,11 +10,11 @@
 
 
 SCRIPT_NAME = 'Y2018M09D07_RH_QA_DS_Carto_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 4
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_INPUT_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m09d05_rh_ds_cat_label_v01_v01"
+BQ_INPUT_TABLE_NAME = "y2018m09d05_rh_ds_cat_label_v01_v04"
 
 CARTO_OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
@@ -57,9 +57,9 @@ creds = cartoframes.Credentials(key=carto_api_key,
 cc = cartoframes.CartoContext(creds=creds)
 
 
-# In[ ]:
+# In[5]:
 
-SELECT
+sql = """SELECT
   PFAF_ID,
   droughtseveritysoilmoisture_dimensionless,
   droughtseveritysoilmoisture_score,
@@ -68,9 +68,45 @@ SELECT
   droughtseveritystreamflow_dimensionless,
   droughtseveritystreamflow_score,
   droughtseveritystreamflow_cat,
-  droughtseveritystreamflow_label
+  droughtseveritystreamflow_label,
+  aridandlowwateruse_boolean_30spfaf06
 FROM
-  `aqueduct30.aqueduct30v01.y2018m09d05_rh_ds_cat_label_v01_v01`
-LIMIT
-  1000
+  `{}.{}`
+""".format(BQ_INPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
 
+
+# In[6]:
+
+print(sql)
+
+
+# In[7]:
+
+df = pd.read_gbq(query=sql,dialect="standard")
+
+
+# In[8]:
+
+df.shape
+
+
+# In[9]:
+
+# Upload result data to Carto
+cc.write(df=df,
+         table_name=CARTO_OUTPUT_TABLE_NAME,
+         overwrite=True,
+         privacy="public")
+
+
+# In[10]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# Previous runs:  
+# 0:00:14.345542  
+# 0:00:20.780113
+# 
