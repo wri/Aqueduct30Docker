@@ -3,18 +3,18 @@
 
 # In[1]:
 
-"""Queries drought severity and stores in Carto.
+"""Queries drought risk and stores in Carto.
 -------------------------------------------------------------------------------
 
 """
 
 
-SCRIPT_NAME = 'Y2018M09D07_RH_QA_DS_Carto_V01'
-OUTPUT_VERSION = 4
+SCRIPT_NAME = 'Y2018M09D28_RH_QA_DR_Carto_V01'
+OUTPUT_VERSION = 2
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_INPUT_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m09d05_rh_ds_cat_label_v01_v04"
+BQ_INPUT_TABLE_NAME = "y2018m09d28_rh_dr_cat_label_v01_v02"
 
 CARTO_OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
@@ -57,25 +57,36 @@ creds = cartoframes.Credentials(key=carto_api_key,
 cc = cartoframes.CartoContext(creds=creds)
 
 
-# In[11]:
+# In[5]:
 
 sql = """SELECT
   PFAF_ID,
-  droughtseveritysoilmoisture_dimensionless,
-  droughtseveritysoilmoisture_score,
-  droughtseveritysoilmoisture_cat,
-  droughtseveritysoilmoisture_label,
-  droughtseveritystreamflow_dimensionless,
-  droughtseveritystreamflow_score,
-  droughtseveritystreamflow_cat,
-  droughtseveritystreamflow_label,
-  aridandlowwateruse_boolean_30spfaf06
+  droughthazard_dimensionless,
+  droughthazard_count,
+  droughthazard_score,
+  droughthazard_cat,
+  droughthazard_label,
+  droughtrisk_dimensionless,
+  droughtrisk_count,
+  droughtrisk_score,
+  droughtrisk_cat,
+  droughtrisk_label,
+  droughtexposure_dimensionless,
+  droughtexposure_count,
+  droughtexposure_score,
+  droughtexposure_cat,
+  droughtexposure_label,
+  droughtvulnerability_dimensionless,
+  droughtvulnerability_count,
+  droughtvulnerability_score,
+  droughtvulnerability_cat,
+  droughtvulnerability_label
 FROM
   `{}.{}`
 """.format(BQ_INPUT_DATASET_NAME,BQ_INPUT_TABLE_NAME)
 
 
-# In[12]:
+# In[6]:
 
 print(sql)
 
@@ -107,6 +118,9 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:14.345542  
-# 0:00:20.780113
-# 
+# 0:00:21.165826
+
+# In[ ]:
+
+
+

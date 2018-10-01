@@ -16,7 +16,7 @@ desertcoldareamask
 
 Author: Rutger Hofste
 Date: 201809028
-Kernel: python27
+Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:

@@ -10,13 +10,13 @@
 
 Author: Rutger Hofste
 Date: 201809028
-Kernel: python27
+Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 Args:
 """
 
-SCRIPT_NAME = "Y2018M98D28_RH_DR_Zonal_Stats_EE_V01"
+SCRIPT_NAME = "Y2018M09D28_RH_DR_Zonal_Stats_EE_V01"
 EE_INPUT_ZONES_PATH = "projects/WRI-Aquaduct/Y2018M04D20_RH_Ingest_HydroBasins_GCS_EE_V01/output_V02/hybas_lev06_v1c_merged_fiona_V04"
 EE_INPUT_VALUES_PATH = "projects/WRI-Aquaduct/Y2018M09D28_RH_DR_Ingest_EE_V01/output_V03/"
 
@@ -66,7 +66,10 @@ reducer = ee.Reducer.count().combine(
 
 # In[6]:
 
-parameters = ["desertcoldareamask","hazard","exposure","vulnerability","risk"]
+# parameters = ["desertcoldareamask","hazard","exposure","vulnerability","risk"]
+# removed mask since it will not output a mean column. 
+
+parameters = ["hazard","exposure","vulnerability","risk"]
 
 
 # In[7]:
@@ -101,7 +104,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:10.984084
+# 0:00:10.984084  
+# 0:00:07.563100
 
 # In[ ]:
 
