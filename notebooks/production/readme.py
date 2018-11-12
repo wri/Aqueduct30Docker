@@ -5,6 +5,18 @@
 # 
 # This document will keep track of what scripts to run to get to the results. 
 # 
+# 
+# ## Abbreviations
+# 
+# 
+# 1. Baseline Water Stress | WS
+# 1. Baseline Water Depletion | WD
+# 
+# 
+# ## Results at hydrobasin level 6
+# 1. **Y2018M10D29_RH_Aqueduct30_V01
+# 
+# 
 # ### Setup Checks  
 # 1. **Y2018M04D16_RH_Checks_V01**  
 #    Run setup checks for credentials. 
@@ -240,6 +252,10 @@
 # #### ICEP
 # 1. **Y20118M10D01_RH_ICEP_Basins_PostGIS_V01**  
 #     Store ICEP data in PostGIS Database.
+#     
+# #### Risk of Untreated Wastewater 
+# 1.  **Y2018M10D05_RH_UWW_PostGIS_V01**  
+#     Store wastewater results on postGIS.
 #     
 # 
 # 
