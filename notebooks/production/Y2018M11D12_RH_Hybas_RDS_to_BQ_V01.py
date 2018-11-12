@@ -101,7 +101,7 @@ if TESTING:
     df = df.sample(1000)
 
 
-# In[ ]:
+# In[11]:
 
 df.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -109,12 +109,12 @@ df.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[ ]:
+# In[12]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start

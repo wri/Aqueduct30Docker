@@ -295,7 +295,11 @@
 # 1.  **Y2018M11D12_RH_Hybas_RDS_to_BQ_V01**
 #     Upload hydrobasin geospatial data to bigquery.
 #     
-#     todo:
+# 1.  **Y2018M11D12_RH_GADM36_Level1_to_RDS_V01**
+#     Upload GADM 3.6 level 1 to RDS.
+#     
+# 
+# 
 #     gadm to RDS
 #     gadm RDS to BQ
 #     
