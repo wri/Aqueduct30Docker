@@ -290,6 +290,27 @@
 # 1.  **Y2018M03D22_RH_Download_ESI_V01**  
 #     Download ESI (Evaporative Stress Index) to Instance, Google Cloud Services and Amazon S3.
 #     
+# 
+# ### Geospatial Layers
+# 1.  **Y2018M11D12_RH_Hybas_RDS_to_BQ_V01**
+#     Upload hydrobasin geospatial data to bigquery.
+#     
+#     todo:
+#     gadm to RDS
+#     gadm RDS to BQ
+#     
+#     whymap to RDS
+#     whymap RDS to BQ
+#     
+#     GADM to RDS
+#     GADM RDS to BQ
+#     
+#     ICEP to RDS
+#     ICEP RDS to BQ
+#     
+#     Union (postGIS or BQ)
+#     
+#     
 #     
 # 
 # 
