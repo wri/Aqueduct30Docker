@@ -3,7 +3,7 @@
 
 # In[1]:
 
-""" Upload hydrobasin geospatial data to bigquery
+""" Upload GADM 3.6 level 1 to bigquery.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
@@ -15,7 +15,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M11D12_RH_Hybas_RDS_to_BQ_V01'
+SCRIPT_NAME = 'Y2018M11D12_RH_GADM36_Level1_RDS_to_BQ_V01'
 OUTPUT_VERSION = 1
 
 BQ_PROJECT_ID = "aqueduct30"
@@ -23,9 +23,8 @@ BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
-RDS_INPUT_TABLE_NAME = "hybas06_v04"
+RDS_INPUT_TABLE_NAME = "y2018m11d12_rh_gadm36_level1_to_rds_v01_v02"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
-
 
 print("\nRDS_DATABASE_ENDPOINT: ", RDS_DATABASE_ENDPOINT,
       "\nRDS_DATABASE_NAME: ", RDS_DATABASE_NAME,
@@ -70,7 +69,16 @@ engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".form
 
 sql = """
 SELECT
-  pfaf_id,
+  gid_1,
+  name_1,
+  gid_0,
+  name_0,
+  varname_1,
+  nl_name_1,
+  type_1,
+  engtype_1,
+  cc_1,
+  hasc_1,
   geom,
   ST_AsText(geom) AS wkt
 FROM
@@ -91,39 +99,49 @@ gdf.shape
 
 # In[8]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+gdf.head()
 
 
 # In[9]:
 
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[13]:
+
 df = pd.DataFrame(gdf.drop("geom",1))
 
 
-# In[10]:
+# In[11]:
 
 if TESTING:
     df = df.sample(1000)
 
 
-# In[11]:
+# In[15]:
 
 df.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
-          chunksize=1000,
+          chunksize=100,
           if_exists="replace")
 
 
-# In[12]:
+# In[16]:
 
 engine.dispose()
 
 
-# In[13]:
+# In[17]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# previous runs:
-# 0:05:16.209576
+# previous runs:  
+# 0:14:59.092810
+
+# In[ ]:
+
+
+
