@@ -3,11 +3,11 @@
 
 # In[1]:
 
-""" Upload hydrobasin geospatial data to bigquery
+""" Union of Hybas and GADM in Bigquey.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20181112
+Date: 20181114
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -15,7 +15,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M11D12_RH_Hybas_RDS_to_BQ_V01'
+SCRIPT_NAME = 'Y2018M11D14_RH_Hybas_Union_GADM_BQ_V01'
 OUTPUT_VERSION = 1
 
 BQ_PROJECT_ID = "aqueduct30"
@@ -23,13 +23,12 @@ BQ_OUTPUT_DATASET_NAME = "geospatial_v01"
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
-RDS_INPUT_TABLE_NAME = "hybas06_v04"
+BQ_INPUT_TABLE_NAME = "y2018m11d14_rh_icepbasins_to_bq_v01_v01"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
-
 
 print("\nRDS_DATABASE_ENDPOINT: ", RDS_DATABASE_ENDPOINT,
       "\nRDS_DATABASE_NAME: ", RDS_DATABASE_NAME,
-      "\nRDS_INPUT_TABLE_NAME: ",RDS_INPUT_TABLE_NAME,
+      "\nBQ_INPUT_TABLE_NAME: ",BQ_INPUT_TABLE_NAME,
       "\nBQ_OUTPUT_DATASET_NAME: ", BQ_OUTPUT_DATASET_NAME,
       "\nBQ_OUTPUT_TABLE_NAME: ", BQ_OUTPUT_TABLE_NAME)
 
@@ -59,76 +58,65 @@ client = bigquery.Client(project=BQ_PROJECT_ID)
 
 # In[4]:
 
-F = open("/.password","r")
-password = F.read().splitlines()[0]
-F.close()
+job_config = bigquery.QueryJobConfig()
 
-engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
+
+# In[ ]:
+
+"""
+SELECT
+    t1.pfaf_id,
+    t2.gid_1,
+    ST_Intersection(ST_GeogFromText(t1.wkt),ST_GeogFromText(t2.wkt)) as geom
+FROM 
+    `aqueduct30.geospatial_v01.y2018m11d12_rh_hybas_rds_to_bq_v01_v01` t1,
+    `aqueduct30.geospatial_v01.y2018m11d12_rh_gadm36_level1_rds_to_bq_v01_v01` t2
+WHERE
+    ST_Intersects(ST_GeogFromText(t1.wkt),ST_GeogFromText(t2.wkt))
+"""
 
 
 # In[5]:
 
-sql = """
+q = """
 SELECT
-  pfaf_id,
-  geom,
-  ST_AsText(geom) AS wkt
-FROM
-  {}
-""".format(RDS_INPUT_TABLE_NAME)
+    t1.df1,
+    t2.df2,
+    ST_Intersection(ST_GeogFromText(t1.wkt),ST_GeogFromText(t2.wkt)) as geom
+FROM 
+    `aqueduct30.spatial_test.df1` t1,
+    `aqueduct30.spatial_test.df2` t2
+WHERE
+    ST_Intersects(ST_GeogFromText(t1.wkt),ST_GeogFromText(t2.wkt))
+
+"""
 
 
 # In[6]:
 
-gdf = gpd.read_postgis(sql=sql,
-                       con=engine)
+destination_dataset_ref = client.dataset('sandbox')
 
 
 # In[7]:
 
-gdf.shape
+destination_table_ref = destination_dataset_ref.table('union_test01')
 
 
 # In[8]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+job_config.destination = destination_table_ref
 
 
 # In[9]:
 
-df = pd.DataFrame(gdf.drop("geom",1))
-
-
-# In[10]:
-
-if TESTING:
-    df = df.sample(1000)
+query_job = client.query(query=q,
+                         job_config=job_config)
 
 
 # In[11]:
 
-df.to_gbq(destination_table=destination_table,
-          project_id=BQ_PROJECT_ID,
-          chunksize=1000,
-          if_exists="replace")
+rows = query_job.result()
 
-
-# In[12]:
-
-engine.dispose()
-
-
-# In[13]:
-
-end = datetime.datetime.now()
-elapsed = end - start
-print(elapsed)
-
-
-# previous runs:  
-# 0:05:16.209576  
-# 0:06:01.469727
-# 
 
 # In[ ]:
 

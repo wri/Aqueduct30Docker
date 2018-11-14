@@ -250,7 +250,7 @@
 #     Merge, cleanup, add category and label for drought risk.
 #     
 # #### ICEP
-# 1. **Y20118M10D01_RH_ICEP_Basins_PostGIS_V01**  
+# 1. **Y2018M10D01_RH_ICEP_Basins_PostGIS_V01**  
 #     Store ICEP data in PostGIS Database.
 #     
 # #### Risk of Untreated Wastewater 
@@ -292,29 +292,26 @@
 #     
 # 
 # ### Geospatial Layers
+# 
+# some geospatial layers are already on RDS as a result of a previous step. These layers include: Hydrobasins, ICEP
+# 
+# 1.  **Y2018M11D14_RH_Create_Geospatial_Dataset_BQ_V01**  
+#     Create dataset to hold geospatial tables in Bigquery.
+# 
 # 1.  **Y2018M11D12_RH_Hybas_RDS_to_BQ_V01**  
 #     Upload hydrobasin geospatial data to bigquery.  
 # 1.  **Y2018M11D12_RH_GADM36_Level1_to_RDS_V01**  
 #     Upload GADM 3.6 level 1 to RDS.    
 # 1.  **Y2018M11D12_RH_GADM36_Level1_RDS_to_BQ_V01**  
 #     Upload GADM 3.6 level 1 to bigquery.
-#     
-# 
 # 1. **Y2018M11D14_RH_WHYMAP_to_RDS_V01**  
-#     Upload WHYMAP geospatial data to RDS. 
-#     
-#     
-#     whymap to RDS
-#     whymap RDS to BQ
-#     
-#     GADM to RDS
-#     GADM RDS to BQ
-#     
-#     ICEP to RDS
-#     ICEP RDS to BQ
-#     
-#     Union (postGIS or BQ)
-#     
+#     Upload WHYMAP geospatial data to RDS.  
+# 1. **Y2018M11D14_RH_WHYMAP_RDS_to_BQ_V01**  
+#     Upload WHYMAP to BQ.    
+# 1. **Y2018M11D14_RH_ICEPBasins_To_BQ_V01**  
+#     Upload ICEP Basins to BQ.
+# 1. **Y2018M11D14_RH_Hybas_Union_GADM_BQ_V01**  
+#     Union of Hybas and GADM in Bigquey.
 #     
 #     
 # 

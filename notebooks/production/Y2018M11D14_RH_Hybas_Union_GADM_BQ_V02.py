@@ -3,11 +3,11 @@
 
 # In[1]:
 
-""" Upload hydrobasin geospatial data to bigquery
+""" Union of Hybas and GADM in Bigquey.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20181112
+Date: 20181114
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -15,7 +15,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M11D12_RH_Hybas_RDS_to_BQ_V01'
+SCRIPT_NAME = 'Y2018M11D14_RH_Hybas_Union_GADM_BQ_V02'
 OUTPUT_VERSION = 1
 
 BQ_PROJECT_ID = "aqueduct30"
@@ -23,14 +23,17 @@ BQ_OUTPUT_DATASET_NAME = "geospatial_v01"
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
-RDS_INPUT_TABLE_NAME = "hybas06_v04"
-BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
+RDS_INPUT_TABLE_LEFT = "hybas06_v04"
+RDS_INPUT_TABLE_RIGHT = "y2018m11d12_rh_gadm36_level1_to_rds_v01_v02"
+
+
+BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 print("\nRDS_DATABASE_ENDPOINT: ", RDS_DATABASE_ENDPOINT,
       "\nRDS_DATABASE_NAME: ", RDS_DATABASE_NAME,
-      "\nRDS_INPUT_TABLE_NAME: ",RDS_INPUT_TABLE_NAME,
-      "\nBQ_OUTPUT_DATASET_NAME: ", BQ_OUTPUT_DATASET_NAME,
+      "\nRDS_INPUT_TABLE_LEFT: ",RDS_INPUT_TABLE_LEFT,
+      "\nRDS_INPUT_TABLE_RIGHT: ",RDS_INPUT_TABLE_LEFT,
       "\nBQ_OUTPUT_TABLE_NAME: ", BQ_OUTPUT_TABLE_NAME)
 
 
@@ -66,71 +69,50 @@ F.close()
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
-# In[5]:
+# In[7]:
 
 sql = """
 SELECT
   pfaf_id,
-  geom,
-  ST_AsText(geom) AS wkt
+  geom
 FROM
   {}
-""".format(RDS_INPUT_TABLE_NAME)
-
-
-# In[6]:
-
-gdf = gpd.read_postgis(sql=sql,
-                       con=engine)
-
-
-# In[7]:
-
-gdf.shape
-
-
-# In[8]:
-
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+""".format(RDS_INPUT_TABLE_LEFT)
 
 
 # In[9]:
 
-df = pd.DataFrame(gdf.drop("geom",1))
+gdf_left = gpd.read_postgis(sql=sql,
+                            con=engine)
 
 
-# In[10]:
+# In[14]:
 
-if TESTING:
-    df = df.sample(1000)
-
-
-# In[11]:
-
-df.to_gbq(destination_table=destination_table,
-          project_id=BQ_PROJECT_ID,
-          chunksize=1000,
-          if_exists="replace")
-
-
-# In[12]:
-
-engine.dispose()
-
-
-# In[13]:
-
-end = datetime.datetime.now()
-elapsed = end - start
-print(elapsed)
+sql = """
+SELECT
+  gid_1,
+  name_1,
+  gid_0,
+  name_0,
+  varname_1,
+  nl_name_1,
+  type_1,
+  engtype_1,
+  cc_1,
+  hasc_1,
+  geom
+FROM
+  {}
+""".format(RDS_INPUT_TABLE_RIGHT)
 
 
-# previous runs:  
-# 0:05:16.209576  
-# 0:06:01.469727
-# 
+# In[16]:
+
+gdf_right = gpd.read_postgis(sql=sql,
+                            con=engine)
+
 
 # In[ ]:
 
-
+gdf_union = gpd.overlay(gfd_left,gdf_right,how="union")
 

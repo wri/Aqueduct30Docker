@@ -19,7 +19,7 @@ SCRIPT_NAME = 'Y2018M11D12_RH_GADM36_Level1_RDS_to_BQ_V01'
 OUTPUT_VERSION = 1
 
 BQ_PROJECT_ID = "aqueduct30"
-BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
+BQ_OUTPUT_DATASET_NAME = "geospatial_v01"
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
@@ -107,7 +107,7 @@ gdf.head()
 destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 
-# In[13]:
+# In[10]:
 
 df = pd.DataFrame(gdf.drop("geom",1))
 
@@ -118,7 +118,7 @@ if TESTING:
     df = df.sample(1000)
 
 
-# In[15]:
+# In[12]:
 
 df.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -126,12 +126,12 @@ df.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[16]:
+# In[13]:
 
 engine.dispose()
 
 
-# In[17]:
+# In[14]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -139,7 +139,9 @@ print(elapsed)
 
 
 # previous runs:  
-# 0:14:59.092810
+# 0:14:59.092810  
+# 0:12:43.245526
+# 
 
 # In[ ]:
 

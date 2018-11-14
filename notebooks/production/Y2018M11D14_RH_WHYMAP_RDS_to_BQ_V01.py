@@ -3,11 +3,11 @@
 
 # In[1]:
 
-""" Upload hydrobasin geospatial data to bigquery
+""" Upload WHYMAP to bigquery.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20181112
+Date: 20181114
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -15,7 +15,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M11D12_RH_Hybas_RDS_to_BQ_V01'
+SCRIPT_NAME = 'Y2018M11D14_RH_WHYMAP_RDS_to_BQ_V01'
 OUTPUT_VERSION = 1
 
 BQ_PROJECT_ID = "aqueduct30"
@@ -23,9 +23,8 @@ BQ_OUTPUT_DATASET_NAME = "geospatial_v01"
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
-RDS_INPUT_TABLE_NAME = "hybas06_v04"
+RDS_INPUT_TABLE_NAME = "y2018m11d14_rh_whymap_to_rds_v01_v01"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
-
 
 print("\nRDS_DATABASE_ENDPOINT: ", RDS_DATABASE_ENDPOINT,
       "\nRDS_DATABASE_NAME: ", RDS_DATABASE_NAME,
@@ -70,7 +69,7 @@ engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".form
 
 sql = """
 SELECT
-  pfaf_id,
+  aqid,
   geom,
   ST_AsText(geom) AS wkt
 FROM
@@ -91,34 +90,38 @@ gdf.shape
 
 # In[8]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+gdf.head()
 
 
 # In[9]:
 
-df = pd.DataFrame(gdf.drop("geom",1))
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 
 # In[10]:
 
-if TESTING:
-    df = df.sample(1000)
+destination_table
 
 
 # In[11]:
 
-df.to_gbq(destination_table=destination_table,
-          project_id=BQ_PROJECT_ID,
-          chunksize=1000,
-          if_exists="replace")
+df = pd.DataFrame(gdf.drop("geom",1))
 
 
 # In[12]:
 
-engine.dispose()
+df.to_gbq(destination_table=destination_table,
+          project_id=BQ_PROJECT_ID,
+          chunksize=100,
+          if_exists="replace")
 
 
 # In[13]:
+
+engine.dispose()
+
+
+# In[14]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -126,9 +129,7 @@ print(elapsed)
 
 
 # previous runs:  
-# 0:05:16.209576  
-# 0:06:01.469727
-# 
+# 0:03:04.858003
 
 # In[ ]:
 
