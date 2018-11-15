@@ -19,7 +19,8 @@ SCRIPT_NAME = 'Y2018M11D14_RH_WHYMAP_RDS_to_BQ_V01'
 OUTPUT_VERSION = 1
 
 BQ_PROJECT_ID = "aqueduct30"
-BQ_OUTPUT_DATASET_NAME = "geospatial_v01"
+BQ_OUTPUT_DATASET_NAME_WKT = "geospatial_wkt_v01"
+BQ_OUTPUT_DATASET_NAME_GEOG = "geospatial_geog_v01"
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
@@ -29,7 +30,8 @@ BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 print("\nRDS_DATABASE_ENDPOINT: ", RDS_DATABASE_ENDPOINT,
       "\nRDS_DATABASE_NAME: ", RDS_DATABASE_NAME,
       "\nRDS_INPUT_TABLE_NAME: ",RDS_INPUT_TABLE_NAME,
-      "\nBQ_OUTPUT_DATASET_NAME: ", BQ_OUTPUT_DATASET_NAME,
+      "\nBQ_OUTPUT_DATASET_NAME_WKT: ", BQ_OUTPUT_DATASET_NAME_WKT,
+      "\nBQ_OUTPUT_DATASET_NAME_GEOG: ", BQ_OUTPUT_DATASET_NAME_GEOG,
       "\nBQ_OUTPUT_TABLE_NAME: ", BQ_OUTPUT_TABLE_NAME)
 
 
@@ -95,12 +97,12 @@ gdf.head()
 
 # In[9]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+destination_table_wkt = "{}.{}".format(BQ_OUTPUT_DATASET_NAME_WKT,BQ_OUTPUT_TABLE_NAME)
 
 
 # In[10]:
 
-destination_table
+destination_table_wkt
 
 
 # In[11]:
@@ -110,7 +112,7 @@ df = pd.DataFrame(gdf.drop("geom",1))
 
 # In[12]:
 
-df.to_gbq(destination_table=destination_table,
+df.to_gbq(destination_table=destination_table_wkt,
           project_id=BQ_PROJECT_ID,
           chunksize=100,
           if_exists="replace")
@@ -122,6 +124,48 @@ engine.dispose()
 
 
 # In[14]:
+
+job_config = bigquery.QueryJobConfig()
+
+
+# In[39]:
+
+q = """
+SELECT
+  aqid,
+  ST_GeogFromText(wkt) AS geog
+FROM
+  {}
+""".format(destination_table_wkt)
+
+
+# In[40]:
+
+destination_dataset_ref = client.dataset(BQ_OUTPUT_DATASET_NAME_GEOG)
+
+
+# In[41]:
+
+destination_table_ref = destination_dataset_ref.table(BQ_OUTPUT_TABLE_NAME)
+
+
+# In[42]:
+
+job_config.destination = destination_table_ref
+
+
+# In[43]:
+
+query_job = client.query(query=q,
+                         job_config=job_config)
+
+
+# In[44]:
+
+rows = query_job.result()
+
+
+# In[45]:
 
 end = datetime.datetime.now()
 elapsed = end - start

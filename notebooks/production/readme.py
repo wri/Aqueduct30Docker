@@ -310,8 +310,10 @@
 #     Upload WHYMAP to BQ.    
 # 1. **Y2018M11D14_RH_ICEPBasins_To_BQ_V01**  
 #     Upload ICEP Basins to BQ.
-# 1. **Y2018M11D14_RH_Hybas_Union_GADM_BQ_V01**  
+# 1. **Y2018M11D14_RH_Hybas_Union_GADM_BQ_V02**  
 #     Union of Hybas and GADM in Bigquey.
+# 1. **Y2018M11D15_RH_Hybas_Union_GADM_RDS_V01**  
+#     Union of Hybas and GADM in RDS.
 #     
 #     
 # 

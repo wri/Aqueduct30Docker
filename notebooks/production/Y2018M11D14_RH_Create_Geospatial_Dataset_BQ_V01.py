@@ -17,7 +17,7 @@ SCRIPT_NAME = 'Y2018M11D14_RH_Create_Geospatial_Dataset_BQ_V01'
 OUTPUT_VERSION = 1
 
 BQ_PROJECT_ID = "aqueduct30"
-BQ_OUTPUT_DATASET_NAME = "geospatial_v01"
+BQ_OUTPUT_DATASET_NAME = "geospatial"
 
 print("\nBQ_OUTPUT_DATASET_NAME: ", BQ_OUTPUT_DATASET_NAME)
 
@@ -47,25 +47,23 @@ client = bigquery.Client(project=BQ_PROJECT_ID)
 
 # In[4]:
 
-dataset_id = BQ_OUTPUT_DATASET_NAME
+dataset_ids = [
+    "geospatial_wkt_v{:02.0f}".format(OUTPUT_VERSION),
+    "geospatial_geog_v{:02.0f}".format(OUTPUT_VERSION)
+]
 
 
 # In[5]:
 
-dataset_ref = client.dataset(dataset_id)
+for dataset_id in dataset_ids:
+    print(dataset_id)
+    dataset_ref = client.dataset(dataset_id)
+    dataset = bigquery.Dataset(dataset_ref)
+    dataset = client.create_dataset(dataset)
+    
 
 
 # In[6]:
-
-dataset = bigquery.Dataset(dataset_ref)
-
-
-# In[7]:
-
-dataset = client.create_dataset(dataset)
-
-
-# In[8]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -76,8 +74,3 @@ print(elapsed)
 # 0:00:14.998675
 # 
 # 
-
-# In[ ]:
-
-
-

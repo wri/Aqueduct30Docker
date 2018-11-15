@@ -6,7 +6,7 @@
 # simple polygon to postGIS to test spatial functions
 
 
-# In[22]:
+# In[3]:
 
 # Database settings
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -19,7 +19,7 @@ BQ_OUTPUT_DATASET_NAME = "spatial_test"
 
 
 
-# In[34]:
+# In[4]:
 
 import os
 import sqlalchemy
@@ -36,7 +36,7 @@ os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
 client = bigquery.Client(project=BQ_PROJECT_ID)
 
 
-# In[4]:
+# In[5]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -58,6 +58,16 @@ polys2 = gpd.GeoSeries([Polygon([(1,1), (3,1), (3,3), (1,3)]),
                               Polygon([(3,3), (5,3), (5,5), (3,5)])])
 
 
+# In[10]:
+
+poly_extent = gpd.GeoSeries([Polygon([(0,0), (10,0), (10,10), (0,10)])])
+
+
+# In[23]:
+
+poly_extent2 = gpd.GeoSeries([Polygon([(0,-90), (101,-90), (100,0), (0,0)])])
+
+
 # In[7]:
 
 df1 = gpd.GeoDataFrame({'geometry': polys1, 'df1':[1,2]})
@@ -66,6 +76,16 @@ df1 = gpd.GeoDataFrame({'geometry': polys1, 'df1':[1,2]})
 # In[8]:
 
 df2 = gpd.GeoDataFrame({'geometry': polys2, 'df2':[1,2]})
+
+
+# In[11]:
+
+df_extent = gpd.GeoDataFrame({'geometry': poly_extent, 'id':[1]})
+
+
+# In[24]:
+
+df_extent2 = gpd.GeoDataFrame({'geometry': poly_extent2, 'id':[1]})
 
 
 # In[9]:
@@ -88,7 +108,7 @@ res_symdiff = gpd.overlay(df1, df2, how='symmetric_difference')
 res_symdiff
 
 
-# In[13]:
+# In[16]:
 
 def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     # this function uploads a polygon shapefile to table in AWS RDS. 
@@ -149,6 +169,16 @@ gdfFromSQL = uploadGDFtoPostGIS(res_symdiff,"test.gpd_symdiff_v01",True)
 # In[17]:
 
 gdfFromSQL = uploadGDFtoPostGIS(res_union,"test.gpd_union_v01",True)
+
+
+# In[17]:
+
+gdfFromSQL = uploadGDFtoPostGIS(df_extent,"test.extent_10degree",True)
+
+
+# In[26]:
+
+gdfFromSQL = uploadGDFtoPostGIS(df_extent2,"test.extent_big",True)
 
 
 # In[30]:
