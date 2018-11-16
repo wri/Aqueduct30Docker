@@ -6,7 +6,7 @@
 # simple polygon to postGIS to test spatial functions
 
 
-# In[3]:
+# In[2]:
 
 # Database settings
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -17,9 +17,7 @@ BQ_OUTPUT_DATASET_NAME = "spatial_test"
 
 
 
-
-
-# In[4]:
+# In[3]:
 
 import os
 import sqlalchemy
@@ -36,7 +34,7 @@ os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
 client = bigquery.Client(project=BQ_PROJECT_ID)
 
 
-# In[5]:
+# In[4]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -58,22 +56,22 @@ polys2 = gpd.GeoSeries([Polygon([(1,1), (3,1), (3,3), (1,3)]),
                               Polygon([(3,3), (5,3), (5,5), (3,5)])])
 
 
-# In[10]:
+# In[7]:
 
 poly_extent = gpd.GeoSeries([Polygon([(0,0), (10,0), (10,10), (0,10)])])
 
 
-# In[23]:
+# In[8]:
 
 poly_extent2 = gpd.GeoSeries([Polygon([(0,-90), (101,-90), (100,0), (0,0)])])
 
 
-# In[7]:
+# In[9]:
 
 df1 = gpd.GeoDataFrame({'geometry': polys1, 'df1':[1,2]})
 
 
-# In[8]:
+# In[10]:
 
 df2 = gpd.GeoDataFrame({'geometry': polys2, 'df2':[1,2]})
 
@@ -83,32 +81,32 @@ df2 = gpd.GeoDataFrame({'geometry': polys2, 'df2':[1,2]})
 df_extent = gpd.GeoDataFrame({'geometry': poly_extent, 'id':[1]})
 
 
-# In[24]:
+# In[12]:
 
 df_extent2 = gpd.GeoDataFrame({'geometry': poly_extent2, 'id':[1]})
 
 
-# In[9]:
+# In[13]:
 
 res_union = gpd.overlay(df1, df2, how='union')
 
 
-# In[10]:
+# In[14]:
 
 res_union
 
 
-# In[11]:
+# In[15]:
 
 res_symdiff = gpd.overlay(df1, df2, how='symmetric_difference')
 
 
-# In[12]:
+# In[16]:
 
 res_symdiff
 
 
-# In[16]:
+# In[17]:
 
 def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     # this function uploads a polygon shapefile to table in AWS RDS. 
@@ -161,36 +159,79 @@ gdfFromSQL = uploadGDFtoPostGIS(df1,"test.df1",True)
 gdfFromSQL = uploadGDFtoPostGIS(df2,"test.df2",True)
 
 
-# In[16]:
+# In[20]:
 
 gdfFromSQL = uploadGDFtoPostGIS(res_symdiff,"test.gpd_symdiff_v01",True)
 
 
-# In[17]:
+# In[21]:
 
 gdfFromSQL = uploadGDFtoPostGIS(res_union,"test.gpd_union_v01",True)
 
 
-# In[17]:
+# In[22]:
 
 gdfFromSQL = uploadGDFtoPostGIS(df_extent,"test.extent_10degree",True)
 
 
-# In[26]:
+# In[23]:
 
 gdfFromSQL = uploadGDFtoPostGIS(df_extent2,"test.extent_big",True)
+
+
+# In[24]:
+
+sql = """
+SELECT
+  df1,
+  geom,
+  ST_AsText(geom) AS wkt,
+  ST_AsGeoJSON(geom) as gjson
+FROM
+  {}
+""".format("test.df1")
+
+
+# In[25]:
+
+gdf = gpd.read_postgis(sql=sql,
+                       con=engine)
+
+
+# In[26]:
+
+gdf
+
+
+# In[27]:
+
+df = pd.DataFrame(gdf.drop("geom",1))
+
+
+# In[28]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,"df1")
+
+
+# In[29]:
+
+df.to_gbq(destination_table=destination_table,
+          project_id=BQ_PROJECT_ID,
+          chunksize=100,
+          if_exists="replace")
 
 
 # In[30]:
 
 sql = """
 SELECT
-  df1,
+  df2,
   geom,
-  ST_AsText(geom) AS wkt
+  ST_AsText(geom) AS wkt,
+  ST_AsGeoJSON(geom) AS gjson
 FROM
   {}
-""".format("test.df1")
+""".format("test.df2")
 
 
 # In[31]:
@@ -201,20 +242,15 @@ gdf = gpd.read_postgis(sql=sql,
 
 # In[32]:
 
-gdf
-
-
-# In[35]:
-
 df = pd.DataFrame(gdf.drop("geom",1))
 
 
-# In[36]:
+# In[33]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,"df1")
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,"df2")
 
 
-# In[38]:
+# In[34]:
 
 df.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -222,35 +258,36 @@ df.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[39]:
+# In[37]:
 
 sql = """
 SELECT
-  df2,
+  id,
   geom,
-  ST_AsText(geom) AS wkt
+  ST_AsText(geom) AS wkt,
+  ST_AsGeoJSON(geom) AS gjson
 FROM
   {}
-""".format("test.df2")
+""".format("test.extent_big")
 
 
-# In[40]:
+# In[38]:
 
 gdf = gpd.read_postgis(sql=sql,
                        con=engine)
 
 
-# In[41]:
+# In[39]:
 
 df = pd.DataFrame(gdf.drop("geom",1))
 
 
-# In[42]:
+# In[40]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,"df2")
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,"extent_big")
 
 
-# In[43]:
+# In[41]:
 
 df.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,

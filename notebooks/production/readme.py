@@ -14,7 +14,6 @@
 # 
 # 
 # ## Results at hydrobasin level 6
-# 1. **Y2018M10D29_RH_Aqueduct30_V01
 # 
 # 
 # ### Setup Checks  
@@ -312,8 +311,6 @@
 #     Upload ICEP Basins to BQ.
 # 1. **Y2018M11D14_RH_Hybas_Union_GADM_BQ_V02**  
 #     Union of Hybas and GADM in Bigquey.
-# 1. **Y2018M11D15_RH_Hybas_Union_GADM_RDS_V01**  
-#     Union of Hybas and GADM in RDS.
 #     
 #     
 # 

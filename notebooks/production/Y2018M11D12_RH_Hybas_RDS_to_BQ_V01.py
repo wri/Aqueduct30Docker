@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 """ Upload hydrobasin geospatial data to bigquery
 -------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M11D12_RH_Hybas_RDS_to_BQ_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME_WKT = "geospatial_wkt_v01"
@@ -37,7 +37,7 @@ print("\nRDS_DATABASE_ENDPOINT: ", RDS_DATABASE_ENDPOINT,
       "\nBQ_OUTPUT_TABLE_NAME: ", BQ_OUTPUT_TABLE_NAME)
 
 
-# In[3]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -47,7 +47,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[4]:
+# In[3]:
 
 import os
 import sqlalchemy
@@ -60,7 +60,7 @@ os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
 client = bigquery.Client(project=BQ_PROJECT_ID)
 
 
-# In[5]:
+# In[4]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -69,46 +69,47 @@ F.close()
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
-# In[6]:
+# In[5]:
 
 sql = """
 SELECT
   pfaf_id,
   geom,
-  ST_AsText(geom) AS wkt
+  ST_AsText(geom) AS wkt,
+  ST_AsGeoJSON(geom) AS gjson
 FROM
   {}
 """.format(RDS_INPUT_TABLE_NAME)
 
 
-# In[7]:
+# In[6]:
 
 gdf = gpd.read_postgis(sql=sql,
                        con=engine)
 
 
-# In[8]:
+# In[7]:
 
 gdf.shape
 
 
-# In[9]:
+# In[8]:
 
 destination_table_wkt = "{}.{}".format(BQ_OUTPUT_DATASET_NAME_WKT,BQ_OUTPUT_TABLE_NAME)
 
 
-# In[10]:
+# In[9]:
 
 df = pd.DataFrame(gdf.drop("geom",1))
 
 
-# In[11]:
+# In[10]:
 
 if TESTING:
     df = df.sample(1000)
 
 
-# In[13]:
+# In[11]:
 
 df.to_gbq(destination_table=destination_table_wkt,
           project_id=BQ_PROJECT_ID,
@@ -116,56 +117,62 @@ df.to_gbq(destination_table=destination_table_wkt,
           if_exists="replace")
 
 
-# In[14]:
+# In[12]:
 
 engine.dispose()
 
 
 # Convert WKT to GEOGRAHPY type. Store in separate table. 
 
-# In[15]:
+# In[13]:
 
 job_config = bigquery.QueryJobConfig()
 
 
-# In[17]:
+# In[14]:
 
 q = """
 SELECT
   pfaf_id,
-  ST_GeogFromText(wkt) as geog
+  ST_GeogFromText(wkt) as geog,
+  ST_GeogFromGeoJSON(gjson) as gjson
 FROM
   {}
 """.format(destination_table_wkt)
 
 
-# In[19]:
+# In[15]:
+
+q
+
+
+# In[16]:
 
 destination_dataset_ref = client.dataset(BQ_OUTPUT_DATASET_NAME_GEOG)
 
 
-# In[25]:
+# In[17]:
 
 destination_table_ref = destination_dataset_ref.table(BQ_OUTPUT_TABLE_NAME)
 
 
-# In[26]:
+# In[18]:
 
 job_config.destination = destination_table_ref
 
 
-# In[27]:
+# In[19]:
 
 query_job = client.query(query=q,
                          job_config=job_config)
 
 
-# In[28]:
+# In[20]:
 
 rows = query_job.result()
 
 
-# In[24]:
+# In[21]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -175,7 +182,8 @@ print(elapsed)
 # previous runs:  
 # 0:05:16.209576  
 # 0:06:01.469727  
-# 0:10:14.312768
+# 0:10:14.312768  
+# 0:10:36.064008
 # 
 # 
 
