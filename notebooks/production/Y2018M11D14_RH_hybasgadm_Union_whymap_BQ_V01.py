@@ -3,35 +3,33 @@
 
 # In[1]:
 
-""" Union of Hybas and GADM in Bigquey.
+""" Union of hybasgadm and Whymap in Bigquery.
 -------------------------------------------------------------------------------
 
 Performance has been significantly improved with the help of Google Experts on
 the Bigquery forum.
 
 Author: Rutger Hofste
-Date: 20181114
+Date: 20181116
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 """
 
-TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M11D14_RH_Hybas_Union_GADM_BQ_V02'
+SCRIPT_NAME = 'Y2018M11D14_RH_hybasgadm_Union_whymap_BQ_V01'
 OUTPUT_VERSION = 2
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "geospatial_geog_v01"
 
-BQ_INPUT_TABLE_LEFT = "y2018m11d12_rh_hybas_rds_to_bq_v01_v01"
-BQ_INPUT_TABLE_RIGHT = "y2018m11d12_rh_gadm36_level1_rds_to_bq_v01_v01"
+BQ_INPUT_TABLE_LEFT = "y2018m11d14_rh_hybas_union_gadm_bq_v02_v02"
+BQ_INPUT_TABLE_RIGHT = "y2018m11d14_rh_whymap_rds_to_bq_v01_v01"
 
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
-
 
 print("\nBQ_DATASET_NAME: ", BQ_DATASET_NAME,
       "\nBQ_INPUT_TABLE_LEFT: ",BQ_INPUT_TABLE_LEFT,
@@ -77,40 +75,39 @@ q = """
 WITH
   polys1 AS (
   SELECT
-    t1.pfaf_id,
-    t1.geog as g
+    t1.id_pfafgadm,
+    t1.g as g
   FROM
     `{}.{}` t1 ),
   polys2 AS (
   SELECT
-    t1.gid_1,
-    t1.gid_0,
-    t1.geog as g
+    t2.aqid,
+    t2.geog as g
   FROM
-    `{}.{}` t1 ),
+    `{}.{}` t2 ),
   -- intersections
   intersections AS (
-    SELECT pfaf_id, gid_1, ST_INTERSECTION(a.g, b.g) i, a.g AS g1, b.g AS g2 
+    SELECT id_pfafgadm, aqid, ST_INTERSECTION(a.g, b.g) i, a.g AS g1, b.g AS g2 
     FROM polys1 a, polys2 b WHERE ST_INTERSECTS(a.g, b.g)
   ),
   -- per-row union of intersections with this row
   diff1 AS (
-    SELECT pfaf_id, ST_UNION_AGG(i) i FROM intersections GROUP BY pfaf_id
+    SELECT id_pfafgadm, ST_UNION_AGG(i) i FROM intersections GROUP BY id_pfafgadm
   ),
   diff2 AS (
-    SELECT gid_1, ST_UNION_AGG(i) i FROM intersections GROUP BY gid_1
+    SELECT aqid, ST_UNION_AGG(i) i FROM intersections GROUP BY aqid
   ),
   -- various combinations of intersections
   pairs AS (
-    SELECT pfaf_id, gid_1, i AS g FROM intersections
+    SELECT id_pfafgadm, aqid, i AS g FROM intersections
     UNION ALL
-    SELECT p.pfaf_id, NULL, IF(i IS NULL, g, ST_DIFFERENCE(g, i)) FROM polys1 p LEFT JOIN diff1 d ON p.pfaf_id = d.pfaf_id
+    SELECT p.id_pfafgadm, NULL, IF(i IS NULL, g, ST_DIFFERENCE(g, i)) FROM polys1 p LEFT JOIN diff1 d ON p.id_pfafgadm = d.id_pfafgadm
     UNION ALL 
-    SELECT NULL, p.gid_1, IF(i IS NULL, g, ST_DIFFERENCE(g, i)) FROM polys2 p LEFT JOIN diff2 d ON p.gid_1 = d.gid_1
+    SELECT NULL, p.aqid, IF(i IS NULL, g, ST_DIFFERENCE(g, i)) FROM polys2 p LEFT JOIN diff2 d ON p.aqid = d.aqid
   )
-  SELECT CONCAT(COALESCE(CAST(pfaf_id AS STRING),'nodata'),
+  SELECT CONCAT(COALESCE(CAST(id_pfafgadm AS STRING),'nodata'),
          "-",
-         COALESCE(gid_1,'nodata')) AS id_pfafgadm, 
+         COALESCE(CAST(aqid AS STRING),'nodata')) AS id_pfafgadmwhymap, 
          *
   FROM pairs WHERE NOT ST_IsEmpty(g)
 """.format(BQ_DATASET_NAME,BQ_INPUT_TABLE_LEFT,BQ_DATASET_NAME,BQ_INPUT_TABLE_RIGHT)
@@ -149,82 +146,14 @@ rows = query_job.result()
 
 # In[12]:
 
-q = """
-SELECT
-    pfaf_id as id,
-    gid_1 as name,
-    ST_AsGeoJSON(g) geom   
-FROM 
-    {}.{} 
-LIMIT 
-    10
-""".format(BQ_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
-
-
-# In[13]:
-
-df = pd.read_gbq(query=q,
-                 dialect='standard')
-
-
-# In[14]:
-
-df.head()
-
-
-# In[15]:
-
-import json
-from shapely.geometry import MultiPolygon, shape
-
-
-# In[16]:
-
-df["geom_shapely"] = df["geom"].apply(lambda x: MultiPolygon([shape(json.loads(x))]),1)
-
-
-# In[17]:
-
-df = df.drop("geom",1)
-
-
-# In[18]:
-
-gdf = gpd.GeoDataFrame(data=df,geometry="geom_shapely")
-
-
-# In[19]:
-
-gdf.crs = "+init=epsg:4326"
-
-
-# In[20]:
-
-output_file_path = "{}/{}_V{:02.0f}.gpkg".format(ec2_output_path,SCRIPT_NAME,OUTPUT_VERSION)
-
-
-# In[21]:
-
-gdf.to_file(filename=output_file_path,
-            driver="GPKG")
-
-
-# In[22]:
-
-get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
-
-
-# In[23]:
-
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
 # Previous Runs:  
-# 0:13:06.158866  
-# 0:09:21.846651
-#     
+# 0:41:16.307653
+# 
 
 # In[ ]:
 

@@ -251,6 +251,12 @@
 # #### ICEP
 # 1. **Y2018M10D01_RH_ICEP_Basins_PostGIS_V01**  
 #     Store ICEP data in PostGIS Database.
+# 1. **Y2018M11D22_RH_ICEP_Basins_To_EE_V01**  
+#     Rasterize and store shape and raste ICEP data in earthengine and S3. 
+# 1. **Y2018M11D22_RH_ICEP_Zonal_Stats_Hybas6_EE_V01**  
+#     Zonal statistics icep_raw at hydrobasin level 6.
+# 1. **Y2018M11D22_RH_ICEP_Cleanup_BQ_V01**  
+#     
 #     
 # #### Risk of Untreated Wastewater 
 # 1.  **Y2018M10D05_RH_UWW_PostGIS_V01**  
@@ -310,7 +316,11 @@
 # 1. **Y2018M11D14_RH_ICEPBasins_To_BQ_V01**  
 #     Upload ICEP Basins to BQ.
 # 1. **Y2018M11D14_RH_Hybas_Union_GADM_BQ_V02**  
-#     Union of Hybas and GADM in Bigquey.
+#     Union of Hybas and GADM in Bigquery.  
+# 1. **Y2018M11D14_RH_hybasgadm_Union_whymap_BQ_V01**  
+#     Union of hybasgadm and Whymap in Bigquery.
+# 1. **Y2018M11D21_RH_Hybasgadmwhymap_Union_Icep_BQ_V01**  
+#     Union of hybasgadmwhymap and Icepbasins in Biqguery.
 #     
 #     
 # 
