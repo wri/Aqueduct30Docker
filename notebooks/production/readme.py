@@ -255,7 +255,8 @@
 #     Rasterize and store shape and raste ICEP data in earthengine and S3. 
 # 1. **Y2018M11D22_RH_ICEP_Zonal_Stats_Hybas6_EE_V01**  
 #     Zonal statistics icep_raw at hydrobasin level 6.
-# 1. **Y2018M11D22_RH_ICEP_Cleanup_BQ_V01**  
+# 1. **Y2018M11D22_RH_ICEP_Hybas6_Cat_Label_BQ_V01**  
+#     Cleanup, add category and label for icep at hydrobasin level 6.
 #     
 #     
 # #### Risk of Untreated Wastewater 
