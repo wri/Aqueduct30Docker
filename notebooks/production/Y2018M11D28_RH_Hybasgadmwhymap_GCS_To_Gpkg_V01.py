@@ -119,12 +119,7 @@ for one_file in files:
 df_all = pd.concat(listje, axis = 0, ignore_index = True)
 
 
-# In[25]:
-
-df_all.shape
-
-
-# In[12]:
+# In[26]:
 
 def convert_shapely_collection_to_multipolygon(fc):
     """ Removes linestrings, points etc. from shapely collections
@@ -149,7 +144,7 @@ def convert_shapely_collection_to_multipolygon(fc):
     return mp
 
 
-# In[13]:
+# In[27]:
 
 def wkt_to_shapely(wkt_string):
     fc = wkt.loads(wkt_string)
@@ -160,25 +155,46 @@ def wkt_to_shapely(wkt_string):
     return output
 
 
-# In[14]:
+# In[28]:
 
-df["geom"] = df["wkt"].apply(wkt_to_shapely)
-
-
-# In[18]:
-
-gdf = gpd.GeoDataFrame(df,geometry="geom")
+df_all["geom"] = df_all["wkt"].apply(wkt_to_shapely)
 
 
-# In[ ]:
+# In[30]:
+
+gdf = gpd.GeoDataFrame(df_all,geometry="geom")
 
 
+# In[31]:
+
+gdf.crs = "+init=epsg:4326"
 
 
-# In[ ]:
+# In[32]:
+
+output_file_path = "{}/{}.gpkg".format(ec2_output_path,SCRIPT_NAME)
 
 
+# In[33]:
 
+gdf.to_file(filename=output_file_path,driver="GPKG")
+
+
+# In[34]:
+
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[35]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# Previous Runs:  
+# 0:18:48.935096
+# 
 
 # In[ ]:
 
