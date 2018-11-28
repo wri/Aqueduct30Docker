@@ -80,7 +80,7 @@ WHERE NOT ST_IsEmpty(g)
 """.format(BQ_DATASET_NAME,BQ_INPUT_TABLE)
 
 
-# In[ ]:
+# In[6]:
 
 df = pd.read_gbq(query=q,dialect='standard')
 

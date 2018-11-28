@@ -321,10 +321,15 @@
 # 1. **Y2018M11D14_RH_hybasgadm_Union_whymap_BQ_V01**  
 #     Union of hybasgadm and Whymap in Bigquery.
 # 1. **Y2018M11D21_RH_Hybasgadmwhymap_Union_Icep_BQ_V01 (Not Used)**  
-#     Union of hybasgadmwhymap and Icepbasins in Biqguery.
-# 
-# 1. **Y2018M11D26_RH_Hybasgadmwhymap_Union_To_Gpkg_V01**  
+#     Union of hybasgadmwhymap and Icepbasins in Biqguery.    
+# 1. **Y2018M11D28_RH_hybasgadmwhymap_To_GCS_V01**  
+#     Export table with geographies as WKT to CSV file on GCS. 
+#     
+# 1. **Y2018M11D26_RH_Hybasgadmwhymap_Union_To_Gpkg_V01 (Not Used)**  
 #     Convert union of hybas, gadm and whymap to geopackage.
+#     
+# 1. **Y2018M11D28_RH_Hybasgadmwhymap_GCS_To_Gpkg_V01**  
+#     Convert hybasgadmwhymap csv files from GCS to geopackage.
 #     
 #     
 # 

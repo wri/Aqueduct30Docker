@@ -31,8 +31,11 @@ TESTING = 0
 SCRIPT_NAME = "Y2018M11D22_RH_ICEP_Hybas6_Cat_Label_BQ_V01"
 OUTPUT_VERSION = 1
 
+COUNT_THRESHOLD = 1000 #(icepbasin cellsize 60km )
+
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M11D22_RH_ICEP_Zonal_Stats_Hybas6_EE_V01/output_V01/"
+
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -41,11 +44,13 @@ BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
 
+s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 print("S3_INPUT_PATH: ",S3_INPUT_PATH,
       "\nec2_input_path: ",ec2_input_path,
       "\nBQ_OUTPUT_DATASET_NAME: ", BQ_OUTPUT_DATASET_NAME,
-      "\nBQ_OUTPUT_TABLE_NAME: ",BQ_OUTPUT_TABLE_NAME
+      "\nBQ_OUTPUT_TABLE_NAME: ",BQ_OUTPUT_TABLE_NAME,
+      "\ns3_output_path:",s3_output_path
       )
 
 
@@ -240,7 +245,7 @@ df.to_csv(output_file_path_csv,encoding='utf-8')
 
 # In[26]:
 
-get_ipython().system('aws s3 cp  {ec2_output_path} {S3_INPUT_PATH} --recursive')
+get_ipython().system('aws s3 cp  {ec2_output_path} {s3_output_path} --recursive')
 
 
 # In[27]:
