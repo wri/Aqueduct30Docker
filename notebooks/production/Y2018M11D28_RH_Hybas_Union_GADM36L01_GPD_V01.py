@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[19]:
+# In[1]:
 
 """ Union of hydrobasin and GADM 36 level 1 using geopandas.
 -------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ print("\nec2_output_path:", ec2_output_path,
 
 
 
-# In[3]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -41,7 +41,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[18]:
+# In[3]:
 
 get_ipython().system('mkdir -p {ec2_output_path}')
 
@@ -129,14 +129,14 @@ gdf_union = gpd.overlay(gdf_left, gdf_right, how='union')
 gdf_union.crs = "+init=epsg:4326"
 
 
-# In[17]:
+# In[ ]:
 
 output_file_path = "{}/{}.gpkg".format(ec2_output_path,SCRIPT_NAME)
 
 
 # In[ ]:
 
-gdf.to_file(filename=output_file_path,driver="GPKG")
+gdf_union.to_file(filename=output_file_path,driver="GPKG")
 
 
 # In[ ]:
