@@ -32,16 +32,16 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 
-TESTING = 1
+TESTING = 0
 SCRIPT_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 5
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
 RDS_INPUT_TABLE_LEFT = "y2018m11d12_rh_gadm36_level1_to_rds_v01_v02"
 RDS_INPUT_TABLE_RIGHT = "hybas06_v04"
 
-ec2_output_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 print("\nec2_output_path:", ec2_output_path,
@@ -58,7 +58,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[30]:
+# In[3]:
 
 import os
 import sqlalchemy
@@ -76,14 +76,14 @@ get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[36]:
+# In[5]:
 
 cpu_count = multiprocessing.cpu_count()
 cpu_count = cpu_count -2 #Avoid freeze
 print("Power to the maxxx:", cpu_count)
 
 
-# In[5]:
+# In[6]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -92,12 +92,12 @@ F.close()
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
-# In[6]:
+# In[7]:
 
-cell_size = 10
+cell_size = 1
 
 
-# In[45]:
+# In[8]:
 
 def create_fishnet_gdf(cell_size):
     crs = {'init': 'epsg:4326'}
@@ -134,18 +134,42 @@ def clip_gdf(gdf,polygon):
     gdf_clipped = gpd.GeoDataFrame(df_intersects,geometry=gs_intersections)
     return gdf_clipped
 
+def create_union_gdfs(gdf):
+    df_out = pd.DataFrame()
+    for index, row in gdf.iterrows():
+        start = datetime.datetime.now()
+        polygon = row.geometry
+        destination_path = "{}/gdf_union_{}.pkl".format(ec2_output_path,index)
+        try:
+            gdf_left_clipped= clip_gdf(gdf_left,polygon)
+            gdf_right_clipped = clip_gdf(gdf_right,polygon)
+            gdf_union = gpd.overlay(gdf_left_clipped,gdf_right_clipped,how="union",use_sindex=True)
+            gdf_union.to_pickle(path=destination_path)
+            error = 0
+     
+        except:
+            print("error",destination_path)
+            error = 1
+        
+        end = datetime.datetime.now()
+        elapsed = end - start
+        outDict = {"error":error,"elapsed":elapsed}
+        df_out = pd.DataFrame(outDict,index=[index])
+        return df_out
+        
 
-# In[8]:
+
+# In[9]:
 
 gdf_grid = create_fishnet_gdf(cell_size)
 
 
-# In[40]:
+# In[10]:
 
 gdf_grid.head()
 
 
-# In[9]:
+# In[11]:
 
 sql = """
 SELECT
@@ -156,18 +180,18 @@ FROM
 """.format(RDS_INPUT_TABLE_LEFT)
 
 
-# In[10]:
+# In[12]:
 
 gdf_left = gpd.read_postgis(sql=sql,
                             con=engine)
 
 
-# In[11]:
+# In[13]:
 
 gdf_left.head()
 
 
-# In[12]:
+# In[14]:
 
 sql = """
 SELECT
@@ -178,90 +202,77 @@ FROM
 """.format(RDS_INPUT_TABLE_RIGHT)
 
 
-# In[13]:
+# In[15]:
 
 gdf_right = gpd.read_postgis(sql=sql,
                              con=engine)
 
 
-# In[14]:
+# In[16]:
 
 gdf_right.head()
 
 
-# In[46]:
+# In[17]:
 
-if TESTING:
-    gdf_grid = gdf_grid[300:350]
-
-
-# In[37]:
-
-gdf_grid_list = np.array_split(gdf_grid, cpu_count*100)
+gdf_grid.shape
 
 
-# In[43]:
+# In[18]:
 
-def create_union_gdfs(gdf):
-    for index, row in gdf.iterrows():
-        polygon = row.geometry
-        #gdf_left_clipped= clip_gdf(gdf_left,polygon)
-        #gdf_right_clipped = clip_gdf(gdf_right,polygon)
-        #gdf_union = gpd.overlay(gdf_left_clipped,gdf_right_clipped,how="union")
-        destination_path = "{}/gdf_union_{}.pkl".format(ec2_output_path,index)
-        #gdf_union.to_pickle(path=destination_path)
-        print()
+#gdf_grid_list = np.array_split(gdf_grid, cpu_count*10)
+gdf_grid_list = np.array_split(gdf_grid, gdf_grid.shape[0])
 
 
-# In[44]:
+# In[ ]:
 
 p= multiprocessing.Pool()
-results_buffered = p.map(create_union_gdfs,gdf_grid_list)
+df_out_list = p.map(create_union_gdfs,gdf_grid_list)
 p.close()
 p.join()
 
 
-# In[26]:
+# In[ ]:
 
-
-
-
-# In[28]:
-
-
-
-
-# In[29]:
-
-for 
+df_out = pd.concat(df_out_list, ignore_index=True)
 
 
 # In[ ]:
 
-
-
-
-# In[ ]:
-
-
+df_out.dtypes
 
 
 # In[ ]:
 
-gdf_grid.to_file(filename=destination_path,
-                 driver="GPKG")
+df_out["seconds"] = df_out["elapsed"].apply(lambda x: x.total_seconds())
 
 
 # In[ ]:
 
-gdf_union.to_file(filename=destination_path,
-                       driver="GPKG")
+output_path_csv = "{}/processing_time.csv".format(ec2_output_path)
+
+
+# In[ ]:
+
+df_out.to_csv(output_path_csv)
 
 
 # In[ ]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
+
+# In[ ]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# Previous Runs:  
+# 0:45:12.187817 (10x10)
+# 0:44:55.686081 (10x10)
+#  (1x1 sindex=true)
 
 # In[ ]:
 

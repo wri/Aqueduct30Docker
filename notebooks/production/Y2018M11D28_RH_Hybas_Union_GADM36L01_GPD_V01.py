@@ -15,7 +15,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 1
 SCRIPT_NAME = "Y2018M11D28_RH_Hybas_Union_GADM36L01_GPD_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
@@ -121,7 +121,7 @@ gdf_right.shape
 
 # In[ ]:
 
-gdf_union = gpd.overlay(gdf_left, gdf_right, how='union')
+gdf_union = gpd.overlay(gdf_left, gdf_right, how='union',use_sindex=True)
 
 
 # In[ ]:

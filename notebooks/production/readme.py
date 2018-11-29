@@ -337,6 +337,13 @@
 #     
 # 1.  **Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01**  
 #     Union of hydrobasin and GADM 36 level 1 using geopandas parallel processing.
+# 1.  **Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_Merge_V01**  
+#     Union of hydrobasin and GADM 36 level 1 merge results. 
+#     
+# 
+# 1. **Y2018M11D29_RH_Hybas6_U_GADM36L01_PostGIS_V01**  
+#     Union of hydrobasin and GADM 36 level 1 using postGIS
+#     
 # 
 # 
 #     
