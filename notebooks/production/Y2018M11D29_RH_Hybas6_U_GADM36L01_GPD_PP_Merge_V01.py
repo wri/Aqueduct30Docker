@@ -36,7 +36,7 @@ TESTING = 1
 SCRIPT_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_Merge_V01"
 OUTPUT_VERSION = 3
 
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01/output_V04/"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01/output_V07/"
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -188,22 +188,22 @@ gdf_out.shape
 gdf.head()
 
 
-# In[27]:
+# In[22]:
 
 output_file_path = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
 
 
-# In[28]:
+# In[23]:
 
 gdf_out.to_file(filename=output_file_path,driver="ESRI Shapefile")
 
 
-# In[29]:
+# In[24]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[30]:
+# In[25]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -212,7 +212,8 @@ print(elapsed)
 
 # Previous Runs:  
 # 0:45:12.187817  
-# 0:08:00.518025
+# 0:08:00.518025  
+# 
 
 # In[ ]:
 

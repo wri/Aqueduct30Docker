@@ -32,9 +32,9 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 
-TESTING = 0
+TESTING = 1
 SCRIPT_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01"
-OUTPUT_VERSION = 5
+OUTPUT_VERSION = 9
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
@@ -42,7 +42,11 @@ RDS_INPUT_TABLE_LEFT = "y2018m11d12_rh_gadm36_level1_to_rds_v01_v02"
 RDS_INPUT_TABLE_RIGHT = "hybas06_v04"
 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ec2_output_path_df = "/volumes/data/{}/outputdf_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path_df = "s3://wri-projects/Aqueduct30/processData/{}/outputdf_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+
 
 print("\nec2_output_path:", ec2_output_path,
       "\ns3_output_path: ", s3_output_path)
@@ -56,12 +60,6 @@ timeString = time.strftime("UTC %H:%M")
 start = datetime.datetime.now()
 print(dateString,timeString)
 sys.version
-
-
-# In[ ]:
-
-import warnings
-warnings.simplefilter(action='ignore', category=AttributeError)
 
 
 # In[3]:
@@ -78,8 +76,10 @@ from shapely.geometry import MultiPolygon, Polygon
 
 # In[4]:
 
-get_ipython().system('rm -r {ec2_output_path}')
+#!rm -r {ec2_output_path}
+#!rm -r {ec2_output_path}
 get_ipython().system('mkdir -p {ec2_output_path}')
+get_ipython().system('mkdir -p {ec2_output_path_df}')
 
 
 # In[5]:
@@ -100,7 +100,7 @@ engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".form
 
 # In[7]:
 
-cell_size = 1
+cell_size = 10
 
 
 # In[8]:
@@ -123,45 +123,105 @@ def create_fishnet_gdf(cell_size):
     gdf_grid.crs = crs
     return gdf_grid
 
-def clip_gdf(gdf,polygon):
+def remove_non_polygon(geometry):
+    """ Removes LineStrings and Points from GeometryCollection.
+    
+    Args:
+        geometry(Shapely object): Input collection or single shape.
+        
+    Returns:
+        geometry_out(MultiPolygon): Collection co
+    
+    
+    """
+    
+    
+    if geometry.geom_type == "GeometryCollection":    
+        geoms = geometry.geoms
+        keep_geoms = []
+        for geom in geoms:
+            geomtype = geom.type
+            if geomtype == "Polygon" or geomtype == "MultiPolygon":
+                keep_geoms.append(geom)
+            else:
+                print("remove geom")
+        geometry_out = MultiPolygon(keep_geoms)
+    elif geometry.geom_type == "Polygon":
+        geometry_out = MultiPolygon([geometry])    
+    elif geometry.geom_type == "MultiPolygon": 
+        geometry_out = geometry
+    else:
+        print("unsuported geometry format:",geometry.geom_type)
+    return geometry_out
+
+
+def clip_gdf(gdf_in,polygon):
     """
     Clip geodataframe using shapely polygon.
     Make sure crs is compatible.
+    
+    Removes any geometry that is (multi)polygon. i.e. LineStrings and Points are Removed
     
     Args:
         gdf (GeoDataFrame): GeoDataFrame in.
         polygon (Shapely Polygon): Polygon used for clipping
     
     """
-    crs = gdf.crs
-    gdf_intersects = gdf.loc[gdf.geometry.intersects(polygon)]
+    crs = gdf_in.crs
+    gdf_intersects = gdf_in.loc[gdf_in.geometry.intersects(polygon)]
     df_intersects = gdf_intersects.drop(columns=[gdf_intersects.geometry.name])
     gs_intersections = gpd.GeoSeries(gdf_intersects.geometry.intersection(polygon),crs=crs)
-    gdf_clipped = gpd.GeoDataFrame(df_intersects,geometry=gs_intersections)
+    gdf_clipped = gpd.GeoDataFrame(df_intersects,geometry=gs_intersections)  
+    
+    # Some clipping results in GeometryCollections with polygons and LineStrings or Points. Convert valid geometry to Multipolygon
+    gdf_clipped.geometry = gdf_clipped.geometry.apply(remove_non_polygon)
     return gdf_clipped
 
 def create_union_gdfs(gdf):
     df_out = pd.DataFrame()
-    for index, row in gdf.iterrows():
-        start = datetime.datetime.now()
-        polygon = row.geometry
-        destination_path = "{}/gdf_union_{}.pkl".format(ec2_output_path,index)
-        try:
-            gdf_left_clipped= clip_gdf(gdf_left,polygon)
-            gdf_right_clipped = clip_gdf(gdf_right,polygon)
-            gdf_union = gpd.overlay(gdf_left_clipped,gdf_right_clipped,how="union",use_sindex=True)
-            gdf_union.to_pickle(path=destination_path)
-            error = 0
-     
-        except:
-            print("error",destination_path)
-            error = 1
-        
-        end = datetime.datetime.now()
-        elapsed = end - start
-        outDict = {"error":error,"elapsed":elapsed}
-        df_out = pd.DataFrame(outDict,index=[index])
-        return df_out
+    start = datetime.datetime.now()
+    polygon = gdf.iloc[0].geometry
+    index = gdf.index[0]
+    destination_path = "{}/gdf_union_{}.pkl".format(ec2_output_path,index)
+    
+    gdf_left_clipped= clip_gdf(gdf_left,polygon)
+    gdf_right_clipped = clip_gdf(gdf_right,polygon)
+    
+    print("gdf_left_clipped.shape[0]",gdf_left_clipped.shape[0])
+    print("gdf_right_clipped.shape[0]",gdf_right_clipped.shape[0])    
+    
+    if gdf_left_clipped.shape[0] == 0 and gdf_right_clipped.shape[0] == 0:
+        print("No geometry in index", index)
+        gdf_out = None
+        write_output = False
+    elif gdf_left_clipped.shape[0] != 0 and gdf_right_clipped.shape[0] == 0:
+        print("Only left geometry in index", index)
+        gdf_out = gdf_left_clipped
+        write_output = True
+    elif gdf_left_clipped.shape[0] == 0 and gdf_right_clipped.shape[0] != 0:
+        print("Only right geometry in index", index)
+        gdf_out = gdf_right_clipped
+        write_output = True
+    elif gdf_left_clipped.shape[0] != 0 and gdf_right_clipped.shape[0] != 0:
+        print("Both geometries in index", index)
+        gdf_union = gpd.overlay(gdf_left_clipped,gdf_right_clipped,how="union")
+        gdf_out = gdf_union
+        write_output = True        
+    
+    
+    if write_output:
+        if TESTING:
+            end = datetime.datetime.now()
+            elapsed = end - start
+            gdf_out["time_processed"] = elapsed.total_seconds()
+            gdf_out["tile_index"] = index
+        else:
+            pass
+        gdf_out.to_pickle(path=destination_path)
+    else:
+        pass
+       
+    return  gdf_left_clipped,gdf_right_clipped
         
 
 
@@ -177,6 +237,11 @@ gdf_grid.head()
 
 # In[11]:
 
+gdf_grid.shape
+
+
+# In[12]:
+
 sql = """
 SELECT
   gid_1,
@@ -186,18 +251,23 @@ FROM
 """.format(RDS_INPUT_TABLE_LEFT)
 
 
-# In[12]:
+# In[13]:
 
 gdf_left = gpd.read_postgis(sql=sql,
                             con=engine)
 
 
-# In[13]:
+# In[14]:
 
 gdf_left.head()
 
 
-# In[14]:
+# In[15]:
+
+gdf_left.shape
+
+
+# In[16]:
 
 sql = """
 SELECT
@@ -208,29 +278,49 @@ FROM
 """.format(RDS_INPUT_TABLE_RIGHT)
 
 
-# In[15]:
+# In[17]:
 
 gdf_right = gpd.read_postgis(sql=sql,
                              con=engine)
 
 
-# In[16]:
+# In[18]:
 
 gdf_right.head()
 
 
-# In[17]:
+# In[19]:
 
-gdf_grid.shape
+gdf_right.shape
 
 
-# In[18]:
+# In[20]:
 
 #gdf_grid_list = np.array_split(gdf_grid, cpu_count*10)
 gdf_grid_list = np.array_split(gdf_grid, gdf_grid.shape[0])
 
 
-# In[19]:
+# In[21]:
+
+len(gdf_grid_list)
+
+
+# In[22]:
+
+gdf_grid_list_test = gdf_grid_list[417:418]
+
+
+# In[23]:
+
+gdf_test = gdf_grid_list_test[0]
+
+
+# In[24]:
+
+gdf_left_clipped,gdf_right_clipped = create_union_gdfs(gdf_test)
+
+
+# In[ ]:
 
 p= multiprocessing.Pool()
 df_out_list = p.map(create_union_gdfs,gdf_grid_list)
@@ -238,37 +328,32 @@ p.close()
 p.join()
 
 
-# In[20]:
+# In[ ]:
 
 df_out = pd.concat(df_out_list, ignore_index=True)
 
 
-# In[21]:
+# In[ ]:
 
-df_out.dtypes
-
-
-# In[22]:
-
-df_out["seconds"] = df_out["elapsed"].apply(lambda x: x.total_seconds())
+output_path_df = "{}/df_out.pkl".format(ec2_output_path_df)
 
 
-# In[23]:
+# In[ ]:
 
-output_path_csv = "{}/processing_time.csv".format(ec2_output_path)
-
-
-# In[24]:
-
-df_out.to_csv(output_path_csv)
+df_out.to_pickle(output_path_df)
 
 
-# In[25]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[26]:
+# In[ ]:
+
+get_ipython().system('aws s3 cp {ec2_output_path_df} {s3_output_path_df} --recursive')
+
+
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -276,9 +361,10 @@ print(elapsed)
 
 
 # Previous Runs:  
-# 0:45:12.187817 (10x10)
-# 0:44:55.686081 (10x10)
-# 1:16:26.394030 (1x1 sindex=true)
+# 0:45:12.187817 (10x10)  
+# 0:44:55.686081 (10x10)  
+# 1:16:26.394030 (1x1 sindex=true)  
+# 
 
 # In[ ]:
 
