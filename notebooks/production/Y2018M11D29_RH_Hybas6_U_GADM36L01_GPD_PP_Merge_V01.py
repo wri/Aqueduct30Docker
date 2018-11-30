@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[5]:
+# In[1]:
 
 """ Union of hydrobasin and GADM 36 level 1 merge results. 
 -------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 1
 SCRIPT_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_Merge_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01/output_V04/"
 
@@ -49,7 +49,7 @@ print("\nS3_INPUT_PATH:", S3_INPUT_PATH,
       "\ns3_output_path: ", s3_output_path)
 
 
-# In[7]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -59,7 +59,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[8]:
+# In[3]:
 
 get_ipython().system('rm -r {ec2_input_path}')
 get_ipython().system('rm -r {ec2_output_path}')
@@ -67,88 +67,143 @@ get_ipython().system('mkdir -p {ec2_input_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[9]:
+# In[4]:
 
-get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive')
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive --exclude *.csv')
 
 
-# In[10]:
+# In[5]:
 
 import os
+import numpy as np
 import pandas as pd
 import geopandas as gpd
+import multiprocessing
 
 
-# In[11]:
+# In[6]:
 
 files = os.listdir(ec2_input_path)
 
 
-# In[ ]:
+# In[7]:
+
+len(files)
+
+
+# In[8]:
 
 gdfs = []
-for one_file in files:
-    
+for one_file in files:    
     input_path = "{}/{}".format(ec2_input_path,one_file)
     gdfs.append(pd.read_pickle(input_path))
 
 
-# In[ ]:
+# In[9]:
 
 gdf = pd.concat(gdfs, ignore_index=True)
 
 
-# In[ ]:
-
-get_ipython().magic('matplotlib inline')
-
-
-# In[ ]:
-
-gdf.head()
-
-
-# In[ ]:
-
-gdf["composite_index"] = gdf["gid_1"] + gdf["pfaf_id"].map(str)
-
-
-# In[ ]:
-
-gdf.head()
-
-
-# In[ ]:
+# In[10]:
 
 gdf.shape
 
 
-# In[ ]:
+# In[11]:
 
-gdf_dissolved = gdf.dissolve(by="composite_index")
-
-
-# In[ ]:
-
-gdf_dissolved.shape
+gdf.head()
 
 
-# In[ ]:
+# In[12]:
 
-output_file_path = "{}/{}.gpkg".format(ec2_output_path,SCRIPT_NAME)
-
-
-# In[ ]:
-
-gdf_dissolved.to_file(filename=output_file_path,driver="GPKG")
+gdf["separator"] = "-"
 
 
-# In[ ]:
+# In[13]:
+
+gdf["composite_index"] = gdf["gid_1"] + gdf["separator"] + gdf["pfaf_id"].map(str)
+
+
+# In[14]:
+
+gdf.drop(columns=["separator"],inplace=True)
+
+
+# In[15]:
+
+gdf_list = [gdf.loc[gdf['composite_index']==val, :] for val in gdf["composite_index"].unique()]
+
+
+# In[16]:
+
+len(gdf_list)
+
+
+# In[17]:
+
+def process_small_gdf(gdf_small):
+    """ Process a small geodataframe. Dissolves into df with 1 row
+    
+    Args:
+        gdf_small(GeoDataFrame): Geodataframe with unique identifiers
+    
+    Returns:
+        gdf_small_out(GeoDataFrame): GeoDataFrame with dissolved geometries.
+    
+    """
+    if gdf_small.shape[0] > 0:
+        composite_index = gdf.iloc[0]["composite_index"]
+        destination_path = "{}/gdf_dissolved_{}.pkl".format(ec2_output_path,composite_index)
+        gdf_small_dissolved = gdf_small.dissolve(by="composite_index")
+        #gdf_small_dissolved.to_pickle(path=destination_path)
+    
+    else:
+        print("invalid input dataframe")
+        gdf_small_dissolved = None
+    return gdf_small_dissolved
+    
+    
+
+
+# In[18]:
+
+p= multiprocessing.Pool()
+df_out_list = p.map(process_small_gdf,gdf_list)
+p.close()
+p.join()
+
+
+# In[19]:
+
+gdf_out = pd.concat(df_out_list, ignore_index=True)
+
+
+# In[20]:
+
+gdf_out.shape
+
+
+# In[21]:
+
+gdf.head()
+
+
+# In[27]:
+
+output_file_path = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
+
+
+# In[28]:
+
+gdf_out.to_file(filename=output_file_path,driver="ESRI Shapefile")
+
+
+# In[29]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[30]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -156,4 +211,10 @@ print(elapsed)
 
 
 # Previous Runs:  
-# 0:45:12.187817
+# 0:45:12.187817  
+# 0:08:00.518025
+
+# In[ ]:
+
+
+

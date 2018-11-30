@@ -121,7 +121,7 @@ gdf_right.shape
 
 # In[ ]:
 
-gdf_union = gpd.overlay(gdf_left, gdf_right, how='union',use_sindex=True)
+gdf_union = gpd.overlay(gdf_left, gdf_right, how='union')
 
 
 # In[ ]:

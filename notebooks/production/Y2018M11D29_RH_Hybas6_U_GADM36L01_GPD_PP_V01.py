@@ -58,6 +58,12 @@ print(dateString,timeString)
 sys.version
 
 
+# In[ ]:
+
+import warnings
+warnings.simplefilter(action='ignore', category=AttributeError)
+
+
 # In[3]:
 
 import os
@@ -224,7 +230,7 @@ gdf_grid.shape
 gdf_grid_list = np.array_split(gdf_grid, gdf_grid.shape[0])
 
 
-# In[ ]:
+# In[19]:
 
 p= multiprocessing.Pool()
 df_out_list = p.map(create_union_gdfs,gdf_grid_list)
@@ -232,37 +238,37 @@ p.close()
 p.join()
 
 
-# In[ ]:
+# In[20]:
 
 df_out = pd.concat(df_out_list, ignore_index=True)
 
 
-# In[ ]:
+# In[21]:
 
 df_out.dtypes
 
 
-# In[ ]:
+# In[22]:
 
 df_out["seconds"] = df_out["elapsed"].apply(lambda x: x.total_seconds())
 
 
-# In[ ]:
+# In[23]:
 
 output_path_csv = "{}/processing_time.csv".format(ec2_output_path)
 
 
-# In[ ]:
+# In[24]:
 
 df_out.to_csv(output_path_csv)
 
 
-# In[ ]:
+# In[25]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[26]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -272,7 +278,7 @@ print(elapsed)
 # Previous Runs:  
 # 0:45:12.187817 (10x10)
 # 0:44:55.686081 (10x10)
-#  (1x1 sindex=true)
+# 1:16:26.394030 (1x1 sindex=true)
 
 # In[ ]:
 
