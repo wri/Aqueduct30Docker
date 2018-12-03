@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 """ Union of hydrobasin and GADM 36 level 1 using geopandas parallel processing.
 -------------------------------------------------------------------------------
@@ -34,9 +34,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 1
 SCRIPT_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01"
-OUTPUT_VERSION = 13
-
-SIMPLIFY_TOLERANCE = 0.000001 #appr. 11 cm
+OUTPUT_VERSION = 19
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
@@ -54,7 +52,7 @@ print("\nec2_output_path:", ec2_output_path,
       "\ns3_output_path: ", s3_output_path)
 
 
-# In[ ]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -64,7 +62,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
+# In[3]:
 
 import os
 import sqlalchemy
@@ -76,22 +74,22 @@ from google.cloud import bigquery
 from shapely.geometry import MultiPolygon, Polygon
 
 
-# In[ ]:
+# In[4]:
 
-#!rm -r {ec2_output_path}
-#!rm -r {ec2_output_path}
+get_ipython().system('rm -r {ec2_output_path}')
+get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path_df}')
 
 
-# In[ ]:
+# In[5]:
 
 cpu_count = multiprocessing.cpu_count()
 cpu_count = cpu_count -2 #Avoid freeze
 print("Power to the maxxx:", cpu_count)
 
 
-# In[ ]:
+# In[6]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -100,12 +98,12 @@ F.close()
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
-# In[ ]:
+# In[7]:
 
 cell_size = 10
 
 
-# In[ ]:
+# In[8]:
 
 def create_fishnet_gdf(cell_size):
     crs = {'init': 'epsg:4326'}
@@ -132,7 +130,8 @@ def post_process_geometry(geometry):
     vertices overlap, the result can be a geometryCollection with
     (mutli)polygons and LineStrings or Points. 
     
-    This function converts the results of an intersection
+    This function converts the results of an intersection. It will
+    remove empty geometries
     
     Args: 
         SIMPLIFY_TOLERANCE(double): Global parameter to specify 
@@ -149,8 +148,7 @@ def post_process_geometry(geometry):
     
     """
     geometry_buffered = geometry.buffer(0)
-    geometry_simplified = geometry_buffered.simplify(tolerance=SIMPLIPY_TOLERANCE)
-    return geometry_simplified
+    return geometry_buffered
 
 
 def clip_gdf(gdf_in,polygon):
@@ -171,38 +169,34 @@ def clip_gdf(gdf_in,polygon):
     gs_intersections = gpd.GeoSeries(gdf_intersects.geometry.intersection(polygon),crs=crs)
     gdf_clipped = gpd.GeoDataFrame(df_intersects,geometry=gs_intersections)  
     
-    # Some clipping results in GeometryCollections with polygons and LineStrings or Points. Convert valid geometry to Multipolygon    gdf_clipped.geometry = gdf_clipped.geometry.apply(post_process_geometry)
-    
-    return gdf_clipped
+    # Some clipping results in GeometryCollections with polygons and LineStrings or Points. Convert valid geometry to Multipolygon
+    gdf_clipped.geometry = gdf_clipped.geometry.apply(post_process_geometry)
+    gdf_clipped_valid = gdf_clipped.loc[gdf_clipped.geometry.is_empty == False]
+    return gdf_clipped_valid
 
 
 def create_union_gdfs(gdf):
+    index = gdf.index[0]
+    print("Processing: ", index)
     df_out = pd.DataFrame()
     start = datetime.datetime.now()
     polygon = gdf.iloc[0].geometry
-    index = gdf.index[0]
     destination_path = "{}/gdf_union_{}.pkl".format(ec2_output_path,index)
     
     gdf_left_clipped= clip_gdf(gdf_left,polygon)
     gdf_right_clipped = clip_gdf(gdf_right,polygon)
     
-    print("gdf_left_clipped.shape[0]",gdf_left_clipped.shape[0])
-    print("gdf_right_clipped.shape[0]",gdf_right_clipped.shape[0])    
-    
     if gdf_left_clipped.shape[0] == 0 and gdf_right_clipped.shape[0] == 0:
-        print("No geometry in index", index)
+
         gdf_out = None
         write_output = False
     elif gdf_left_clipped.shape[0] != 0 and gdf_right_clipped.shape[0] == 0:
-        print("Only left geometry in index", index)
         gdf_out = gdf_left_clipped
         write_output = True
     elif gdf_left_clipped.shape[0] == 0 and gdf_right_clipped.shape[0] != 0:
-        print("Only right geometry in index", index)
         gdf_out = gdf_right_clipped
         write_output = True
-    elif gdf_left_clipped.shape[0] != 0 and gdf_right_clipped.shape[0] != 0:
-        print("Both geometries in index", index)
+    elif gdf_left_clipped.shape[0] != 0 and gdf_right_clipped.shape[0] != 0:        
         gdf_union = gpd.overlay(gdf_left_clipped,gdf_right_clipped,how="union")
         gdf_out = gdf_union
         write_output = True        
@@ -219,27 +213,28 @@ def create_union_gdfs(gdf):
         gdf_out.to_pickle(path=destination_path)
     else:
         pass
-       
-    return  gdf_left_clipped,gdf_right_clipped
+    
+    print("Succesfully processed", index)
+    return  gdf_out
         
 
 
-# In[ ]:
+# In[9]:
 
 gdf_grid = create_fishnet_gdf(cell_size)
 
 
-# In[ ]:
+# In[10]:
 
 gdf_grid.head()
 
 
-# In[ ]:
+# In[11]:
 
 gdf_grid.shape
 
 
-# In[ ]:
+# In[12]:
 
 sql = """
 SELECT
@@ -250,23 +245,23 @@ FROM
 """.format(RDS_INPUT_TABLE_LEFT)
 
 
-# In[ ]:
+# In[13]:
 
 gdf_left = gpd.read_postgis(sql=sql,
                             con=engine)
 
 
-# In[ ]:
+# In[14]:
 
 gdf_left.head()
 
 
-# In[ ]:
+# In[15]:
 
 gdf_left.shape
 
 
-# In[ ]:
+# In[16]:
 
 sql = """
 SELECT
@@ -277,78 +272,73 @@ FROM
 """.format(RDS_INPUT_TABLE_RIGHT)
 
 
-# In[ ]:
+# In[17]:
 
 gdf_right = gpd.read_postgis(sql=sql,
                              con=engine)
 
 
-# In[ ]:
+# In[18]:
 
 gdf_right.head()
 
 
-# In[ ]:
+# In[19]:
 
 gdf_right.shape
 
 
-# In[ ]:
+# In[20]:
 
 # inspect case for Egypt index = 417, case for Canada index = 515
 gdf_grid.head()
 
 
-# In[ ]:
+# In[21]:
 
 #gdf_grid_list = np.array_split(gdf_grid, cpu_count*10)
 gdf_grid_list = np.array_split(gdf_grid, gdf_grid.shape[0])
 
 
-# In[ ]:
+# In[22]:
 
 len(gdf_grid_list)
 
 
-# In[ ]:
+# In[23]:
 
-gdf_grid_list_test = gdf_grid_list[417:418]
-
-
-# In[ ]:
-
-p= multiprocessing.Pool()
+p= multiprocessing.Pool(processes=cpu_count)
 df_out_list = p.map(create_union_gdfs,gdf_grid_list)
 p.close()
 p.join()
 
 
-# In[ ]:
+# In[24]:
 
 df_out = pd.concat(df_out_list, ignore_index=True)
 
 
-# In[ ]:
+# In[25]:
 
 output_path_df = "{}/df_out.pkl".format(ec2_output_path_df)
 
 
-# In[ ]:
+# In[26]:
 
 df_out.to_pickle(output_path_df)
 
 
-# In[ ]:
+# In[27]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[28]:
 
 get_ipython().system('aws s3 cp {ec2_output_path_df} {s3_output_path_df} --recursive')
 
 
-# In[ ]:
+# In[29]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -359,6 +349,7 @@ print(elapsed)
 # 0:45:12.187817 (10x10)  
 # 0:44:55.686081 (10x10)  
 # 1:16:26.394030 (1x1 sindex=true)  
+# 0:47:42.023796  
 # 
 
 # In[ ]:

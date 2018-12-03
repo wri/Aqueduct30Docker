@@ -34,9 +34,9 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 1
 SCRIPT_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_Merge_V01"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 6
 
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01/output_V07/"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01/output_V19/"
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -167,43 +167,50 @@ def process_small_gdf(gdf_small):
 
 # In[18]:
 
-p= multiprocessing.Pool()
+cpu_count = multiprocessing.cpu_count()
+cpu_count = cpu_count -2 #Avoid freeze
+print("Power to the maxxx:", cpu_count)
+
+
+# In[19]:
+
+p= multiprocessing.Pool(processes=cpu_count)
 df_out_list = p.map(process_small_gdf,gdf_list)
 p.close()
 p.join()
 
 
-# In[19]:
+# In[20]:
 
 gdf_out = pd.concat(df_out_list, ignore_index=True)
 
 
-# In[20]:
+# In[21]:
 
 gdf_out.shape
 
 
-# In[21]:
+# In[22]:
 
 gdf.head()
 
 
-# In[22]:
+# In[23]:
 
 output_file_path = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
 
 
-# In[23]:
+# In[24]:
 
 gdf_out.to_file(filename=output_file_path,driver="ESRI Shapefile")
 
 
-# In[24]:
+# In[25]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[25]:
+# In[26]:
 
 end = datetime.datetime.now()
 elapsed = end - start
