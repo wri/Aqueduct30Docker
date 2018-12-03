@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 """ Union of hydrobasin and GADM 36 level 1 using geopandas parallel processing.
 -------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ Save output
 
 Author: Rutger Hofste
 Date: 20181128
-Kernel: python35
+Kernel: python35+
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 """
@@ -34,7 +34,9 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 1
 SCRIPT_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01"
-OUTPUT_VERSION = 9
+OUTPUT_VERSION = 13
+
+SIMPLIFY_TOLERANCE = 0.000001 #appr. 11 cm
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
@@ -52,7 +54,7 @@ print("\nec2_output_path:", ec2_output_path,
       "\ns3_output_path: ", s3_output_path)
 
 
-# In[2]:
+# In[ ]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -62,7 +64,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[3]:
+# In[ ]:
 
 import os
 import sqlalchemy
@@ -74,7 +76,7 @@ from google.cloud import bigquery
 from shapely.geometry import MultiPolygon, Polygon
 
 
-# In[4]:
+# In[ ]:
 
 #!rm -r {ec2_output_path}
 #!rm -r {ec2_output_path}
@@ -82,14 +84,14 @@ get_ipython().system('mkdir -p {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path_df}')
 
 
-# In[5]:
+# In[ ]:
 
 cpu_count = multiprocessing.cpu_count()
 cpu_count = cpu_count -2 #Avoid freeze
 print("Power to the maxxx:", cpu_count)
 
 
-# In[6]:
+# In[ ]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -98,12 +100,12 @@ F.close()
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
-# In[7]:
+# In[ ]:
 
 cell_size = 10
 
 
-# In[8]:
+# In[ ]:
 
 def create_fishnet_gdf(cell_size):
     crs = {'init': 'epsg:4326'}
@@ -123,36 +125,32 @@ def create_fishnet_gdf(cell_size):
     gdf_grid.crs = crs
     return gdf_grid
 
-def remove_non_polygon(geometry):
-    """ Removes LineStrings and Points from GeometryCollection.
+def post_process_geometry(geometry):
+    """ Post Process Shapely Geometries after Intersection
     
-    Args:
-        geometry(Shapely object): Input collection or single shape.
-        
+    Shapely does not always create the desired output geometry. When
+    vertices overlap, the result can be a geometryCollection with
+    (mutli)polygons and LineStrings or Points. 
+    
+    This function converts the results of an intersection
+    
+    Args: 
+        SIMPLIFY_TOLERANCE(double): Global parameter to specify 
+            simplification tolerance.
+        geomerty (shapely object): GeometryCollection, Multipolygon
+            Polygon, Linestring etc.
+            
     Returns:
-        geometry_out(MultiPolygon): Collection co
-    
+        geometry_out(shapely object): MultiPolygon or
+            Polygon of simplified geometry.
+            
+    Usage:
+        apply to geodataframe geometry column.
     
     """
-    
-    
-    if geometry.geom_type == "GeometryCollection":    
-        geoms = geometry.geoms
-        keep_geoms = []
-        for geom in geoms:
-            geomtype = geom.type
-            if geomtype == "Polygon" or geomtype == "MultiPolygon":
-                keep_geoms.append(geom)
-            else:
-                print("remove geom")
-        geometry_out = MultiPolygon(keep_geoms)
-    elif geometry.geom_type == "Polygon":
-        geometry_out = MultiPolygon([geometry])    
-    elif geometry.geom_type == "MultiPolygon": 
-        geometry_out = geometry
-    else:
-        print("unsuported geometry format:",geometry.geom_type)
-    return geometry_out
+    geometry_buffered = geometry.buffer(0)
+    geometry_simplified = geometry_buffered.simplify(tolerance=SIMPLIPY_TOLERANCE)
+    return geometry_simplified
 
 
 def clip_gdf(gdf_in,polygon):
@@ -173,9 +171,10 @@ def clip_gdf(gdf_in,polygon):
     gs_intersections = gpd.GeoSeries(gdf_intersects.geometry.intersection(polygon),crs=crs)
     gdf_clipped = gpd.GeoDataFrame(df_intersects,geometry=gs_intersections)  
     
-    # Some clipping results in GeometryCollections with polygons and LineStrings or Points. Convert valid geometry to Multipolygon
-    gdf_clipped.geometry = gdf_clipped.geometry.apply(remove_non_polygon)
+    # Some clipping results in GeometryCollections with polygons and LineStrings or Points. Convert valid geometry to Multipolygon    gdf_clipped.geometry = gdf_clipped.geometry.apply(post_process_geometry)
+    
     return gdf_clipped
+
 
 def create_union_gdfs(gdf):
     df_out = pd.DataFrame()
@@ -225,22 +224,22 @@ def create_union_gdfs(gdf):
         
 
 
-# In[9]:
+# In[ ]:
 
 gdf_grid = create_fishnet_gdf(cell_size)
 
 
-# In[10]:
+# In[ ]:
 
 gdf_grid.head()
 
 
-# In[11]:
+# In[ ]:
 
 gdf_grid.shape
 
 
-# In[12]:
+# In[ ]:
 
 sql = """
 SELECT
@@ -251,23 +250,23 @@ FROM
 """.format(RDS_INPUT_TABLE_LEFT)
 
 
-# In[13]:
+# In[ ]:
 
 gdf_left = gpd.read_postgis(sql=sql,
                             con=engine)
 
 
-# In[14]:
+# In[ ]:
 
 gdf_left.head()
 
 
-# In[15]:
+# In[ ]:
 
 gdf_left.shape
 
 
-# In[16]:
+# In[ ]:
 
 sql = """
 SELECT
@@ -278,46 +277,42 @@ FROM
 """.format(RDS_INPUT_TABLE_RIGHT)
 
 
-# In[17]:
+# In[ ]:
 
 gdf_right = gpd.read_postgis(sql=sql,
                              con=engine)
 
 
-# In[18]:
+# In[ ]:
 
 gdf_right.head()
 
 
-# In[19]:
+# In[ ]:
 
 gdf_right.shape
 
 
-# In[20]:
+# In[ ]:
+
+# inspect case for Egypt index = 417, case for Canada index = 515
+gdf_grid.head()
+
+
+# In[ ]:
 
 #gdf_grid_list = np.array_split(gdf_grid, cpu_count*10)
 gdf_grid_list = np.array_split(gdf_grid, gdf_grid.shape[0])
 
 
-# In[21]:
+# In[ ]:
 
 len(gdf_grid_list)
 
 
-# In[22]:
+# In[ ]:
 
 gdf_grid_list_test = gdf_grid_list[417:418]
-
-
-# In[23]:
-
-gdf_test = gdf_grid_list_test[0]
-
-
-# In[24]:
-
-gdf_left_clipped,gdf_right_clipped = create_union_gdfs(gdf_test)
 
 
 # In[ ]:
