@@ -195,17 +195,32 @@ gdf_out.shape
 gdf.head()
 
 
-# In[23]:
+# In[27]:
 
-output_file_path = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
+output_file_path = "{}/{}".format(ec2_output_path,SCRIPT_NAME)
 
 
 # In[24]:
 
-gdf_out.to_file(filename=output_file_path,driver="ESRI Shapefile")
+gdf_out.to_file(output_file_path + ".shp",driver="ESRI Shapefile")
 
 
-# In[25]:
+# In[28]:
+
+gdf_out.to_pickle(output_file_path + ".pkl")
+
+
+# In[29]:
+
+gdf_out.head()
+
+
+# In[30]:
+
+gdf_out.shape
+
+
+# In[31]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 

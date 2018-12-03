@@ -1,10 +1,16 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[58]:
 
-""" Union of hydrobasin and GADM 36 level 1 using geopandas parallel processing.
+""" Union of hydrobasingadm36L01 and Whymap using geopandas parallel processing.
 -------------------------------------------------------------------------------
+
+TODO tomorrow: Simplify geometry of large input data, or snap geometries before
+performing the union.
+
+Avoid topology errors.
+
 
 Step 1:
 Create polygons (10x10 degree, 648).
@@ -25,22 +31,26 @@ Step 6:
 Save output
 
 Author: Rutger Hofste
-Date: 20181128
+Date: 20181203
 Kernel: python35+
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 """
 
-
 TESTING = 0
-SCRIPT_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_V01"
-OUTPUT_VERSION = 19
+SCRIPT_NAME = "Y2018M12D03_RH_Hybas6GADM36L01_U_Whymap_PP_V01"
+OUTPUT_VERSION = 1
+
+TOLERANCE = 0.000001 # degrees
 
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
-RDS_INPUT_TABLE_LEFT = "y2018m11d12_rh_gadm36_level1_to_rds_v01_v02"
-RDS_INPUT_TABLE_RIGHT = "hybas06_v04"
+RDS_INPUT_TABLE_RIGHT = "y2018m11d14_rh_whymap_to_rds_v01_v01"
 
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_Merge_V01/output_V06/"
+INPUT_FILE_NAME = "Y2018M11D29_RH_Hybas6_U_GADM36L01_GPD_PP_Merge_V01.pkl"
+
+ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path_df = "/volumes/data/{}/outputdf_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
@@ -49,7 +59,11 @@ s3_output_path_df = "s3://wri-projects/Aqueduct30/processData/{}/outputdf_V{:02.
 
 
 print("\nec2_output_path:", ec2_output_path,
-      "\ns3_output_path: ", s3_output_path)
+      "\ns3_output_path: ", s3_output_path,
+      "\ns3_output_path: ", s3_output_path,
+      "\nS3_INPUT_PATH: ", S3_INPUT_PATH,
+      "\nRDS_INPUT_TABLE_RIGHT: ",RDS_INPUT_TABLE_RIGHT)
+
 
 
 # In[2]:
@@ -62,7 +76,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[3]:
+# In[37]:
 
 import os
 import sqlalchemy
@@ -72,24 +86,31 @@ import pandas as pd
 import geopandas as gpd
 from google.cloud import bigquery
 from shapely.geometry import MultiPolygon, Polygon
+from shapely.ops import snap
 
 
 # In[4]:
 
-get_ipython().system('rm -r {ec2_output_path}')
-get_ipython().system('rm -r {ec2_output_path}')
+#r {ec2_output_path}
+#!rm -r {ec2_output_path}
+get_ipython().system('mkdir -p {ec2_input_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path_df}')
 
 
 # In[5]:
 
+get_ipython().system('aws s3 cp {S3_INPUT_PATH} {ec2_input_path} --recursive')
+
+
+# In[6]:
+
 cpu_count = multiprocessing.cpu_count()
 cpu_count = cpu_count -2 #Avoid freeze
 print("Power to the maxxx:", cpu_count)
 
 
-# In[6]:
+# In[7]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -98,12 +119,12 @@ F.close()
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
 
 
-# In[7]:
+# In[8]:
 
 cell_size = 10
 
 
-# In[8]:
+# In[9]:
 
 def create_fishnet_gdf(cell_size):
     crs = {'init': 'epsg:4326'}
@@ -216,96 +237,202 @@ def create_union_gdfs(gdf):
     
     print("Succesfully processed", index)
     return  gdf_out
-        
-
-
-# In[9]:
-
-gdf_grid = create_fishnet_gdf(cell_size)
 
 
 # In[10]:
 
-gdf_grid.head()
+gdf_grid = create_fishnet_gdf(cell_size)
 
 
 # In[11]:
 
+gdf_grid.head()
+
+
+# In[64]:
+
 gdf_grid.shape
 
 
-# In[12]:
+# In[65]:
 
-sql = """
-SELECT
-  gid_1,
-  geom
-FROM
-  {}
-""".format(RDS_INPUT_TABLE_LEFT)
+input_path = "{}/{}".format(ec2_input_path,INPUT_FILE_NAME)
 
 
-# In[13]:
+# In[66]:
 
-gdf_left = gpd.read_postgis(sql=sql,
-                            con=engine)
+gdf_left = pd.read_pickle(input_path)
 
 
-# In[14]:
+# In[67]:
 
 gdf_left.head()
 
 
-# In[15]:
+# In[68]:
 
 gdf_left.shape
 
 
-# In[16]:
+# In[69]:
+
+def simplify_gdf(gdf):
+    gdf_out = gdf
+    gdf_out.geometry = gdf_out.geometry.simplify(tolerance=TOLERANCE)
+    return gdf_out
+
+
+# In[70]:
+
+gdf_left_list = np.array_split(gdf_left, cpu_count*100)
+
+
+# In[74]:
+
+p= multiprocessing.Pool(processes=cpu_count)
+df_out_list = p.map(simplify_gdf,gdf_left_list)
+p.close()
+p.join()
+
+
+# In[75]:
+
+gdf_left_simplified = pd.concat(df_out_list, ignore_index=True)
+
+
+# In[77]:
 
 sql = """
 SELECT
-  pfaf_id,
+  aqid,
   geom
 FROM
   {}
 """.format(RDS_INPUT_TABLE_RIGHT)
 
 
-# In[17]:
+# In[78]:
 
 gdf_right = gpd.read_postgis(sql=sql,
                              con=engine)
 
 
-# In[18]:
+# In[79]:
 
 gdf_right.head()
 
 
-# In[19]:
+# In[80]:
 
 gdf_right.shape
 
 
-# In[20]:
+# In[81]:
 
-# inspect case for Egypt index = 417, case for Canada index = 515
-gdf_grid.head()
+# got error index 265 (intersection)
 
 
-# In[21]:
+# In[82]:
 
-#gdf_grid_list = np.array_split(gdf_grid, cpu_count*10)
+gdf_grid_test = gdf_grid[265:266]
+
+
+# In[83]:
+
+polygon = gdf_grid_test.iloc[0].geometry
+
+
+# In[84]:
+
+gdf_clipped_left_test = clip_gdf(gdf_left_simplified,polygon)
+
+
+# In[85]:
+
+gdf_clipped_right_test = clip_gdf(gdf_right,polygon)
+
+
+# In[86]:
+
+get_ipython().magic('matplotlib inline')
+
+
+# In[89]:
+
+gdf_clipped_left_test["isvalid"] = gdf_clipped_left_test.geometry.is_valid
+
+
+# In[90]:
+
+gdf_clipped_right_test["isvalid"] = gdf_clipped_right_test.geometry.is_valid
+
+
+# In[91]:
+
+gdf_union = gpd.overlay(gdf_clipped_left_test,gdf_clipped_right_test,how="union")
+
+
+# In[ ]:
+
+
+
+
+# In[27]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
 gdf_grid_list = np.array_split(gdf_grid, gdf_grid.shape[0])
 
 
-# In[22]:
+# In[ ]:
 
 len(gdf_grid_list)
 
 
-# In[23]:
+# In[ ]:
+
+gdf_grid_test = gdf_grid[265:266]
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
 
 p= multiprocessing.Pool(processes=cpu_count)
 df_out_list = p.map(create_union_gdfs,gdf_grid_list)
@@ -313,44 +440,20 @@ p.close()
 p.join()
 
 
-# In[24]:
+# In[ ]:
 
 df_out = pd.concat(df_out_list, ignore_index=True)
 
 
-# In[25]:
+# In[ ]:
 
 output_path_df = "{}/df_out.pkl".format(ec2_output_path_df)
 
 
-# In[26]:
+# In[ ]:
 
 df_out.to_pickle(output_path_df)
 
-
-# In[27]:
-
-get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
-
-
-# In[28]:
-
-get_ipython().system('aws s3 cp {ec2_output_path_df} {s3_output_path_df} --recursive')
-
-
-# In[29]:
-
-end = datetime.datetime.now()
-elapsed = end - start
-print(elapsed)
-
-
-# Previous Runs:  
-# 0:45:12.187817 (10x10)  
-# 0:44:55.686081 (10x10)  
-# 1:16:26.394030 (1x1 sindex=true)  
-# 0:47:42.023796  
-# 
 
 # In[ ]:
 
