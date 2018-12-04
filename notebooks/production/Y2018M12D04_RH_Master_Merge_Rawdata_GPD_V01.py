@@ -41,15 +41,15 @@ BQ_IN["SEV"] = "y2018m08d02_rh_intra_annual_variability_cat_label_v01_v02"
 BQ_IN["DRR"] = "y2018m09d28_rh_dr_cat_label_v01_v02"
 
 # Riverine Flood Risk | RFR
-BQ_IN["RFR"] = ""
+BQ_IN["RFR"] = "y2018m12d04_rh_rfr_cfr_bq_v01_v01"
 
 # Coastal Flood Risk | CFR
-BQ_IN["CFR"] = ""
+BQ_IN["CFR"] = "y2018m12d04_rh_rfr_cfr_bq_v01_v01"
 
 # Physical Risk Quality | QAL -----------------
 
 # Untreated Collected Wastewater | UCW
-BQ_IN["UCW"] = ""
+BQ_IN["UCW"] = "y2018m12d04_rh_ucw_bq_v01_v01"
 
 # Coastal Eutrophication Potential | CEP
 BQ_IN["CEP"] = "y2018m11d22_rh_icep_hybas6_cat_label_bq_v01_v01"

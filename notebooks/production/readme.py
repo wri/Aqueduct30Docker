@@ -260,9 +260,9 @@
 #     
 #     
 # #### Risk of Untreated Wastewater 
-# 1.  **Y2018M10D05_RH_UWW_PostGIS_V01**  
-#     Store wastewater results on postGIS.
-#     
+# 1.  **Y2018M12D04_RH_UCW_BQ_V01**  
+#     Process wastewater data and store on BigQuery.
+# 
 # 
 # ### Flood Risk Branch
 # 
