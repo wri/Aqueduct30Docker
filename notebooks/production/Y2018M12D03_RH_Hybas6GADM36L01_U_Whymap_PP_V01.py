@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[58]:
+# In[1]:
 
 """ Union of hydrobasingadm36L01 and Whymap using geopandas parallel processing.
 -------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[37]:
+# In[3]:
 
 import os
 import sqlalchemy
@@ -249,58 +249,32 @@ gdf_grid = create_fishnet_gdf(cell_size)
 gdf_grid.head()
 
 
-# In[64]:
+# In[12]:
 
 gdf_grid.shape
 
 
-# In[65]:
+# In[13]:
 
 input_path = "{}/{}".format(ec2_input_path,INPUT_FILE_NAME)
 
 
-# In[66]:
+# In[14]:
 
 gdf_left = pd.read_pickle(input_path)
 
 
-# In[67]:
+# In[15]:
 
 gdf_left.head()
 
 
-# In[68]:
+# In[16]:
 
 gdf_left.shape
 
 
-# In[69]:
-
-def simplify_gdf(gdf):
-    gdf_out = gdf
-    gdf_out.geometry = gdf_out.geometry.simplify(tolerance=TOLERANCE)
-    return gdf_out
-
-
-# In[70]:
-
-gdf_left_list = np.array_split(gdf_left, cpu_count*100)
-
-
-# In[74]:
-
-p= multiprocessing.Pool(processes=cpu_count)
-df_out_list = p.map(simplify_gdf,gdf_left_list)
-p.close()
-p.join()
-
-
-# In[75]:
-
-gdf_left_simplified = pd.concat(df_out_list, ignore_index=True)
-
-
-# In[77]:
+# In[21]:
 
 sql = """
 SELECT
@@ -311,65 +285,95 @@ FROM
 """.format(RDS_INPUT_TABLE_RIGHT)
 
 
-# In[78]:
+# In[22]:
 
 gdf_right = gpd.read_postgis(sql=sql,
                              con=engine)
 
 
-# In[79]:
+# In[23]:
 
 gdf_right.head()
 
 
-# In[80]:
+# In[24]:
 
 gdf_right.shape
 
 
-# In[81]:
+# In[25]:
 
 # got error index 265 (intersection)
 
 
-# In[82]:
+# In[26]:
 
 gdf_grid_test = gdf_grid[265:266]
 
 
-# In[83]:
+# In[27]:
 
 polygon = gdf_grid_test.iloc[0].geometry
 
 
-# In[84]:
+# In[28]:
 
-gdf_clipped_left_test = clip_gdf(gdf_left_simplified,polygon)
+gdf_clipped_left_test = clip_gdf(gdf_left,polygon)
 
 
-# In[85]:
+# In[29]:
 
 gdf_clipped_right_test = clip_gdf(gdf_right,polygon)
 
 
-# In[86]:
+# In[30]:
 
 get_ipython().magic('matplotlib inline')
 
 
-# In[89]:
+# In[38]:
 
-gdf_clipped_left_test["isvalid"] = gdf_clipped_left_test.geometry.is_valid
-
-
-# In[90]:
-
-gdf_clipped_right_test["isvalid"] = gdf_clipped_right_test.geometry.is_valid
+gdf_clipped_left_test_selection = gdf_clipped_left_test.loc[(gdf_clipped_left_test["gid_1"] == "BRA.5_1") & ((gdf_clipped_left_test["pfaf_id"] == 634708.000000000000000 )|(gdf_clipped_left_test["pfaf_id"] == 634508.000000000000000 )) ]
 
 
-# In[91]:
+# In[134]:
 
-gdf_union = gpd.overlay(gdf_clipped_left_test,gdf_clipped_right_test,how="union")
+gdf_clipped_left_test2 = gdf_clipped_left_test[30:285]
+
+
+# In[135]:
+
+gdf_union = gpd.overlay(gdf_clipped_left_test2,gdf_clipped_right_test,how="union")
+
+
+# In[110]:
+
+test_left = gdf_clipped_left_test[30:31]
+
+
+# In[142]:
+
+test_left.plot()
+
+
+# In[138]:
+
+test_right = gdf_clipped_left_test[285:286]
+
+
+# In[139]:
+
+test_right
+
+
+# In[141]:
+
+test_right.plot()
+
+
+# In[143]:
+
+test_union = gpd.overlay(test_left,test_right,how="union")
 
 
 # In[ ]:
@@ -377,7 +381,32 @@ gdf_union = gpd.overlay(gdf_clipped_left_test,gdf_clipped_right_test,how="union"
 
 
 
-# In[27]:
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
 
 
 
