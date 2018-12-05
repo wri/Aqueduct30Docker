@@ -149,7 +149,7 @@ destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 # In[18]:
 
-df.to_gbq(destination_table=destination_table,
+df_out.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
           chunksize=10000,
           if_exists="replace")

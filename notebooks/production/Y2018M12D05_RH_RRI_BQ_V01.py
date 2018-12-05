@@ -3,21 +3,23 @@
 
 # In[1]:
 
-""" Process flood risk data and store on BigQuery. 
+""" Process reprisk index and store on BigQuery.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20181204
+Date: 20181205
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 """
 
-SCRIPT_NAME = "Y2018M12D04_RH_UCW_BQ_V01"
+SCRIPT_NAME = "Y2018M12D05_RH_RRI_BQ_V01"
 OUTPUT_VERSION = 1
 
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/Wastewater"
-INPUT_FILE_NAME = "wastewater_results.csv"
+NODATA_VALUE = -9999
+
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/RepRisk"
+INPUT_FILE_NAME = "rri_results.csv"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -96,7 +98,7 @@ df.head()
 
 # In[11]:
 
-# WW -> UCW
+# RRI -> RRI
 
 
 # raw -> raw.
@@ -108,19 +110,16 @@ df.head()
 # In[12]:
 
 df_out = df.rename(columns={"ADM0_A3":"adm0_a3",
-                            "WW_raw":"ucw_raw",
-                            "WW_s":"ucw_score",
-                            "WW_cat":"ucw_label"})
+                            "RRI_raw":"rri_raw",
+                            "RRI_s":"rri_score",
+                            "RRI_cat":"rri_label"})
 
 
 # In[13]:
 
-df_out.drop(columns=["Exclude",
-                     "Percent_Connected",
-                     "Untreated",
-                     "Primary",
-                     "Secondary",
-                     "Tertiary"],inplace=True)
+df_out["rri_raw"] = df_out["rri_raw"].fillna(NODATA_VALUE)
+df_out["rri_score"] = df_out["rri_score"].fillna(NODATA_VALUE)
+df_out["rri_label"] = df_out["rri_label"].fillna("No Data")
 
 
 # In[14]:
@@ -135,7 +134,7 @@ def score_to_category(score):
 
 # In[15]:
 
-df_out["ucw_cat"] = df_out["ucw_score"].apply(score_to_category)
+df_out["rri_cat"] = df_out["rri_score"].apply(score_to_category)
 
 
 # In[16]:
@@ -163,5 +162,11 @@ elapsed = end - start
 print(elapsed)
 
 
-# Previous runs:  
-# 0:00:18.766466
+# Previous runs:   
+# 0:00:13.546827
+# 
+
+# In[ ]:
+
+
+

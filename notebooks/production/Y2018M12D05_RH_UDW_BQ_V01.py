@@ -3,21 +3,23 @@
 
 # In[1]:
 
-""" Process flood risk data and store on BigQuery. 
+""" Process unimproved/no drinking water and store on BigQuery.
 -------------------------------------------------------------------------------
 
 Author: Rutger Hofste
-Date: 20181204
+Date: 20181205
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 """
 
-SCRIPT_NAME = "Y2018M12D04_RH_UCW_BQ_V01"
+SCRIPT_NAME = "Y2018M12D05_RH_UDW_BQ_V01"
 OUTPUT_VERSION = 1
 
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/Wastewater"
-INPUT_FILE_NAME = "wastewater_results.csv"
+NODATA_VALUE = -9999
+
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/AccessToDW"
+INPUT_FILE_NAME = "dw_results.csv"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -96,7 +98,7 @@ df.head()
 
 # In[11]:
 
-# WW -> UCW
+# DW -> UDW
 
 
 # raw -> raw.
@@ -107,23 +109,30 @@ df.head()
 
 # In[12]:
 
-df_out = df.rename(columns={"ADM0_A3":"adm0_a3",
-                            "WW_raw":"ucw_raw",
-                            "WW_s":"ucw_score",
-                            "WW_cat":"ucw_label"})
+df_out = df.rename(columns={"PFAF_ID":"pfaf_id",
+                            "DW_raw":"udw_raw",
+                            "DW_s":"udw_score",
+                            "DW_cat":"udw_label"})
 
 
 # In[13]:
 
-df_out.drop(columns=["Exclude",
-                     "Percent_Connected",
-                     "Untreated",
-                     "Primary",
-                     "Secondary",
-                     "Tertiary"],inplace=True)
+df_out.drop(columns=["DW_nat_raw",
+                     "DW_rur_raw",
+                     "DW_urb_raw",
+                     "rur_pop",
+                     "urb_pop",
+                     "total_pop"],inplace=True)
 
 
 # In[14]:
+
+df_out["udw_raw"] = df_out["udw_raw"].fillna(NODATA_VALUE)
+df_out["udw_score"] = df_out["udw_score"].fillna(NODATA_VALUE)
+df_out["udw_label"] = df_out["udw_label"].fillna("No Data")
+
+
+# In[15]:
 
 def score_to_category(score):
     if score != 5:
@@ -133,22 +142,22 @@ def score_to_category(score):
     return cat
 
 
-# In[15]:
-
-df_out["ucw_cat"] = df_out["ucw_score"].apply(score_to_category)
-
-
 # In[16]:
 
-df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+df_out["udw_cat"] = df_out["udw_score"].apply(score_to_category)
 
 
 # In[17]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df_out = df_out.reindex(sorted(df_out.columns), axis=1)
 
 
 # In[18]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[19]:
 
 df.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -156,7 +165,7 @@ df.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[19]:
+# In[20]:
 
 end = datetime.datetime.now()
 elapsed = end - start

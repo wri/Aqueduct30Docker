@@ -29,10 +29,11 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2018M11D22_RH_ICEP_Hybas6_Cat_Label_BQ_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 COUNT_THRESHOLD = 1000 #(icepbasin cellsize 60km )
 
+NODATA_VALUE = -9999
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M11D22_RH_ICEP_Zonal_Stats_Hybas6_EE_V01/output_V01/"
 
@@ -110,7 +111,9 @@ def normalize_score(row):
     return final_score
 
 def category_to_label(row):
-    if row < 1:
+    if row < -9998:
+        cat = "No Data"
+    elif row < 1:
         cat = "Low (< -5)"
     elif row < 2:
         cat = "Low to medium (-5 to 0)"
@@ -121,7 +124,7 @@ def category_to_label(row):
     elif row <= 5:
         cat = "Extremely High (> +5)"
     else:
-        cat = "No Data"
+        cat = "Error"
     return cat
 
 def label_to_category(row):
@@ -136,7 +139,7 @@ def label_to_category(row):
     elif row == "Extremely High (> +5)":
         cat = 4
     else:
-        cat = -1
+        cat = -9999
     return cat
 
 
@@ -172,14 +175,14 @@ df.zones = df.zones.astype(np.int64)
 
 # In[13]:
 
-df = df.rename(columns={"mean":"ICEP_raw",
+df = df.rename(columns={"mean":"ice_raw",
                         "zones":"pfaf_id"})
 
 
 # In[14]:
 
-icep_min = df["ICEP_raw"].min()
-icep_max = df["ICEP_raw"].max()
+icep_min = df["ice_raw"].min()
+icep_max = df["ice_raw"].max()
 
 
 # In[15]:
@@ -194,40 +197,51 @@ icep_max
 
 # In[17]:
 
-df["ICEP_score"] = df["ICEP_raw"].apply(lambda x: normalize_score(x))
+df["ice_raw"] = df["ice_raw"].fillna(-9999.0)
 
 
 # In[18]:
 
-df["ICEP_label"] = df["ICEP_score"].apply(lambda x: category_to_label(x))
+df["ice_score"] = df["ice_raw"].apply(lambda x: normalize_score(x))
 
 
 # In[19]:
 
-df["ICEP_cat"] = df["ICEP_label"].apply(lambda x: label_to_category(x))
+# Replace nodata scores with NoData value
+df["ice_score"][df["ice_raw"] <-9998 ] = NODATA_VALUE
 
 
 # In[20]:
 
-df = df.drop(columns=["output_version","reducer","script_used","spatial_aggregation","spatial_resolution","unit","parameter"])
+df["ice_label"] = df["ice_score"].apply(lambda x: category_to_label(x))
 
 
 # In[21]:
 
-df.columns = df.columns.str.lower()
+df["ice_cat"] = df["ice_label"].apply(lambda x: label_to_category(x))
 
 
 # In[22]:
 
-df.head()
+df = df.drop(columns=["output_version","reducer","script_used","spatial_aggregation","spatial_resolution","unit","parameter"])
 
 
 # In[23]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df.columns = df.columns.str.lower()
 
 
 # In[24]:
+
+df.head()
+
+
+# In[25]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[26]:
 
 df.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -235,7 +249,7 @@ df.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[25]:
+# In[27]:
 
 output_file_path_pkl = "{}/icep_cat_label.pkl".format(ec2_output_path)
 output_file_path_csv = "{}/icep_cat_label.csv".format(ec2_output_path)
@@ -243,12 +257,12 @@ df.to_pickle(output_file_path_pkl)
 df.to_csv(output_file_path_csv,encoding='utf-8')
 
 
-# In[26]:
+# In[28]:
 
 get_ipython().system('aws s3 cp  {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[27]:
+# In[29]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -259,8 +273,3 @@ print(elapsed)
 # 0:00:20.201732  
 # 0:00:19.542761
 # 
-
-# In[ ]:
-
-
-

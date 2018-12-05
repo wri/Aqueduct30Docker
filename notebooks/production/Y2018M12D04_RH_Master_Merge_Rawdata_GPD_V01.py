@@ -57,10 +57,10 @@ BQ_IN["CEP"] = "y2018m11d22_rh_icep_hybas6_cat_label_bq_v01_v01"
 # Regulatory and Reputational Risk | RRR --------------
 
 # Unimproved/no drinking water | UDW
-BQ_IN["UDW"] = ""
+BQ_IN["UDW"] = "y2018m12d05_rh_udw_bq_v01_v01"
 
 # Unimproved/no sanitation | USA
-BQ_IN["USA"] = ""
+BQ_IN["USA"] = "y2018m12d05_rh_usa_bq_v01_v01"
 
 # RepRisk Index | RRI
 BQ_IN["RRI"] = ""
