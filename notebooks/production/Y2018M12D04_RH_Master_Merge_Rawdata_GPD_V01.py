@@ -492,5 +492,10 @@ df_rri = pd.read_gbq(query=sql_rri,dialect="standard")
 
 # In[ ]:
 
-# approaches, join without geometry or with geometry
+# approaches, join without geometry or with geometry? without
+
+
+# In[ ]:
+
+
 

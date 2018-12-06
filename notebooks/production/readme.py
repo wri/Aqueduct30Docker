@@ -333,7 +333,13 @@
 # 1. **Y2018M11D14_RH_ICEPBasins_To_BQ_V01**  
 #     Upload ICEP Basins to BQ.
 # 1. **Y2018M12D04_RH_Union_ArcMap_V01**  
-#     Union of hybas6, gadm36L01, Whymap in Arcmap   
+#     Union of hybas6, gadm36L01, Whymap in Arcmap
+# 1. **Y2018M12D06_RH_Master_Shape_Composite_Index_V01**  
+#     Simplify and create composite index.
+# 1. **Y2018M12D06_RH_Master_Shape_Dissolve_V01**  
+#     Dissolve on composite index in arcMap.
+# 1. **Y2018M12D06_RH_Master_Shape_V01**  
+#     Process master shapefile and store in multiple formats.
 # 
 #     
 #     
