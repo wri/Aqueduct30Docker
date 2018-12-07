@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[73]:
+# In[97]:
 
 """ Merge raw data into master table. 
 -------------------------------------------------------------------------------
@@ -23,6 +23,24 @@ BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 
 BQ_IN = {}
+
+
+BQ_IN["Master"] = "y2018m12d06_rh_master_shape_v01_v01"
+
+
+# Additional tables required
+
+# GADM countries 
+BQ_IN["GADM36L01"] = "y2018m11d12_rh_gadm36_level1_rds_to_bq_v01_v01"
+
+# Weights
+BQ_IN["weights"] ="y2018m12d06_rh_process_weights_bq_v01_v01"
+
+# FAO basins
+
+
+
+# Area per aq30_id
 
 # Physical Risk Quantity | QAN   -------------
 
@@ -72,16 +90,19 @@ BQ_IN["RRI"] = "y2018m12d05_rh_rri_bq_v01_v01"
 
 
 
+
+
+
 print("\nBQ_OUTPUT_DATASET_NAME: ", BQ_OUTPUT_DATASET_NAME,
       "\nBQ_OUTPUT_TABLE_NAME: ", BQ_OUTPUT_TABLE_NAME)
 
 
-# In[7]:
+# In[2]:
 
 BQ_IN
 
 
-# In[8]:
+# In[3]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -91,7 +112,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[9]:
+# In[4]:
 
 import os
 import pandas as pd
@@ -102,13 +123,104 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
 os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
 client = bigquery.Client(project=BQ_PROJECT_ID)
 
+pd.set_option('display.max_columns', 500)
+
+
+# In[5]:
+
+# Master Table
+
+
+# In[6]:
+
+sql_master = """
+SELECT
+  aq30_id,
+  string_id,
+  pfaf_id,
+  gid_1,
+  aqid
+FROM
+  `{}.{}.{}`
+ORDER BY
+  aq30_id
+""".format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["Master"])
+
+
+# In[7]:
+
+df_master = pd.read_gbq(query=sql_master,dialect="standard")
+
+
+# In[8]:
+
+df_master.head()
+
+
+# In[9]:
+
+# GADM Cross Table
+
+
+# In[10]:
+
+sql_gadm36l01 = """
+SELECT
+  gid_1,
+  name_1,
+  gid_0,
+  name_0,
+  varname_1,
+  nl_name_1,
+  type_1,
+  engtype_1,
+  cc_1,
+  hasc_1
+FROM
+  `{}.{}.{}`
+""".format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["GADM36L01"])
+
+
+# In[11]:
+
+df_gadm36l01 = pd.read_gbq(query=sql_gadm36l01,dialect="standard")
+
+
+# In[12]:
+
+df_gadm36l01.head()
+
 
 # In[ ]:
+
+sql_gadm36l01 = """
+SELECT
+  gid_1,
+  name_1,
+  gid_0,
+  name_0,
+  varname_1,
+  nl_name_1,
+  type_1,
+  engtype_1,
+  cc_1,
+  hasc_1
+FROM
+  `{}.{}.{}`
+""".format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["GADM36L01"])
+
+
+# In[ ]:
+
+
+
+
+# In[13]:
 
 # BWS annual
 
 
-# In[23]:
+# In[14]:
 
 sql_bws_annual = """
 SELECT
@@ -116,7 +228,6 @@ SELECT
   temporal_resolution,
   delta_id,
   year,
-  month,
   waterstress_raw_dimensionless_coalesced,
   waterstress_score_dimensionless_coalesced,
   waterstress_category_dimensionless_coalesced,
@@ -129,26 +240,26 @@ WHERE
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["BWS"])
 
 
-# In[24]:
+# In[15]:
 
 df_bws_annual = pd.read_gbq(query=sql_bws_annual,dialect="standard")
 
 
-# In[27]:
+# In[16]:
 
-df_bws_annual = df_bws_annual.rename(columns={"pfafid_30spfaf06":"pfafid",
+df_bws_annual = df_bws_annual.rename(columns={"pfafid_30spfaf06":"pfaf_id",
                                               "waterstress_raw_dimensionless_coalesced":"bws_raw",
                                               "waterstress_score_dimensionless_coalesced":"bws_score",
                                               "waterstress_category_dimensionless_coalesced":"bws_cat",
                                               "waterstress_label_dimensionless_coalesced":"bws_label"})
 
 
-# In[ ]:
+# In[17]:
 
 # BWD annual
 
 
-# In[37]:
+# In[18]:
 
 sql_bwd_annual = """
 SELECT
@@ -156,7 +267,6 @@ SELECT
   temporal_resolution,
   delta_id,
   year,
-  month,
   waterdepletion_raw_dimensionless_coalesced,
   waterdepletion_score_dimensionless_coalesced,
   waterdepletion_category_dimensionless_coalesced,
@@ -169,26 +279,34 @@ WHERE
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["BWD"])
 
 
-# In[38]:
+# In[19]:
 
 df_bwd_annual = pd.read_gbq(query=sql_bwd_annual,dialect="standard")
 
 
-# In[39]:
+# In[20]:
 
-df_bwd_annual = df_bwd_annual.rename(columns={"pfafid_30spfaf06":"pfafid",
+df_bwd_annual = df_bwd_annual.rename(columns={"pfafid_30spfaf06":"pfaf_id",
                                               "waterdepletion_raw_dimensionless_coalesced":"bwd_raw",
                                               "waterdepletion_score_dimensionless_coalesced":"bwd_score",
                                               "waterdepletion_category_dimensionless_coalesced":"bwd_cat",
                                               "waterdepletion_label_dimensionless_coalesced":"bwd_label"})
 
 
-# In[40]:
+# In[21]:
+
+df_bwd_annual.drop(columns=["temporal_resolution",
+                            "year",
+                            "delta_id"],
+                   inplace=True)
+
+
+# In[22]:
 
 # IAV 
 
 
-# In[41]:
+# In[23]:
 
 sql_iav_annual = """
 SELECT
@@ -208,31 +326,38 @@ WHERE
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["IAV"])
 
 
-# In[42]:
+# In[24]:
 
 df_iav_annual = pd.read_gbq(query=sql_iav_annual,dialect="standard")
 
 
-# In[43]:
+# In[25]:
 
-df_iav_annual = df_iav_annual.rename(columns={"pfafid_30spfaf06":"pfafid",
+df_iav_annual = df_iav_annual.rename(columns={"pfafid_30spfaf06":"pfaf_id",
                                               "iav_riverdischarge_m_coalesced":"iav_raw",
                                               "iav_riverdischarge_score_coalesced":"iav_score",
                                               "iav_riverdischarge_category_coalesced":"iav_cat",
                                               "iav_riverdischarge_label_coalesced":"iav_label"})
 
 
-# In[45]:
+# In[26]:
+
+df_iav_annual.drop(columns=["temporal_resolution",
+                            "year",
+                            "delta_id"],
+                   inplace=True)
+
+
+# In[27]:
 
 # SEV
 
 
-# In[46]:
+# In[28]:
 
 sql_sev = """
 SELECT
   pfafid_30spfaf06,
-  delta_id,
   sv_riverdischarge_m_coalesced,
   sv_riverdischarge_score_coalesced,
   sv_riverdischarge_category_coalesced,
@@ -242,26 +367,26 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["SEV"])
 
 
-# In[48]:
+# In[29]:
 
 df_sev = pd.read_gbq(query=sql_sev,dialect="standard")
 
 
-# In[49]:
+# In[30]:
 
-df_sev = df_sev.rename(columns={"pfafid_30spfaf06":"pfafid",
+df_sev = df_sev.rename(columns={"pfafid_30spfaf06":"pfaf_id",
                                 "sv_riverdischarge_m_coalesced":"sev_raw",
                                 "sv_riverdischarge_score_coalesced":"sev_score",
                                 "sv_riverdischarge_category_coalesced":"sev_cat",
                                 "sv_label_dimensionless_coalesced":"sev_label"})
 
 
-# In[50]:
+# In[31]:
 
 # RFR
 
 
-# In[51]:
+# In[32]:
 
 sql_rfr = """
 SELECT
@@ -275,17 +400,17 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["RFR"])
 
 
-# In[52]:
+# In[33]:
 
 df_rfr = pd.read_gbq(query=sql_rfr,dialect="standard")
 
 
-# In[53]:
+# In[34]:
 
 # CFR
 
 
-# In[54]:
+# In[35]:
 
 sql_cfr = """
 SELECT
@@ -299,17 +424,17 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["CFR"])
 
 
-# In[55]:
+# In[36]:
 
 df_cfr = pd.read_gbq(query=sql_cfr,dialect="standard")
 
 
-# In[56]:
+# In[37]:
 
 # DRR
 
 
-# In[57]:
+# In[38]:
 
 sql_drr = """
 SELECT
@@ -323,26 +448,26 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["DRR"])
 
 
-# In[58]:
+# In[39]:
 
 df_drr = pd.read_gbq(query=sql_drr,dialect="standard")
 
 
-# In[59]:
+# In[40]:
 
-df_drr = df_drr.rename(columns={"PFAF_ID":"pfafid",
+df_drr = df_drr.rename(columns={"PFAF_ID":"pfaf_id",
                                 "droughtrisk_raw":"drr_raw",
                                 "droughtrisk_score":"drr_score",
                                 "droughtrisk_cat":"drr_cat",
                                 "droughtrisk_label":"drr_label"})
 
 
-# In[60]:
+# In[41]:
 
 # GTD
 
 
-# In[61]:
+# In[42]:
 
 sql_gtd = """
 SELECT
@@ -356,26 +481,26 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["GTD"])
 
 
-# In[63]:
+# In[43]:
 
 df_gtd = pd.read_gbq(query=sql_gtd,dialect="standard")
 
 
-# In[64]:
+# In[44]:
 
 df_gtd = df_gtd.rename(columns={"AqID_spatial_unit":"aqid",
                                 "groundwatertabledecliningtrend_cmperyear":"gtd_raw",
-                                "roundwatertabledecliningtrend_score":"gtd_score",
+                                "groundwatertabledecliningtrend_score":"gtd_score",
                                 "groundwatertabledecliningtrend_cat":"gtd_cat",
                                 "groundwatertabledecliningtrend_label":"gtd_label"})
 
 
-# In[65]:
+# In[45]:
 
 # UCW
 
 
-# In[67]:
+# In[46]:
 
 sql_ucw = """
 SELECT
@@ -389,17 +514,17 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["UCW"])
 
 
-# In[68]:
+# In[47]:
 
 df_ucw = pd.read_gbq(query=sql_ucw,dialect="standard")
 
 
-# In[69]:
+# In[48]:
 
 # CEP
 
 
-# In[74]:
+# In[49]:
 
 sql_cep = """
 SELECT
@@ -413,17 +538,17 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["CEP"])
 
 
-# In[75]:
+# In[50]:
 
 df_cep = pd.read_gbq(query=sql_cep,dialect="standard")
 
 
-# In[77]:
+# In[51]:
 
 # UDW
 
 
-# In[78]:
+# In[52]:
 
 sql_udw = """
 SELECT
@@ -437,17 +562,17 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["UDW"])
 
 
-# In[79]:
+# In[53]:
 
 df_udw = pd.read_gbq(query=sql_udw,dialect="standard")
 
 
-# In[80]:
+# In[54]:
 
 # USA
 
 
-# In[81]:
+# In[55]:
 
 sql_usa = """
 SELECT
@@ -461,17 +586,17 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["USA"])
 
 
-# In[82]:
+# In[56]:
 
 df_usa = pd.read_gbq(query=sql_usa,dialect="standard")
 
 
-# In[83]:
+# In[57]:
 
 # RRI
 
 
-# In[84]:
+# In[58]:
 
 sql_rri = """
 SELECT
@@ -485,14 +610,257 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["RRI"])
 
 
-# In[85]:
+# In[59]:
 
 df_rri = pd.read_gbq(query=sql_rri,dialect="standard")
 
 
 # In[ ]:
 
-# approaches, join without geometry or with geometry? without
+
+
+
+# # Joining  Tables
+
+# In[60]:
+
+df_master.head()
+
+
+# In[61]:
+
+df_master.shape
+
+
+# In[62]:
+
+df_gadm36l01.head()
+
+
+# In[63]:
+
+df_merged = pd.merge(left=df_master,
+                     right=df_gadm36l01,
+                     how="left",
+                     left_on="gid_1",
+                     right_on="gid_1",
+                     validate="many_to_one")
+
+
+# In[64]:
+
+# Merge BWS
+
+
+# In[65]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_bws_annual,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[66]:
+
+# Merge BWD
+
+
+# In[67]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_bwd_annual,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[68]:
+
+# Merge IAV
+
+
+# In[69]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_iav_annual,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[70]:
+
+# Merge SEV
+
+
+# In[71]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_sev,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[72]:
+
+# Merge RFR
+
+
+# In[73]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_rfr,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[74]:
+
+# Merge CFR
+
+
+# In[75]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_cfr,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[76]:
+
+# Merge DRR
+
+
+# In[77]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_drr,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[78]:
+
+# Merge GTD
+
+
+# In[79]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_gtd,
+                     how="left",
+                     left_on="aqid",
+                     right_on="aqid",
+                     validate="many_to_one")
+
+
+# In[80]:
+
+# UCW
+
+
+# In[81]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_ucw,
+                     how="left",
+                     left_on="gid_0",
+                     right_on="adm0_a3",
+                     validate="many_to_one")
+
+
+# In[82]:
+
+df_merged.drop(columns=["adm0_a3"],
+               inplace=True)
+
+
+# In[83]:
+
+df_merged.head()
+
+
+# In[86]:
+
+# CEP
+
+
+# In[87]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_cep,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[85]:
+
+# UDW
+
+
+# In[90]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_udw,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[ ]:
+
+# USA
+
+
+# In[91]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_usa,
+                     how="left",
+                     left_on="pfaf_id",
+                     right_on="pfaf_id",
+                     validate="many_to_one")
+
+
+# In[92]:
+
+df_merged.head()
+
+
+# In[93]:
+
+# RRI
+
+
+# In[95]:
+
+df_merged = pd.merge(left=df_merged,
+                     right=df_rri,
+                     how="left",
+                     left_on="gid_0",
+                     right_on="adm0_a3",
+                     validate="many_to_one")
+
+
+# In[96]:
+
+df_merged.head()
 
 
 # In[ ]:

@@ -310,7 +310,8 @@
 #     add pcrGlob water demand, supply and stress data to database.
 #     
 # 
-# 
+# 1. **Y2018M12D06_RH_Process_Weights_BQ_V01**  
+#     Process and upload industry weights to BigQuery.
 #     
 # 
 # ### Geospatial Layers

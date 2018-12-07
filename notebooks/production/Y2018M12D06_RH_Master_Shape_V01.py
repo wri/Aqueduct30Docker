@@ -14,7 +14,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2018M12D06_RH_Master_Shape_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 NODATA_VALUE = -9999
 
@@ -136,40 +136,27 @@ gdf["pfaf_id"] = pd.to_numeric(gdf["pfaf_id"])
 gdf["aqid"] = pd.to_numeric(gdf["aqid"])
 
 
-# In[19]:
+# In[15]:
 
 gdf = gdf.sort_values("string_id")
 
 
-# In[20]:
+# In[16]:
 
 gdf["aq30_id"] = gdf.index
 
 
-# In[22]:
+# In[17]:
 
 gdf = gdf.reindex(sorted(gdf.columns), axis=1)
 
 
-# In[23]:
+# In[18]:
 
 gdf.head()
 
 
-# In[26]:
-
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,OUTPUT_TABLE_NAME)
-
-
-# In[27]:
-
-gdf.to_gbq(destination_table=destination_table,
-          project_id=BQ_PROJECT_ID,
-          chunksize=1000,
-          if_exists="replace")
-
-
-# In[28]:
+# In[19]:
 
 def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     # this function uploads a polygon shapefile to table in AWS RDS. 
@@ -212,12 +199,60 @@ def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     return gdfFromSQL
 
 
-# In[29]:
+# In[20]:
+
+gdf.shape
+
+
+# In[ ]:
 
 gdfFromSQL = uploadGDFtoPostGIS(gdf,OUTPUT_TABLE_NAME,False)
 
 
-# In[30]:
+# In[ ]:
+
+gdfFromSQL.shape
+
+
+# In[ ]:
+
+gdfFromSQL.head()
+
+
+# In[ ]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,OUTPUT_TABLE_NAME)
+
+
+# In[ ]:
+
+gdfFromSQL.to_gbq(destination_table=destination_table,
+                  project_id=BQ_PROJECT_ID,
+                  chunksize=1000,
+                  if_exists="replace")
+
+
+# In[ ]:
+
+output_file_path = "{}/{}".format(ec2_output_path,SCRIPT_NAME)
+
+
+# In[ ]:
+
+gdf.to_pickle(output_file_path + ".pkl")
+
+
+# In[ ]:
+
+gdf.to_file(output_file_path + ".shp",driver="ESRI Shapefile")
+
+
+# In[ ]:
+
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -225,7 +260,8 @@ print(elapsed)
 
 
 # Previous runs:   
-# 0:01:12.245867
+# 0:01:12.245867  
+# 0:48:09.273757
 
 # In[ ]:
 
