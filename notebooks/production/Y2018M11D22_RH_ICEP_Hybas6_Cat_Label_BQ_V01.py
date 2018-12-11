@@ -29,7 +29,7 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2018M11D22_RH_ICEP_Hybas6_Cat_Label_BQ_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 COUNT_THRESHOLD = 1000 #(icepbasin cellsize 60km )
 
@@ -175,14 +175,14 @@ df.zones = df.zones.astype(np.int64)
 
 # In[13]:
 
-df = df.rename(columns={"mean":"ice_raw",
+df = df.rename(columns={"mean":"cep_raw",
                         "zones":"pfaf_id"})
 
 
 # In[14]:
 
-icep_min = df["ice_raw"].min()
-icep_max = df["ice_raw"].max()
+icep_min = df["cep_raw"].min()
+icep_max = df["cep_raw"].max()
 
 
 # In[15]:
@@ -197,28 +197,28 @@ icep_max
 
 # In[17]:
 
-df["ice_raw"] = df["ice_raw"].fillna(-9999.0)
+df["cep_raw"] = df["cep_raw"].fillna(-9999.0)
 
 
 # In[18]:
 
-df["ice_score"] = df["ice_raw"].apply(lambda x: normalize_score(x))
+df["cep_score"] = df["cep_raw"].apply(lambda x: normalize_score(x))
 
 
 # In[19]:
 
 # Replace nodata scores with NoData value
-df["ice_score"][df["ice_raw"] <-9998 ] = NODATA_VALUE
+df["cep_score"][df["cep_raw"] <-9998 ] = NODATA_VALUE
 
 
 # In[20]:
 
-df["ice_label"] = df["ice_score"].apply(lambda x: category_to_label(x))
+df["cep_label"] = df["cep_score"].apply(lambda x: category_to_label(x))
 
 
 # In[21]:
 
-df["ice_cat"] = df["ice_label"].apply(lambda x: label_to_category(x))
+df["cep_cat"] = df["cep_label"].apply(lambda x: label_to_category(x))
 
 
 # In[22]:

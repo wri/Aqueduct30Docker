@@ -313,6 +313,9 @@
 # 1. **Y2018M12D06_RH_Process_Weights_BQ_V01**  
 #     Process and upload industry weights to BigQuery.
 #     
+# 1. **Y2018M12D07_RH_Process_Area_BQ_V01**  
+#      Process and upload areas of master shapefile to BigQuery.
+#     
 # 
 # ### Geospatial Layers
 # 
@@ -349,7 +352,10 @@
 # 
 #     
 # 1. **Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V01**  
-#     Merge raw data into master table.  
+#     Merge raw data into master table. 
+# 1. **Y2018M12D11_RH_Master_Weights_GPD_V01**  
+#     Apply industry weights on merged table.
+#     
 #     
 #     
 #     

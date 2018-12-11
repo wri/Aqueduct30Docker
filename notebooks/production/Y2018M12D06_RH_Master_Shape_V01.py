@@ -204,27 +204,27 @@ def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
 gdf.shape
 
 
-# In[ ]:
+# In[21]:
 
 gdfFromSQL = uploadGDFtoPostGIS(gdf,OUTPUT_TABLE_NAME,False)
 
 
-# In[ ]:
+# In[22]:
 
 gdfFromSQL.shape
 
 
-# In[ ]:
+# In[23]:
 
 gdfFromSQL.head()
 
 
-# In[ ]:
+# In[24]:
 
 destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,OUTPUT_TABLE_NAME)
 
 
-# In[ ]:
+# In[25]:
 
 gdfFromSQL.to_gbq(destination_table=destination_table,
                   project_id=BQ_PROJECT_ID,
@@ -232,27 +232,27 @@ gdfFromSQL.to_gbq(destination_table=destination_table,
                   if_exists="replace")
 
 
-# In[ ]:
+# In[26]:
 
 output_file_path = "{}/{}".format(ec2_output_path,SCRIPT_NAME)
 
 
-# In[ ]:
+# In[27]:
 
 gdf.to_pickle(output_file_path + ".pkl")
 
 
-# In[ ]:
+# In[28]:
 
 gdf.to_file(output_file_path + ".shp",driver="ESRI Shapefile")
 
 
-# In[ ]:
+# In[29]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[30]:
 
 end = datetime.datetime.now()
 elapsed = end - start
