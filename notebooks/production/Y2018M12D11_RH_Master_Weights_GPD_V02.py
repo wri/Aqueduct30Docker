@@ -21,12 +21,12 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 """
 
-SCRIPT_NAME = 'Y2018M12D11_RH_Master_Weights_GPD_V01'
-OUTPUT_VERSION = 3
+SCRIPT_NAME = 'Y2018M12D11_RH_Master_Weights_GPD_V02'
+OUTPUT_VERSION = 1
 
 BQ_IN = {}
 # Master Table
-BQ_IN["MASTER"] = "y2018m12d04_rh_master_merge_rawdata_gpd_v01_v02"
+BQ_IN["MASTER"] = "y2018m12d04_rh_master_merge_rawdata_gpd_v02_v02"
 
 # Weights
 BQ_IN["WEIGHTS"] ="y2018m12d06_rh_process_weights_bq_v01_v01"
@@ -83,11 +83,21 @@ pd.set_option('display.max_columns', 500)
 
 sql_master = """
 SELECT
-  *
+  string_id,
+  pfaf_id,
+  gid_0,
+  gid_1,
+  aqid,
+  delta_id,
+  indicator,
+  raw,
+  score,
+  cat,
+  label
 FROM
   `{}.{}.{}`
 ORDER BY
-  aq30_id
+  string_id
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["MASTER"])
 
 
@@ -106,14 +116,19 @@ df_master.head()
 df_master.shape
 
 
-# In[10]:
+# In[43]:
+
+df_in = df_master
+
+
+# In[44]:
 
 sql_weights = """
 SELECT
   id,
-  category_full_name,
-  category_short,
-  indicator_name_full,
+  group_full,
+  group_short,
+  indicator_full,
   indicator_short,
   industry_full,
   industry_short,
@@ -126,22 +141,114 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["WEIGHTS"])
 
 
-# In[11]:
+# In[45]:
 
 df_weights = pd.read_gbq(query=sql_weights,dialect="standard")
 
 
-# In[12]:
+# In[46]:
 
 df_weights.head()
 
 
-# In[13]:
+# In[47]:
 
 df_weights.shape
 
 
-# In[14]:
+# In[48]:
+
+df_groups = df_weights.loc[df_weights["industry_short"] =="DEF"][["indicator_short","group_short"]]
+
+
+# In[49]:
+
+df_groups = df_groups.apply(lambda x: x.astype(str).str.lower())
+
+
+# In[50]:
+
+df_groups
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[51]:
+
+# Add group to dataframe
+df_in = pd.merge(left=df_in,
+                 right=df_groups,
+                 how="left",
+                 left_on="indicator",
+                 right_on="indicator_short")
+df_in.drop("indicator_short",axis=1,inplace=True)
+
+
+# In[56]:
+
+df_industries = df_weights[["indicator_short","industry_short","weight_fraction"]]
+
+
+# In[57]:
+
+df_industries = df_industries.apply(lambda x: x.astype(str).str.lower())
+
+
+# In[ ]:
+
+
+
+
+# In[60]:
+
+# Add industry to each indicator
+df_w = pd.merge(left=df_in,
+                right=df_industries,
+                left_on = "indicator",
+                right_on = "indicator_short",
+                how = "right")
+
+
+# In[67]:
+
+# mask out weights where score is None
+df_w["weight_fraction"] = df_w["weight_fraction"].mask(np.isnan(df_w["score"]))
+
+
+# In[78]:
+
+test = df_w.loc[(df_w["industry_short"] == "def") & (df_w["string_id"] == "111011-EGY.11_1-3365")]
+
+
+# In[83]:
+
+test.dtypes
+
+
+# In[96]:
+
+test2 = test["weight_fraction"]
+
+
+# In[97]:
+
+test2
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
 
 industries = list(df_weights.industry_short.unique())
 categories = list(df_weights.category_short.unique())
@@ -149,17 +256,17 @@ indicators = list(df_weights.indicator_short.unique())
 
 
 
-# In[15]:
+# In[ ]:
 
 # Calculate Overall Water Risks by using weights
 
 
-# In[16]:
+# In[ ]:
 
 df_merged_weights = df_master.copy()
 
 
-# In[17]:
+# In[ ]:
 
 for industry in industries:
     for indicator in indicators:
@@ -173,12 +280,12 @@ for industry in industries:
         df_merged_weights[column_name_weighted_score] = score * weight
 
 
-# In[18]:
+# In[ ]:
 
 df_merged_weights.head()
 
 
-# In[19]:
+# In[ ]:
 
 def mask_weights():
     """
@@ -200,12 +307,12 @@ def mask_weights():
 mask_weights()
 
 
-# In[20]:
+# In[ ]:
 
 df_master.head()
 
 
-# In[21]:
+# In[ ]:
 
 for industry in industries:    
     # weights    
@@ -232,17 +339,17 @@ for industry in industries:
 
 
 
-# In[22]:
+# In[ ]:
 
 df_merged_weights.head()
 
 
-# In[23]:
+# In[ ]:
 
 destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 
-# In[24]:
+# In[ ]:
 
 df_merged_weights.to_gbq(destination_table=destination_table,
                          project_id=BQ_PROJECT_ID,
@@ -250,22 +357,22 @@ df_merged_weights.to_gbq(destination_table=destination_table,
                          if_exists="replace")
 
 
-# In[25]:
+# In[ ]:
 
 destination_path_s3 = "{}/{}.csv".format(ec2_output_path,SCRIPT_NAME)
 
 
-# In[26]:
+# In[ ]:
 
 df_merged_weights.to_csv(destination_path_s3)
 
 
-# In[27]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[28]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start

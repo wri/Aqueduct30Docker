@@ -351,9 +351,9 @@
 # ### Merge Rawdata
 # 
 #     
-# 1. **Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V01**  
+# 1. **Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V02**  
 #     Merge raw data into master table. 
-# 1. **Y2018M12D11_RH_Master_Weights_GPD_V01**  
+# 1. **Y2018M12D11_RH_Master_Weights_GPD_V02** # 2 already created.  
 #     Apply industry weights on merged table.
 #     
 #     
