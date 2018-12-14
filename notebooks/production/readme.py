@@ -355,6 +355,8 @@
 #     Merge raw data into master table. 
 # 1. **Y2018M12D11_RH_Master_Weights_GPD_V02**  
 #     Apply industry weights on merged table.
+# 1. **Y2018M12D14_RH_Master_Horizontal_GPD_V01**  
+#     Create horizontal table for readability. 
 #     
 #     
 #     

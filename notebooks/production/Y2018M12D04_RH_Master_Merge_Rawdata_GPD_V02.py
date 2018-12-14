@@ -11,7 +11,6 @@ a vertical approach was more useful when applying the weights.
 
 version 2 of the script creates a vertical output. 
 
-
 Author: Rutger Hofste
 Date: 20181204
 Kernel: python35
@@ -21,7 +20,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = 'Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V02'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
@@ -365,13 +364,14 @@ df_master_merged = pd.merge(left=df_master,
                      validate="many_to_one")
 
 
+# In[ ]:
+
+
+
+
 # In[16]:
 
 df_merged = []
-
-
-# In[17]:
-
 for indicator, dictje in d_1_out.items():
     identifier = dictje["identifier2"]
     df_in = dictje["df"]
@@ -387,30 +387,30 @@ df_result = pd.concat(df_merged, axis=0)
 df_result_nones = df_result.replace(to_replace=[-9999,-9998,-9999.0,-9998.0,"-9999","NoData"],value= np.nan)
 
 
-# In[18]:
+# In[17]:
 
 df_result_nones.head()
 
 
-# In[19]:
+# In[18]:
 
 df_result_nones.shape
 
 
-# In[20]:
+# In[19]:
 
 destination_path_s3 = "{}/{}.pkl".format(ec2_output_path,SCRIPT_NAME)
 df_result_nones.to_pickle(destination_path_s3)
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[21]:
+# In[20]:
 
 destination_table = "{}.{}".format(BQ_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 print(destination_table)
 
 
-# In[22]:
+# In[21]:
 
 df_result_nones.to_gbq(destination_table=destination_table,
                        project_id=BQ_PROJECT_ID,
@@ -418,7 +418,7 @@ df_result_nones.to_gbq(destination_table=destination_table,
                        if_exists="replace")
 
 
-# In[23]:
+# In[22]:
 
 end = datetime.datetime.now()
 elapsed = end - start

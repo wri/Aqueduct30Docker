@@ -22,7 +22,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M12D11_RH_Master_Weights_GPD_V02'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 BQ_IN = {}
 # Master Table
@@ -105,17 +105,20 @@ df_master = pd.read_gbq(query=sql_master,dialect="standard")
 
 # In[8]:
 
-df_master.head()
+df_master.shape
 
 
 # In[9]:
 
-df_master.shape
+df_in = df_master
 
 
 # In[10]:
 
-df_in = df_master
+# certain GUs have invalid 'None' indicators. removing those
+# This happens when the id exists in the master shapefile but not in te indicator results.
+
+df_valid_in = df_in.loc[df_in["indicator"].notnull()]
 
 
 # In[11]:
@@ -166,47 +169,52 @@ df_groups
 # In[17]:
 
 # Add group to dataframe
-df_in = pd.merge(left=df_in,
+df_group_in = pd.merge(left=df_valid_in,
                  right=df_groups,
                  how="left",
                  left_on="indicator",
                  right_on="indicator_short")
-df_in.drop("indicator_short",axis=1,inplace=True)
+df_group_in.drop("indicator_short",axis=1,inplace=True)
 
 
 # In[18]:
 
-df_industries = df_weights[["indicator_short","industry_short","weight_fraction"]]
+df_group_in.tail()
 
 
 # In[19]:
 
-# Add industry to each indicator
-df_w = pd.merge(left=df_in,
-                right=df_industries,
-                left_on = "indicator",
-                right_on = "indicator_short",
-                how = "right")
-df_w.drop("indicator_short",axis=1,inplace=True)
+df_industries = df_weights[["indicator_short","industry_short","weight_fraction"]]
 
 
 # In[20]:
+
+# Add industry to each indicator
+df_w = pd.merge(left=df_group_in,
+                right=df_industries,
+                left_on = "indicator",
+                right_on = "indicator_short",
+                how = "left")
+df_w.drop("indicator_short",axis=1,inplace=True)
+
+
+# In[21]:
 
 # mask out weights where score is None
 df_w["weight_fraction"] = df_w["weight_fraction"].mask(np.isnan(df_w["score"]))
 
 
-# In[21]:
+# In[22]:
 
 df_w["weighted_score"] = df_w["weight_fraction"] * df_w["score"]
 
 
-# In[22]:
-
-df_w.head()
-
-
 # In[23]:
+
+df_w.tail()
+
+
+# In[24]:
 
 def calculate_group_aggregate(df):
     """ Calculates the weighted scores for each industry, group pair. 
@@ -339,73 +347,88 @@ def category_to_label(cat):
     return label
 
 
-# In[24]:
+# In[25]:
 
 df_group = calculate_group_aggregate(df_w)
 
 
-# In[25]:
+# In[26]:
 
 df_group = calculate_group_remapped_scores(df_group)
 
 
-# In[26]:
+# In[27]:
 
 df_total = calculate_total_aggregate(df_group)
 
 
-# In[27]:
+# In[28]:
 
 df_total = calculate_remapped_scores(df_total)
 
 
-# In[33]:
+# In[29]:
 
 df_agg = pd.concat([df_group, df_total],axis=0)
 
 
-# In[36]:
+# In[30]:
 
 df_agg["cat"] = df_agg["score"].apply(score_to_category)
 df_agg["label"] = df_agg["cat"].apply(category_to_label)
 
 
-# In[37]:
+# In[31]:
 
 df_agg_out = pd.concat([df_w,df_agg],axis=0)
 
 
-# In[41]:
+# In[32]:
 
 df_agg_out.sort_index(axis=1,inplace=True)
 
 
-# In[42]:
+# In[33]:
 
 df_agg_out.head()
 
 
-# In[43]:
+# In[34]:
 
-destination_path_s3 = "{}/{}.csv".format(ec2_output_path,SCRIPT_NAME)
-
-
-# In[44]:
-
-df_agg_out.to_csv(destination_path_s3)
+df_agg_out.tail()
 
 
-# In[46]:
+# In[35]:
+
+destination_path_csv = "{}/{}.csv".format(ec2_output_path,SCRIPT_NAME)
+
+
+# In[36]:
+
+df_agg_out.to_csv(destination_path_csv)
+
+
+# In[37]:
+
+destination_path_pkl = "{}/{}.pkl".format(ec2_output_path,SCRIPT_NAME)
+
+
+# In[38]:
+
+df_agg_out.to_pickle(destination_path_pkl)
+
+
+# In[39]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[47]:
+# In[40]:
 
 destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 
-# In[49]:
+# In[41]:
 
 # This can be sped up by using csv files, storing to GCS and ingesting from there.
 df_agg_out.to_gbq(destination_table=destination_table,
@@ -414,7 +437,7 @@ df_agg_out.to_gbq(destination_table=destination_table,
                          if_exists="replace")
 
 
-# In[50]:
+# In[42]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -423,3 +446,8 @@ print(elapsed)
 
 # Previous runs:   
 # 0:28:11.269342
+
+# In[ ]:
+
+
+
