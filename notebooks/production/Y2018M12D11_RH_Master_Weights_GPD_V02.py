@@ -10,9 +10,9 @@ This script applies the industry weights to the framework. Overall Water Risk
 (OWR) is calculated for every industry. When scores are unavailable (nan),
 the weights have been set to Nan to exclude them from the weight sum. 
 
-Todo:
-overall water risk scores per category (e.g.) have not been calculated yet. 
 
+Grouped and overall water risks is calculated and stored as a separate 
+indicator callend awr (aggregated water risk). 
 
 Author: Rutger Hofste
 Date: 20181211
@@ -70,12 +70,14 @@ get_ipython().system('mkdir -p {ec2_output_path}')
 import os
 import pandas as pd
 import numpy as np
+import scipy.interpolate
 from google.cloud import bigquery
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
 os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
 client = bigquery.Client(project=BQ_PROJECT_ID)
 
+get_ipython().magic('matplotlib inline')
 pd.set_option('display.max_columns', 500)
 
 
@@ -84,11 +86,6 @@ pd.set_option('display.max_columns', 500)
 sql_master = """
 SELECT
   string_id,
-  pfaf_id,
-  gid_0,
-  gid_1,
-  aqid,
-  delta_id,
   indicator,
   raw,
   score,
@@ -116,22 +113,22 @@ df_master.head()
 df_master.shape
 
 
-# In[43]:
+# In[10]:
 
 df_in = df_master
 
 
-# In[44]:
+# In[11]:
 
 sql_weights = """
 SELECT
   id,
   group_full,
-  group_short,
+  LOWER(group_short) AS group_short,
   indicator_full,
-  indicator_short,
+  LOWER(indicator_short) AS indicator_short,
   industry_full,
-  industry_short,
+  LOWER(industry_short) AS industry_short,
   weight_abs,
   weight_label,
   weight_interpretation,
@@ -141,47 +138,32 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["WEIGHTS"])
 
 
-# In[45]:
+# In[12]:
 
 df_weights = pd.read_gbq(query=sql_weights,dialect="standard")
 
 
-# In[46]:
+# In[13]:
 
 df_weights.head()
 
 
-# In[47]:
+# In[14]:
 
 df_weights.shape
 
 
-# In[48]:
+# In[15]:
 
-df_groups = df_weights.loc[df_weights["industry_short"] =="DEF"][["indicator_short","group_short"]]
-
-
-# In[49]:
-
-df_groups = df_groups.apply(lambda x: x.astype(str).str.lower())
+df_groups = df_weights.loc[df_weights["industry_short"] =="def"][["indicator_short","group_short"]]
 
 
-# In[50]:
+# In[16]:
 
 df_groups
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[51]:
+# In[17]:
 
 # Add group to dataframe
 df_in = pd.merge(left=df_in,
@@ -192,22 +174,12 @@ df_in = pd.merge(left=df_in,
 df_in.drop("indicator_short",axis=1,inplace=True)
 
 
-# In[56]:
+# In[18]:
 
 df_industries = df_weights[["indicator_short","industry_short","weight_fraction"]]
 
 
-# In[57]:
-
-df_industries = df_industries.apply(lambda x: x.astype(str).str.lower())
-
-
-# In[ ]:
-
-
-
-
-# In[60]:
+# In[19]:
 
 # Add industry to each indicator
 df_w = pd.merge(left=df_in,
@@ -215,171 +187,239 @@ df_w = pd.merge(left=df_in,
                 left_on = "indicator",
                 right_on = "indicator_short",
                 how = "right")
+df_w.drop("indicator_short",axis=1,inplace=True)
 
 
-# In[67]:
+# In[20]:
 
 # mask out weights where score is None
 df_w["weight_fraction"] = df_w["weight_fraction"].mask(np.isnan(df_w["score"]))
 
 
-# In[78]:
+# In[21]:
 
-test = df_w.loc[(df_w["industry_short"] == "def") & (df_w["string_id"] == "111011-EGY.11_1-3365")]
-
-
-# In[83]:
-
-test.dtypes
+df_w["weighted_score"] = df_w["weight_fraction"] * df_w["score"]
 
 
-# In[96]:
+# In[22]:
 
-test2 = test["weight_fraction"]
-
-
-# In[97]:
-
-test2
+df_w.head()
 
 
-# In[ ]:
+# In[23]:
 
-
-
-
-# In[ ]:
-
-industries = list(df_weights.industry_short.unique())
-categories = list(df_weights.category_short.unique())
-indicators = list(df_weights.indicator_short.unique())
-
-
-
-# In[ ]:
-
-# Calculate Overall Water Risks by using weights
-
-
-# In[ ]:
-
-df_merged_weights = df_master.copy()
-
-
-# In[ ]:
-
-for industry in industries:
-    for indicator in indicators:
-        column_name_weight = "{}_{}_weight".format(indicator.lower(),industry.lower())
-        column_name_score = "{}_score".format(indicator.lower())
-        column_name_weighted_score = "{}_{}_weightedscore".format(indicator.lower(),industry.lower())
-        weight = df_weights.loc[(df_weights.industry_short == industry) & (df_weights.indicator_short == indicator)].weight_fraction.iloc[0]
-        score = df_master[column_name_score]
-               
-        df_merged_weights[column_name_weight] = weight
-        df_merged_weights[column_name_weighted_score] = score * weight
-
-
-# In[ ]:
-
-df_merged_weights.head()
-
-
-# In[ ]:
-
-def mask_weights():
+def calculate_group_aggregate(df):
+    """ Calculates the weighted scores for each industry, group pair. 
+    e.g. Quantity risk for Agriculture (qan,agr).
+    The dataframe will have an indicator called "awr" that stands for
+    aggregated water risk. 
+    
+    
+    Args:
+        df (DataFrame) : Pandas Dataframe with Aqueduct values.
+    
+    Returns:
+        df_agg (DataFrame) : DataFrame with aggregated scores. 
+    
     """
-    Sets weights to np.nan when the score is np.nan
+    df_agg = df.groupby(["string_id","industry_short","group_short"])["weight_fraction","weighted_score"].agg("sum").reset_index()
+    df_agg["indicator"] = "awr" # Aggregated Water Risk
+    df_agg["raw"] = df_agg["weighted_score"] / df_agg["weight_fraction"]
+    return df_agg
+
+def calculate_total_aggregate(df_group):
+    """ Calculates the weighted scores for each industry.
+    e.g. Total risk for Agriculture
+    The dataframe will have an indicator called "awr" that stands for
+    aggregated water risk and a 'group' tot that stands for total.
     
-    this is required for later steps in which sums are 
-    calculated.
-        
+    
+    Args:
+        df_group (DataFrame) : Pandas Dataframe with Grouped 
+            Aqueduct values.
+    
+    Returns:
+        df_totalagg (DataFrame) : DataFrame with aggregated scores. 
+    
     """
+    df_totalagg = df_group.groupby(["string_id","industry_short"])["weight_fraction","weighted_score"].agg("sum").reset_index()
+    df_totalagg["group_short"] = "tot"
+    df_totalagg["indicator"] = "awr" 
+    df_totalagg["raw"] = df_totalagg["weighted_score"] / df_totalagg["weight_fraction"]
+    return df_totalagg
 
-    for industry in industries:
-        for indicator in indicators:
-            weight_column_name = "{}_{}_weight".format(indicator.lower(),industry.lower())
-            score_column_name = "{}_{}_weightedscore".format(indicator.lower(),industry.lower())
-            df_merged_weights[weight_column_name] = df_merged_weights[weight_column_name].mask(np.isnan(df_merged_weights[score_column_name]))
-
-    return 1
-
-mask_weights()
-
-
-# In[ ]:
-
-df_master.head()
-
-
-# In[ ]:
-
-for industry in industries:    
-    # weights    
-    regex_w = '^.*_{}_weight$|^string_id$'.format(industry.lower())
-    df_w = df_merged_weights.filter(regex=regex_w)
-    df_w = df_w.set_index("string_id")
-    column_name_w = "{}_weight_sum".format(industry.lower())
-    df_merged_weights[column_name_w] = df_w.sum(axis=1).values
+def quantile_interp_function(s,q,y):
+    """ Get a interpolated function based on quantiles.
+    y and q should be the same length.
+    
+    Args:
+        s(pandas Series): Input y data that needs to 
+            be remapped.
+        q(list): list with quantile x values.
+        y(list): list with y value to map to.
         
-    # Overall scores
-    regex_s = '^.*_{}_weightedscore$|^string_id$'.format(industry.lower())
-    df_s = df_merged_weights.filter(regex=regex_s)
-    df_s = df_s.set_index("string_id")
-    column_name_s = "{}_weightedscore_sum".format(industry.lower())
-    df_merged_weights[column_name_s] = df_s.sum(axis=1).values
-    df_merged_weights["owr_{}_raw".format(industry.lower())] = df_merged_weights[column_name_s] / df_merged_weights[column_name_w]
+    Returns:
+        f(interp1d) : Scipy function object.
+        quantiles(Pandas Series): list of quantile y 
+            values. 
+        
+    Example:
+    
+        s = df["col"]
+        q = [0,0.2,0.4,0.6,0.8,1]
+        y = [0,1,2,3,4,5]
+        f = quantile_interp_function(s,quantiles,y)
+        y_new = f(x)
+    
+    """
+    quantiles = s.quantile(q=q)
+    f = scipy.interpolate.interp1d(quantiles,y)
+    return f, quantiles
 
+def calculate_group_remapped_scores(df_group):
+    """ remap scores based on quantiles and linear
+    interpolation. 
+    
+    See other functions for more information.
+    
+    Quantiles are determined per-group. 
     
     
+    """
+    
+    groups = ["qan","qal","rrr"]
+    q = [0,0.2,0.4,0.6,0.8,1]
+    y = [0,1,2,3,4,5]
+
+    ss_out = pd.Series() 
+    for group in groups:
+        s = df_group.loc[df_group["group_short"] == group]["raw"]
+        f, quantiles = quantile_interp_function(s,q,y)
+        print("quantile values used for group: ",group, "\n", quantiles)
+        s_out  = df_group.loc[df_group["group_short"] == group]["raw"].apply(f)
+        ss_out = ss_out.append(s_out)
+
+    df_group["score"] = ss_out
+    return df_group
+
+def calculate_remapped_scores(df):
+    q = [0,0.2,0.4,0.6,0.8,1]
+    y = [0,1,2,3,4,5]
+    s = df.loc[df["group_short"] == "tot"]["raw"]
+    f, quantiles = quantile_interp_function(s,q,y)
+    print("quantiles used for aggregate total:",quantiles)
+    df["score"] = df["raw"].apply(f)
+    return df
+
+def score_to_category(score):
+    if np.isnan(score):
+        cat = np.nan
+    elif score != 5:
+        cat = int(np.floor(score))
+    else:
+        cat = 4
+    return cat
+    
+
+def category_to_label(cat):
+    if np.isnan(cat):
+        label = "NoData"
+    elif cat == 0:
+        label = "Low"
+    elif cat == 1:
+        label = "Low - Medium"
+    elif cat == 2:
+        label = "Medium"
+    elif cat == 3:
+        label = "Medium - High"
+    elif cat == 4: 
+        label = "High"
+    else:
+        label = "Error"
+    return label
 
 
-# In[ ]:
+# In[24]:
+
+df_group = calculate_group_aggregate(df_w)
 
 
+# In[25]:
+
+df_group = calculate_group_remapped_scores(df_group)
 
 
-# In[ ]:
+# In[26]:
 
-df_merged_weights.head()
-
-
-# In[ ]:
-
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df_total = calculate_total_aggregate(df_group)
 
 
-# In[ ]:
+# In[27]:
 
-df_merged_weights.to_gbq(destination_table=destination_table,
-                         project_id=BQ_PROJECT_ID,
-                         chunksize=10000,
-                         if_exists="replace")
+df_total = calculate_remapped_scores(df_total)
 
 
-# In[ ]:
+# In[33]:
+
+df_agg = pd.concat([df_group, df_total],axis=0)
+
+
+# In[36]:
+
+df_agg["cat"] = df_agg["score"].apply(score_to_category)
+df_agg["label"] = df_agg["cat"].apply(category_to_label)
+
+
+# In[37]:
+
+df_agg_out = pd.concat([df_w,df_agg],axis=0)
+
+
+# In[41]:
+
+df_agg_out.sort_index(axis=1,inplace=True)
+
+
+# In[42]:
+
+df_agg_out.head()
+
+
+# In[43]:
 
 destination_path_s3 = "{}/{}.csv".format(ec2_output_path,SCRIPT_NAME)
 
 
-# In[ ]:
+# In[44]:
 
-df_merged_weights.to_csv(destination_path_s3)
+df_agg_out.to_csv(destination_path_s3)
 
 
-# In[ ]:
+# In[46]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[47]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[49]:
+
+# This can be sped up by using csv files, storing to GCS and ingesting from there.
+df_agg_out.to_gbq(destination_table=destination_table,
+                         project_id=BQ_PROJECT_ID,
+                         chunksize=100000,
+                         if_exists="replace")
+
+
+# In[50]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
 
 
-# In[ ]:
-
-
-
+# Previous runs:   
+# 0:28:11.269342
