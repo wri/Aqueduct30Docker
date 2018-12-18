@@ -40,7 +40,7 @@ BQ_IN["area"] = 'y2018m12d07_rh_process_area_bq_v01_v01'
 
 # too slow, using s3 instead
 BQ_IN["indicators"] = 'y2018m12d11_rh_master_weights_gpd_v02_v01'
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02/output_V03"
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02/output_V04"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -372,45 +372,45 @@ elapsed = end - start
 print(elapsed)
 
 
-# In[33]:
+# In[31]:
 
 gdf_simple = gdf_master[["string_id","geom"]]
 
 
-# In[38]:
+# In[32]:
 
 # Saving as geopackage did not work. Therefore saving the unique identifier (string_id) and geom as shapefile. 
 # This can be joined in GIS software later
 gdf_simple.to_file(filename=destination_path_shp,driver="ESRI Shapefile",encoding ='utf-8')
 
 
-# In[39]:
+# In[33]:
 
 gdf_master.to_pickle(destination_path_pkl)
 
 
-# In[40]:
+# In[34]:
 
 df_master.to_csv(destination_path_csv, encoding='utf-8')
 
 
-# In[41]:
+# In[35]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[42]:
+# In[36]:
 
 gdf_master2 = gdf_master.rename(columns={"geom":"geometry"})
 gdf_master2 = gpd.GeoDataFrame(gdf_master2,geometry="geometry")
 
 
-# In[43]:
+# In[37]:
 
 gdfFromSQL = uploadGDFtoPostGIS(gdf_master2,output_table_name,False)
 
 
-# In[44]:
+# In[38]:
 
 gdfFromSQL.to_gbq(destination_table=destination_table,
                   project_id=BQ_PROJECT_ID,
@@ -418,7 +418,7 @@ gdfFromSQL.to_gbq(destination_table=destination_table,
                   if_exists="replace")
 
 
-# In[45]:
+# In[39]:
 
 end = datetime.datetime.now()
 elapsed = end - start
