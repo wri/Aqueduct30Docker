@@ -20,7 +20,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = 'Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V02'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
@@ -39,6 +39,7 @@ INDICATORS = {"bws":"pfaf_id",
               "iav":"pfaf_id",
               "sev":"pfaf_id",
               "cfr":"pfaf_id",
+              "rfr":"pfaf_id",
               "drr":"pfaf_id",
               "gtd":"AqID_spatial_unit",
               "ucw":"adm0_a3",

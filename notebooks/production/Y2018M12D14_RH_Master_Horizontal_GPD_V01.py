@@ -22,7 +22,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M12D14_RH_Master_Horizontal_GPD_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 4
 
 
 # AWS RDS PostGIS
@@ -46,7 +46,7 @@ BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
-ec2_input_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
+ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
@@ -86,6 +86,8 @@ import geopandas as gpd
 import numpy as np
 import sqlalchemy
 from google.cloud import bigquery
+from shapely.geometry.multipolygon import MultiPolygon
+from geoalchemy2 import Geometry, WKTElement
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
 os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
@@ -102,9 +104,10 @@ password = F.read().splitlines()[0]
 F.close()
 
 engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,DATABASE_ENDPOINT,DATABASE_NAME))
+connection = engine.connect()
 
 
-# In[ ]:
+# In[7]:
 
 def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     # this function uploads a polygon shapefile to table in AWS RDS. 
@@ -147,7 +150,7 @@ def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     return gdfFromSQL
 
 
-# In[7]:
+# In[8]:
 
 sql = """
 SELECT
@@ -161,27 +164,27 @@ FROM {}
 """.format(POSTGIS_INPUT_TABLE_NAME)
 
 
-# In[8]:
+# In[9]:
 
 gdf =gpd.GeoDataFrame.from_postgis(sql,engine,geom_col='geom')
 
 
-# In[9]:
+# In[10]:
 
 gdf.head()
 
 
-# In[10]:
+# In[11]:
 
 gdf.shape
 
 
-# In[11]:
+# In[12]:
 
 gdf_master = gdf
 
 
-# In[12]:
+# In[13]:
 
 sql_gadm = """
 SELECT
@@ -200,12 +203,12 @@ FROM
 """.format(BQ_PROJECT_ID,BQ_OUTPUT_DATASET_NAME,BQ_IN["GADM36L01"])
 
 
-# In[13]:
+# In[14]:
 
 df_gadm = pd.read_gbq(query=sql_gadm,dialect="standard")
 
 
-# In[14]:
+# In[15]:
 
 gdf_master = pd.merge(left=gdf_master,
                       right=df_gadm,
@@ -214,7 +217,7 @@ gdf_master = pd.merge(left=gdf_master,
                       how = "left")
 
 
-# In[15]:
+# In[16]:
 
 sql_area = """
 SELECT
@@ -226,7 +229,7 @@ FROM
 df_area = pd.read_gbq(query=sql_area,dialect="standard")
 
 
-# In[16]:
+# In[17]:
 
 gdf_master = pd.merge(left=gdf_master,
                       right=df_area,
@@ -235,7 +238,7 @@ gdf_master = pd.merge(left=gdf_master,
                       how = "left")
 
 
-# In[17]:
+# In[18]:
 
 sql_in = """
 SELECT
@@ -255,24 +258,24 @@ FROM
 #df_in = pd.read_gbq(query=sql_in,dialect="standard") # Takes too long, reverting to pickled file instead
 
 
-# In[18]:
+# In[19]:
 
 source_path = "{}/Y2018M12D11_RH_Master_Weights_GPD_V02.pkl".format(ec2_input_path)
 
 
-# In[19]:
+# In[20]:
 
 df_in = pd.read_pickle(source_path)
 
 
-# In[20]:
+# In[21]:
 
 df_in.head()
 
 
 # # Append (horizontally) all indicators
 
-# In[21]:
+# In[22]:
 
 indicators = list(df_in["indicator"].unique())
 indicators.remove('awr')
@@ -292,7 +295,7 @@ for indicator in indicators:
                           how="left")
 
 
-# In[22]:
+# In[23]:
 
 gdf_master.loc[gdf_master["string_id"] == "253001-SJM.2_1-89"]
 
@@ -348,45 +351,66 @@ gdf_master.shape
 # 
 # 
 
-# In[36]:
+# In[28]:
 
 df_master =gdf_master.drop("geom",axis=1)
 
 
-# In[42]:
+# In[29]:
 
-destination_path_gpkg = "{}/{}.gpkg".format(ec2_output_path,SCRIPT_NAME)
+destination_path_shp = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
 destination_path_csv = "{}/{}.csv".format(ec2_output_path,SCRIPT_NAME)
 destination_path_pkl = "{}/{}.pkl".format(ec2_output_path,SCRIPT_NAME)
 output_table_name = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 
-# In[ ]:
+# In[30]:
 
-gdf_master.to_file(filename=destination_path_gpkg,driver="GPKG",encoding ='utf-8')
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
 
 
-# In[31]:
+# In[33]:
 
-gdf_master.to_pickle(destination_path_pkl)
+gdf_simple = gdf_master[["string_id","geom"]]
+
+
+# In[38]:
+
+# Saving as geopackage did not work. Therefore saving the unique identifier (string_id) and geom as shapefile. 
+# This can be joined in GIS software later
+gdf_simple.to_file(filename=destination_path_shp,driver="ESRI Shapefile",encoding ='utf-8')
 
 
 # In[39]:
 
+gdf_master.to_pickle(destination_path_pkl)
+
+
+# In[40]:
+
 df_master.to_csv(destination_path_csv, encoding='utf-8')
 
 
-# In[32]:
+# In[41]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[42]:
 
-gdfFromSQL = uploadGDFtoPostGIS(gdf_master,output_table_name,False)
+gdf_master2 = gdf_master.rename(columns={"geom":"geometry"})
+gdf_master2 = gpd.GeoDataFrame(gdf_master2,geometry="geometry")
 
 
-# In[ ]:
+# In[43]:
+
+gdfFromSQL = uploadGDFtoPostGIS(gdf_master2,output_table_name,False)
+
+
+# In[44]:
 
 gdfFromSQL.to_gbq(destination_table=destination_table,
                   project_id=BQ_PROJECT_ID,
@@ -394,7 +418,7 @@ gdfFromSQL.to_gbq(destination_table=destination_table,
                   if_exists="replace")
 
 
-# In[ ]:
+# In[45]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -402,4 +426,5 @@ print(elapsed)
 
 
 # Previous runs:   
+# 0:47:11.853503
 # 
