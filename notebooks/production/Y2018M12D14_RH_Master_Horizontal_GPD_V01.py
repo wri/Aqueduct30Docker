@@ -22,7 +22,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M12D14_RH_Master_Horizontal_GPD_V01'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 6
 
 
 # AWS RDS PostGIS
@@ -39,8 +39,8 @@ BQ_IN["GADM36L01"] = "y2018m11d12_rh_gadm36_level1_rds_to_bq_v01_v01"
 BQ_IN["area"] = 'y2018m12d07_rh_process_area_bq_v01_v01'
 
 # too slow, using s3 instead
-BQ_IN["indicators"] = 'y2018m12d11_rh_master_weights_gpd_v02_v01'
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02/output_V04"
+BQ_IN["indicators"] = 'y2018m12d11_rh_master_weights_gpd_v02_v06'
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02/output_V05"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"

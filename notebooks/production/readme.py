@@ -49,7 +49,7 @@
 #     
 # 1. **Y2017M11D15_RH_Add_HydroBasins_postGIS_V01**  
 #     Add hydrobasins geometry and table to postGIS database.    
-# 1. **Y2017M11D22_RH_FAO_To_Database_V01**    
+# 1. **Y2017M11D22_RH_FAO_To_Database_V02**    
 #     Store FAO data in AWS RDS database.
 # 1. **Y2017M11D23_RH_Upstream_Downstream_Basin_To_Database_V01**  
 #     Add upstream pfaf ID to postgis database.
@@ -331,6 +331,8 @@
 # 
 # 1. **Y2018D12D17_RH_GADM36L01_EE_V01**  
 #     Ingest GADM level 1 data to earthengine. 
+# 1. **Y2019M01D07_RH_GADM36L01_Rasterize_EE_V01**  
+#     Rasterize GADM level 1 using earthengine.
 # 
 # 1.  **Y2018M11D12_RH_GADM36_Level1_RDS_to_BQ_V01**  
 #     Upload GADM 3.6 level 1 to bigquery.
@@ -366,7 +368,18 @@
 #     Create horizontal table for readability. 
 #     
 #     
-#     
+# ## Results at GADM Level
+# Scripts used for aggregations have GA in them to denote GADM Aggregations. 
+# 
+# 
+# 1.  **Y2019M01D07_RH_GA_CEP_Zonal_Stats_GADM_EE_V01**  
+#     Zonal statistics icep_raw at GADM level 1.
+# 
+# 
+# 
+# 
+# 
+# 
 #     
 #     
 #     

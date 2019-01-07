@@ -20,7 +20,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = 'Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V02'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 5
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
@@ -83,7 +83,7 @@ BQ_IN["gtd"] = "y2018m09d03_rh_gws_cat_label_v01_v01"
 # Physical Risk Quality | QAL -----------------
 
 # Untreated Collected Wastewater | UCW
-BQ_IN["ucw"] = "y2018m12d04_rh_ucw_bq_v01_v01"
+BQ_IN["ucw"] = "y2018m12d04_rh_ucw_bq_v01_v02"
 
 # Coastal Eutrophication Potential | CEP
 BQ_IN["cep"] = "y2018m11d22_rh_icep_hybas6_cat_label_bq_v01_v03"

@@ -5,6 +5,12 @@
 
 """ Upload GADM 3.6 level 1 to RDS.
 -------------------------------------------------------------------------------
+this  script has been modified on 2019 01 07 to include an integer id column.
+The integer id column is obtained by sorting the GID_1 column alphabetically.
+
+The link table with columns gid_1 and gid_1_id is stored as csv on S3 and 
+on google bigquery.
+
 
 Author: Rutger Hofste
 Date: 20181112
@@ -28,12 +34,15 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2018M11D12_RH_GADM36_Level1_to_RDS_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 4
 
 # Database settings
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
 OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
+
+BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
+BQ_OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 INPUT_URL = "https://biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_gpkg.zip"
 LEVEL = 1 #Province or equivalent level
@@ -44,7 +53,8 @@ s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/"
 
 print("\nInput ec2: " + ec2_input_path,
       "\nInput URL : " + INPUT_URL,
-      "\nOutput postGIS table : " + OUTPUT_TABLE_NAME)
+      "\nOutput postGIS table : " + OUTPUT_TABLE_NAME,
+      "\nOutput S3 : " + s3_output_path)
 
 
 # In[2]:
@@ -55,6 +65,21 @@ timeString = time.strftime("UTC %H:%M")
 start = datetime.datetime.now()
 print(dateString,timeString)
 sys.version
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
 
 # In[3]:
@@ -78,12 +103,18 @@ get_ipython().system('wget {INPUT_URL} -P {ec2_input_path}')
 
 import os
 import sqlalchemy
+import pandas as pd
 import geopandas as gpd
 from shapely.geometry.multipolygon import MultiPolygon
 from geoalchemy2 import Geometry, WKTElement
 
 
 # In[6]:
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
+
+
+# In[7]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -93,42 +124,42 @@ engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".form
 connection = engine.connect()
 
 
-# In[7]:
+# In[8]:
 
 files = os.listdir("{}".format(ec2_input_path))
 
 
-# In[8]:
+# In[9]:
 
 files
 
 
-# In[9]:
+# In[10]:
 
 file_name = files[0]
 
 
-# In[10]:
+# In[11]:
 
 get_ipython().system("unzip '{ec2_input_path}/{file_name}' -d {ec2_output_path}")
 
 
-# In[11]:
+# In[12]:
 
 layer = "level{:01.0f}".format(LEVEL)
 
 
-# In[12]:
+# In[13]:
 
 input_file_path = "{}/{}".format(ec2_output_path,"gadm36_levels.gpkg")
 
 
-# In[13]:
+# In[14]:
 
 gdf = gpd.read_file(input_file_path,layer=layer)
 
 
-# In[14]:
+# In[15]:
 
 def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     # this function uploads a polygon shapefile to table in AWS RDS. 
@@ -171,43 +202,88 @@ def uploadGDFtoPostGIS(gdf,tableName,saveIndex):
     return gdfFromSQL
 
 
-# In[15]:
+# In[16]:
 
 if TESTING:
     gdf = gdf.sample(1000)
 
 
-# In[16]:
+# In[17]:
 
 gdf.head()
 
 
-# In[17]:
+# In[18]:
 
 gdf.shape
 
 
-# In[18]:
+# In[19]:
 
 gdf.columns = map(str.lower, gdf.columns)
 
 
-# In[19]:
-
-gdf = gdf.set_index("gid_{}".format(LEVEL), drop=False)
-
-
 # In[20]:
 
-gdfFromSQL = uploadGDFtoPostGIS(gdf,OUTPUT_TABLE_NAME,False)
+gdf["gid_1_id"] = gdf.index
 
 
 # In[21]:
 
-engine.dispose()
+gdf.head()
 
 
 # In[22]:
+
+gdfFromSQL = uploadGDFtoPostGIS(gdf,OUTPUT_TABLE_NAME,False)
+
+
+# In[23]:
+
+df = gdf[["gid_1_id","gid_1"]]
+
+
+# In[24]:
+
+df.head()
+
+
+# In[25]:
+
+filename_gpkg = "{}/{}.gpkg".format(ec2_output_path,SCRIPT_NAME)
+filename_csv = "{}/{}.csv".format(ec2_output_path,SCRIPT_NAME)
+
+
+# In[26]:
+
+df.to_csv(filename_csv)
+
+
+# In[27]:
+
+df.to_gbq(destination_table="{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME),
+          project_id = "aqueduct30",
+          if_exists= "replace")
+
+
+# In[29]:
+
+gdfFromSQL.to_file(filename=filename_gpkg,
+                   driver="GPKG",
+                   encoding="UTF-8")
+
+
+# In[30]:
+
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[31]:
+
+engine.dispose()
+
+
+# In[32]:
 
 end = datetime.datetime.now()
 elapsed = end - start

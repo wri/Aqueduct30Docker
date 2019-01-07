@@ -12,9 +12,8 @@
 # 
 # 
 
-# In[1]:
+# In[42]:
 
-get_ipython().magic('matplotlib inline')
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
 timeString = time.strftime("UTC %H:%M")
@@ -23,7 +22,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[2]:
+# In[1]:
 
 SCRIPT_NAME = "Y2017M11D22_RH_FAO_To_Database_V01"
 
@@ -41,8 +40,10 @@ S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2017M08D23_RH_Merge_F
 S3_INPUT_PATH_LINK = "s3://wri-projects/Aqueduct30/processData/Y2017M08D25_RH_spatial_join_FAONames_V01/output/"
 
 # Database settings
-DATABASE_IDENTIFIER = "aqueduct30v02"
-DATABASE_NAME = "database01"
+# Database settings
+RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
+RDS_DATABASE_NAME = "database01"
+OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 TABLE_NAME_FAO_MAJOR = "fao_major_v%0.2d" %(OUTPUT_VERSION)
 TABLE_NAME_FAO_MINOR = "fao_minor_v%0.2d" %(OUTPUT_VERSION)
@@ -69,20 +70,20 @@ get_ipython().system('aws s3 cp {S3_INPUT_PATH} {EC2_INPUT_PATH} --recursive')
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_LINK} {EC2_INPUT_PATH} --recursive')
 
 
-# In[6]:
+# In[4]:
 
 import os
+import sqlalchemy
+import boto3
+import botocore
 import pandas as pd
 import geopandas as gpd
 from ast import literal_eval
-import boto3
-import botocore
-from sqlalchemy import *
 from geoalchemy2 import Geometry, WKTElement
 from shapely.geometry.multipolygon import MultiPolygon
 
 
-# In[7]:
+# In[23]:
 
 # RDS Connection
 def rdsConnect(database_identifier,database_name):
@@ -158,22 +159,27 @@ def postGISDissolveFirst(sourceTableName,targetTableName,by):
 
 
 
-# In[8]:
+# In[5]:
 
-engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
+F = open("/.password","r")
+password = F.read().splitlines()[0]
+F.close()
+
+engine = sqlalchemy.create_engine("postgresql://rutgerhofste:{}@{}:5432/{}".format(password,RDS_DATABASE_ENDPOINT,RDS_DATABASE_NAME))
+connection = engine.connect()
 
 
-# In[ ]:
+# In[6]:
 
 gdf = gpd.read_file(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME+".shp"))
 
 
-# In[ ]:
+# In[7]:
 
 gdf.columns = map(str.lower, gdf.columns)
 
 
-# In[ ]:
+# In[8]:
 
 gdf.head()
 
@@ -181,67 +187,67 @@ gdf.head()
 # The idea is to store the data in two tables: major basin and minor basin together with the geometry. There is no unique identifier for the minor basins so we will use a composite key    
 #     
 
-# In[ ]:
+# In[9]:
 
 def compositeKey(maj_bas,sub_bas):
     key = 'MAJ_BAS_%0.4d_SUB_BAS_%0.7d' %(maj_bas,sub_bas)
     return key
 
 
-# In[ ]:
+# In[10]:
 
 gdf["fao_id"]= gdf.apply(lambda x: compositeKey(x["maj_bas"],x["sub_bas"]),1)
 
 
-# In[ ]:
+# In[11]:
 
 gdf.head()
 
 
-# In[ ]:
+# In[12]:
 
 gdf = gdf.set_index("fao_id",drop=False)
 
 
-# In[ ]:
+# In[13]:
 
 df = gdf.drop("geometry",1)
 
 
-# In[ ]:
+# In[14]:
 
 dfGrouped = df.groupby(df["fao_id"]).first()
 
 
-# In[ ]:
+# In[15]:
 
 dfGrouped.shape
 
 
 # ## Major River Basins
 
-# In[ ]:
+# In[16]:
 
 dfMajorFull = gdf[["maj_bas","maj_name","maj_area","legend"]]
 gdfMinor = gdf[["sub_bas","to_bas","maj_bas","sub_name","sub_area","geometry","fao_id"]]
 
 
-# In[ ]:
+# In[17]:
 
 dfMajorFull.head()
 
 
-# In[ ]:
+# In[18]:
 
 dfMajor = dfMajorFull.groupby("maj_bas").first()
 
 
-# In[ ]:
+# In[19]:
 
 dfMajor.head()
 
 
-# In[ ]:
+# In[20]:
 
 dfMajor.to_sql(
     name = TABLE_NAME_FAO_MAJOR,
@@ -252,58 +258,58 @@ dfMajor.to_sql(
 
 # ## Minor River Basins
 
-# In[ ]:
+# In[21]:
 
 gdfMinor.head()
 
 
 # Geometry consists of polygon and multipolygon type. Upload both to postGIS and set polygon to multipolygon and join. 
 
-# In[ ]:
+# In[24]:
 
 gdfFromSQL = uploadGDFtoPostGIS(gdfMinor,TABLE_NAME_FAO_MINOR_TEMP,False)
 
 
-# In[ ]:
+# In[25]:
 
 gdfFromSQL.head()
 
 
-# In[ ]:
+# In[26]:
 
 test = gdfFromSQL.duplicated(subset="fao_id")
 
 
-# In[ ]:
+# In[27]:
 
 test.head()
 
 
-# In[ ]:
+# In[28]:
 
 gdfFromSQL2 = postGISDissolveFirst(TABLE_NAME_FAO_MINOR_TEMP,TABLE_NAME_FAO_MINOR,"fao_id")
 
 
 # Drop temporary table
 
-# In[ ]:
+# In[29]:
 
 sql = "DROP TABLE IF EXISTS %s" %(TABLE_NAME_FAO_MINOR_TEMP)
 
 
-# In[ ]:
+# In[30]:
 
 connection.execute(sql)
 
 
 # Check dimensions :
 
-# In[ ]:
+# In[31]:
 
 gdfFromSQL2.shape[0]
 
 
-# In[ ]:
+# In[32]:
 
 dfGrouped.shape[0]
 
@@ -314,37 +320,37 @@ dfGrouped.shape[0]
 # 
 # 
 
-# In[ ]:
+# In[33]:
 
 df_link = pd.read_pickle(os.path.join(EC2_INPUT_PATH,INPUT_FILE_NAME_LINK+".pkl"))
 
 
-# In[ ]:
+# In[34]:
 
 df_link = df_link.reset_index()
 
 
-# In[ ]:
+# In[35]:
 
 df_link.drop("index",1,inplace=True)
 
 
-# In[ ]:
+# In[36]:
 
 df_link.index.names = ['id']
 
 
-# In[ ]:
+# In[37]:
 
 #df_link.columns = map(str.lower, df_link.columns)
 
 
-# In[ ]:
+# In[38]:
 
 df_link.columns = ["pfaf_id","fao_id"]
 
 
-# In[ ]:
+# In[39]:
 
 df_link.to_sql(
     name = TABLE_NAME_FAO_LINK,
@@ -353,14 +359,22 @@ df_link.to_sql(
     index= True)
 
 
-# In[ ]:
+# In[40]:
 
 connection.close()
 
 
-# In[ ]:
+# In[43]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# Previous runs:  
+# 0:00:09.742852
+
+# In[ ]:
+
+
 

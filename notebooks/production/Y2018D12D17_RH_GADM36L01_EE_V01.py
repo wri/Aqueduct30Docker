@@ -6,6 +6,9 @@
 """ Ingest GADM level 1 data to earthengine. 
 -------------------------------------------------------------------------------
 
+Hier gebleven. Gedoe met max vertices. Ofwel simplified version uploaded of
+rasterize. 
+
 Author: Rutger Hofste
 Date: 20181217
 Kernel: python35
@@ -27,14 +30,18 @@ Args:
 """
 
 SCRIPT_NAME = "Y2018D12D17_RH_GADM36L01_EE_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 4
 
 # Database settings
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 RDS_DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = "y2018m11d12_rh_gadm36_level1_to_rds_v01_v02"
+INPUT_TABLE_NAME = "y2018m11d12_rh_gadm36_level1_to_rds_v01_v04"
 
 GCS_OUTPUT_PATH = "gs://aqueduct30_v01/{}".format(SCRIPT_NAME)
+
+GDAL_RASTERIZE_PATH = "/opt/anaconda3/envs/python35/bin/gdal_rasterize"
+X_DIMENSION_30S = 43200
+Y_DIMENSION_30S = 21600
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -107,55 +114,105 @@ gdf =gpd.GeoDataFrame.from_postgis(q,connection,geom_col='geom' )
 
 # In[8]:
 
-gdf.head()
+# Add integer identifier to shapefile
 
 
 # In[9]:
 
-destination_path = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
+gdf.sort_index(axis=1,inplace=True)
 
 
 # In[10]:
 
-gdf.to_file(filename=destination_path,driver="ESRI Shapefile")
+gdf.head()
 
 
 # In[11]:
 
-get_ipython().system('gsutil -m cp -r {ec2_output_path} {GCS_OUTPUT_PATH}')
+destination_path_shp = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
 
 
 # In[12]:
+
+gdf.to_file(filename=destination_path_shp,driver="ESRI Shapefile")
+
+
+# In[13]:
+
+get_ipython().system('gsutil -m cp -r {ec2_output_path} {GCS_OUTPUT_PATH}')
+
+
+# In[14]:
 
 command = "earthengine create folder projects/WRI-Aquaduct/{}".format(SCRIPT_NAME)
 response = subprocess.check_output(command,shell=True)
 
 
-# In[13]:
+# In[15]:
 
 command = "earthengine create folder projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 response = subprocess.check_output(command,shell=True)
 
 
-# In[14]:
+# In[16]:
 
 source_path = "{}/{}.shp".format(GCS_OUTPUT_PATH,SCRIPT_NAME)
 
 
-# In[15]:
+# In[17]:
 
 source_path
 
 
-# In[16]:
+# In[27]:
 
-command = "earthengine upload table --asset_id=projects/WRI-Aquaduct/{}/output_V{:02.0f}/gadm36l01 {}".format(SCRIPT_NAME,OUTPUT_VERSION,source_path)
+command = "/opt/anaconda3/envs/python35/bin/earthengine upload table --asset_id='projects/WRI-Aquaduct/{}/output_V{:02.0f}/gadm36l01' '{}' --max_vertices=1000000".format(SCRIPT_NAME,OUTPUT_VERSION,source_path)
+
+
+# In[28]:
+
 response = subprocess.check_output(command,shell=True)
 
 
-# In[17]:
+# In[20]:
+
+# rasterize at 30s resolution
+
+
+# In[21]:
+
+#destination_path_tif = "{}/{}.tif".format(ec2_output_path,SCRIPT_NAME)
+
+
+# In[22]:
+
+"""
+field = "gadm01id"
+x_dimension = X_DIMENSION_30S
+y_dimension = Y_DIMENSION_30S
+layer_name = SCRIPT_NAME
+input_path = destination_path_shp
+output_path = destination_path_tif
+"""
+
+
+# In[23]:
+
+#command = "{} -a {} -ot Integer64 -of GTiff -te -180 -90 180 90 -ts {} {} -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l {} -a_nodata -9999 {} {}".format(GDAL_RASTERIZE_PATH,field,x_dimension,y_dimension,layer_name,input_path,output_path)
+
+
+# In[24]:
 
 end = datetime.datetime.now()
 elapsed = end - start
 print(elapsed)
+
+
+# Previous runs:   
+# 0:06:44.576493
+# 
+
+# In[ ]:
+
+
 

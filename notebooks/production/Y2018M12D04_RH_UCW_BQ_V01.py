@@ -14,7 +14,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2018M12D04_RH_UCW_BQ_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/Wastewater"
 INPUT_FILE_NAME = "wastewater_results.csv"
@@ -145,15 +145,30 @@ df_out = df_out.reindex(sorted(df_out.columns), axis=1)
 
 # In[17]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df_out.head()
 
 
 # In[18]:
 
-destination_table
+df_out.loc[(df_out['ucw_raw'] == -1.0) ,'ucw_cat'] = -1
 
 
 # In[19]:
+
+df_out.head()
+
+
+# In[20]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[21]:
+
+destination_table
+
+
+# In[22]:
 
 df_out.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -161,7 +176,7 @@ df_out.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[20]:
+# In[23]:
 
 end = datetime.datetime.now()
 elapsed = end - start
