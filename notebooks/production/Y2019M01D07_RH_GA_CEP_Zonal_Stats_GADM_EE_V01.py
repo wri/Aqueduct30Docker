@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[10]:
+# In[1]:
 
 """ Zonal statistics icep_raw at GADM level 1.
 -------------------------------------------------------------------------------
@@ -20,11 +20,11 @@ Args:
 
 """
 
-TESTING = 1
+TESTING = 0
 SCRIPT_NAME = "Y2019M01D07_RH_GA_CEP_Zonal_Stats_GADM_EE_V01"
 OUTPUT_VERSION = 1
 
-EE_INPUT_ZONES_PATH = "projects/WRI-Aquaduct/Y2018D12D17_RH_GADM36L01_EE_V01/output_V02/gadm36l01"
+EE_INPUT_ZONES_PATH = "projects/WRI-Aquaduct/Y2019M01D07_RH_GADM36L01_Rasterize_EE_V01/output_V01/Y2019M01D07_RH_GADM36L01_Rasterize_EE_V01"
 EE_INPUT_VALUES_PATH = "projects/WRI-Aquaduct/Y2018M11D22_RH_ICEP_Basins_To_EE_V01/output_V01/icep_icepraw_30s"
 
 EXTRA_PROPERTIES = {"output_version":OUTPUT_VERSION,
@@ -43,7 +43,7 @@ print("Input ee zones: " +  EE_INPUT_ZONES_PATH +
       "\nOutput gcs: " + gcs_output_path)
 
 
-# In[4]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -53,13 +53,13 @@ print(dateString,timeString)
 sys.version
 
 
-# In[5]:
+# In[3]:
 
 get_ipython().system('rm -r {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[6]:
+# In[4]:
 
 import pandas as pd
 import ee
@@ -67,7 +67,7 @@ import aqueduct3
 ee.Initialize()
 
 
-# In[7]:
+# In[5]:
 
 def dict_to_feature(dictje):
     return ee.Feature(None,dictje)
@@ -99,28 +99,76 @@ def post_process_results(result_list,function_properties,extra_properties=EXTRA_
     return df  
 
 
-# In[8]:
+# In[6]:
 
 spatial_resolution = "30s"
 reducer_name = "mean"
 
 
-# In[11]:
+# In[7]:
 
 geometry = aqueduct3.earthengine.get_global_geometry(TESTING)
 
 
-# In[14]:
+# In[8]:
 
 reducer = aqueduct3.earthengine.get_grouped_reducer(reducer_name)
 
 
-# In[15]:
+# In[9]:
 
 total_image = ee.Image(EE_INPUT_VALUES_PATH).addBands(ee.Image(EE_INPUT_ZONES_PATH))
 
 
-# In[ ]:
+# In[10]:
 
 crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
 
+
+# In[11]:
+
+result_list = total_image.reduceRegion(geometry = geometry,
+                        reducer= reducer,
+                        crsTransform = crs_transform,
+                        maxPixels=1e10
+                        ).get("groups")
+
+
+# In[12]:
+
+function_properties = {"spatial_resolution":spatial_resolution,
+                       "reducer":reducer_name}
+
+
+# In[13]:
+
+df = post_process_results(result_list,function_properties)
+
+
+# In[17]:
+
+df.shape
+
+
+# In[14]:
+
+output_file_path_pkl = "{}/df_gadm36_l1_{}.pkl".format(ec2_output_path,spatial_resolution)
+output_file_path_csv = "{}/df_gadm36_l1_{}.csv".format(ec2_output_path,spatial_resolution)
+df.to_pickle(output_file_path_pkl)
+df.to_csv(output_file_path_csv,encoding='utf-8')
+
+
+# In[15]:
+
+get_ipython().system('aws s3 cp  {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[16]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# Previous runs:  
+# 

@@ -328,12 +328,10 @@
 #     Upload hydrobasin geospatial data to bigquery.  
 # 1.  **Y2018M11D12_RH_GADM36_Level1_to_RDS_V01**  
 #     Upload GADM 3.6 level 1 to RDS.    
-# 
 # 1. **Y2018D12D17_RH_GADM36L01_EE_V01**  
 #     Ingest GADM level 1 data to earthengine. 
 # 1. **Y2019M01D07_RH_GADM36L01_Rasterize_EE_V01**  
 #     Rasterize GADM level 1 using earthengine.
-# 
 # 1.  **Y2018M11D12_RH_GADM36_Level1_RDS_to_BQ_V01**  
 #     Upload GADM 3.6 level 1 to bigquery.
 # 1. **Y2018M11D14_RH_WHYMAP_to_RDS_V01**  
@@ -372,8 +370,16 @@
 # Scripts used for aggregations have GA in them to denote GADM Aggregations. 
 # 
 # 
+# 1. **Y2019M01D08_RH_Total_Demand_EE_V01**  
+#     Total demand to be used as weights for spatial aggregation.
+#     
+# 
+# 
+# 
 # 1.  **Y2019M01D07_RH_GA_CEP_Zonal_Stats_GADM_EE_V01**  
 #     Zonal statistics icep_raw at GADM level 1.
+# 1.  **Y2019M01D07_RH_GA_CEP_GADM_Cat_Label_BQ_V01**  
+#     Cleanup, add category and label for icep at gadm level 1.
 # 
 # 
 # 

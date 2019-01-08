@@ -67,21 +67,6 @@ print(dateString,timeString)
 sys.version
 
 
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
 # In[3]:
 
 # Version 3.6 Date accessed 2018 09 11

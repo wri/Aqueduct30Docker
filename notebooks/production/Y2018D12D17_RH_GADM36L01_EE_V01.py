@@ -30,7 +30,7 @@ Args:
 """
 
 SCRIPT_NAME = "Y2018D12D17_RH_GADM36L01_EE_V01"
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 6
 
 # Database settings
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -91,6 +91,7 @@ connection = engine.connect()
 
 q = """
 SELECT
+    gid_1_id,
     gid_0,
     name_0,
     gid_1,
@@ -104,6 +105,8 @@ SELECT
     ST_SimplifyPreserveTopology(geom,0.0001) as geom --approximately 11.11 meter at equator.
 FROM
     {}
+ORDER BY
+    gid_1_id
 """.format(INPUT_TABLE_NAME)
 
 
@@ -114,22 +117,22 @@ gdf =gpd.GeoDataFrame.from_postgis(q,connection,geom_col='geom' )
 
 # In[8]:
 
-# Add integer identifier to shapefile
+gdf.sort_index(axis=1,inplace=True)
 
 
 # In[9]:
 
-gdf.sort_index(axis=1,inplace=True)
+gdf.head()
 
 
 # In[10]:
 
-gdf.head()
+destination_path_shp = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
 
 
 # In[11]:
 
-destination_path_shp = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
+destination_path_shp
 
 
 # In[12]:
@@ -154,37 +157,42 @@ command = "earthengine create folder projects/WRI-Aquaduct/{}/output_V{:02.0f}".
 response = subprocess.check_output(command,shell=True)
 
 
-# In[16]:
+# In[18]:
 
-source_path = "{}/{}.shp".format(GCS_OUTPUT_PATH,SCRIPT_NAME)
+source_path = "{}/output_V{:02.0f}/{}.shp".format(GCS_OUTPUT_PATH,OUTPUT_VERSION,SCRIPT_NAME)
 
 
-# In[17]:
+# In[19]:
 
 source_path
 
 
-# In[27]:
+# In[20]:
 
 command = "/opt/anaconda3/envs/python35/bin/earthengine upload table --asset_id='projects/WRI-Aquaduct/{}/output_V{:02.0f}/gadm36l01' '{}' --max_vertices=1000000".format(SCRIPT_NAME,OUTPUT_VERSION,source_path)
 
 
-# In[28]:
+# In[21]:
 
 response = subprocess.check_output(command,shell=True)
 
 
-# In[20]:
+# In[22]:
+
+command
+
+
+# In[23]:
 
 # rasterize at 30s resolution
 
 
-# In[21]:
+# In[24]:
 
 #destination_path_tif = "{}/{}.tif".format(ec2_output_path,SCRIPT_NAME)
 
 
-# In[22]:
+# In[25]:
 
 """
 field = "gadm01id"
@@ -196,12 +204,12 @@ output_path = destination_path_tif
 """
 
 
-# In[23]:
+# In[26]:
 
 #command = "{} -a {} -ot Integer64 -of GTiff -te -180 -90 180 90 -ts {} {} -co COMPRESS=DEFLATE -co PREDICTOR=1 -co ZLEVEL=6 -l {} -a_nodata -9999 {} {}".format(GDAL_RASTERIZE_PATH,field,x_dimension,y_dimension,layer_name,input_path,output_path)
 
 
-# In[24]:
+# In[27]:
 
 end = datetime.datetime.now()
 elapsed = end - start
