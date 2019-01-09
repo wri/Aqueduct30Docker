@@ -372,9 +372,7 @@
 # 
 # 1. **Y2019M01D08_RH_Total_Demand_EE_V01**  
 #     Total demand to be used as weights for spatial aggregation.
-#     
-# 
-# 
+#   
 # 
 # 1.  **Y2019M01D07_RH_GA_CEP_Zonal_Stats_GADM_EE_V01**  
 #     Zonal statistics icep_raw at GADM level 1.

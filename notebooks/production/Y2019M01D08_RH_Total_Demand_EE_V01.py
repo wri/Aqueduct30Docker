@@ -6,6 +6,10 @@
 """ Total demand to be used as weights for spatial aggregation.
 -------------------------------------------------------------------------------
 
+Note that exporting global images including polar regions at a 5 arcminute 
+resolution leads to internal errors. Using a maximum latitude of 89.5 which
+corresponds to 4320 x 2148 pixels
+
 Creates total demand images. Will create a simple mean image for now but can be
 extended to create imagecollections per sector etc. 
 
@@ -27,20 +31,23 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D08_RH_Total_Demand_EE_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 X_DIMENSION_5MIN = 4320
-Y_DIMENSION_5MIN = 2160
+Y_DIMENSION_5MIN_NOPOLAR = 2148 # was (2160)
+
+X_DIMENSION_30S = 43200
+Y_DIMENSION_30S_NOPOLAR = 21480 # was (2160)
 
 CRS = "EPSG:4326"
 
-CRS_TRANSFORM_5MIN = """[
+CRS_TRANSFORM_5MIN_NOPOLAR = """[
     0.08333333333333333,
     0,
     -180,
     0,
     -0.08333333333333333,
-    90
+    89.5
 ]"""
 
 ic_pdomww_path = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PDomWW_year_m_5min_1960_2014"
@@ -124,29 +131,33 @@ response = subprocess.check_output(command,shell=True)
 
 # In[11]:
 
-description = SCRIPT_NAME
-asset_id = 'projects/WRI-Aquaduct/{}/output_V{:02.0f}/global_historical_PTotWW_year_m_5min_1960_2014'.format(SCRIPT_NAME,OUTPUT_VERSION)
+description_5min = "{}_5min".format(SCRIPT_NAME)
+asset_id_5min = 'projects/WRI-Aquaduct/{}/output_V{:02.0f}/global_historical_PTotWW_year_m_5min_1960_2014'.format(SCRIPT_NAME,OUTPUT_VERSION)
+description_30s = "{}_30s".format(SCRIPT_NAME)
+asset_id_30s = 'projects/WRI-Aquaduct/{}/output_V{:02.0f}/global_historical_PTotWW_year_m_30s_1960_2014'.format(SCRIPT_NAME,OUTPUT_VERSION)
 
 
 # In[12]:
 
-asset_id
+asset_id_5min
+asset_id_30s
 
 
 # In[13]:
 
-dimensions_5min = "{}x{}".format(X_DIMENSION_5MIN,Y_DIMENSION_5MIN)
+dimensions_5min_nopolar = "{}x{}".format(X_DIMENSION_5MIN,Y_DIMENSION_5MIN_NOPOLAR)
+dimensions_30s_nopolar = "{}x{}".format(X_DIMENSION_30S,Y_DIMENSION_30S_NOPOLAR)
 
 
 # In[14]:
 
 task = ee.batch.Export.image.toAsset(
     image =  ee.Image(image_out),
-    description = description,
-    assetId = asset_id,
-    dimensions = dimensions_5min,
+    description = description_5min,
+    assetId = asset_id_5min,
+    dimensions = dimensions_5min_nopolar,
     crs = CRS,
-    crsTransform = CRS_TRANSFORM_5MIN,
+    crsTransform = CRS_TRANSFORM_5MIN_NOPOLAR,
     maxPixels = 1e10   
 )
 
@@ -157,6 +168,24 @@ task.start()
 
 
 # In[16]:
+
+task2 = ee.batch.Export.image.toAsset(
+    image =  ee.Image(image_out),
+    description = description_30s,
+    assetId = asset_id_30s,
+    dimensions = dimensions_30s_nopolar,
+    crs = CRS,
+    crsTransform = CRS_TRANSFORM_30S_NOPOLAR,
+    maxPixels = 1e10   
+)
+
+
+# In[ ]:
+
+task2.start()
+
+
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
