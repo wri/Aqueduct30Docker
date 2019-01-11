@@ -372,6 +372,10 @@
 # 
 # 1. **Y2019M01D08_RH_Total_Demand_EE_V01**  
 #     Total demand to be used as weights for spatial aggregation.
+# 1. **Y2019M01D10_RH_GA_Rasterize_Indicators_GDAL_V01**  
+#     Rasterize indicators at 30s as input for aggregation.
+# 1. **Y2019M01D10_RH_GA_Rasterize_Indicators_EE_V01**  
+#     Ingest rasterized indicators in earthengine. 
 #   
 # 
 # 1.  **Y2019M01D07_RH_GA_CEP_Zonal_Stats_GADM_EE_V01**  

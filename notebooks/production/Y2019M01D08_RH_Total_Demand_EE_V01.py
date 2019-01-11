@@ -34,10 +34,12 @@ SCRIPT_NAME = "Y2019M01D08_RH_Total_Demand_EE_V01"
 OUTPUT_VERSION = 3
 
 X_DIMENSION_5MIN = 4320
+Y_DIMENSION_5MIN = 2160
 Y_DIMENSION_5MIN_NOPOLAR = 2148 # was (2160)
 
 X_DIMENSION_30S = 43200
-Y_DIMENSION_30S_NOPOLAR = 21480 # was (2160)
+Y_DIMENSION_30S = 21600
+Y_DIMENSION_30S_NOPOLAR = 21480 # was (21600)
 
 CRS = "EPSG:4326"
 
@@ -47,6 +49,15 @@ CRS_TRANSFORM_5MIN_NOPOLAR = """[
     -180,
     0,
     -0.08333333333333333,
+    89.5
+]"""
+
+CRS_TRANSFORM_30S_NOPOLAR = """[
+    0.008333333333333333,
+    0,
+    -180,
+    0,
+    -0.008333333333333333,
     89.5
 ]"""
 
@@ -180,12 +191,12 @@ task2 = ee.batch.Export.image.toAsset(
 )
 
 
-# In[ ]:
+# In[17]:
 
 task2.start()
 
 
-# In[ ]:
+# In[18]:
 
 end = datetime.datetime.now()
 elapsed = end - start

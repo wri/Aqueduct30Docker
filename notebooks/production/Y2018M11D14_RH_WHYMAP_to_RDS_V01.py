@@ -166,10 +166,27 @@ gdfFromSQL = uploadGDFtoPostGIS(gdf,OUTPUT_TABLE_NAME,False)
 
 # In[13]:
 
-engine.dispose()
+filename_gpkg = "{}/{}.gpkg".format(ec2_output_path,SCRIPT_NAME)
 
 
 # In[14]:
+
+gdfFromSQL.to_file(filename=filename_gpkg,
+                   driver="GPKG",
+                   encoding="UTF-8")
+
+
+# In[15]:
+
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[16]:
+
+engine.dispose()
+
+
+# In[17]:
 
 end = datetime.datetime.now()
 elapsed = end - start
