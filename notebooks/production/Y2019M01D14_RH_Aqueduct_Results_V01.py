@@ -37,9 +37,20 @@ Indicator overview:
 "usa", "Unimproved/no sanitation","hydrobasin level 6", "pfaf_id"
 "rri", "RepRisk Index,"country","gid_0" 
 
-10 indicators need to be joined at hydrobasin level 6, 
+10 indicators at hydrobasin level 6, 
 1 at groundwater aquifer level and 
 2 at country (GADM level 0)
+
+the master shapefile has a unique identifier called string_id
+
+the format of string_id is {pfaf_id} - {gid_1} - {aqid}
+114415-SOM.7_1-3306
+
+pfaf_id = 114415
+gid_1 = SOM.7_1 (Somalia, province 7_1)
+aqid = 3306
+
+when files contain a string_id, you should use that to join the data. 
 
 Overall Water Risk
 
@@ -167,6 +178,7 @@ get_ipython().system('mkdir -p {ec2_output_path}')
 get_ipython().system('mkdir -p {ec2_output_path}/master_geom')
 get_ipython().system('mkdir -p {ec2_output_path}/annual')
 get_ipython().system('mkdir -p {ec2_output_path}/monthly')
+get_ipython().system('mkdir -p {ec2_output_path}/industry_weights')
 get_ipython().system('mkdir -p {ec2_output_path}/fao')
 get_ipython().system('mkdir -p {ec2_output_path}/gadm')
 
