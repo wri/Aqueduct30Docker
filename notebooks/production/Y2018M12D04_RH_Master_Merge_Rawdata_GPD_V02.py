@@ -211,7 +211,7 @@ def process_bws():
     FROM
       `{}.{}.{}`
     WHERE
-      temporal_resolution = 'year'
+      temporal_resolution  = 'year'
       AND year = 2014
     """.format(BQ_PROJECT_ID,BQ_DATASET_NAME,BQ_IN["bws"])
     df = pd.read_gbq(query=sql,dialect="standard")
@@ -233,7 +233,7 @@ def process_bwd():
     FROM
       `{}.{}.{}`
     WHERE
-      temporal_resolution = 'year'
+      temporal_resolution  = 'year'
       AND year = 2014
     """.format(BQ_PROJECT_ID,BQ_DATASET_NAME,BQ_IN["bwd"])
     df = pd.read_gbq(query=sql,dialect="standard")

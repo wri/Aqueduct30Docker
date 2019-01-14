@@ -10,6 +10,7 @@
 # 
 # The script requires a file called .password to be stored in the current working directory with the password to the database. Basic functionality
 # 
+# This script has been edited on 2019 01 14 to store data on Google BigQuery. 
 # 
 
 # In[42]:
@@ -81,6 +82,13 @@ import geopandas as gpd
 from ast import literal_eval
 from geoalchemy2 import Geometry, WKTElement
 from shapely.geometry.multipolygon import MultiPolygon
+
+
+# In[ ]:
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/.google.json"
+os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
+client = bigquery.Client(project=BQ_PROJECT_ID)
 
 
 # In[23]:
