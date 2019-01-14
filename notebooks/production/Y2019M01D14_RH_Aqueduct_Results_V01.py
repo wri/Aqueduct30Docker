@@ -124,7 +124,7 @@ Output files:
 
 
 SCRIPT_NAME = 'Y2019M01D14_RH_Aqueduct_Results_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 1
 
 # GBQ
 BQ_PROJECT_ID = "aqueduct30"
@@ -513,27 +513,27 @@ total_out["gadm"] = data_out
 
 # ## Export
 
-# In[ ]:
+# In[28]:
 
 for key, data_out in total_out.items():
     print("writing ", key, " to: ", data_out["path"])
     
     if key == "master":
-        data_out["data"].to_file(filename=data_out["path"]+".gpkg",
-                                 driver="GPKG",
+        data_out["data"].to_file(filename=data_out["path"]+".shp",
+                                 driver="ESRI Shapefile",
                                  encoding ='utf-8')
     else:
         data_out["data"].to_pickle(path=data_out["path"]+".pkl")
-        data_out["data"].to_csv(path_or_buf=data_out["path"]+".pkl")
+        data_out["data"].to_csv(path_or_buf=data_out["path"]+".csv")
     
 
 
-# In[ ]:
+# In[29]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[ ]:
+# In[30]:
 
 end = datetime.datetime.now()
 elapsed = end - start
