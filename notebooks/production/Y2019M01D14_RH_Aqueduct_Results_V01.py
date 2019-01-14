@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[6]:
+# In[32]:
 
 """ Share Aqueduct results with external party in multiple formats. 
 -------------------------------------------------------------------------------
@@ -99,15 +99,14 @@ Options for improvement:
 
 
 Output files:
-- Master shapefile.
+- Master shapefile
 - Annual results normalized
 - Annual result pivoted
 
 - Monthly results
-- Indust
-- FAO Basin Names.
-- GADM Country and Province Names.
-
+- Industry weights
+- FAO Basin Names
+- GADM Country and Province Names
 
 
 """
@@ -121,6 +120,7 @@ BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
 
 BQ_INPUT_TABLE  = {}
+BQ_INPUT_TABLE["annual_normalized"] = "y2018m12d11_rh_master_weights_gpd_v02_v06"
 
 # RDS
 RDS_DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
@@ -129,7 +129,7 @@ RDS_MASTER_GEOM_TABLE = "y2018m12d06_rh_master_shape_v01_v02"
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
-s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
+s3_output_path = "s3://wri-projects/Aqueduct30/finalData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 print("RDS_MASTER_GEOM_TABLE: ", RDS_MASTER_GEOM_TABLE,
       "\ns3_output_path: ", s3_output_path)
@@ -210,7 +210,33 @@ gdf = gdf[0:100]
 gdf.to_file(filename=destination_path_master,driver="GPKG",encoding ='utf-8')
 
 
-# # Annual Results
+# # Annual results normalized
+
+# In[33]:
+
+sql_annual_normalize = """
+SELECT
+  string_id,
+  indicator,
+  group_short,
+  industry_short,
+  raw,
+  score,
+  cat,
+  label,
+  weight_fraction,
+  weighted_score
+FROM
+  `{}.{}.{}`
+""".format(BQ_PROJECT_ID,BQ_DATASET_NAME,BQ_INPUT_TABLE["annual_normalized"])
+
+
+# In[35]:
+
+print(sql_annual_normalize)
+
+
+# # Annual result pivoted
 
 # # Monthly Resuls
 
@@ -219,7 +245,11 @@ gdf.to_file(filename=destination_path_master,driver="GPKG",encoding ='utf-8')
 
 
 
+# #  FAO Basin Names
+
 # # Industry Weights
+
+# # GADM Country and Province Names
 
 # In[ ]:
 
