@@ -382,6 +382,8 @@
 #     Rasterize indicators at 30s as input for aggregation.
 # 1. **Y2019M01D10_RH_GA_Rasterize_Indicators_EE_V01**  
 #     Ingest rasterized indicators in earthengine. 
+# 1. **Y2019M01D17_RH_GA_Zonal_Stats_Weighted_Indicators_EE_V01**  
+#     Zonal statistics for GADM level 1 for sum  of weights and weights * indicators.
 #   
 # 
 # 1.  **Y2019M01D07_RH_GA_CEP_Zonal_Stats_GADM_EE_V01**  

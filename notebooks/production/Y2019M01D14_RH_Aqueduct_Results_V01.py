@@ -540,5 +540,6 @@ elapsed = end - start
 print(elapsed)
 
 
-# Previous runs:   
+# Previous runs:  
+# 0:10:14.242736
 # 
