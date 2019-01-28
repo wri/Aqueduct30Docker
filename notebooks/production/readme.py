@@ -384,6 +384,8 @@
 #     Ingest rasterized indicators in earthengine. 
 # 1. **Y2019M01D17_RH_GA_Zonal_Stats_Weighted_Indicators_EE_V01**  
 #     Zonal statistics for GADM level 1 for sum  of weights and weights * indicators.
+# 1.  **Y2019M01D28_RH_GA_Zonal_Stats_Table_V01**  
+#     Post process aggregations from EE and combine with other datasets.
 #   
 # 
 # 1.  **Y2019M01D07_RH_GA_CEP_Zonal_Stats_GADM_EE_V01**  

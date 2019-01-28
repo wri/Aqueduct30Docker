@@ -17,7 +17,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D17_RH_GA_Zonal_Stats_Weighted_Indicators_EE_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 EE_ZONES_PATH = "projects/WRI-Aquaduct/Y2018D12D17_RH_GADM36L01_EE_V01/output_V06/gadm36l01"
 EE_WEIGHTS_PATH = "projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V03/global_historical_PTotWW_year_m_30s_1960_2014"
@@ -65,15 +65,10 @@ zones = ee.FeatureCollection(EE_ZONES_PATH)
 
 # In[6]:
 
-zones_test = zones.limit(10)
-
-
-# In[7]:
-
 weights = ee.Image(EE_WEIGHTS_PATH)
 
 
-# In[8]:
+# In[7]:
 
 CRS_TRANSFORM_30S_NOPOLAR = [
     0.008333333333333333,
@@ -85,17 +80,17 @@ CRS_TRANSFORM_30S_NOPOLAR = [
 ]
 
 
-# In[9]:
+# In[8]:
 
 print(weights.getInfo())
 
 
-# In[10]:
+# In[9]:
 
 indicators = ["bws","bwd","iav","sev","gtd","drr","rfr","cfr","ucw","cep","udw","usa","rri"]
 
 
-# In[11]:
+# In[10]:
 
 def drop_geometry(feature):
     feature_out = ee.Feature(None,{})
@@ -105,10 +100,10 @@ def drop_geometry(feature):
     
 
 
-# In[12]:
+# In[11]:
 
 # Sum of weights per gadm unit
-fc_weights_sums = weights.reduceRegions(collection=zones_test,
+fc_weights_sums = weights.reduceRegions(collection=zones,
                                    reducer=ee.Reducer.sum(),
                                    crs="EPSG:4326",
                                    crsTransform=CRS_TRANSFORM_30S_NOPOLAR
@@ -125,7 +120,7 @@ task = ee.batch.Export.table.toCloudStorage(collection=fc_weights_sums_nogeom,
 task.start()
 
 
-# In[13]:
+# In[12]:
 
 for indicator in indicators:
     print(indicator)
@@ -133,7 +128,7 @@ for indicator in indicators:
     values = ee.Image(values_path)
     weighted_values = weights.multiply(values)
 
-    fc_weighted_values_sums = weighted_values.reduceRegions(collection=zones_test,
+    fc_weighted_values_sums = weighted_values.reduceRegions(collection=zones,
                                                             reducer=ee.Reducer.sum(),
                                                             crs="EPSG:4326",
                                                             crsTransform=CRS_TRANSFORM_30S_NOPOLAR
@@ -151,7 +146,7 @@ for indicator in indicators:
     
 
 
-# In[14]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start
