@@ -61,16 +61,19 @@ CRS_TRANSFORM_30S_NOPOLAR = """[
     89.5
 ]"""
 
-ic_pdomww_path = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PDomWW_year_m_5min_1960_2014"
-ic_pindww_path = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PIndWW_year_m_5min_1960_2014"
-ic_pirrww_path = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PIrrWW_year_m_5min_1960_2014"
-ic_plivww_path = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PLivWW_year_m_5min_1960_2014"
+dimensions_5min_nopolar = "{}x{}".format(X_DIMENSION_5MIN,Y_DIMENSION_5MIN_NOPOLAR)
+dimensions_30s_nopolar = "{}x{}".format(X_DIMENSION_30S,Y_DIMENSION_30S_NOPOLAR)
 
+ic_paths ={}
+ic_paths["Dom"] = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PDomWW_year_m_5min_1960_2014"
+ic_paths["Ind"] = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PIndWW_year_m_5min_1960_2014"
+ic_paths["Irr"] = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PIrrWW_year_m_5min_1960_2014"
+ic_paths["Liv"] = "projects/WRI-Aquaduct/PCRGlobWB20V09/global_historical_PLivWW_year_m_5min_1960_2014"
 
-print("ic_pdomww_path :",ic_pdomww_path,
-      "\nic_pindww_path :",ic_pindww_path,
-      "\nic_pirrww_path :",ic_pirrww_path,
-      "\nic_plivww_path :",ic_plivww_path)
+print("ic_pdomww_path :",ic_paths["Dom"],
+      "\nic_pindww_path :",ic_paths["Ind"],
+      "\nic_pirrww_path :",ic_paths["Irr"],
+      "\nic_plivww_path :",ic_paths["Liv"])
 
 
 # In[2]:
@@ -96,18 +99,27 @@ ee.Initialize()
 
 # In[5]:
 
-i_pdomww = ee.ImageCollection(ic_pdomww_path).reduce(ee.Reducer.mean())
-i_pindww = ee.ImageCollection(ic_pindww_path).reduce(ee.Reducer.mean())
-i_pirrww = ee.ImageCollection(ic_pirrww_path).reduce(ee.Reducer.mean())
-i_plivww = ee.ImageCollection(ic_plivww_path).reduce(ee.Reducer.mean())
+sectors = ["Dom","Ind","Irr","Liv"]
 
 
 # In[6]:
 
-i_ptotww = i_pdomww.add(i_pindww).add(i_pirrww).add(i_plivww)
+reduced_image = {}
+for sector in sectors:
+    reduced_image[sector] = ee.ImageCollection(ic_paths[sector]).reduce(ee.Reducer.mean())
 
 
 # In[7]:
+
+reduced_image["Tot"] = reduced_image["Dom"].add(reduced_image["Ind"]).add(reduced_image["Ind"]).add(reduced_image["Irr"]).add(reduced_image["Liv"])
+
+
+# In[8]:
+
+sectors.append("Tot")
+
+
+# In[9]:
 
 def post_process(image):
     image = image.select(["b1_mean"],["b1"])
@@ -123,80 +135,65 @@ def post_process(image):
     return image
 
 
-# In[8]:
-
-image_out = post_process(i_ptotww)
+# In[ ]:
 
 
-# In[9]:
+
+
+# In[10]:
+
+image_out = {}
+for sector in sectors:
+    print(sector)
+    image_out[sector] = post_process(reduced_image[sector])
+
+
+# In[11]:
 
 command = "earthengine create folder projects/WRI-Aquaduct/{}".format(SCRIPT_NAME)
 response = subprocess.check_output(command,shell=True)
 
 
-# In[10]:
+# In[12]:
 
 command = "earthengine create folder projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 response = subprocess.check_output(command,shell=True)
 
 
-# In[11]:
-
-description_5min = "{}_5min".format(SCRIPT_NAME)
-asset_id_5min = 'projects/WRI-Aquaduct/{}/output_V{:02.0f}/global_historical_PTotWW_year_m_5min_1960_2014'.format(SCRIPT_NAME,OUTPUT_VERSION)
-description_30s = "{}_30s".format(SCRIPT_NAME)
-asset_id_30s = 'projects/WRI-Aquaduct/{}/output_V{:02.0f}/global_historical_PTotWW_year_m_30s_1960_2014'.format(SCRIPT_NAME,OUTPUT_VERSION)
-
-
-# In[12]:
-
-asset_id_5min
-asset_id_30s
-
-
-# In[13]:
-
-dimensions_5min_nopolar = "{}x{}".format(X_DIMENSION_5MIN,Y_DIMENSION_5MIN_NOPOLAR)
-dimensions_30s_nopolar = "{}x{}".format(X_DIMENSION_30S,Y_DIMENSION_30S_NOPOLAR)
-
-
 # In[14]:
 
-task = ee.batch.Export.image.toAsset(
-    image =  ee.Image(image_out),
-    description = description_5min,
-    assetId = asset_id_5min,
-    dimensions = dimensions_5min_nopolar,
-    crs = CRS,
-    crsTransform = CRS_TRANSFORM_5MIN_NOPOLAR,
-    maxPixels = 1e10   
-)
+for sector in sectors:
+    print(sector)
+    description_5min = "{}_{}_5min".format(SCRIPT_NAME,sector)
+    asset_id_5min = 'projects/WRI-Aquaduct/{}/output_V{:02.0f}/global_historical_P{}WW_year_m_5min_1960_2014'.format(SCRIPT_NAME,OUTPUT_VERSION,sector)
+    description_30s = "{}_{}_30s".format(SCRIPT_NAME,sector)
+    asset_id_30s = 'projects/WRI-Aquaduct/{}/output_V{:02.0f}/global_historical_P{}WW_year_m_30s_1960_2014'.format(SCRIPT_NAME,OUTPUT_VERSION,sector)
+    
+    task_5min = ee.batch.Export.image.toAsset(
+        image =  ee.Image(image_out[sector]),
+        description = description_5min,
+        assetId = asset_id_5min,
+        dimensions = dimensions_5min_nopolar,
+        crs = CRS,
+        crsTransform = CRS_TRANSFORM_5MIN_NOPOLAR,
+        maxPixels = 1e10   
+    )
+    
+    task_5min.start()
+    
+    task_30s = ee.batch.Export.image.toAsset(
+        image =  ee.Image(image_out[sector]),
+        description = description_30s,
+        assetId = asset_id_30s,
+        dimensions = dimensions_30s_nopolar,
+        crs = CRS,
+        crsTransform = CRS_TRANSFORM_30S_NOPOLAR,
+        maxPixels = 1e10   
+    )
+    task_30s.start()
 
 
-# In[15]:
-
-task.start()
-
-
-# In[16]:
-
-task2 = ee.batch.Export.image.toAsset(
-    image =  ee.Image(image_out),
-    description = description_30s,
-    assetId = asset_id_30s,
-    dimensions = dimensions_30s_nopolar,
-    crs = CRS,
-    crsTransform = CRS_TRANSFORM_30S_NOPOLAR,
-    maxPixels = 1e10   
-)
-
-
-# In[17]:
-
-task2.start()
-
-
-# In[18]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
