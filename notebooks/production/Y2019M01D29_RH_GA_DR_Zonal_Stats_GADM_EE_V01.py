@@ -3,15 +3,14 @@
 
 # In[1]:
 
-""" Zonal statistics icep_raw at GADM level 1.
+""" Zonal statistics drought risk at GADM level 1.
 -------------------------------------------------------------------------------
 
-Calculate average Index for Coastal Eutrophication Potential raw value per 
-gadm level 1 shape. 
+Drought risk per GADM level 1 unit. 
 
 
 Author: Rutger Hofste
-Date: 20190107
+Date: 20190129
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -21,17 +20,18 @@ Args:
 """
 
 TESTING = 0
-SCRIPT_NAME = "Y2019M01D07_RH_GA_CEP_Zonal_Stats_GADM_EE_V01"
-OUTPUT_VERSION = 1
+SCRIPT_NAME = "Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01"
+OUTPUT_VERSION = 2
 
 EE_INPUT_ZONES_PATH = "projects/WRI-Aquaduct/Y2019M01D07_RH_GADM36L01_Rasterize_EE_V01/output_V01/Y2019M01D07_RH_GADM36L01_Rasterize_EE_V01"
-EE_INPUT_VALUES_PATH = "projects/WRI-Aquaduct/Y2018M11D22_RH_ICEP_Basins_To_EE_V01/output_V01/icep_icepraw_30s"
+EE_INPUT_VALUES_PATH = "projects/WRI-Aquaduct/Y2018M09D28_RH_DR_Ingest_EE_V01/output_V03/risk"
 
 EXTRA_PROPERTIES = {"output_version":OUTPUT_VERSION,
                     "script_used":SCRIPT_NAME,
                      "spatial_aggregation":"gadm_36_L01",
-                     "parameter":"icep_raw",
+                     "parameter":"dr_raw",
                      "unit":"dimensionless"}
+
 
 gcs_output_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -145,12 +145,12 @@ function_properties = {"spatial_resolution":spatial_resolution,
 df = post_process_results(result_list,function_properties)
 
 
-# In[17]:
+# In[14]:
 
 df.shape
 
 
-# In[14]:
+# In[15]:
 
 output_file_path_pkl = "{}/df_gadm36_l1_{}.pkl".format(ec2_output_path,spatial_resolution)
 output_file_path_csv = "{}/df_gadm36_l1_{}.csv".format(ec2_output_path,spatial_resolution)
@@ -158,12 +158,12 @@ df.to_pickle(output_file_path_pkl)
 df.to_csv(output_file_path_csv,encoding='utf-8')
 
 
-# In[15]:
+# In[16]:
 
 get_ipython().system('aws s3 cp  {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[16]:
+# In[17]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -171,5 +171,10 @@ print(elapsed)
 
 
 # Previous runs:   
-# 0:01:26.187297
+# 0:01:07.645329
 # 
+
+# In[ ]:
+
+
+

@@ -31,7 +31,7 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D08_RH_Total_Demand_EE_V01"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
@@ -135,11 +135,6 @@ def post_process(image):
     return image
 
 
-# In[ ]:
-
-
-
-
 # In[10]:
 
 image_out = {}
@@ -160,7 +155,7 @@ command = "earthengine create folder projects/WRI-Aquaduct/{}/output_V{:02.0f}".
 response = subprocess.check_output(command,shell=True)
 
 
-# In[14]:
+# In[13]:
 
 for sector in sectors:
     print(sector)
@@ -193,7 +188,7 @@ for sector in sectors:
     task_30s.start()
 
 
-# In[ ]:
+# In[14]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -201,10 +196,5 @@ print(elapsed)
 
 
 # Previous runs:   
-# 0:00:07.542663
+# 0:00:22.601835
 # 
-
-# In[ ]:
-
-
-
