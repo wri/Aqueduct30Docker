@@ -55,8 +55,11 @@
 #     Add upstream pfaf ID to postgis database.
 # 1. **Y2018M07D03_RH_Upload_Hydrobasin_Mapbox_V01**  
 #     Upload simplified hydrobasins to mapbox for visualization purposes.
-# 1. **Y2018M07D18_RH_Upload_Hydrobasin_Carto_V01**
+# 1. **Y2018M07D18_RH_Upload_Hydrobasin_Carto_V01**  
 #     Upload simplified hydrobasins to carto for visualization purposes.
+#     
+# 1. **Y2019M02D11_RH_River_Networks_30s_V01**  
+#     Merge river networks per continent. Store in multiple formats.
 # 
 # ### Group Delta Region in HydroBasin level 6
 # 
@@ -64,7 +67,7 @@
 #     Several manual steps to create a list of delta sub-basins.
 # 1. **Y2018M02D15_RH_GDBD_Merge_V01**  
 #     This script will reproject GDBD basins and streams and merge them.
-# 1. **Y2018M02D16_RH_Number_Streams_Per_Basin_V01**  
+# 1. **Y2018M02D16_RH_Number_Streams_Per_Basin_V01**  encidi
 #     Determine the number of streams per GDBD basin.
 # 1. **Y2018M07D25_RH_Basin_Manual_Step_V01**  
 #     Manual step to create hydrobasin equivalent of GDBD deltas. 
