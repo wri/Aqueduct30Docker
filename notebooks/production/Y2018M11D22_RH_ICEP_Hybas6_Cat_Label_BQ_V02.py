@@ -11,6 +11,11 @@ Date: 20181122
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
+Script updated to fix an error in the ICEP script. Incorrect conversion of raw 
+values to scores. 
+
+
+
 Args:
     TESTING (Boolean) : Toggle testing case.
     SCRIPT_
@@ -28,7 +33,7 @@ Args:
 """
 
 TESTING = 0
-SCRIPT_NAME = "Y2018M11D22_RH_ICEP_Hybas6_Cat_Label_BQ_V01"
+SCRIPT_NAME = "Y2018M11D22_RH_ICEP_Hybas6_Cat_Label_BQ_V02"
 OUTPUT_VERSION = 3
 
 COUNT_THRESHOLD = 1000 #(icepbasin cellsize 60km )
@@ -96,7 +101,7 @@ def normalize_score(row):
     if row <= -5:
         minV, maxV, addV = icep_min, -5, 0
     elif row <= 0:
-        minV, maxV, addV = -5, -1, 0 #there is probably an error here. should be -5, 0, 1, see Sam's email.
+        minV, maxV, addV = -5, 0, 1 #there is probably an error here. should be -5, 0, 1, see Sam's email.
     elif row <= 1:
         minV, maxV, addV = 0, 1, 2
     elif row <= 5:

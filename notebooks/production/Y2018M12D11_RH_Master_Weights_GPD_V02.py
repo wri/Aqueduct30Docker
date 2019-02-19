@@ -10,7 +10,6 @@ This script applies the industry weights to the framework. Overall Water Risk
 (OWR) is calculated for every industry. When scores are unavailable (nan),
 the weights have been set to Nan to exclude them from the weight sum. 
 
-
 Grouped and overall water risks is calculated and stored as a separate 
 indicator callend awr (aggregated water risk). 
 
@@ -22,11 +21,11 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M12D11_RH_Master_Weights_GPD_V02'
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 7
 
 BQ_IN = {}
 # Master Table
-BQ_IN["MASTER"] = "y2018m12d04_rh_master_merge_rawdata_gpd_v02_v05"
+BQ_IN["MASTER"] = "y2018m12d04_rh_master_merge_rawdata_gpd_v02_v06"
 
 # Weights
 BQ_IN["WEIGHTS"] ="y2018m12d06_rh_process_weights_bq_v01_v01"
@@ -446,7 +445,8 @@ print(elapsed)
 
 # Previous runs:   
 # 0:28:11.269342  
-# 0:22:35.716177
+# 0:22:35.716177   
+# 0:21:53.347870
 # 
 
 # In[ ]:
