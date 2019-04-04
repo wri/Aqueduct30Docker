@@ -31,7 +31,7 @@ EC2_INPUT_PATH = "/volumes/data/%s/input/" %(SCRIPT_NAME)
 EC2_OUTPUT_PATH = "/volumes/data/%s/output/" %(SCRIPT_NAME)
 
 INPUT_VERSION = 1
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 # Database settings
 DATABASE_IDENTIFIER = "aqueduct30v02"
@@ -77,22 +77,22 @@ scopes = ["upstream_pfaf_ids","downstream_pfaf_ids","basin_pfaf_ids"]
 df = pd.read_csv(os.path.join(EC2_INPUT_PATH,INPUT_FILENAME+".csv"))
 
 
-# In[8]:
+# In[ ]:
 
 df.columns = map(str.lower, df.columns)
 
 
-# In[9]:
+# In[ ]:
 
 df = df.set_index("pfaf_id",drop=False)
 
 
-# In[10]:
+# In[ ]:
 
 df = df.drop_duplicates(subset="pfaf_id") #one basin 353020 has two HybasIDs 
 
 
-# In[11]:
+# In[ ]:
 
 def rowToDataFrame(index,row,columnName):    
     listje = literal_eval(row[columnName])
@@ -118,7 +118,7 @@ def rdsConnect(database_identifier,database_name):
     
 
 
-# In[12]:
+# In[ ]:
 
 resultDict = {}
 for scope in scopes:
@@ -139,19 +139,19 @@ for scope in scopes:
     
 
 
-# In[13]:
+# In[ ]:
 
 resultDict["upstream_pfaf_ids"].head()
 
 
 # Store in database
 
-# In[14]:
+# In[ ]:
 
 engine, connection = rdsConnect(DATABASE_IDENTIFIER,DATABASE_NAME)
 
 
-# In[15]:
+# In[ ]:
 
 for key, dfScope in resultDict.items():
     if key == "basin_pfaf_ids":
@@ -171,12 +171,12 @@ for key, dfScope in resultDict.items():
     
 
 
-# In[16]:
+# In[ ]:
 
 connection.close()
 
 
-# In[17]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start

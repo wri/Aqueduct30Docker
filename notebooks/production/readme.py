@@ -59,7 +59,11 @@
 #     Upload simplified hydrobasins to carto for visualization purposes.
 #     
 # 1. **Y2019M02D11_RH_River_Networks_30s_V01**  
-#     Merge river networks per continent. Store in multiple formats.
+#     Merge river networks per continent. Store in multiple formats.  
+# 1. **Y2019M02D28_RH_Hydrobasin_Upstream_Downstream_Normalized_V01**  
+#     Create table for upstream and downstream relation.
+# 
+#     
 # 
 # ### Group Delta Region in HydroBasin level 6
 # 

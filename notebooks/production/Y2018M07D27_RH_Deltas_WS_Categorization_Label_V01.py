@@ -29,7 +29,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D27_RH_Deltas_WS_Categorization_Label_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -112,15 +112,15 @@ def waterstress_integercategory_to_labelcategory(integercategory):
     if integercategory == -1:
         label = "Arid and Low Wateruse"
     elif integercategory == 0:
-        label = "Low"
+        label = "Low (<10%)"
     elif integercategory == 1:
-        label = "Low - Medium"
+        label = "Low - Medium (10-20%)"
     elif integercategory == 2:
-        label = "Medium - High"
+        label = "Medium - High (20-40%)"
     elif integercategory == 3:
-        label = "High"
+        label = "High (40-80%)"
     elif integercategory == 4:
-        label = "Extremely High"
+        label = "Extremely High (>80%)"
     else:
         label = "NoData"
     return label
@@ -165,15 +165,15 @@ sql +=         " THEN 'NoData' "
 sql +=     " WHEN waterstress_category_dimensionless_30spfaf06 = -1"
 sql +=         " THEN 'Arid and Low Water Use' "
 sql +=     " WHEN waterstress_category_dimensionless_30spfaf06 = 0"
-sql +=         " THEN 'Low' "
+sql +=         " THEN 'Low (<10%)' "
 sql +=     " WHEN waterstress_category_dimensionless_30spfaf06 = 1"
-sql +=         " THEN 'Low - Medium' "
+sql +=         " THEN 'Low - Medium (10-20%)' "
 sql +=     " WHEN waterstress_category_dimensionless_30spfaf06 = 2"
-sql +=         " THEN 'Medium - High' "
+sql +=         " THEN 'Medium - High (20-40%)' "
 sql +=     " WHEN waterstress_category_dimensionless_30spfaf06 = 3"
-sql +=         " THEN 'High' "
+sql +=         " THEN 'High (40-80%)' "
 sql +=     " WHEN waterstress_category_dimensionless_30spfaf06 = 4"
-sql +=         " THEN 'Extremely High' "
+sql +=         " THEN 'Extremely High (>80%)' "
 sql +=     " ELSE 'error, check score'"
 sql +=     " END AS waterstress_label_dimensionless_30spfaf06,"
 
@@ -183,62 +183,62 @@ sql +=         " THEN 'NoData' "
 sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = -1"
 sql +=         " THEN 'Arid and Low Water Use' "
 sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 0"
-sql +=         " THEN 'Low' "
+sql +=         " THEN 'Low (<5%)' "
 sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 1"
-sql +=         " THEN 'Low - Medium' "
+sql +=         " THEN 'Low - Medium (5-25%)' "
 sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 2"
-sql +=         " THEN 'Medium - High' "
+sql +=         " THEN 'Medium - High (25-50%)' "
 sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 3"
-sql +=         " THEN 'High' "
+sql +=         " THEN 'High (50-75%)' "
 sql +=     " WHEN waterdepletion_category_dimensionless_30spfaf06 = 4"
-sql +=         " THEN 'Extremely High' "
+sql +=         " THEN 'Extremely High (>75%)' "
 sql +=     " ELSE 'error, check score'"
 sql +=     " END AS waterdepletion_label_dimensionless_30spfaf06"
 
 sql += " FROM cte;"
 
 
-# In[7]:
-
-result = engine.execute(sql)
-
-
 # In[8]:
 
-sql_index = "CREATE INDEX {}delta_id ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"delta_id")
+result = engine.execute(text(sql))
 
 
 # In[9]:
 
-result = engine.execute(sql_index)
+sql_index = "CREATE INDEX {}delta_id ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"delta_id")
 
 
 # In[10]:
 
-sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
+result = engine.execute(sql_index)
 
 
 # In[11]:
 
-result = engine.execute(sql_index2)
+sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
 # In[12]:
 
-sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
+result = engine.execute(sql_index2)
 
 
 # In[13]:
 
-result = engine.execute(sql_index3)
+sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
 
 
 # In[14]:
 
-engine.dispose()
+result = engine.execute(sql_index3)
 
 
 # In[15]:
+
+engine.dispose()
+
+
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -246,7 +246,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:02.116257
+# 0:00:02.116257  
+# 0:00:09.629002
 
 # In[ ]:
 

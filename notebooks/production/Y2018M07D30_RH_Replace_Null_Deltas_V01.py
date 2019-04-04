@@ -28,12 +28,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Replace_Null_Deltas_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v07"
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v08"
 
 
 print("Input Table: " , INPUT_TABLE_NAME)
@@ -124,7 +124,8 @@ print(elapsed)
 # 0:21:14.401220  
 # 0:42:08.612665  
 # 0:42:04.108612  
-# 0:52:44.430636
+# 0:52:44.430636  
+# 0:50:01.565077
 
 # In[ ]:
 
