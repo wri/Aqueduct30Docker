@@ -22,7 +22,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M12D14_RH_Master_Horizontal_GPD_V01'
-OUTPUT_VERSION = 7
+OUTPUT_VERSION = 10
 
 
 # AWS RDS PostGIS
@@ -39,8 +39,8 @@ BQ_IN["GADM36L01"] = "y2018m11d12_rh_gadm36_level1_rds_to_bq_v01_v01"
 BQ_IN["area"] = 'y2018m12d07_rh_process_area_bq_v01_v01'
 
 # too slow, using s3 instead
-BQ_IN["indicators"] = 'y2018m12d11_rh_master_weights_gpd_v02_v06'
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02/output_V07"
+BQ_IN["indicators"] = 'y2018m12d11_rh_master_weights_gpd_v02_v09'
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02/output_V10"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -312,13 +312,14 @@ for industry in industries:
     for group in groups:
         print(industry,group)
         df_sel = df_in.loc[(df_in["industry_short"] == industry) &(df_in["group_short"] == group) &(df_in["indicator"] == indicator)]
-        df_out = df_sel[["string_id","raw","score","cat","label"]]
+        df_out = df_sel[["string_id","raw","score","cat","label","weight_fraction"]]
 
         df_out.columns = ["string_id",
                           "w_{}_{}_{}_raw".format(indicator,industry,group),
                           "w_{}_{}_{}_score".format(indicator,industry,group),
                           "w_{}_{}_{}_cat".format(indicator,industry,group),
-                          "w_{}_{}_{}_label".format(indicator,industry,group)]
+                          "w_{}_{}_{}_label".format(indicator,industry,group),
+                          "w_{}_{}_{}_weight_fraction".format(indicator,industry,group)]
         gdf_master = pd.merge(left=gdf_master,
                               right=df_out,
                               left_on ="string_id",
@@ -427,5 +428,7 @@ print(elapsed)
 
 # Previous runs:   
 # 0:47:11.853503  
-# 0:48:37.800392
+# 0:48:37.800392  
+# 0:49:17.171412  
+# 0:51:51.547798
 # 

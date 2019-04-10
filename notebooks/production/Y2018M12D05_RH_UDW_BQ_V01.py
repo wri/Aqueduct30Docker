@@ -14,12 +14,12 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2018M12D05_RH_UDW_BQ_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 NODATA_VALUE = -9999
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/AccessToDW"
-INPUT_FILE_NAME = "dw_results.csv"
+INPUT_FILE_NAME = "dw_results_basin_v2.csv"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -98,6 +98,11 @@ df.head()
 
 # In[11]:
 
+df["DW_cat"].unique()
+
+
+# In[12]:
+
 # DW -> UDW
 
 
@@ -107,7 +112,7 @@ df.head()
 # cat -> label. 
 
 
-# In[12]:
+# In[13]:
 
 df_out = df.rename(columns={"PFAF_ID":"pfaf_id",
                             "DW_raw":"udw_raw",
@@ -115,49 +120,98 @@ df_out = df.rename(columns={"PFAF_ID":"pfaf_id",
                             "DW_cat":"udw_label"})
 
 
-# In[13]:
+# In[14]:
 
+"""
 df_out.drop(columns=["DW_nat_raw",
                      "DW_rur_raw",
                      "DW_urb_raw",
                      "rur_pop",
                      "urb_pop",
                      "total_pop"],inplace=True)
+"""
 
 
-# In[14]:
+# In[15]:
 
 df_out["udw_raw"] = df_out["udw_raw"].fillna(NODATA_VALUE)
 df_out["udw_score"] = df_out["udw_score"].fillna(NODATA_VALUE)
 df_out["udw_label"] = df_out["udw_label"].fillna("No Data")
 
 
-# In[15]:
-
-def score_to_category(score):
-    if score != 5:
-        cat = int(np.floor(score))
-    else:
-        cat = 4
-    return cat
-
-
 # In[16]:
 
-df_out["udw_cat"] = df_out["udw_score"].apply(score_to_category)
+def update_labels(label):
+    # update labels to be consistent with rest of framework
+    if label == "Low (>2.5%)":
+        new_label = "Low (<2.5%)"
+    elif label == "Low to medium (2.5-5%)":
+        new_label = "Low - Medium (2.5-5%)"
+    elif label == "Medium to high (5-10%)":
+        new_label = "Medium - High (5-10%)"
+    elif label == "High (10-20%)":
+        new_label = "High (10-20%)"
+    elif label == "Extremely High (>20%)":
+        new_label = "Extremely High (>20%)"
+    elif label == "No Data":
+        new_label = "No Data"
+    else:
+        print(label)
+    return new_label
+    
+def label_to_category(row):
+    if row == "Low (>2.5%)":
+        cat = 0
+    elif row == "Low to medium (2.5-5%)":
+        cat = 1
+    elif row == "Medium to high (5-10%)":
+        cat = 2
+    elif row == "High (10-20%)":
+        cat = 3
+    elif row == "Extremely High (>20%)":
+        cat = 4
+    else:
+        cat = -9999
+    return cat
+    
 
 
 # In[17]:
 
-df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+df_out["udw_cat"] = df_out["udw_label"].apply(label_to_category)
 
 
 # In[18]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df_out["udw_label"] = df_out["udw_label"].apply(update_labels)
 
 
 # In[19]:
+
+df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+
+
+# In[20]:
+
+df_out
+
+
+# In[21]:
+
+df_out["udw_label"].unique()
+
+
+# In[22]:
+
+df_out["udw_cat"].unique()
+
+
+# In[23]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[24]:
 
 df_out.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -165,7 +219,7 @@ df_out.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[20]:
+# In[25]:
 
 end = datetime.datetime.now()
 elapsed = end - start

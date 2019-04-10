@@ -14,7 +14,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2018M12D05_RH_RRI_BQ_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 NODATA_VALUE = -9999
 
@@ -124,30 +124,70 @@ df_out["rri_label"] = df_out["rri_label"].fillna("No Data")
 
 # In[14]:
 
-def score_to_category(score):
-    if score != 5:
-        cat = int(np.floor(score))
-    else:
-        cat = 4
-    return cat
+df_out["rri_label"].unique()
 
 
 # In[15]:
 
-df_out["rri_cat"] = df_out["rri_score"].apply(score_to_category)
+def update_labels_rri(label):
+    # update labels to be consistent with rest of framework
+    if label == "Low (< 25%)":
+        new_label = "Low (<25%)"
+    elif label == "Low to medium (25 to 50%)":
+        new_label = "Low - Medium (25-50%)"
+    elif label == "Medium to high (50 to 60%)":
+        new_label = "Medium - High (50-60%)"
+    elif label == "High (60 t0 75%)":
+        new_label = "High (60-75%)"
+    elif label == "Extremely High (> 75%)":
+        new_label = "Extremely High (>75%)"
+    else:
+        new_label = "error, check script"
+    return new_label
+
+def category_from_labels_rri(label):
+    if label == "Low (< 25%)":
+        cat = 0
+    elif label == "Low to medium (25 to 50%)":
+        cat = 1
+    elif label == "Medium to high (50 to 60%)":
+        cat = 2
+    elif label == "High (60 t0 75%)":
+        cat =3
+    elif label == "Extremely High (> 75%)":
+        cat = 4
+    else:
+        cat = -9999
+    return cat
 
 
 # In[16]:
 
-df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+df_out["rri_cat"] = df_out["rri_label"].apply(category_from_labels_rri)
+df_out["rri_label"] = df_out["rri_label"].apply(update_labels_rri)
 
 
 # In[17]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df_out = df_out.reindex(sorted(df_out.columns), axis=1)
 
 
 # In[18]:
+
+df_out["rri_cat"].unique()
+
+
+# In[19]:
+
+df_out["rri_label"].unique()
+
+
+# In[20]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[21]:
 
 df_out.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -155,7 +195,7 @@ df_out.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[19]:
+# In[22]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -165,8 +205,3 @@ print(elapsed)
 # Previous runs:   
 # 0:00:13.546827
 # 
-
-# In[ ]:
-
-
-

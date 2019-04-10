@@ -30,7 +30,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M08D02_RH_Intra_Annual_Variability_Cat_Label_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -156,15 +156,15 @@ sql +=         " THEN 'NoData' "
 sql +=     " WHEN sv_riverdischarge_category_30spfaf06 = -1"
 sql +=         " THEN 'Arid and Low Water Use' "
 sql +=     " WHEN sv_riverdischarge_category_30spfaf06 = 0"
-sql +=         " THEN 'Low' "
+sql +=         " THEN 'Low (<0.33)' "
 sql +=     " WHEN sv_riverdischarge_category_30spfaf06 = 1"
-sql +=         " THEN 'Low - Medium' "
+sql +=         " THEN 'Low - Medium (0.33-0.66)' "
 sql +=     " WHEN sv_riverdischarge_category_30spfaf06 = 2"
-sql +=         " THEN 'Medium - High' "
+sql +=         " THEN 'Medium - High (0.66-1.00)' "
 sql +=     " WHEN sv_riverdischarge_category_30spfaf06 = 3"
-sql +=         " THEN 'High' "
+sql +=         " THEN 'High (1.00-1.33)' "
 sql +=     " WHEN sv_riverdischarge_category_30spfaf06 = 4"
-sql +=         " THEN 'Extremely High' "
+sql +=         " THEN 'Extremely High (>1.33)' "
 sql +=     " ELSE 'error, check score'"
 sql +=     " END AS sv_label_dimensionless_30spfaf06,"
 
@@ -174,15 +174,15 @@ sql +=         " THEN 'NoData' "
 sql +=     " WHEN sv_riverdischarge_category_delta = -1"
 sql +=         " THEN 'Arid and Low Water Use' "
 sql +=     " WHEN sv_riverdischarge_category_delta = 0"
-sql +=         " THEN 'Low' "
+sql +=         " THEN 'Low (<0.33)' "
 sql +=     " WHEN sv_riverdischarge_category_delta = 1"
-sql +=         " THEN 'Low - Medium' "
+sql +=         " THEN 'Low - Medium (0.33-0.66)' "
 sql +=     " WHEN sv_riverdischarge_category_delta = 2"
-sql +=         " THEN 'Medium - High' "
+sql +=         " THEN 'Medium - High (0.66-1.00)' "
 sql +=     " WHEN sv_riverdischarge_category_delta = 3"
-sql +=         " THEN 'High' "
+sql +=         " THEN 'High (1.00-1.33)' "
 sql +=     " WHEN sv_riverdischarge_category_delta = 4"
-sql +=         " THEN 'Extremely High' "
+sql +=         " THEN 'Extremely High (>1.33)' "
 sql +=     " ELSE 'error, check score'"
 sql +=     " END AS sv_label_dimensionless_delta,"
 
@@ -192,15 +192,15 @@ sql +=         " THEN 'NoData' "
 sql +=     " WHEN sv_riverdischarge_category_coalesced = -1"
 sql +=         " THEN 'Arid and Low Water Use' "
 sql +=     " WHEN sv_riverdischarge_category_coalesced = 0"
-sql +=         " THEN 'Low' "
+sql +=         " THEN 'Low (<0.33)' "
 sql +=     " WHEN sv_riverdischarge_category_coalesced = 1"
-sql +=         " THEN 'Low - Medium' "
+sql +=         " THEN 'Low - Medium (0.33-0.66)' "
 sql +=     " WHEN sv_riverdischarge_category_coalesced = 2"
-sql +=         " THEN 'Medium - High' "
+sql +=         " THEN 'Medium - High (0.66-1.00)' "
 sql +=     " WHEN sv_riverdischarge_category_coalesced = 3"
-sql +=         " THEN 'High' "
+sql +=         " THEN 'High (1.00-1.33)' "
 sql +=     " WHEN sv_riverdischarge_category_coalesced = 4"
-sql +=         " THEN 'Extremely High' "
+sql +=         " THEN 'Extremely High (>1.33)' "
 sql +=     " ELSE 'error, check score'"
 sql +=     " END AS sv_label_dimensionless_coalesced"
 
@@ -244,7 +244,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:02.762684
+# 0:00:02.762684  
+# 0:00:03.663936
 
 # In[ ]:
 

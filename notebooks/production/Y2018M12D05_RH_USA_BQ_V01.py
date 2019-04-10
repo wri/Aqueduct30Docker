@@ -14,12 +14,12 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2018M12D05_RH_USA_BQ_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 4
 
 NODATA_VALUE = -9999
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/AccessToSanitation"
-INPUT_FILE_NAME = "sn_results.csv"
+INPUT_FILE_NAME = "sn_results_basin_v2.csv"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -117,12 +117,14 @@ df_out = df.rename(columns={"PFAF_ID":"pfaf_id",
 
 # In[13]:
 
+"""
 df_out.drop(columns=["SN_nat_raw",
                      "SN_rur_raw",
                      "SN_urb_raw",
                      "rur_pop",
                      "urb_pop",
                      "total_pop"],inplace=True)
+"""
 
 
 # In[14]:
@@ -134,30 +136,72 @@ df_out["usa_label"] = df_out["usa_label"].fillna("No Data")
 
 # In[15]:
 
-def score_to_category(score):
-    if score != 5:
-        cat = int(np.floor(score))
-    else:
-        cat = 4
-    return cat
+df_out["usa_label"].unique()
 
 
 # In[16]:
 
-df_out["usa_cat"] = df_out["usa_score"].apply(score_to_category)
+def update_labels_usa(label):
+    # update labels to be consistent with rest of framework
+    if label == "Low (<2.5%)":
+        new_label = "Low (<2.5%)"
+    elif label == "Low to medium (2.5-5%)":
+        new_label = "Low - Medium (2.5-5%)"
+    elif label == "Medium to high (5-10%)":
+        new_label = "Medium - High (5-10%)"
+    elif label == "High (10-20%)":
+        new_label = "High (10-20%)"
+    elif label == "Extremely High (>20%)":
+        new_label = "Extremely High (>20%)"
+    elif label == "No Data":
+        new_label = "No Data"
+    else:
+        new_label = "error, check script"
+    return new_label
+
+def category_from_labels_usa(label):
+    if label == "Low (<2.5%)":
+        cat = 0
+    elif label == "Low to medium (2.5-5%)":
+        cat = 1
+    elif label == "Medium to high (5-10%)":
+        cat = 2
+    elif label == "High (10-20%)":
+        cat =3
+    elif label == "Extremely High (>20%)":
+        cat = 4
+    else:
+        cat = -9999
+    return cat
 
 
 # In[17]:
 
-df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+df_out["usa_cat"] = df_out["usa_label"].apply(category_from_labels_usa)
+df_out["usa_label"] = df_out["usa_label"].apply(update_labels_usa)
 
 
 # In[18]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df_out["usa_cat"].unique() 
 
 
 # In[19]:
+
+df_out["usa_label"].unique()
+
+
+# In[20]:
+
+df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+
+
+# In[21]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[22]:
 
 df_out.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -165,7 +209,7 @@ df_out.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[20]:
+# In[23]:
 
 end = datetime.datetime.now()
 elapsed = end - start

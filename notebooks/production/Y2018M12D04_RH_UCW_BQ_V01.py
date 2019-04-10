@@ -14,7 +14,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2018M12D04_RH_UCW_BQ_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 4
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/Wastewater"
 INPUT_FILE_NAME = "wastewater_results.csv"
@@ -125,50 +125,86 @@ df_out.drop(columns=["Exclude",
 
 # In[14]:
 
-def score_to_category(score):
-    if score != 5:
-        cat = int(np.floor(score))
+def update_labels(label):
+    # Update label to correct format.
+    if label == "Low to no wastewater collected":
+        new_label = "No to Low Wastewater Collected"
+    elif label == "Low (< 30%)":
+        new_label = "Low (<30%)"
+    elif label == "Low to medium (0.3 to 60%)":
+        new_label = "Low - Medium (30-60%)"
+    elif label == "Medium to high (0.6 to 90%)":
+        new_label = "Medium - High (60-90%)"
+    elif  label == "High (0.9 to 100%)":
+        new_label = "High (90-100%)"
+    elif label == "Extremely High (100%)":
+        new_label =  "Extremely High (100%)"
     else:
+        new_label = "error, check script"
+    return new_label
+
+def category_from_label(label):
+    # get cat from label
+    if label == "Low to no wastewater collected":
+        cat = -1
+    elif label == "Low (< 30%)":
+        cat = 0
+    elif label == "Low to medium (0.3 to 60%)":
+        cat = 1
+    elif label == "Medium to high (0.6 to 90%)":
+        cat = 2
+    elif  label == "High (0.9 to 100%)":
+        cat = 3
+    elif label == "Extremely High (100%)":
         cat = 4
+    else:
+        cat = -9999
     return cat
+    
+
 
 
 # In[15]:
 
-df_out["ucw_cat"] = df_out["ucw_score"].apply(score_to_category)
+df_out["ucw_cat"] = df_out["ucw_label"].apply(category_from_label)
 
 
 # In[16]:
 
-df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+df_out["ucw_label"] = df_out["ucw_label"].apply(update_labels)
 
 
 # In[17]:
 
-df_out.head()
+df_out = df_out.reindex(sorted(df_out.columns), axis=1)
 
 
 # In[18]:
 
-df_out.loc[(df_out['ucw_raw'] == -1.0) ,'ucw_cat'] = -1
+df_out.head()
 
 
 # In[19]:
 
-df_out.head()
+df_out.loc[(df_out['ucw_raw'] == -1.0) ,'ucw_cat'] = -1
 
 
 # In[20]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df_out.head()
 
 
 # In[21]:
 
-destination_table
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 
 # In[22]:
+
+destination_table
+
+
+# In[23]:
 
 df_out.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -176,7 +212,7 @@ df_out.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[23]:
+# In[24]:
 
 end = datetime.datetime.now()
 elapsed = end - start

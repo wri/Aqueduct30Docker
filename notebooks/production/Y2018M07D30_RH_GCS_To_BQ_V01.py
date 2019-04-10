@@ -18,11 +18,11 @@ OUTPUT_VERSION = 6
 OVERWRITE_OUTPUT = 1 
 
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M07D17_RH_RDS_To_S3_V02/output_V09/"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M07D17_RH_RDS_To_S3_V02/output_V10/"
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v07" #For header
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v08" #For header
 
 
 OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -172,7 +172,8 @@ print(elapsed)
 # 0:03:08.852822  
 # 0:02:24.556886  
 # 0:02:31.501342  
-# 0:02:21.296729
+# 0:02:21.296729  
+# 0:02:37.833459
 # 
 
 # In[ ]:

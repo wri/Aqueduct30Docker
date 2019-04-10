@@ -20,7 +20,7 @@ Result:
 """
 
 SCRIPT_NAME = "Y2018M09D28_RH_DR_Cat_Label_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 4
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M09D28_RH_DR_Zonal_Stats_EE_V01/output_V01/"
 
@@ -124,15 +124,15 @@ def category_to_label(cat):
     if cat == -9999:
         label = "NoData"
     elif cat == 0:
-        label = "Low"
+        label = "Low (0.0-0.2)"
     elif cat == 1:
-        label = "Low - Medium"
+        label = "Low - Medium (0.2-0.4)"
     elif cat == 2:
-        label = "Medium"
+        label = "Medium (0.4-0.6)"
     elif cat == 3:
-        label = "Medium - High"
+        label = "Medium - High (0.6-0.8)"
     elif cat == 4: 
-        label = "High"
+        label = "High (0.8-1.0)"
     else:
         label = "Error"
     return label

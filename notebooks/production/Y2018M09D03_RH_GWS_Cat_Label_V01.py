@@ -81,7 +81,7 @@ Result:
 """
 
 SCRIPT_NAME = "Y2018M09D03_RH_GWS_Cat_Label_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -222,15 +222,15 @@ def category_to_label_gtdt(cat):
     elif cat == -9998:
         label = "Insignificant Trend"
     elif cat == 0:
-        label = "Low"
+        label = "Low (<0 cm/y)"
     elif cat == 1:
-        label = "Low - Medium"
+        label = "Low - Medium (0-2 cm/y)"
     elif cat == 2:
-        label = "Medium - High"
+        label = "Medium - High (2-4 cm/y)"
     elif cat == 3:
-        label = "High"
+        label = "High (4-8 cm/y)"
     elif cat == 4: 
-        label = "Extremely High"
+        label = "Extremely High (>8 cm/y)"
     else:
         label = "Error"
     return label
@@ -263,30 +263,32 @@ df["groundwatertabledecliningtrend_score"] = df["groundwatertabledecliningtrend_
 
 # In[13]:
 
-df["groundwatertabledecliningtrend_score"] = np.where(df["r_squared"]>=0.9,df["groundwatertabledecliningtrend_score"],-9998)
+#df["groundwatertabledecliningtrend_score"] = np.where(df["r_squared"]>=0.9,df["groundwatertabledecliningtrend_score"],-9998)
+# changed to 0.8 on 2019 04 05
+df["groundwatertabledecliningtrend_score"] = np.where(df["r_squared"]>=0.8,df["groundwatertabledecliningtrend_score"],-9998)
 
 
-# In[15]:
+# In[14]:
 
 df["groundwatertabledecliningtrend_cat"] = df["groundwatertabledecliningtrend_score"].apply(score_to_category)
 
 
-# In[16]:
+# In[15]:
 
 df["groundwatertabledecliningtrend_label"] = df["groundwatertabledecliningtrend_cat"].apply(category_to_label_gtdt)
 
 
-# In[17]:
+# In[16]:
 
 df.head()
 
 
-# In[18]:
+# In[17]:
 
 destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
 
 
-# In[19]:
+# In[18]:
 
 df.to_gbq(destination_table=destination_table,
     project_id=BQ_PROJECT_ID,
@@ -294,7 +296,7 @@ df.to_gbq(destination_table=destination_table,
     if_exists="replace")
 
 
-# In[20]:
+# In[19]:
 
 end = datetime.datetime.now()
 elapsed = end - start

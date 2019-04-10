@@ -34,7 +34,7 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2018M11D22_RH_ICEP_Hybas6_Cat_Label_BQ_V02"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 COUNT_THRESHOLD = 1000 #(icepbasin cellsize 60km )
 
@@ -119,29 +119,29 @@ def category_to_label(row):
     if row < -9998:
         cat = "No Data"
     elif row < 1:
-        cat = "Low (< -5)"
+        cat = "Low (<-5)"
     elif row < 2:
-        cat = "Low to medium (-5 to 0)"
+        cat = "Low - Medium (-5 to 0)"
     elif row < 3:
-        cat = "Medium to high (0 to +1)"
+        cat = "Medium - High (0 to 1)"
     elif row < 4:
-        cat = "High (+1 to +5)"
+        cat = "High (1 to 5)"
     elif row <= 5:
-        cat = "Extremely High (> +5)"
+        cat = "Extremely High (>5)"
     else:
         cat = "Error"
     return cat
 
 def label_to_category(row):
-    if row == "Low (< -5)":
+    if row == "Low (<-5)":
         cat = 0
-    elif row == "Low to medium (-5 to 0)":
+    elif row == "Low - Medium (-5 to 0)":
         cat = 1
-    elif row == "Medium to high (0 to +1)":
+    elif row == "Medium - High (0 to 1)":
         cat = 2
-    elif row == "High (+1 to +5)":
+    elif row == "High (1 to 5)":
         cat = 3
-    elif row == "Extremely High (> +5)":
+    elif row == "Extremely High (>5)":
         cat = 4
     else:
         cat = -9999

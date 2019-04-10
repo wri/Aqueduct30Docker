@@ -20,7 +20,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = 'Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V02'
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 9
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
@@ -62,42 +62,42 @@ BQ_IN["bws"] = "y2018m07d30_rh_gcs_to_bq_v01_v06"
 BQ_IN["bwd"] = "y2018m07d30_rh_gcs_to_bq_v01_v06"
 
 # Interannual Variability | IAV
-BQ_IN["iav"] = "y2018m07d31_rh_inter_av_cat_label_v01_v02"
+BQ_IN["iav"] = "y2018m07d31_rh_inter_av_cat_label_v01_v03"
 
 # Seasonal Variability | SEV
-BQ_IN["sev"] = "y2018m08d02_rh_intra_annual_variability_cat_label_v01_v02"
+BQ_IN["sev"] = "y2018m08d02_rh_intra_annual_variability_cat_label_v01_v03"
 
 # Riverine Flood Risk | RFR
-BQ_IN["rfr"] = "y2018m12d04_rh_rfr_cfr_bq_v01_v01"
+BQ_IN["rfr"] = "y2018m12d04_rh_rfr_cfr_bq_v01_v03"
 
 # Coastal Flood Risk | CFR
-BQ_IN["cfr"] = "y2018m12d04_rh_rfr_cfr_bq_v01_v01"
+BQ_IN["cfr"] = "y2018m12d04_rh_rfr_cfr_bq_v01_v03"
 
 # Drought Risk | DRR
-BQ_IN["drr"] = "y2018m09d28_rh_dr_cat_label_v01_v02"
+BQ_IN["drr"] = "y2018m09d28_rh_dr_cat_label_v01_v04"
 
 # Groundwater Table Decline | GTD
-BQ_IN["gtd"] = "y2018m09d03_rh_gws_cat_label_v01_v01"
+BQ_IN["gtd"] = "y2018m09d03_rh_gws_cat_label_v01_v02"
 
 
 # Physical Risk Quality | QAL -----------------
 
 # Untreated Collected Wastewater | UCW
-BQ_IN["ucw"] = "y2018m12d04_rh_ucw_bq_v01_v02"
+BQ_IN["ucw"] = "y2018m12d04_rh_ucw_bq_v01_v04"
 
 # Coastal Eutrophication Potential | CEP
-BQ_IN["cep"] = "y2018m11d22_rh_icep_hybas6_cat_label_bq_v02_v03"
+BQ_IN["cep"] = "y2018m11d22_rh_icep_hybas6_cat_label_bq_v02_v04"
 
 # Regulatory and Reputational Risk | RRR --------------
 
 # Unimproved/no drinking water | UDW
-BQ_IN["udw"] = "y2018m12d05_rh_udw_bq_v01_v01"
+BQ_IN["udw"] = "y2018m12d05_rh_udw_bq_v01_v03"
 
 # Unimproved/no sanitation | USA
-BQ_IN["usa"] = "y2018m12d05_rh_usa_bq_v01_v01"
+BQ_IN["usa"] = "y2018m12d05_rh_usa_bq_v01_v04"
 
 # RepRisk Index | RRI
-BQ_IN["rri"] = "y2018m12d05_rh_rri_bq_v01_v01"
+BQ_IN["rri"] = "y2018m12d05_rh_rri_bq_v01_v02"
 
 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
@@ -428,7 +428,8 @@ print(elapsed)
 
 # Previous runs:   
 # 0:02:28.099761  
-# 0:03:18.624484
+# 0:03:18.624484  
+# 0:02:39.054623
 # 
 
 # In[ ]:

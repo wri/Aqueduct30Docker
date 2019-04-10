@@ -135,18 +135,18 @@ descriptions of indicators and weights.
 
 
 SCRIPT_NAME = 'Y2019M01D14_RH_Aqueduct_Results_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 # GBQ
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
 
 BQ_INPUT_TABLE  = {}
-BQ_INPUT_TABLE["annual_normalized"] = "y2018m12d11_rh_master_weights_gpd_v02_v07"
-BQ_INPUT_TABLE["annual_pivot"] = "y2018m12d14_rh_master_horizontal_gpd_v01_v07"
+BQ_INPUT_TABLE["annual_normalized"] = "y2018m12d11_rh_master_weights_gpd_v02_v10"
+BQ_INPUT_TABLE["annual_pivot"] = "y2018m12d14_rh_master_horizontal_gpd_v01_v09"
 BQ_INPUT_TABLE["monthly_normalized_bws"] = "y2018m07d30_rh_gcs_to_bq_v01_v06"
 BQ_INPUT_TABLE["monthly_normalized_bwd"] = "y2018m07d30_rh_gcs_to_bq_v01_v06"
-BQ_INPUT_TABLE["monthly_normalized_iav"] = "y2018m07d31_rh_inter_av_cat_label_v01_v02"
+BQ_INPUT_TABLE["monthly_normalized_iav"] = "y2018m07d31_rh_inter_av_cat_label_v01_v03"
 BQ_INPUT_TABLE["industry_weights"] = "y2018m12d06_rh_process_weights_bq_v01_v01"
 BQ_INPUT_TABLE["gadm"] = "y2018m11d12_rh_gadm36_level1_rds_to_bq_v01_v01"
 

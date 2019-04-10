@@ -21,11 +21,11 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M12D11_RH_Master_Weights_GPD_V02'
-OUTPUT_VERSION = 7
+OUTPUT_VERSION = 10
 
 BQ_IN = {}
 # Master Table
-BQ_IN["MASTER"] = "y2018m12d04_rh_master_merge_rawdata_gpd_v02_v06"
+BQ_IN["MASTER"] = "y2018m12d04_rh_master_merge_rawdata_gpd_v02_v09"
 
 # Weights
 BQ_IN["WEIGHTS"] ="y2018m12d06_rh_process_weights_bq_v01_v01"
@@ -332,15 +332,15 @@ def category_to_label(cat):
     if np.isnan(cat):
         label = "NoData"
     elif cat == 0:
-        label = "Low"
+        label = "Low (0-1)"
     elif cat == 1:
-        label = "Low - Medium"
+        label = "Low - Medium (1-2)"
     elif cat == 2:
-        label = "Medium"
+        label = "Medium - High (2-3)"
     elif cat == 3:
-        label = "Medium - High"
+        label = "High (3-4)"
     elif cat == 4: 
-        label = "High"
+        label = "Extremely High (4-5)"
     else:
         label = "Error"
     return label
@@ -446,7 +446,8 @@ print(elapsed)
 # Previous runs:   
 # 0:28:11.269342  
 # 0:22:35.716177   
-# 0:21:53.347870
+# 0:21:53.347870  
+# 0:24:52.610386
 # 
 
 # In[ ]:

@@ -14,7 +14,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2018M12D04_RH_RFR_CFR_BQ_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/Floods"
 INPUT_FILE_NAME = "flood_results.csv"
@@ -123,31 +123,116 @@ df_out.drop(columns=["River_pop_impacted","Coast_pop_impacted","pop_total"],inpl
 
 # In[14]:
 
-def score_to_category(score):
-    if score != 5:
-        cat = int(np.floor(score))
-    else:
-        cat = 4
-    return cat
+df_out["cfr_label"].unique()
 
 
 # In[15]:
 
-df_out["rfr_cat"] = df_out["rfr_score"].apply(score_to_category)
-df_out["cfr_cat"] = df_out["cfr_score"].apply(score_to_category)
+def update_labels_rfr(label):
+    # update labels to be consistent with rest of framework
+    if label == "Low (0 to 1 in 1,000)":
+        new_label = "Low (0 to 1 in 1,000)"
+    elif label == "Low to medium (1 in 1,000 to 2 in 1,000)":
+        new_label = "Low - Medium (1 in 1,000 to 2 in 1,000)"
+    elif label == "Medium to high (2 in 1,000 to 6 in 1,000)":
+        new_label = "Medium - High (2 in 1,000 to 6 in 1,000)"
+    elif label == "High (6 in 1,000 to 1 in 100)":
+        new_label = "High (6 in 1,000 to 1 in 100)"
+    elif label == "Extremely High (more than 1 in 100)":
+        new_label = "Extremely High (more than 1 in 100)"
+    else:
+        new_label = "error, check script"
+    return new_label
+
+def category_from_labels_rfr(label):
+    if label == "Low (0 to 1 in 1,000)":
+        cat = 0
+    elif label == "Low to medium (1 in 1,000 to 2 in 1,000)":
+        cat = 1
+    elif label == "Medium to high (2 in 1,000 to 6 in 1,000)":
+        cat = 2
+    elif label == "High (6 in 1,000 to 1 in 100)":
+        cat =3
+    elif label == "Extremely High (more than 1 in 100)":
+        cat = 4
+    else:
+        cat = -9999
+    return cat
+
+
+def update_labels_cfr(label):
+    # update labels to be consistent with rest of framework
+    if label == "Low (0 to 9 in 1,000,000)":
+        new_label = "Low (0 to 9 in 1,000,000)"
+    elif label == "Low to medium (9 in 1,000,000 to 7 in 100,000)":
+        new_label = "Low - Medium (9 in 1,000,000 to 7 in 100,000)"
+    elif label == "Medium to high (7 in 100,000 to 3 in 10,000)":
+        new_label = "Medium - High (7 in 100,000 to 3 in 10,000)"
+    elif label == "High (3 in 10,000 to 2 in 1,000)":
+        new_label = "High (3 in 10,000 to 2 in 1,000)"
+    elif label == "Extremely High (more than 2 in 1,000)":
+        new_label = "Extremely High (more than 2 in 1,000)"
+    else:
+        print(label)
+        new_label = "error"
+    return new_label
+
+def category_from_labels_cfr(label):
+    # update labels to be consistent with rest of framework
+    if label == "Low (0 to 9 in 1,000,000)":
+        cat = 0
+    elif label == "Low to medium (9 in 1,000,000 to 7 in 100,000)":
+        cat  = 1
+    elif label == "Medium to high (7 in 100,000 to 3 in 10,000)":
+        cat = 2
+    elif label == "High (3 in 10,000 to 2 in 1,000)":
+        cat  = 3
+    elif label == "Extremely High (more than 2 in 1,000)":
+        cat = 4
+    else:
+        cat = -9999
+    return cat
+    
 
 
 # In[16]:
 
-df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+df_out["rfr_cat"] = df_out["rfr_label"].apply(category_from_labels_rfr)
+df_out["rfr_label"] = df_out["rfr_label"].apply(update_labels_rfr)
 
 
 # In[17]:
 
-destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+df_out["cfr_cat"] = df_out["cfr_label"].apply(category_from_labels_cfr)
+df_out["cfr_label"] = df_out["cfr_label"].apply(update_labels_cfr)
 
 
 # In[18]:
+
+df_out = df_out.reindex(sorted(df_out.columns), axis=1)
+
+
+# In[19]:
+
+df_out["rfr_label"].unique()
+
+
+# In[20]:
+
+df_out["cfr_label"].unique()
+
+
+# In[21]:
+
+df_out["cfr_cat"].unique()
+
+
+# In[22]:
+
+destination_table = "{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABLE_NAME)
+
+
+# In[23]:
 
 df_out.to_gbq(destination_table=destination_table,
           project_id=BQ_PROJECT_ID,
@@ -155,7 +240,7 @@ df_out.to_gbq(destination_table=destination_table,
           if_exists="replace")
 
 
-# In[19]:
+# In[24]:
 
 end = datetime.datetime.now()
 elapsed = end - start
