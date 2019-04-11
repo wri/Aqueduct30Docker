@@ -6,7 +6,13 @@
 """ Zonal statistics drought risk at GADM level 1.
 -------------------------------------------------------------------------------
 
-Drought risk per GADM level 1 unit. 
+Drought risk per GADM level 1 unit. Weights include:
+Ones (no weight),
+Total gross withdrawal
+Domestic gross withdrawal
+Industrial gross withdrawal
+Irrigation gross withdrawal
+Livestock gross withdrawal
 
 
 Author: Rutger Hofste
@@ -21,10 +27,19 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
-EE_INPUT_ZONES_PATH = "projects/WRI-Aquaduct/Y2019M01D07_RH_GADM36L01_Rasterize_EE_V01/output_V01/Y2019M01D07_RH_GADM36L01_Rasterize_EE_V01"
-EE_INPUT_VALUES_PATH = "projects/WRI-Aquaduct/Y2018M09D28_RH_DR_Ingest_EE_V01/output_V03/risk"
+EE_ZONES_PATH = "projects/WRI-Aquaduct/Y2018D12D17_RH_GADM36L01_EE_V01/output_V06/gadm36l01"
+EE_INDICATOR_PATH = "projects/WRI-Aquaduct/Y2018M09D28_RH_DR_Ingest_EE_V01/output_V03/risk"
+
+EE_WEIGHTS = {}
+EE_WEIGHTS["Tot"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V04/global_historical_PTotWW_year_m_30s_1960_2014"
+EE_WEIGHTS["Dom"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V04/global_historical_PDomWW_year_m_30s_1960_2014"
+EE_WEIGHTS["Ind"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V04/global_historical_PIndWW_year_m_30s_1960_2014"
+EE_WEIGHTS["Irr"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V04/global_historical_PIrrWW_year_m_30s_1960_2014"
+EE_WEIGHTS["Liv"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V04/global_historical_PLivWW_year_m_30s_1960_2014"
+EE_WEIGHTS["One"] ="projects/WRI-Aquaduct/Y2017M09D05_RH_Create_Area_Image_EE_V01/output_V07/global_ones_30s_V07"
+
 
 EXTRA_PROPERTIES = {"output_version":OUTPUT_VERSION,
                     "script_used":SCRIPT_NAME,
@@ -33,14 +48,15 @@ EXTRA_PROPERTIES = {"output_version":OUTPUT_VERSION,
                      "unit":"dimensionless"}
 
 
-gcs_output_path = "gs://aqueduct30_v01/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
-ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
-s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+GCS_BUCKET= "aqueduct30_v01"
+GCS_OUTPUT_PATH = "{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
 
-print("Input ee zones: " +  EE_INPUT_ZONES_PATH +
-      "\nInput ee values: " + EE_INPUT_VALUES_PATH +
-      "\nOutput s3: " + s3_output_path,
-      "\nOutput gcs: " + gcs_output_path)
+ee_output_path = "projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+
+print("EE_ZONES_PATH: " +  EE_ZONES_PATH +
+      "\nEE_INDICATOR_PATH : " + EE_INDICATOR_PATH  +
+      "\nGCS_OUTPUT_PATH: " + GCS_OUTPUT_PATH,
+      "\nee_output_path : " + ee_output_path )
 
 
 # In[2]:
@@ -69,101 +85,79 @@ ee.Initialize()
 
 # In[5]:
 
-def dict_to_feature(dictje):
-    return ee.Feature(None,dictje)
-
-def post_process_results(result_list,function_properties,extra_properties=EXTRA_PROPERTIES):
-    """Client side function to convert results of reduceRegion to pandas dataframe.
-    -------------------------------------------------------------------------------
-    
-    Adds additional properties. The script is client side for convenience reasons.
-    A more robust and fast approach would be to add the extra_properties to the 
-    server side dictionary.
-    
-    Args:
-        result_list (ee.List) : List of dictionaries. Result from reduceRegion
-        function_properties (dictionary) : Additional properties used in the 
-            reduceRegion function call.
-        extra_properties (dictionary) : Additional properties set at global level. 
-    
-    Returns:
-        df (pd.DataFrame) : Pandas dataframe with extra properties.
-    
-    
-    """
-    extra_properties = {**function_properties, **EXTRA_PROPERTIES}
-    result_list_clientside = result_list.getInfo()
-    df = pd.DataFrame(result_list_clientside)
-    df = df.assign(**extra_properties)
-    df = df.apply(pd.to_numeric, errors='ignore')
-    return df  
+zones = ee.FeatureCollection(EE_ZONES_PATH)
 
 
 # In[6]:
 
-spatial_resolution = "30s"
-reducer_name = "mean"
+CRS_TRANSFORM_30S_NOPOLAR = [
+    0.008333333333333333,
+    0,
+    -180,
+    0,
+    -0.008333333333333333,
+    89.5
+]
 
 
 # In[7]:
 
-geometry = aqueduct3.earthengine.get_global_geometry(TESTING)
+def drop_geometry(feature):
+    feature_out = ee.Feature(None,{})
+    feature_out = feature_out.copyProperties(source=ee.Feature(feature),
+                                             properties=["gid_1","sum"])
+    return feature_out
 
 
 # In[8]:
 
-reducer = aqueduct3.earthengine.get_grouped_reducer(reducer_name)
+sectors = ["One","Tot","Dom","Ind","Irr","Liv"]
+indicators = ["drr"]
 
 
 # In[9]:
 
-total_image = ee.Image(EE_INPUT_VALUES_PATH).addBands(ee.Image(EE_INPUT_ZONES_PATH))
+for sector in sectors:
+    print(sector)
+    weights = ee.Image(EE_WEIGHTS[sector])
+    fc_weights_sums = weights.reduceRegions(collection=zones,
+                                            reducer=ee.Reducer.sum(),
+                                            crs="EPSG:4326",
+                                            crsTransform=CRS_TRANSFORM_30S_NOPOLAR
+                                            )
+    fc_weights_sums_nogeom = fc_weights_sums.map(drop_geometry)
+    output_file_path_weights = "{}/{}_weights_sum".format(GCS_OUTPUT_PATH,sector)
+    task = ee.batch.Export.table.toCloudStorage(collection=fc_weights_sums_nogeom,
+                                                description="{}_weights".format(sector),
+                                                bucket=GCS_BUCKET,
+                                                fileNamePrefix=output_file_path_weights,
+                                                fileFormat="CSV")
+
+    task.start()
+
+    for indicator in indicators:
+        print(sector,indicator)
+        values_path = "{}".format(EE_INDICATOR_PATH)
+        values = ee.Image(values_path)
+        weighted_values = weights.multiply(values)
+
+        fc_weighted_values_sums = weighted_values.reduceRegions(collection=zones,
+                                                                reducer=ee.Reducer.sum(),
+                                                                crs="EPSG:4326",
+                                                                crsTransform=CRS_TRANSFORM_30S_NOPOLAR
+                                                                )
+
+        fc_weighted_values_sums_nogeom = fc_weighted_values_sums.map(drop_geometry)
+        output_file_path_weighted_values = "{}/{}_weighted_{}_sum".format(GCS_OUTPUT_PATH,sector,indicator)
+        task = ee.batch.Export.table.toCloudStorage(collection=fc_weighted_values_sums_nogeom,
+                                                    description=indicator,
+                                                    bucket=GCS_BUCKET,
+                                                    fileNamePrefix=output_file_path_weighted_values,
+                                                    fileFormat="CSV")
+        task.start()
 
 
 # In[10]:
-
-crs_transform = aqueduct3.earthengine.get_crs_transform(spatial_resolution)
-
-
-# In[11]:
-
-result_list = total_image.reduceRegion(geometry = geometry,
-                        reducer= reducer,
-                        crsTransform = crs_transform,
-                        maxPixels=1e10
-                        ).get("groups")
-
-
-# In[12]:
-
-function_properties = {"spatial_resolution":spatial_resolution,
-                       "reducer":reducer_name}
-
-
-# In[13]:
-
-df = post_process_results(result_list,function_properties)
-
-
-# In[14]:
-
-df.shape
-
-
-# In[15]:
-
-output_file_path_pkl = "{}/df_gadm36_l1_{}.pkl".format(ec2_output_path,spatial_resolution)
-output_file_path_csv = "{}/df_gadm36_l1_{}.csv".format(ec2_output_path,spatial_resolution)
-df.to_pickle(output_file_path_pkl)
-df.to_csv(output_file_path_csv,encoding='utf-8')
-
-
-# In[16]:
-
-get_ipython().system('aws s3 cp  {ec2_output_path} {s3_output_path} --recursive')
-
-
-# In[17]:
 
 end = datetime.datetime.now()
 elapsed = end - start

@@ -3,30 +3,28 @@
 
 # In[1]:
 
-"""Post process aggregations from EE and combine with other datasets.
+"""Post process aggregations from drought risk EE.
 -------------------------------------------------------------------------------
 
-combines the different datasets into one result table. 
+Store drought risk result in tabular format, compatible with other baseline 
+water stress, baseline water depletion, interannual variability, seasonal 
+variobility. 
 
 indicator weights 
-bws withdrawal per sector
-bwd withdrawal per sector
-iav withdrawal per sector
-sev withdrawal per sector
-
+drr withdrawal per sector
 
 Author: Rutger Hofste
-Date: 20190128
+Date: 20190411
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 """
 
 TESTING = 0
-SCRIPT_NAME = "Y2019M01D28_RH_GA_Zonal_Stats_Table_V01"
-OUTPUT_VERSION = 8
+SCRIPT_NAME = "Y2019M04D11_RH_GA_DRR_Zonal_Stats_Table_V01"
+OUTPUT_VERSION = 2
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M01D17_RH_GA_Zonal_Stats_Weighted_Indicators_EE_V01/output_V06"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01/output_V03"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
@@ -44,7 +42,6 @@ print("GCS_INPUT_PATH: " + GCS_INPUT_PATH +
       "\nec2_input_path: " +  ec2_input_path + 
       "\nec2_output_path: " + ec2_output_path + 
       "\ns3_output_path: " + s3_output_path  )
-
 
 
 # In[2]:
@@ -160,7 +157,7 @@ df_gadm_0 = pd.read_gbq(query=sql,
                        dialect="standard")
 
 
-# ## BWS, BWD, IAV, SEV
+# ## DRR
 
 # In[13]:
 
@@ -288,14 +285,12 @@ def  export_df(df,geographic_scale):
 
     return df_merged
 
-    
-
 
 # In[15]:
 
 sectors = ["One","Tot","Dom","Ind","Irr","Liv"]
 #indicators = ["bws","bwd","iav","sev","gtd","drr","rfr","cfr","ucw","cep","udw","usa","rri"]
-indicators = ["bws","bwd","iav","sev"]
+indicators = ["drr"]
 
 
 # In[16]:
@@ -334,25 +329,20 @@ df_gid_0.shape
 
 # In[19]:
 
-df_gid_0.head()
+df_gid_1.shape
 
 
 # In[20]:
 
-df_gid_1.shape
+df_gid_1.head()
 
 
 # In[21]:
 
-df_gid_1.head()
-
-
-# In[22]:
-
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[23]:
+# In[22]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -360,5 +350,9 @@ print(elapsed)
 
 
 # Previous runs:   
-# 0:00:37.409272
-# 
+# 0:03:06.456055
+
+# In[ ]:
+
+
+

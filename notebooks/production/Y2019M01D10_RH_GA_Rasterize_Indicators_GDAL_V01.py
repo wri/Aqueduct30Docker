@@ -24,7 +24,7 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D10_RH_GA_Rasterize_Indicators_GDAL_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
@@ -38,7 +38,7 @@ RDS_INPUT_TABLE ="y2018m12d06_rh_master_shape_v01_v02"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
-BQ_INPUT_TABLE_NAME = "y2018m12d11_rh_master_weights_gpd_v02_v06"
+BQ_INPUT_TABLE_NAME = "y2018m12d11_rh_master_weights_gpd_v02_v10"
 
 GDAL_RASTERIZE_PATH = "/opt/anaconda3/envs/python35/bin/gdal_rasterize"
 

@@ -17,7 +17,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D17_RH_GA_Zonal_Stats_Weighted_Indicators_EE_V01"
-OUTPUT_VERSION = 5
+OUTPUT_VERSION = 6
 
 EE_ZONES_PATH = "projects/WRI-Aquaduct/Y2018D12D17_RH_GADM36L01_EE_V01/output_V06/gadm36l01"
 
@@ -27,6 +27,7 @@ EE_WEIGHTS["Dom"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/out
 EE_WEIGHTS["Ind"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V04/global_historical_PIndWW_year_m_30s_1960_2014"
 EE_WEIGHTS["Irr"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V04/global_historical_PIrrWW_year_m_30s_1960_2014"
 EE_WEIGHTS["Liv"] ="projects/WRI-Aquaduct/Y2019M01D08_RH_Total_Demand_EE_V01/output_V04/global_historical_PLivWW_year_m_30s_1960_2014"
+EE_WEIGHTS["One"] ="projects/WRI-Aquaduct/Y2017M09D05_RH_Create_Area_Image_EE_V01/output_V07/global_ones_30s_V07"
 
 
 EE_INDICATOR_PATH = "projects/WRI-Aquaduct/Y2019M01D10_RH_GA_Rasterize_Indicators_EE_V01/output_V01/"
@@ -91,8 +92,9 @@ def drop_geometry(feature):
 
 # In[8]:
 
-sectors = ["Tot","Dom","Ind","Irr","Liv"]
-indicators = ["bws","bwd","iav","sev","gtd","drr","rfr","cfr","ucw","cep","udw","usa","rri"]
+sectors = ["One","Tot","Dom","Ind","Irr","Liv"]
+#indicators = ["bws","bwd","iav","sev","gtd","drr","rfr","cfr","ucw","cep","udw","usa","rri"]
+indicators = ["bws","bwd","iav","sev"]
 
 
 # In[9]:

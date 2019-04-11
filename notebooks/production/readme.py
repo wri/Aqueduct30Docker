@@ -363,7 +363,6 @@
 #     
 # 
 # ### Merge Rawdata
-# 
 #     
 # 1. **Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V02**  
 #     Merge raw data into master table. 
@@ -391,7 +390,23 @@
 #     Ingest rasterized indicators in earthengine. 
 # 1.  **Y2019M01D17_RH_GA_Zonal_Stats_Weighted_Indicators_EE_V01**  
 #     Zonal statistics for GADM level 1 for sum  of weights and weights * indicators.
+# 1.  **Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01**  
+#     Zonal statistics drought risk at GADM level 1. 
+#   
+#     
+#     
+#     
+#     
+# 1.  **Y2019M01D28_RH_GA_Zonal_Stats_Table_V01**  
+#     Post process aggregations from EE and combine with other datasets.
+# 1.  **Y2019M04D11_RH_GA_DRR_Zonal_Stats_Table_V01**  
+#     Post process aggregations from drought risk EE.
+# 1.  **Y2019M04D11_RH_GA_RFR_Post_Process_V01**  
+#     Post process aggregations from riverine flood risk.
 # 
+# 
+# 
+# move to Archive:
 # 1.  **Y2019M01D29_RH_GA_GTD_Cat_Label_V01**  
 #     Add category and label for groundwater stress and trend at state level.
 # 
@@ -399,15 +414,6 @@
 #     Zonal statistics icep_raw at GADM level 1.
 # 1.  **Y2019M01D07_RH_GA_CEP_GADM_Cat_Label_BQ_V01**  
 #     Cleanup, add category and label for icep at gadm level 1.
-# 1.  **Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01**  
-#     Zonal statistics drought risk at GADM level 1.
-#     
-#     
-# 1.  **Y2019M01D28_RH_GA_Zonal_Stats_Table_V01**  
-#     Post process aggregations from EE and combine with other datasets.
-# 
-# 
-# 
 # 
 #     
 #     

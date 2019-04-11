@@ -17,9 +17,9 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D10_RH_GA_Rasterize_Indicators_EE_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M01D10_RH_GA_Rasterize_Indicators_GDAL_V01/output_V02/"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M01D10_RH_GA_Rasterize_Indicators_GDAL_V01/output_V03/"
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
