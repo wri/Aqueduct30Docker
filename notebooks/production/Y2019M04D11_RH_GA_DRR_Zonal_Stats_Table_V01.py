@@ -22,7 +22,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M04D11_RH_GA_DRR_Zonal_Stats_Table_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01/output_V03"
 
@@ -274,10 +274,10 @@ def  export_df(df,geographic_scale):
         df_merged_csv = df_merged.set_index("gid_1")
     
     
-    output_file_path_ec2 = "{}/aqueduct30_{}_V{:02.0f}.csv".format(ec2_output_path,geographic_scale,OUTPUT_VERSION)
+    output_file_path_ec2 = "{}/{}_{}_V{:02.0f}.csv".format(ec2_output_path,SCRIPT_NAME,geographic_scale,OUTPUT_VERSION)
     df_merged_csv.to_csv(path_or_buf=output_file_path_ec2,index=True)
     
-    destination_table = "{}.aqueduct30_{}_V{:02.0f}".format(BQ_DATASET_NAME,geographic_scale,OUTPUT_VERSION)
+    destination_table = "{}.{}_{}_V{:02.0f}".format(BQ_DATASET_NAME,SCRIPT_NAME,geographic_scale,OUTPUT_VERSION).lower()
 
     df_merged.to_gbq(destination_table=destination_table,
                      project_id=BQ_PROJECT_ID,
@@ -350,7 +350,7 @@ print(elapsed)
 
 
 # Previous runs:   
-# 0:03:06.456055
+# 0:00:41.101792
 
 # In[ ]:
 
