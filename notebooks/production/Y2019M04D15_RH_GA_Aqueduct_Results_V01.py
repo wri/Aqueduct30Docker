@@ -28,7 +28,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2019M04D15_RH_GA_Aqueduct_Results_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 
 BQ_PROJECT_ID = "aqueduct30"
@@ -36,15 +36,15 @@ BQ_DATASET_NAME = "aqueduct30v01"
 
 BQ_INPUT_TABLE_NAME = {}
 BQ_INPUT_TABLE_NAME["country"] = {}
-BQ_INPUT_TABLE_NAME["country"]["PCRGLOBWB"] = "y2019m01d28_rh_ga_zonal_stats_table_v01_country_v11"
-BQ_INPUT_TABLE_NAME["country"]["drought"] = "y2019m04d11_rh_ga_drr_zonal_stats_table_v01_country_v03"
-BQ_INPUT_TABLE_NAME["country"]["flood"] = "y2019m04d11_rh_ga_rfr_post_process_v01_country_v04"
+BQ_INPUT_TABLE_NAME["country"]["PCRGLOBWB"] = "y2019m01d28_rh_ga_zonal_stats_table_v01_country_v13"
+BQ_INPUT_TABLE_NAME["country"]["drought"] = "y2019m04d11_rh_ga_drr_zonal_stats_table_v01_country_v06"
+BQ_INPUT_TABLE_NAME["country"]["flood"] = "y2019m04d11_rh_ga_rfr_post_process_v01_country_v05"
 
 
 BQ_INPUT_TABLE_NAME["province"] = {}
-BQ_INPUT_TABLE_NAME["province"]["PCRGLOBWB"]  = "y2019m01d28_rh_ga_zonal_stats_table_v01_province_v11"
-BQ_INPUT_TABLE_NAME["province"]["drought"] = "y2019m04d11_rh_ga_drr_zonal_stats_table_v01_province_v03"
-BQ_INPUT_TABLE_NAME["province"]["flood"] = "y2019m04d11_rh_ga_rfr_post_process_v01_province_v04"
+BQ_INPUT_TABLE_NAME["province"]["PCRGLOBWB"]  = "y2019m01d28_rh_ga_zonal_stats_table_v01_province_v13"
+BQ_INPUT_TABLE_NAME["province"]["drought"] = "y2019m04d11_rh_ga_drr_zonal_stats_table_v01_province_v06"
+BQ_INPUT_TABLE_NAME["province"]["flood"] = "y2019m04d11_rh_ga_rfr_post_process_v01_province_v05"
 
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
@@ -106,7 +106,9 @@ for geographic_scale, dictje  in BQ_INPUT_TABLE_NAME.items():
               cat,
               label,
               sum_weights,
-              sum_weighted_indicator
+              sum_weighted_indicator,
+              count_valid,
+              fraction_valid
             FROM
               `{}.{}.{}`
             """.format(BQ_PROJECT_ID,BQ_DATASET_NAME,table_name)
@@ -124,7 +126,9 @@ for geographic_scale, dictje  in BQ_INPUT_TABLE_NAME.items():
               cat,
               label,
               sum_weights,
-              sum_weighted_indicator
+              sum_weighted_indicator,
+              count_valid,
+              fraction_valid
             FROM
               `{}.{}.{}`
             """.format(BQ_PROJECT_ID,BQ_DATASET_NAME,table_name)

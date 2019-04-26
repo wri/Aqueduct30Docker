@@ -22,9 +22,9 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M04D11_RH_GA_DRR_Zonal_Stats_Table_V01"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 6
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01/output_V03"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01/output_V05"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
@@ -165,6 +165,7 @@ def score_to_category(score):
     if np.isnan(score):
         cat = np.nan
     else:
+        score = score*5
         if score < 5:
             cat = int(np.floor(score))
         else:
@@ -183,7 +184,20 @@ def get_weights_df(sector):
     df_weights = pd.read_csv(input_file_path)
     df_weights.drop(columns=["system:index",".geo"],
                     inplace=True)
-    df_weights.rename(columns={"sum":"sum_weights"},
+    df_weights.rename(columns={"sum":"sum_weights","count":"count_weights"},
+                      inplace=True)
+    return df_weights
+
+def get_counts_df():
+    """ Get dataframe with the number of cells (count(ones)) for each gid1
+    
+    """
+    input_file_name = "One_weights_sumee_export.csv"
+    input_file_path = "{}/{}".format(ec2_input_path,input_file_name)
+    df_weights = pd.read_csv(input_file_path)
+    df_weights.drop(columns=["system:index",".geo","sum"],
+                    inplace=True)
+    df_weights.rename(columns={"count":"count_valid"},
                       inplace=True)
     return df_weights
 
@@ -196,7 +210,7 @@ def get_weighted_indicator_df(indicator):
     df = pd.read_csv(input_file_path)
     df.drop(columns=["system:index",".geo"],
             inplace=True)
-    df.rename(columns={"sum":"sum_weighted_indicator"},inplace=True)
+    df.rename(columns={"sum":"sum_weighted_indicator","count":"count_weighted_indicator"},inplace=True)
     df["indicator_name"] = indicator
     df["weight"] = sector
     return df
@@ -230,6 +244,7 @@ def process_df(df):
     
     
     """
+    df["fraction_valid"] = df["count_weighted_indicator"]/ df["count_valid"]
     df["score"]  = df["sum_weighted_indicator"] / df["sum_weights"]
     df["score"].clip(lower=None,upper=5,inplace=True)
     df["cat"] = df["score"].apply(score_to_category)
@@ -301,19 +316,34 @@ df_appended_gid_0 = pd.DataFrame()
 for sector in sectors:
     for indicator in indicators:
         print("sector:" , sector , "indicator: ", indicator)
+        # added later to calculate % valid cells. 
+        # %valid = sum(valid_indicator*valid*weight) / count(ones)
+        df_counts_gid_1 = get_counts_df() 
         df_weights_gid_1 = get_weights_df(sector)
-        df_indicator_gid_1 = get_weighted_indicator_df(indicator)
+        
         df_gid_1 = pd.merge(left=df_weights_gid_1,
-                                   right=df_indicator_gid_1,
-                                   how="inner",
-                                   left_on="gid_1",
-                                   right_on="gid_1")
+                            right=df_counts_gid_1,
+                            how="left",
+                            left_on="gid_1",
+                            right_on="gid_1")
+        
+        
+        df_indicator_gid_1 = get_weighted_indicator_df(indicator)
+        
+        df_gid_1 = pd.merge(left=df_gid_1,
+                            right=df_indicator_gid_1,
+                            how="inner",
+                            left_on="gid_1",
+                            right_on="gid_1")
         df_gid_0 = province_to_country(df_gid_1,sector,indicator)
+        
         df_gid_0 = process_df(df_gid_0)
         df_gid_1 = process_df(df_gid_1)
         
         df_appended_gid_0 = df_appended_gid_0.append(df_gid_0)
         df_appended_gid_1 = df_appended_gid_1.append(df_gid_1)
+        
+        
 
 
 # In[17]:
@@ -350,7 +380,9 @@ print(elapsed)
 
 
 # Previous runs:   
-# 0:00:41.101792
+# 0:00:41.101792  
+# 0:00:44.439611
+# 
 
 # In[ ]:
 

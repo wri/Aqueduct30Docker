@@ -17,7 +17,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D17_RH_GA_Zonal_Stats_Weighted_Indicators_EE_V01"
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 7
 
 EE_ZONES_PATH = "projects/WRI-Aquaduct/Y2018D12D17_RH_GADM36L01_EE_V01/output_V06/gadm36l01"
 
@@ -85,7 +85,7 @@ CRS_TRANSFORM_30S_NOPOLAR = [
 def drop_geometry(feature):
     feature_out = ee.Feature(None,{})
     feature_out = feature_out.copyProperties(source=ee.Feature(feature),
-                                             properties=["gid_1","sum"])
+                                             properties=["gid_1","sum","count"])
     return feature_out
     
 
@@ -99,11 +99,16 @@ indicators = ["bws","bwd","iav","sev"]
 
 # In[9]:
 
+reducer= ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True)
+
+
+# In[10]:
+
 for sector in sectors:
     print(sector)
     weights = ee.Image(EE_WEIGHTS[sector])
     fc_weights_sums = weights.reduceRegions(collection=zones,
-                                            reducer=ee.Reducer.sum(),
+                                            reducer=reducer,
                                             crs="EPSG:4326",
                                             crsTransform=CRS_TRANSFORM_30S_NOPOLAR
                                             )
@@ -124,7 +129,7 @@ for sector in sectors:
         weighted_values = weights.multiply(values)
 
         fc_weighted_values_sums = weighted_values.reduceRegions(collection=zones,
-                                                                reducer=ee.Reducer.sum(),
+                                                                reducer=reducer,
                                                                 crs="EPSG:4326",
                                                                 crsTransform=CRS_TRANSFORM_30S_NOPOLAR
                                                                 )
@@ -139,7 +144,7 @@ for sector in sectors:
         task.start()
 
 
-# In[10]:
+# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start

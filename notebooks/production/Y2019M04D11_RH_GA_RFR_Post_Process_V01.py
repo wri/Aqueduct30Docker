@@ -22,7 +22,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2019M04D11_RH_GA_RFR_Post_Process_V01"
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 5
 
 S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/finalData/Floods"
 INPUT_FILE_NAME_PROVINCE = "flood_State_results.csv"
@@ -199,7 +199,7 @@ def process_dataframe(df,geographic_scale):
                         "pop_total":"sum_weights"})
 
     df_out["indicator_name"] = "rfr"
-    df_out["weight"] = "pop"
+    df_out["weight"] = "Pop"
     df_out["cat"] = df_out["score"].apply(score_to_category)
     df_out["score_ranked"] = df_out["score"].rank(ascending=False,method="min")
     
@@ -224,6 +224,9 @@ def process_dataframe(df,geographic_scale):
         df_out = df_out.set_index("gid_1",drop=False)
     
     # Export
+    df_out["count_valid"] = np.NaN
+    df_out["fraction_valid"] = np.NaN
+    
     output_file_path_ec2 = "{}/{}_{}_V{:02.0f}.csv".format(ec2_output_path,SCRIPT_NAME,geographic_scale,OUTPUT_VERSION)
     df_out.to_csv(path_or_buf=output_file_path_ec2,index=True)
     destination_table = "{}.{}_{}_V{:02.0f}".format(BQ_DATASET_NAME,SCRIPT_NAME,geographic_scale,OUTPUT_VERSION).lower()

@@ -27,7 +27,7 @@ Args:
 
 TESTING = 0
 SCRIPT_NAME = "Y2019M01D29_RH_GA_DR_Zonal_Stats_GADM_EE_V01"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 5
 
 EE_ZONES_PATH = "projects/WRI-Aquaduct/Y2018D12D17_RH_GADM36L01_EE_V01/output_V06/gadm36l01"
 EE_INDICATOR_PATH = "projects/WRI-Aquaduct/Y2018M09D28_RH_DR_Ingest_EE_V01/output_V03/risk"
@@ -105,7 +105,7 @@ CRS_TRANSFORM_30S_NOPOLAR = [
 def drop_geometry(feature):
     feature_out = ee.Feature(None,{})
     feature_out = feature_out.copyProperties(source=ee.Feature(feature),
-                                             properties=["gid_1","sum"])
+                                             properties=["gid_1","sum","count"])
     return feature_out
 
 
@@ -117,11 +117,16 @@ indicators = ["drr"]
 
 # In[9]:
 
+reducer= ee.Reducer.sum().combine(reducer2= ee.Reducer.count(), sharedInputs= True)
+
+
+# In[10]:
+
 for sector in sectors:
     print(sector)
     weights = ee.Image(EE_WEIGHTS[sector])
     fc_weights_sums = weights.reduceRegions(collection=zones,
-                                            reducer=ee.Reducer.sum(),
+                                            reducer=reducer,
                                             crs="EPSG:4326",
                                             crsTransform=CRS_TRANSFORM_30S_NOPOLAR
                                             )
@@ -142,7 +147,7 @@ for sector in sectors:
         weighted_values = weights.multiply(values)
 
         fc_weighted_values_sums = weighted_values.reduceRegions(collection=zones,
-                                                                reducer=ee.Reducer.sum(),
+                                                                reducer=reducer,
                                                                 crs="EPSG:4326",
                                                                 crsTransform=CRS_TRANSFORM_30S_NOPOLAR
                                                                 )
@@ -157,7 +162,7 @@ for sector in sectors:
         task.start()
 
 
-# In[10]:
+# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -165,7 +170,9 @@ print(elapsed)
 
 
 # Previous runs:   
-# 0:01:07.645329
+# 0:01:07.645329  
+# 0:00:25.497235
+# 
 # 
 
 # In[ ]:
