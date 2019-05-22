@@ -27,6 +27,8 @@
 # 
 # 1. **Y2019M05D21_RH_AQ30VS21_Rasterize_AQ30_EE_V01**  
 #     Rasterize Aqueduct 30 and store to Google Cloud Storage.
+# 1. **Y2019M05D22_RH_AQ30VS21_Rasters_Ingest_EE_V01**  
+#     Ingest rasterized indicators to earthengine.
 #     
 #    
 # 
