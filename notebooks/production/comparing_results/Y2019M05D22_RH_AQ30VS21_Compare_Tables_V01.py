@@ -11,9 +11,6 @@ Compare Aqueduct 30 vs 21 and create change tables.
 Creating an area image in GDAL / rasterion is cumbersome. Therefore I will 
 explore options to get the task done in EarthEngine.
 
-TODO:
-
-- multiply by area raster (m2 or km2)
 
 Author: Rutger Hofste
 Date: 20190522
@@ -25,7 +22,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 0
 
 SCRIPT_NAME = "Y2019M05D22_RH_AQ30VS21_Compare_Tables_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 5
 
 AQ21_EE_PATH = "projects/WRI-Aquaduct/Y2019M05D22_RH_AQ30VS21_Rasters_AQ21_Ingest_EE_V01/output_V01/"
 AQ30_EE_PATH = "projects/WRI-Aquaduct/Y2019M05D22_RH_AQ30VS21_Rasters_AQ30_Ingest_EE_V01/output_V02/"
@@ -155,7 +152,7 @@ aq21_lower_bounds = [0,1,2,3,4]
 aq30_lower_bounds = [0,1,2,3,4]
 
 
-# In[6]:
+# In[ ]:
 
 for aq30_indicator, aq21_indicator in INDICATORS.items():
     aq21_image = get_aq21_image(aq21_indicator)
@@ -170,11 +167,14 @@ for aq30_indicator, aq21_indicator in INDICATORS.items():
             aq30_mask = mask_image(aq30_image,aq30_lower_bound)
             total_mask = aq21_mask.multiply(aq30_mask)
             
-            fc = sum_raster(total_mask)
+            area_km2 = ee.Image.pixelArea().divide(ee.Image(1e6))
+            total_area_mask  = total_mask.multiply(area_km2)
+            
+            fc = sum_raster(total_area_mask)
             export_fc(fc,description)
 
 
-# In[7]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start

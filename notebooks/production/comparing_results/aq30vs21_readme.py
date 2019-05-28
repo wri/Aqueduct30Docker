@@ -32,10 +32,13 @@
 # 1. **Y2019M05D22_RH_AQ39VS21_Rasterize_AQ21_EE_V01**  
 #     Rasterize Aqueduct 21 and store to Google Cloud Storage.
 # 1. **Y2019M05D22_RH_AQ30VS21_Rasters_AQ21_Ingest_EE_V01**  
-#     Ingest rasterized AQ21 indicators to earthengine.
-#    
+#     Ingest rasterized AQ21 indicators to earthengine.   
 # 1. **Y2019M05D22_RH_AQ30VS21_Compare_Tables_V01**  
 #     Compare Aqueduct 30 vs 21 and create change tables.
+# 1. **Y2019M05D23_RH_AQ30VS21_Combine_Tables_V01**  
+#     Create tables with aqueduct 30 categories vs aqueduct 21. 
+# 1. **Y2019M05D28_RH_AQ30VS21_Export_Dif_Geotiff_EE_V01**  
+#     Generate and export difference maps of various indicators.
 #     
 #     
 #    
