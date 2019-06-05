@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[13]:
 
 """ Create tables with aqueduct 30 categories vs aqueduct 21.
 -------------------------------------------------------------------------------
@@ -14,6 +14,8 @@ Todo:
 - Save figure as jpg
 - Save data as csv
 
+Calculate area under the curve: 
+https://stackoverflow.com/questions/56446533/how-do-i-get-the-sum-of-values-under-a-diagonal-in-numpy/56448158#56448158
 
 Author: Rutger Hofste
 Date: 20190523
@@ -25,7 +27,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 0
 
 SCRIPT_NAME = "Y2019M05D23_RH_AQ30VS21_Combine_Tables_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 3
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M05D22_RH_AQ30VS21_Compare_Tables_V01/output_V05"
 INPUT_VERSION = 5
@@ -124,7 +126,8 @@ def plot_array(a,indicator):
     ax = fig.add_subplot(111)
     title = "{}: Fraction of area in different risk categories".format(indicator_readable)
     fig.suptitle(title, fontsize=12)
-    im = ax.imshow(a_fraction, extent=extent, origin='lower', interpolation='None', cmap='viridis')
+    a_percentage = a_fraction*100
+    im = ax.imshow(a_percentage, extent=extent, origin='lower', interpolation='None', cmap='Greens')
 
     # Add the text
     jump_x = (x_end - x_start) / (2.0 * size)
@@ -135,7 +138,8 @@ def plot_array(a,indicator):
     for y_index, y in enumerate(y_positions):
         for x_index, x in enumerate(x_positions):
             label = a_fraction[y_index, x_index]
-            label = "{:0.2f}".format(label)
+            label = label * 100
+            label = "{:0.0f}%".format(label)
             text_x = x + jump_x
             text_y = y + jump_y
             ax.text(text_x, text_y, label, color='black', ha='center', va='center')
@@ -183,7 +187,7 @@ for aq30_indicator, aq21_indicator in INDICATORS.items():
     a_fraction = a/a.sum()
     fig = plot_array(a_fraction,aq30_indicator)
     filename = aq30_indicator
-    output_path = "{}/{}.pdf".format(ec2_output_path,filename)
+    output_path = "{}/{}.png".format(ec2_output_path,filename)
     fig.savefig(output_path)
 
 
@@ -199,4 +203,5 @@ elapsed = end - start
 print(elapsed)
 
 
-# Previous Runs:
+# Previous Runs:  
+# 0:00:07.450879

@@ -39,7 +39,8 @@
 #     Create tables with aqueduct 30 categories vs aqueduct 21. 
 # 1. **Y2019M05D28_RH_AQ30VS21_Export_Dif_Geotiff_EE_V01**  
 #     Generate and export difference maps of various indicators.
-#     
+# 1. **Y2019M05D30_RH_AQ30VS21_Merge_Dif_Geotiff_V01**  
+#     Merge the difference geotiffs into one.
 #     
 #    
 # 

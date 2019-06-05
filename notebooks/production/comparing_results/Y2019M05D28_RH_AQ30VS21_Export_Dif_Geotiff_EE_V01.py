@@ -6,6 +6,10 @@
 """ Generate and export difference maps of various indicators.
 -------------------------------------------------------------------------------
 
+
+
+Exports at 30s for resource watch embed.
+
 Exports at 5 arc minutes for print. The original data is available at 30 arc
 seconds
 
@@ -20,7 +24,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 0
 
 SCRIPT_NAME = "Y2019M05D28_RH_AQ30VS21_Export_Dif_Geotiff_EE_V01"
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 6
 
 AQ21_EE_PATH = "projects/WRI-Aquaduct/Y2019M05D22_RH_AQ30VS21_Rasters_AQ21_Ingest_EE_V01/output_V01/"
 AQ30_EE_PATH = "projects/WRI-Aquaduct/Y2019M05D22_RH_AQ30VS21_Rasters_AQ30_Ingest_EE_V01/output_V02/"
@@ -117,20 +121,23 @@ for aq30_indicator, aq21_indicator in INDICATORS.items():
     i_aq30_minus_aq21 = aq30_image.subtract(aq21_image)
     
     description = "{}{}".format(aq30_indicator,aq21_indicator)
-    fileNamePrefix = "{}/output_V{:02f}/{}_minus_{}".format(SCRIPT_NAME,OUTPUT_VERSION,aq30_indicator,aq21_image )
-    
+    fileNamePrefix = "{}/output_V{:02d}/{}_minus_{}_30s".format(SCRIPT_NAME,OUTPUT_VERSION,aq30_indicator,aq21_indicator )
+    print(fileNamePrefix)
+    coords = [[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]]
+    coords2 = [[[-180.0, -90.0],  [180.0, -90.0],  [180.0, 90.0],  [-180.0, 90.0],  [-180.0, -90.0]]]
     #geometry = ee.Geometry.Polygon(coords=[[-10.0, -10.0], [10,  -10.0], [10, 10], [-10,10]], proj= ee.Projection('EPSG:4326'),geodesic=False ) 
-    geometry = ee.Geometry.Polygon(coords=[[-180.0, -90.0], [180,  -90.0], [180, 90], [-180,90]], proj= ee.Projection('EPSG:4326'),geodesic=False )
-    
+    #geometry = ee.Geometry.Polygon(coords=coords, proj= ee.Projection('EPSG:4326'),geodesic=False )
+    #geometry_client_side = geometry.getInfo()['coordinates']
+
     task = ee.batch.Export.image.toCloudStorage(image=i_aq30_minus_aq21,
                                                 description=description,
                                                 bucket=GCS_BUCKET,
                                                 fileNamePrefix=fileNamePrefix ,
-                                                #dimensions,
-                                                #region=geometry,
-                                                #scale,
+                                                #dimensions="4320x2160",
+                                                region=coords2,
+                                                #scale=100000,
                                                 crs=CRS,
-                                                crsTransform=CRS_TRANSFORM_5MIN,
+                                                crsTransform=CRS_TRANSFORM_30S,
                                                 maxPixels=1e10,
                                                 #shardSize,
                                                 #fileDimensions,
@@ -141,7 +148,7 @@ for aq30_indicator, aq21_indicator in INDICATORS.items():
     task.start()
 
 
-# In[ ]:
+# In[6]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -149,3 +156,4 @@ print(elapsed)
 
 
 # previous run:
+# 0:00:08.458988
