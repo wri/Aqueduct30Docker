@@ -15,12 +15,12 @@ The Water Risk Atlas final data (Annual, Monthly):
 
 ## Other interesting datasets:
 
-## raster data:
+### raster data:
 
 PCR-GLOBWB 2 on S3 (Geotiff): `s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output_V02`
 PCR-GLOBWB 2 on earthengine (ImageCollection): `projects/WRI-Aquaduct/PCRGlobWB20V0/global_historical_PDomWN_month_m_5min_1960_2014`  
 
-## tabular results
+### tabular results
 
 on S3: `s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02`    
 on BigQuery:  `aqueduct30:aqueduct30v01.y2018m12d11_rh_master_weights_gpd_v02_v10`  
