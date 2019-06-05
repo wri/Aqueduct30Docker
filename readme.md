@@ -13,6 +13,10 @@ Input data, process data and final data can all be found on AWS S3:
 The Water Risk Atlas final data (Annual, Monthly):  
 `s3://wri-projects/Aqueduct30/finalData/Y2019M01D14_RH_Aqueduct_Results_V01`
 
+Country rankings final data:
+`wri-projects/Aqueduct30/finalData/Y2019M04D15_RH_GA_Aqueduct_Results_V01`  
+
+
 ## Other interesting datasets:
 
 ### raster data:
