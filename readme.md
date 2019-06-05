@@ -1,11 +1,11 @@
-## Work in Progress!!
+## Alpha version, not released  
 
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/wri/Aqueduct30Docker/master)
 
-# Aqueduct tools
+# Tools
 not released to public yet
 
-# Aqueduct Data
+# Data
 
 Input data, process data and final data can all be found on AWS S3:  
 `s3://wri-projects/Aqueduct30`
@@ -17,19 +17,19 @@ Country rankings final data:
 `wri-projects/Aqueduct30/finalData/Y2019M04D15_RH_GA_Aqueduct_Results_V01`  
 
 
-## Other interesting datasets:
+## Auxiliary data:
 
-### raster data:
+### raster  
 
 PCR-GLOBWB 2 on S3 (Geotiff): `s3://wri-projects/Aqueduct30/processData/Y2017M07D31_RH_Convert_NetCDF_Geotiff_V02/output_V02`
-PCR-GLOBWB 2 on earthengine (ImageCollection): `projects/WRI-Aquaduct/PCRGlobWB20V0/global_historical_PDomWN_month_m_5min_1960_2014`  
+PCR-GLOBWB 2 on earthengine (ImageCollection): `projects/WRI-Aquaduct/PCRGlobWB20V0/global_historical_PDomWN_month_m_5min_1960_2014`  [link](https://code.earthengine.google.com/?accept_repo=aqueduct30)  
 
-### tabular results
+### tabular  
 
 on S3: `s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02`    
 on BigQuery:  `aqueduct30:aqueduct30v01.y2018m12d11_rh_master_weights_gpd_v02_v10`  
 
-# WRI Aqueduct 3.0 Data Processing workflow
+# Workflow
 
 Througout the readme, variables that you need to replace with your own variable are indicated in greater than and smaller than signs `<variableYouNeedToReplace>`
 
@@ -54,7 +54,7 @@ Each data source (pristine data), indicated with the open cylinder on the right 
 
 The pristine data is also copied to step 0 in the data processing folder: wri-projects/Aqueduct30/processData
 
-# Technical Setup
+# Setup
 
 A link to edit the technical setup drawing:
 https://docs.google.com/drawings/d/1UR62IEQwQChj2SsksMsYGBb5YnVu_VaZlG10ZGowpA4/edit?usp=sharing
