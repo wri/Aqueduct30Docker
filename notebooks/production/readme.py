@@ -448,7 +448,10 @@
 #     Download ESI (Evaporative Stress Index) to Instance, Google Cloud Services and Amazon S3.
 # 
 #     
+# ### Other scripts
 # 
+# 1. **Y2019M06D05_RH_Hydrobasin6_histogram_V01**  
+#    Generate histogram data for in technical note.
 # 
 
 # In[ ]:
