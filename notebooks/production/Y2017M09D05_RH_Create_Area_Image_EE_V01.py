@@ -37,9 +37,9 @@ TODO:
 """
 
 
-SCRIPT_NAME = "Y2017M09D05_RH_Create_Area_Image_EE_V01"
+SCRIPT_NAME = "Y2017M09D05_RH_create_area_image_EE_V01"
 INPUT_VERSION = 2
-OUTPUT_VERSION = 7 
+OUTPUT_VERSION =1 
 
 X_DIMENSION_5MIN = 4320
 Y_DIMENSION_5MIN = 2160
@@ -73,11 +73,10 @@ CRS_TRANSFORM_30S = [
   ]
 
 
-ee_input_path = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V{:02.0f}".format(INPUT_VERSION)
-ee_output_path = "projects/WRI-Aquaduct/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION)
+ee_path = "projects/WRI-Aquaduct/PCRGlobWB20_Aux_V{:02.0f}".format(INPUT_VERSION)
 
-print("Input ee: " +  ee_input_path +
-      "\nOutput ee: " + ee_output_path)
+print("Input ee: " +  ee_path +
+      "\nOutput ee: " + ee_path)
 
 
 # In[2]:
@@ -94,26 +93,25 @@ sys.version
 
 # imports
 import ee
-import re
 import numpy as np
 import aqueduct3
-import subprocess
 
 ee.Initialize()
 
 
 # In[4]:
 
-def exportToAsset(ee_output_path,d):
+def exportToAsset(ee_path,d):
     """ Export image to asset
-
+    
     Args:
         ee_path (string) : earth engine folder.
         d (dictionary) : dictionary with properties. Required:
           'image'  and 'dimensions'
     
-    Returns:
-        None
+    
+    
+    
     
     """
     
@@ -133,7 +131,7 @@ def exportToAsset(ee_output_path,d):
     
     
     image = image.set(metadata)    
-    assetId = ee_output_path + "/" + d["exportdescription"] + "_V{:02.0f}".format(OUTPUT_VERSION)
+    assetId = ee_path + d["exportdescription"] + "_V{:02.0f}".format(OUTPUT_VERSION)
     
     task = ee.batch.Export.image.toAsset(
         image =  ee.Image(image),
@@ -163,78 +161,68 @@ properties ={}
 
 # In[6]:
 
-properties["global_ones_5min"] = {"image":ones_raster,
+properties["ones_5min"] = {"image":ones_raster,
                            "dimensions":dimensions_5min,
                            "spatial_resolution":"5min",
                            "ingested_by":"RutgerHofste" ,
-                           "exportdescription": "global_ones_5min" ,
-                           "unit": "dimensionless" ,
-                           "script_used":SCRIPT_NAME,
+                           "exportdescription": "ones_5min" ,
+                           "units": "dimensionless" ,
+                           "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
                            "spatial_resolution":"5min",
-                           "output_version":OUTPUT_VERSION,
-                           "indicator":"ones"
+                           "output_version":OUTPUT_VERSION
                            }
 
 
 # In[7]:
 
-properties["global_ones_30s"] = {"image":ones_raster,
+properties["ones_30s"] = {"image":ones_raster,
                           "dimensions":dimensions_30s,
                           "spatial_resolution":"30s",
                           "ingested_by":"RutgerHofste",
-                          "exportdescription": "global_ones_30s" ,
-                          "unit": "dimensionless",
-                          "script_used":SCRIPT_NAME,
+                          "exportdescription": "ones_30s" ,
+                          "units": "dimensionless",
+                          "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
                           "spatial_resolution":"30s",
-                          "output_version":OUTPUT_VERSION,
-                          "indicator":"ones"
+                          "output_version":OUTPUT_VERSION
                           }
 
 
 # In[8]:
 
-properties["global_area_m2_5min"] = {"image":area_raster,
+properties["area_5min_m2"] = {"image":area_raster,
                               "dimensions":dimensions_5min,
                               "spatial_resolution":"5min",
                               "ingested_by":"RutgerHofste" ,
-                              "exportdescription": "global_area_m2_5min" ,
-                              "unit": "m2",
-                              "script_used":SCRIPT_NAME,
+                              "exportdescription": "area_5min_m2" ,
+                              "units": "m2",
+                              "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
                               "spatial_resolution":"5min",
-                              "output_version":OUTPUT_VERSION,
-                              "indicator":"area"
+                              "output_version":OUTPUT_VERSION
                              }
 
 
 # In[9]:
 
-properties["global_area_m2_30s"] = {"image":area_raster,
+properties["area_30s_m2"] = {"image":area_raster,
                              "dimensions":dimensions_30s,
                              "spatial_resolution":"30s",
                              "ingested_by":"RutgerHofste" ,
-                             "exportdescription": "global_area_m2_30s" ,
-                             "unit": "m2",
-                             "script_used":SCRIPT_NAME,
+                             "exportdescription": "area_30s_m2" ,
+                             "units": "m2",
+                             "script_used":"Y2017M09D05_RH_create_area_image_EE_V01",
                              "spatial_resolution":"30s",
-                             "output_version":OUTPUT_VERSION,
-                             "indicator":"area"
+                             "output_version":OUTPUT_VERSION
                              }
 
 
 # In[10]:
 
-result = aqueduct3.earthengine.create_ee_folder_recursive(ee_output_path)
-        
-
-
-# In[11]:
-
 for key, value in properties.items():
-    exportToAsset(ee_output_path,value)
+    exportToAsset(ee_path,value)
     print(key)   
 
 
-# In[12]:
+# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -243,7 +231,6 @@ print(elapsed)
 
 # Previous Runs:  
 # 0:00:08.226092
-# 0:00:13.646075
 
 # In[ ]:
 
