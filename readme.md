@@ -13,8 +13,26 @@ Input data, process data and final data can all be found on AWS S3:
 The Water Risk Atlas final data (Annual, Monthly):  
 `s3://wri-projects/Aqueduct30/finalData/Y2019M01D14_RH_Aqueduct_Results_V01`
 
-Country rankings final data:
+Country rankings final data:  
 `wri-projects/Aqueduct30/finalData/Y2019M04D15_RH_GA_Aqueduct_Results_V01`  
+
+## FAQ:
+
+Q:  
+In the file, some geo units (by string_id) have a indicator labeled as “awr”. Could you explain what that is?
+A:  
+awr in Aqueduct 3.0 stands for aggregated water risk. There are four options: tot (total), qan (quantity), qal (quality) and rrr (regulatory and reputaitonal). In combination with an industry weighting scheme (see technical note), these represent the aggregated water risk. awr tot is also referred to as "overall water risk".  
+
+Q:  
+If we look at unique string_ids, why does master_geom.shp has 68,511 units, but annual_normalized.csv only has 68,365? For example, the unit (string_id: None-ALA.13_1-None) is not in the csv file.  
+A:  
+"None-ALA.13_1-None" means that it's not part of a hydroBasin nor a goundwater aquifer. It's part of the GADM level 0 (usually country) of Åland. For Åland, we don't have any country information either. We used an inner join leading to the different shapes of the data. 
+
+Q:  
+The number indicators each geo unit (by string_id) has are not always the same. Some of them have 14 (e.g., 434823-CHN.16_1-1626), some 13 (e.g., 296905-SAU.13_1-None), 12 (e.g., 524050-None-2096), 4 (e.g., None-AGO.2_1-2691)… Could you explain why that’s the case?  
+A:  
+This depends on data availability. The string_id uses the format hydrobasinID_GADM0ID_WHYMAPID. "None" is used when a geometry is not part of the associated geometry. The numbers that you specify are however different than what I found. For each string_id and weighting_sheme (industry), there is a maximum of 13 indicators + 3 grouped aggregated water risk + 1 total aggregated water risk score. Hence the maximum is 17. 
+
 
 
 ## Auxiliary data:
