@@ -20,6 +20,12 @@ drought risk
 
 riverine flood risk
 
+
+Added on 2019 06 12:
+not all countries are well represented by the hydroBasin level 6 sub-basins
+and we decided to mask out based on inspection. 
+
+
 Author: Rutger Hofste
 Date: 20190415
 Kernel: python35
@@ -28,7 +34,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2019M04D15_RH_GA_Aqueduct_Results_V01"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 
 BQ_PROJECT_ID = "aqueduct30"
@@ -47,6 +53,9 @@ BQ_INPUT_TABLE_NAME["province"]["drought"] = "y2019m04d11_rh_ga_drr_zonal_stats_
 BQ_INPUT_TABLE_NAME["province"]["flood"] = "y2019m04d11_rh_ga_rfr_post_process_v01_province_v05"
 
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
+
+S3_INPUT_PATH_VALIDHYBAS = "s3://wri-projects/Aqueduct30/processData/Y2019M06D12_RH_GA_Check_HydroBasin6_V01/output_V01/"
+
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION) 
@@ -78,6 +87,11 @@ get_ipython().system('mkdir -p {ec2_output_path}')
 
 # In[4]:
 
+get_ipython().system('aws s3 cp {S3_INPUT_PATH_VALIDHYBAS} {ec2_input_path} --recursive')
+
+
+# In[5]:
+
 import os
 import numpy as np
 import pandas as pd
@@ -88,7 +102,27 @@ os.environ["GOOGLE_CLOUD_PROJECT"] = "aqueduct30"
 client = bigquery.Client(project=BQ_PROJECT_ID)
 
 
-# In[5]:
+# In[6]:
+
+input_filename_validhybas = "gadm0_valid_hybas6_V01.csv"
+
+
+# In[7]:
+
+input_path_validhybase = "{}/{}".format(ec2_input_path,input_filename_validhybas)
+
+
+# In[8]:
+
+df_validhybas = pd.read_csv(input_path_validhybase)
+
+
+# In[9]:
+
+df_validhybas = df_validhybas[["GID_0","valid_hybas6"]]
+
+
+# In[10]:
 
 for geographic_scale, dictje  in BQ_INPUT_TABLE_NAME.items():
     df_out = pd.DataFrame()
@@ -137,24 +171,36 @@ for geographic_scale, dictje  in BQ_INPUT_TABLE_NAME.items():
                          dialect="standard")
         
         df_out = df_out.append(df)
+    
         
+    
+    df_out2 = pd.merge(left=df_out,
+                       right=df_validhybas,
+                       how="left",
+                       left_on="gid_0",
+                       right_on="GID_0")
+    df_out2.drop(columns=["GID_0"],
+                 inplace=True)
+    
+    
+    
+    
     output_file_path_ec2 = "{}/{}_{}_V{:02.0f}.csv".format(ec2_output_path,SCRIPT_NAME,geographic_scale,OUTPUT_VERSION)
-    df_out.to_csv(path_or_buf=output_file_path_ec2,index=True)
+    df_out2.to_csv(path_or_buf=output_file_path_ec2,index=True)
     destination_table = "{}.{}_{}_V{:02.0f}".format(BQ_DATASET_NAME,SCRIPT_NAME,geographic_scale,OUTPUT_VERSION).lower()
 
-    df_out.to_gbq(destination_table=destination_table,
+    df_out2.to_gbq(destination_table=destination_table,
                   project_id=BQ_PROJECT_ID,
                   if_exists="replace")
+    
 
-        
 
-
-# In[6]:
+# In[11]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[7]:
+# In[12]:
 
 end = datetime.datetime.now()
 elapsed = end - start

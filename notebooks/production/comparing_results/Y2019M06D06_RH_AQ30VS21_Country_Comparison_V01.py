@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[10]:
+# In[1]:
 
 """ Compare country aggregations, create charts and combined database.
 -------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ ec2_output_path =  "/volumes/data/{}/output_V{:02.0f}".format(SCRIPT_NAME,OUTPUT
 s3_output_path = "s3://wri-projects/Aqueduct30/Aq30vs21/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 
 print("S3_INPUT_PATH_AQ30: " + S3_INPUT_PATH_AQ30,
-      "S3_INTPUT_PATH_AQ21: " + S3_INTPUT_PATH_AQ21,
+      "S3_INPUT_PATH_AQ21: " + S3_INPUT_PATH_AQ21,
       "\nec2_input_path: " + ec2_input_path +
       "\nec2_output_path: " + ec2_output_path+ 
       "\ns3_output_path: " + s3_output_path)
@@ -44,7 +44,7 @@ print("S3_INPUT_PATH_AQ30: " + S3_INPUT_PATH_AQ30,
 # 
 # 
 
-# In[5]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -54,7 +54,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[6]:
+# In[3]:
 
 get_ipython().system('rm -r {ec2_input_path}')
 get_ipython().system('rm -r {ec2_output_path}')
@@ -62,54 +62,54 @@ get_ipython().system('mkdir -p {ec2_input_path}')
 get_ipython().system('mkdir -p {ec2_output_path}')
 
 
-# In[7]:
+# In[4]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_AQ30} {ec2_input_path} --recursive')
 
 
-# In[11]:
+# In[5]:
 
 get_ipython().system('aws s3 cp {S3_INPUT_PATH_AQ21} {ec2_input_path} --recursive')
 
 
-# In[12]:
+# In[6]:
 
 import os
 import pandas as pd
 
 
-# In[13]:
+# In[7]:
 
 os.listdir(ec2_input_path)
 
 
-# In[14]:
+# In[8]:
 
 aq21_input_filename = "Y2019M06D06_RH_AQ21_Country_Rankings_Simple_V01.csv"
 aq30_input_filename = "Y2019M04D15_RH_GA_Aqueduct_Results_V01_country_V03.csv"
 
 
-# In[57]:
+# In[9]:
 
 df_aq21_og = pd.read_csv("{}/{}".format(ec2_input_path,aq21_input_filename))
 
 
-# In[58]:
+# In[10]:
 
 df_aq21_og.head()
 
 
-# In[43]:
+# In[11]:
 
 df_aq30_og = pd.read_csv("{}/{}".format(ec2_input_path,aq30_input_filename))
 
 
-# In[44]:
+# In[12]:
 
 df_aq30_og.head()
 
 
-# In[52]:
+# In[13]:
 
 def pre_process_aq21(df):
     df_sel = df[["Rank","aq30_gid_0","new_name","All sectors","Agricultural","Domestic" ,"Industrial"]]
@@ -132,22 +132,22 @@ def pre_process_aq30(df):
     return df_sel
 
 
-# In[59]:
+# In[14]:
 
 df_aq21 = pre_process_aq21(df_aq21_og)
 
 
-# In[60]:
+# In[15]:
 
 df_aq21.head()
 
 
-# In[61]:
+# In[16]:
 
 df_aq30 = pre_process_aq30(df_aq30_og)
 
 
-# In[68]:
+# In[17]:
 
 df_bws_aq30vs21 = df_aq21.merge(right=df_aq30,
                                 how="inner",
@@ -155,22 +155,39 @@ df_bws_aq30vs21 = df_aq21.merge(right=df_aq30,
                                 right_on="gid_0")
 
 
-# In[69]:
+# In[18]:
 
 df_bws_aq30vs21.head()
 
 
-# In[70]:
+# In[19]:
 
 df_bws_aq30vs21 = df_bws_aq30vs21[["gid_0","name_0","bws_s_aq21_tot","bws_s_aq30_tot","aq21_rank","aq30_rank","fraction_valid"]]
 
 
-# In[71]:
+# In[20]:
 
-df_bws_aq30vs21
-
-
-# In[ ]:
+output_filename = "Y2019M06D06_RH_AQ30VS21_Country_Comparison_V01.csv"
+output_path = "{}/{}".format(ec2_output_path,output_filename)
 
 
+# In[21]:
 
+df_bws_aq30vs21.to_csv(path_or_buf=output_path)
+
+
+# In[22]:
+
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+
+
+# In[23]:
+
+end = datetime.datetime.now()
+elapsed = end - start
+print(elapsed)
+
+
+# previous run:  
+# 0:00:07.447482
+# 
