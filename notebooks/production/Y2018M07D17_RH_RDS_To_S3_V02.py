@@ -25,7 +25,7 @@ pd.set_option('display.max_columns', 500)
 import multiprocessing
 
 SCRIPT_NAME = 'Y2018M07D17_RH_RDS_To_S3_V02'
-OUTPUT_VERSION = 10
+OUTPUT_VERSION = 11
 
 TESTING = 0
 
@@ -132,18 +132,18 @@ p.close()
 p.join()
 
 
-# In[ ]:
+# In[14]:
 
-#!aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet')
 
 
-# In[ ]:
+# In[15]:
 
 # cleared output to save space
 get_ipython().system('gsutil -m cp {ec2_output_path}/*.csv {gcs_output_path}')
 
 
-# In[ ]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start

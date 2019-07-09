@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[18]:
+# In[1]:
 
 """
 Inspect Overall Water Risk per sector.
@@ -56,13 +56,13 @@ Nomenclature
 
 # User Input
 INDUSTRY = "def" # one of ['DEF', 'AGR', 'FNB', 'CHE', 'ELP', 'SMC', 'ONG', 'MIN', 'CON', 'TEX']
-STRING_ID = '742498-USA.6_1-1335' # Use Shapefile to find string_id
+STRING_ID = '453750-IND.31_1-3383' # Use Shapefile to find string_id
 
 
-# In[19]:
+# In[3]:
 
 SCRIPT_NAME = 'Y2018M11D11_RH_QA_OWR_Inspector_Tool_V01'
-OUTPUT_VERSION = 1
+OUTPUT_VERSION = 2
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -71,7 +71,7 @@ BQ_IN = "y2018m12d11_rh_master_weights_gpd_v01_v02"
 BQ_OUTPUT_TABLE_NAME = "{}_v{:02.0f}".format(SCRIPT_NAME,OUTPUT_VERSION).lower()
 
 
-# In[20]:
+# In[4]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -81,7 +81,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[21]:
+# In[6]:
 
 import os
 import collections
@@ -102,7 +102,7 @@ pd.set_option('display.max_rows', 500)
 get_ipython().magic('matplotlib inline')
 
 
-# In[22]:
+# In[8]:
 
 sql_nomenclature = """
 SELECT
@@ -114,45 +114,45 @@ ORDER BY
 """
 
 
-# In[23]:
+# In[9]:
 
 df_nomenclature = pd.read_gbq(query=sql_nomenclature,dialect="standard")
 
 
-# In[24]:
+# In[10]:
 
 df_nomenclature
 
 
-# In[25]:
+# In[12]:
 
 indicators = list(df_nomenclature["indicator_short"].unique())
 industries = list(df_nomenclature["industry_short"].unique())
-indicators_full = list(df_nomenclature["indicator_name_full"].unique())
+indicators_full = list(df_nomenclature["indicator_full"].unique())
 industries_full = list(df_nomenclature["industry_full"].unique())
 
 
-# In[8]:
+# In[13]:
 
 indicators
 
 
-# In[9]:
+# In[14]:
 
 indicators_full
 
 
-# In[10]:
+# In[15]:
 
 industries
 
 
-# In[11]:
+# In[16]:
 
 industries_full
 
 
-# In[12]:
+# In[18]:
 
 def get_hex_color(score):
     if score < 1:
@@ -201,6 +201,7 @@ def build_query(indicators,industry,string_id):
     return sql
 
 sql = build_query(indicators,INDUSTRY,STRING_ID)
+print(sql)
 df_in = pd.read_gbq(query=sql,dialect="standard")
 
 xs = []

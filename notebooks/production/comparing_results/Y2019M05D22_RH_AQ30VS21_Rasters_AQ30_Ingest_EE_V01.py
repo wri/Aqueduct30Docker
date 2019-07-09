@@ -3,7 +3,7 @@
 
 # In[1]:
 
-""" Ingest rasterized AQ21 indicators to earthengine.
+""" Ingest rasterized AQ30 indicators to earthengine.
 -------------------------------------------------------------------------------
 
 Ingest the rasterized tiffs of selected indicators to earthengine.
@@ -14,13 +14,12 @@ Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 """
-
 TESTING = 0
 
-SCRIPT_NAME = "Y2019M05D22_RH_AQ30VS21_Rasters_AQ21_Ingest_EE_V01"
-OUTPUT_VERSION = 2
+SCRIPT_NAME = "Y2019M05D22_RH_AQ30VS21_Rasters_AQ30_Ingest_EE_V01"
+OUTPUT_VERSION = 3
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M05D22_RH_AQ39VS21_Rasterize_AQ21_EE_V01/output_V03/"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M05D21_RH_AQ30VS21_Rasterize_AQ30_EE_V01/output_V06/"
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -67,19 +66,21 @@ response = subprocess.check_output(command,shell=True)
 
 # In[6]:
 
-indicators = ["DEFAULT",#Overall Water Risk
-              "BWS_s", #Baseline Water Stress
-              "WSV_s", #Inter-annual Variability
-              "SV_s", #Seasonal Variability
-              "HFO_s", #Flood Occurrence
-              "DRO_s", #Drought Severity
-              "STOR_s", #Upstream Storage
-              "GW_s", #Groundwater Stress
-              "WRI_s", #Return Flow Ratio
-              "ECO_S_s", #Upstream Protected Land
-              "MC_s", #Media Coverage 
-              "WCG_s", #Access to Water 
-              "ECO_V_s"] # Threatened Amphibians
+indicators = ["owr_score",
+              "owr_wf",
+              "bws_score",
+              "bwd_score",
+              "iav_score",
+              "sev_score",
+              "gtd_score",
+              "rfr_score",
+              "cfr_score",
+              "drr_score",
+              "ucw_score",
+              "cep_score",
+              "udw_score",
+              "usa_score",
+              "rri_score"]
 
 
 # In[7]:
@@ -88,7 +89,7 @@ for indicator in indicators:
     print(indicator)
     source_path = "{}{}.tif".format(GCS_INPUT_PATH,indicator)
     destination_path = "{}/{}".format(ee_output_path,indicator)
-    command = "/opt/anaconda3/envs/python35/bin/earthengine upload image --asset_id={} {} --nodata_value=-32767".format(destination_path,source_path)
+    command = "/opt/anaconda3/envs/python35/bin/earthengine upload image --asset_id={} {} --nodata_value=-9999".format(destination_path,source_path)
     response = subprocess.check_output(command,shell=True)
 
 
@@ -99,11 +100,5 @@ elapsed = end - start
 print(elapsed)
 
 
-# Previous run:  
-# 0:00:43.537564
-# 
-
-# In[ ]:
-
-
-
+# Previous run:
+# 0:59:39.278812
