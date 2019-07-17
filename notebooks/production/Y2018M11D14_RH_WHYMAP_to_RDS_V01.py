@@ -13,6 +13,9 @@ Please note that columns with uppercase should be referred to by using double
 quotes whereas strings need single quotes. Please note that the script will 
 consolidate two polygons in Russia that spans two hemispheres into one.
 
+Edit: 2019 07 09 added shapefile to export format.
+
+
 Author: Rutger Hofste
 Date: 20181114
 Kernel: python35
@@ -167,6 +170,7 @@ gdfFromSQL = uploadGDFtoPostGIS(gdf,OUTPUT_TABLE_NAME,False)
 # In[13]:
 
 filename_gpkg = "{}/{}.gpkg".format(ec2_output_path,SCRIPT_NAME)
+filename_shp = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
 
 
 # In[14]:
@@ -178,15 +182,22 @@ gdfFromSQL.to_file(filename=filename_gpkg,
 
 # In[15]:
 
-get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+gdfFromSQL.to_file(filename=filename_shp,
+                   driver="ESRI Shapefile",
+                   encoding="UTF-8")
 
 
 # In[16]:
 
-engine.dispose()
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
 # In[17]:
+
+engine.dispose()
+
+
+# In[18]:
 
 end = datetime.datetime.now()
 elapsed = end - start

@@ -263,6 +263,7 @@ def process_df(df):
     df.drop(columns=["indicator"],
             inplace=True)
     df["score_ranked"] = df["score"].rank(ascending=False,method="min")
+    
     return df
 
 def  export_df(df,geographic_scale):

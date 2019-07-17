@@ -11,6 +11,7 @@ The integer id column is obtained by sorting the GID_1 column alphabetically.
 The link table with columns gid_1 and gid_1_id is stored as csv on S3 and 
 on google bigquery.
 
+Edit: added shapefile format 2019 07 09 for simpifying.
 
 Author: Rutger Hofste
 Date: 20181112
@@ -236,6 +237,7 @@ df.head()
 # In[25]:
 
 filename_gpkg = "{}/{}.gpkg".format(ec2_output_path,SCRIPT_NAME)
+filename_shp = "{}/{}.shp".format(ec2_output_path,SCRIPT_NAME)
 filename_csv = "{}/{}.csv".format(ec2_output_path,SCRIPT_NAME)
 
 
@@ -251,7 +253,7 @@ df.to_gbq(destination_table="{}.{}".format(BQ_OUTPUT_DATASET_NAME,BQ_OUTPUT_TABL
           if_exists= "replace")
 
 
-# In[29]:
+# In[28]:
 
 gdfFromSQL.to_file(filename=filename_gpkg,
                    driver="GPKG",
@@ -260,15 +262,22 @@ gdfFromSQL.to_file(filename=filename_gpkg,
 
 # In[30]:
 
-get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
+gdfFromSQL.to_file(filename=filename_shp,
+                   driver="ESRI Shapefile",
+                   encoding="UTF-8")
 
 
 # In[31]:
 
-engine.dispose()
+get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
 # In[32]:
+
+engine.dispose()
+
+
+# In[33]:
 
 end = datetime.datetime.now()
 elapsed = end - start
