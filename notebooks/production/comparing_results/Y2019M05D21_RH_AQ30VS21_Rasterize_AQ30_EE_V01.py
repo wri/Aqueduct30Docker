@@ -28,7 +28,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 0
 
 SCRIPT_NAME = "Y2019M05D21_RH_AQ30VS21_Rasterize_AQ30_EE_V01"
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 7
 
 GDAL_RASTERIZE_PATH = "/opt/anaconda3/envs/python35/bin/gdal_rasterize"
 X_DIMENSION_30S = 43200
@@ -153,18 +153,31 @@ gdf_selection = gdf_merge[["string_id",
                            "w_awr_def_tot_score",
                            "w_awr_def_tot_weight_fraction",
                            "bws_score",
+                           "bws_cat", # Added on 2019 10 30
                            "bwd_score",
+                           "bwd_cat",
                            "iav_score",
+                           "iav_cat",
                            "sev_score",
+                           "sev_cat",
                            "gtd_score",
+                           "gtd_cat",
                            "rfr_score",
+                           "rfr_cat",
                            "cfr_score",
+                           "cfr_cat",
                            "drr_score",
+                           "drr_cat",
                            "ucw_score",
+                           "ucw_cat",
                            "cep_score",
+                           "cep_cat",
                            "udw_score",
+                           "udw_cat",
                            "usa_score",
+                           "usa_cat",
                            "rri_score",
+                           "rri_cat",
                            "geometry"]]
 
 
@@ -195,24 +208,37 @@ gdf_selection.to_file(driver="ESRI Shapefile",filename=process_path)
 indicators = ["owr_score",
               "owr_wf",
               "bws_score",
+              "bws_cat", 
               "bwd_score",
+              "bwd_cat",
               "iav_score",
+              "iav_cat",
               "sev_score",
+              "sev_cat",
               "gtd_score",
+              "gtd_cat",
               "rfr_score",
+              "rfr_cat",
               "cfr_score",
+              "cfr_cat",
               "drr_score",
+              "drr_cat",
               "ucw_score",
+              "ucw_cat",
               "cep_score",
+              "cep_cat",
               "udw_score",
+              "udw_cat",
               "usa_score",
-              "rri_score"]
+              "usa_cat",
+              "rri_score",
+              "rri_cat"]
 
 
 # In[23]:
 
 for indicator in indicators:
-    print(indicator)
+    print(indicator)    
     column = indicator
     layer = SCRIPT_NAME
     destination_path_shp = process_path

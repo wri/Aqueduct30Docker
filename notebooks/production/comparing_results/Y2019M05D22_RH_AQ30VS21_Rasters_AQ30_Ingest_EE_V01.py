@@ -17,9 +17,9 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 0
 
 SCRIPT_NAME = "Y2019M05D22_RH_AQ30VS21_Rasters_AQ30_Ingest_EE_V01"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M05D21_RH_AQ30VS21_Rasterize_AQ30_EE_V01/output_V06/"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M05D21_RH_AQ30VS21_Rasterize_AQ30_EE_V01/output_V07/"
 
 ec2_input_path = "/volumes/data/{}/input_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -69,18 +69,31 @@ response = subprocess.check_output(command,shell=True)
 indicators = ["owr_score",
               "owr_wf",
               "bws_score",
+              "bws_cat",
               "bwd_score",
+              "bwd_cat",
               "iav_score",
+              "iav_cat",
               "sev_score",
+              "sev_cat",
               "gtd_score",
+              "gtd_cat",
               "rfr_score",
+              "rfr_cat",
               "cfr_score",
+              "cfr_cat",
               "drr_score",
+              "drr_cat",
               "ucw_score",
+              "ucw_cat",
               "cep_score",
+              "cep_cat",
               "udw_score",
+              "udw_cat",
               "usa_score",
-              "rri_score"]
+              "usa_cat",
+              "rri_score",
+              "rri_cat"]
 
 
 # In[7]:

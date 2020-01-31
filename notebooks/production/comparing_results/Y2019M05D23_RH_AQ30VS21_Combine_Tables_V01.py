@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[13]:
+# In[1]:
 
 """ Create tables with aqueduct 30 categories vs aqueduct 21.
 -------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 TESTING = 0
 
 SCRIPT_NAME = "Y2019M05D23_RH_AQ30VS21_Combine_Tables_V01"
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2019M05D22_RH_AQ30VS21_Compare_Tables_V01/output_V05"
 INPUT_VERSION = 5
@@ -205,3 +205,13 @@ print(elapsed)
 
 # Previous Runs:  
 # 0:00:07.450879
+
+# In[13]:
+
+s3_output_path
+
+
+# In[ ]:
+
+
+

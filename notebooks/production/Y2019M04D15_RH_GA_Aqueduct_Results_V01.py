@@ -38,8 +38,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = "Y2019M04D15_RH_GA_Aqueduct_Results_V01"
-OUTPUT_VERSION = 5
-
+OUTPUT_VERSION = 7
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
@@ -252,6 +251,8 @@ def mask_invalid(df):
     """
     cond = (((df["fraction_valid"]>0.5) | (df["indicator_name"] == "rfr" ))& (df["valid_hybas6"] ==1))
     df['score'] = np.where(cond, df["score"], -9999)
+    df['cat'] = np.where(cond, df["cat"], -9999)
+    df['label'] = np.where(cond, df["label"], "NoData")
     
     return df
     
@@ -330,9 +331,15 @@ for geographic_scale, dictje  in BQ_INPUT_TABLE_NAME.items():
 
     #df_out3["score_ranked_all"] = df_out3.groupby(by=["indicator_name","weight"])["score"].rank(ascending=False,method="min")
     # Only primary (UN member) countries: 
-    df_out4 = df_out3.loc[df_out3["primary"] == 1]
+    
+    # Removed for version 7
+    #df_out4 = df_out3.loc[df_out3["primary"] == 1]
+    df_out4  = df_out3.copy()
     df_out4["score_ranked"] =  df_out4.groupby(by=["indicator_name","weight"])["score"].rank(ascending=False,method="min")
 
+    # added on 2019 07 24
+    df_out4 = df_out4.loc[df_out4["indicator_name"].isin(["bws","drr","rfr"])]
+    
     dict_out[geographic_scale] = clean_vertical(df_out4,geographic_scale)
     
     output_file_path_ec2 = "{}/{}_{}_V{:02.0f}.csv".format(ec2_output_path,SCRIPT_NAME,geographic_scale,OUTPUT_VERSION)
@@ -347,12 +354,12 @@ for geographic_scale, dictje  in BQ_INPUT_TABLE_NAME.items():
        
 
 
-# In[20]:
+# In[18]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive')
 
 
-# In[21]:
+# In[19]:
 
 end = datetime.datetime.now()
 elapsed = end - start
