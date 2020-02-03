@@ -6,6 +6,8 @@
 """ Fit linear trend and average on 1969-2014 timeseries of linear trends.
 -------------------------------------------------------------------------------
 
+Update 2020/02/03, now use the capped values. Starting from version 6
+
 Fit a linear trend and average on the water stress values calculated with a 10
 year moving window ordinary linear regression. 
 
@@ -33,11 +35,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D28_RH_WS_Full_Range_Ols_PostGIS_30sPfaf06_V02'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 6
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v02_v06'
+INPUT_TABLE_NAME = 'y2018m06d04_rh_water_stress_postgis_30spfaf06_v02_v08'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -84,7 +86,7 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-temporal_reducers = ["","ma10_","ols10_"]
+temporal_reducers = ["","ma10_","ols10_","capped_ols10_"]
 if TESTING:
     temporal_reducers = [""]
     
@@ -207,6 +209,7 @@ print(elapsed)
 # 0:31:26.302268  
 # 0:29:30.630927  
 # 0:26:08.090470
+# 0:31:46.727090
 
 # In[ ]:
 

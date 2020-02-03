@@ -6,6 +6,9 @@
 """ Using the full range ols_ols10, apply the arid and lowwateruse thresholds.
 -------------------------------------------------------------------------------
 
+2020/02/03 starting from version 5
+
+
 Author: Rutger Hofste
 Date: 20180709
 Kernel: python35
@@ -29,11 +32,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D09_RH_Arid_LowWaterUse_Full_Ols_PostGIS_V01'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 5
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v04'
+INPUT_TABLE_NAME = 'y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v06'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 THRESHOLD_ARID_YEAR = 0.03 #units are m/year, threshold defined by Aqueduct 2.1
@@ -86,14 +89,14 @@ if OVERWRITE_OUTPUT:
 temporal_reducers = ["ols_ols10_"]
 
 
-# In[6]:
+# In[9]:
 
 sql = "CREATE TABLE {} AS ".format(OUTPUT_TABLE_NAME)
 sql = sql + "SELECT pfafid_30spfaf06, ols_ols10_riverdischarge_m_30spfaf06, ols_ols10_ptotww_m_30spfaf06, ols_ols10_ptotwn_m_30spfaf06, year, "
 
 # arid
 sql = sql + " CASE"
-sql = sql + " WHEN (ols_ols10_riverdischarge_m_30spfaf06 + ols_ols10_ptotwn_m_30spfaf06) < {} THEN 1".format(THRESHOLD_ARID_YEAR)
+sql = sql + " WHEN (ols_ols10_riverdischarge_m_30spfaf06) < {} THEN 1".format(THRESHOLD_ARID_YEAR)
 sql = sql + " ELSE 0 "
 sql = sql + " END"
 sql = sql + " AS ols_ols10_arid_boolean_30spfaf06,"
@@ -107,7 +110,7 @@ sql = sql + " AS ols_ols10_lowwateruse_boolean_30spfaf06,"
 
 # Arid AND Lowwateruse  
 sql = sql + " CASE"
-sql = sql + " WHEN ols_ols10_ptotww_m_30spfaf06 < {} AND (ols_ols10_riverdischarge_m_30spfaf06 + ols_ols10_ptotwn_m_30spfaf06)  < {} THEN 1".format(THRESHOLD_LOW_WATER_USE_YEAR, THRESHOLD_ARID_YEAR)
+sql = sql + " WHEN ols_ols10_ptotww_m_30spfaf06 < {} AND (ols_ols10_riverdischarge_m_30spfaf06)  < {} THEN 1".format(THRESHOLD_LOW_WATER_USE_YEAR, THRESHOLD_ARID_YEAR)
 sql = sql + " ELSE 0 "
 sql = sql + " END"
 sql = sql + " AS ols_ols10_aridandlowwateruse_boolean_30spfaf06 ,"
@@ -116,17 +119,17 @@ sql = sql + " FROM {}".format(INPUT_TABLE_NAME)
 sql = sql + " WHERE temporal_resolution = 'year' "
 
 
-# In[7]:
+# In[10]:
 
 sql
 
 
-# In[8]:
+# In[11]:
 
 result = engine.execute(sql)
 
 
-# In[9]:
+# In[12]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -136,7 +139,8 @@ print(elapsed)
 # Previous runs:  
 # 0:02:11.888964  
 # 0:02:12.255110  
-# 0:01:56.781839
+# 0:01:56.781839  
+# 0:03:23.336755
 # 
 
 # In[ ]:

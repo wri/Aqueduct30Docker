@@ -6,6 +6,12 @@
 """ Calculate water stress with raw, ma10 and ols10 at subbasin level.
 -------------------------------------------------------------------------------
 
+Edit 2020/02/03 found an error in the data. For waterstress calculations
+it's better to use the capped regression results. If not, you see negative
+supply or demand numbers. Version 8 and upward use the capped values. In 
+addition, to avoid division by 0, we set the result to null if /0
+
+
 The tresholds per month will be used to set waterstress to 1 before doing a
 regression. In order to determine if a subbasin is arid and lowwater use, 
 a full range regression ols1960-2014 for riverdischarge and ptotww and ptotwn
@@ -34,7 +40,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M06D04_RH_Water_Stress_PostGIS_30sPfaf06_V02'
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 8
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -88,7 +94,7 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-temporal_reducers = ["","ma10_","ols10_"]
+temporal_reducers = ["","ma10_","ols10_","capped_ols10_"]
 if TESTING:
     temporal_reducers = [""]
 
@@ -122,16 +128,10 @@ Exceptions:
 sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql +=  " SELECT *,"
 for temporal_reducer in temporal_reducers:   
-    sql += " CASE "
-    sql += " WHEN {}aridandlowwateruse_boolean_30spfaf06 = 1 THEN 1 ".format(temporal_reducer)
-    sql += " ELSE {}ptotww_m_30spfaf06 / ({}riverdischarge_m_30spfaf06 + {}ptotwn_m_30spfaf06) ".format(temporal_reducer,temporal_reducer,temporal_reducer)
-    sql += " END"
+    sql += " {}ptotww_m_30spfaf06 / NULLIF({}riverdischarge_m_30spfaf06,0)".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " AS {}waterstress_dimensionless_30spfaf06 ,".format(temporal_reducer)
-    
-    sql += " CASE "
-    sql += " WHEN {}aridandlowwateruse_boolean_30spfaf06 = 1 THEN 1 ".format(temporal_reducer)
-    sql += " ELSE {}ptotwn_m_30spfaf06 / ({}riverdischarge_m_30spfaf06 + {}ptotwn_m_30spfaf06) ".format(temporal_reducer,temporal_reducer,temporal_reducer)
-    sql += " END"
+
+    sql += " {}ptotwn_m_30spfaf06 / NULLIF({}riverdischarge_m_30spfaf06,0)".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " AS {}waterdepletion_dimensionless_30spfaf06,".format(temporal_reducer)
 
 sql = sql[:-1]
