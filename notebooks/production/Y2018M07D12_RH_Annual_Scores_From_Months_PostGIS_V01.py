@@ -6,6 +6,9 @@
 """ Calculate Annual Scores by averaging monthly values.
 -------------------------------------------------------------------------------
 
+Update 2020/02/05 output version 5 to 6. Input changed from 2 to 5
+
+
 Author: Rutger Hofste
 Date: 20180712
 Kernel: python35
@@ -29,12 +32,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D12_RH_Annual_Scores_From_Months_PostGIS_V01'
-OUTPUT_VERSION = 5
+OUTPUT_VERSION = 6
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v02" 
+INPUT_TABLE_NAME = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v05" 
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -85,7 +88,10 @@ if OVERWRITE_OUTPUT:
 selection_columns = ["pfafid_30spfaf06",
                      "year",
                      "temporal_resolution"]
-aggregate_columns = ["ols_ols10_waterstress_dimensionless_30spfaf06","ols_ols10_waterdepletion_dimensionless_30spfaf06"]
+aggregate_columns = ["ols_ols10_waterstress_dimensionless_30spfaf06",
+                     "ols_capped_ols10_waterstress_dimensionless_30spfaf06",
+                     "ols_ols10_waterdepletion_dimensionless_30spfaf06",
+                     "ols_capped_ols10_waterdepletion_dimensionless_30spfaf06"]
 
 
 # In[6]:
@@ -94,19 +100,19 @@ sql =  "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql += " SELECT "
 for selection_column in selection_columns:
     sql += " {},".format(selection_column)
-sql +=     " AVG(ols_ols10_waterstress_dimensionless_30spfaf06) AS avg1y_ols_ols10_waterstress_dimensionless_30spfaf06,"
-sql +=     " CASE WHEN SUM (ols_ols10_ptotww_m_30spfaf06) >0 "
-sql +=         " THEN SUM(ols_ols10_waterstress_dimensionless_30spfaf06 * ols_ols10_ptotww_m_30spfaf06) / SUM (ols_ols10_ptotww_m_30spfaf06) "
-sql +=     " ELSE AVG(ols_ols10_waterstress_dimensionless_30spfaf06)"
+sql +=     " AVG(ols_capped_ols10_waterstress_dimensionless_30spfaf06) AS avg1y_ols_ols10_waterstress_dimensionless_30spfaf06,"
+sql +=     " CASE WHEN SUM (ols_capped_ols10_ptotww_m_30spfaf06) >0 "
+sql +=         " THEN SUM(ols_capped_ols10_waterstress_dimensionless_30spfaf06 * ols_capped_ols10_ptotww_m_30spfaf06) / SUM (ols_capped_ols10_ptotww_m_30spfaf06) "
+sql +=     " ELSE AVG(ols_capped_ols10_waterstress_dimensionless_30spfaf06)"
 sql +=     " END"
-sql +=     " AS avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06,"
+sql +=     " AS avg1y_ols_capped_ols10_weighted_waterstress_dimensionless_30spfaf06,"
 
-sql +=     " AVG(ols_ols10_waterdepletion_dimensionless_30spfaf06) AS avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06,"
-sql +=     " CASE WHEN SUM (ols_ols10_ptotww_m_30spfaf06) >0 "
-sql +=         " THEN SUM(ols_ols10_waterdepletion_dimensionless_30spfaf06 * ols_ols10_ptotww_m_30spfaf06) / SUM (ols_ols10_ptotww_m_30spfaf06) "
-sql +=     " ELSE AVG(ols_ols10_waterdepletion_dimensionless_30spfaf06)"
+sql +=     " AVG(ols_capped_ols10_waterdepletion_dimensionless_30spfaf06) AS avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06,"
+sql +=     " CASE WHEN SUM (ols_capped_ols10_ptotww_m_30spfaf06) >0 "
+sql +=         " THEN SUM(ols_capped_ols10_waterdepletion_dimensionless_30spfaf06 * ols_capped_ols10_ptotww_m_30spfaf06) / SUM (ols_capped_ols10_ptotww_m_30spfaf06) "
+sql +=     " ELSE AVG(ols_capped_ols10_waterdepletion_dimensionless_30spfaf06)"
 sql +=     " END"
-sql +=     " AS avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06"
+sql +=     " AS avg1y_ols_capped_ols10_weighted_waterdepletion_dimensionless_30spfaf06"
 sql += " FROM {}".format(INPUT_TABLE_NAME)
 sql += " WHERE temporal_resolution = 'month'" 
 sql += " GROUP BY pfafid_30spfaf06, year, temporal_resolution"
@@ -159,7 +165,8 @@ print(elapsed)
 # 0:02:42.553314  
 # 0:02:33.060358  
 # 0:02:33.656827  
-# 0:02:08.691658
+# 0:02:08.691658  
+# 0:02:46.805150
 # 
 
 # In[ ]:

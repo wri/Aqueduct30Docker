@@ -89,7 +89,7 @@ if OVERWRITE_OUTPUT:
 temporal_reducers = ["ols_ols10_"]
 
 
-# In[9]:
+# In[6]:
 
 sql = "CREATE TABLE {} AS ".format(OUTPUT_TABLE_NAME)
 sql = sql + "SELECT pfafid_30spfaf06, ols_ols10_riverdischarge_m_30spfaf06, ols_ols10_ptotww_m_30spfaf06, ols_ols10_ptotwn_m_30spfaf06, year, "
@@ -119,17 +119,17 @@ sql = sql + " FROM {}".format(INPUT_TABLE_NAME)
 sql = sql + " WHERE temporal_resolution = 'year' "
 
 
-# In[10]:
+# In[7]:
 
 sql
 
 
-# In[11]:
+# In[8]:
 
 result = engine.execute(sql)
 
 
-# In[12]:
+# In[9]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -140,7 +140,8 @@ print(elapsed)
 # 0:02:11.888964  
 # 0:02:12.255110  
 # 0:01:56.781839  
-# 0:03:23.336755
+# 0:03:23.336755  
+# 0:02:31.679844
 # 
 
 # In[ ]:

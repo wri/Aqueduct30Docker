@@ -37,7 +37,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D09_RH_Apply_AridLowOnce_Mask_PostGIS_V01'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 5
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -115,32 +115,32 @@ sql += " WHERE r.year = 2014"
 print(sql)
 
 
-# In[ ]:
+# In[8]:
 
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[9]:
 
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[ ]:
+# In[10]:
 
 sql_index
 
 
-# In[ ]:
+# In[11]:
 
 result = engine.execute(sql_index)
 
 
-# In[ ]:
+# In[12]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[13]:
 
 end = datetime.datetime.now()
 elapsed = end - start
