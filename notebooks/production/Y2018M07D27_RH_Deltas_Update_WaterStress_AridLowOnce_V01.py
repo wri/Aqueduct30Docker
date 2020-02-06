@@ -5,6 +5,7 @@
 
 """ Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 -------------------------------------------------------------------------------
+Y2020M02D06 update output version 2-3 input 2-3
 
 Join the results of the arid and lowwater use mask based on annual values (ols)
 (ols_ols10_**) and the master table. 
@@ -52,12 +53,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D27_RH_Deltas_Update_WaterStress_AridLowOnce_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d27_rh_deltas_merge_simplify_tables_v01_v02"
+INPUT_TABLE_NAME = "y2018m07d27_rh_deltas_merge_simplify_tables_v01_v03"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -115,14 +116,14 @@ sql +=     " WHEN temporal_resolution = 'month'"
 sql +=     " THEN ("
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql +=             " THEN ols_ols10_waterstress_dimensionless_30spfaf06"        
+sql +=             " THEN ols_capped_ols10_waterstress_dimensionless_30spfaf06"        
 sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " WHEN temporal_resolution = 'year'"
 sql +=    " THEN ( "
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql +=             " THEN avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06"        
+sql +=             " THEN avg1y_ols_capped_ols10_weighted_waterstress_dimensionless_30spfaf06"        
 sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " ELSE -9999"
@@ -135,14 +136,14 @@ sql +=     " WHEN temporal_resolution = 'month'"
 sql +=     " THEN ("
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql +=             " THEN ols_ols10_waterdepletion_dimensionless_30spfaf06"        
+sql +=             " THEN ols_capped_ols10_waterdepletion_dimensionless_30spfaf06"        
 sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " WHEN temporal_resolution = 'year'"
 sql +=    " THEN ( "
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql +=             " THEN avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06"        
+sql +=             " THEN avg1y_ols_capped_ols10_weighted_waterdepletion_dimensionless_30spfaf06"        
 sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " ELSE -9999"

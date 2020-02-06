@@ -6,6 +6,9 @@
 """ Add category and label for water stress. 
 -------------------------------------------------------------------------------
 
+Update 2020/02/06 update input version from 9 to 10, updated output version 
+from 6 to 7
+
 Updated to add thresholds to labels and double check nodata values.
 
 Author: Rutger Hofste
@@ -30,12 +33,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D12_RH_WS_Categorization_Label_PostGIS_V01'
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 7
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d10_rh_update_waterstress_aridlowonce_postgis_v01_v09"
+INPUT_TABLE_NAME = "y2018m07d10_rh_update_waterstress_aridlowonce_postgis_v01_v10"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -211,47 +214,47 @@ sql +=     " END AS waterdepletion_label_dimensionless_30spfaf06"
 sql += " FROM cte;"
 
 
-# In[10]:
+# In[8]:
 
 result = engine.execute(text(sql))
 
 
-# In[11]:
+# In[9]:
 
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[12]:
+# In[10]:
 
 result = engine.execute(sql_index)
 
 
-# In[13]:
+# In[11]:
 
 sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
-# In[14]:
+# In[12]:
 
 result = engine.execute(sql_index2)
 
 
-# In[15]:
+# In[13]:
 
 sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
 
 
-# In[16]:
+# In[14]:
 
 result = engine.execute(sql_index3)
 
 
-# In[17]:
+# In[15]:
 
 engine.dispose()
 
 
-# In[18]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -263,7 +266,9 @@ print(elapsed)
 # 0:19:55.641388  
 # 0:19:58.862378  
 # 0:20:12.699107  
-# 0:31:51.036312
+# 0:31:51.036312  
+# 0:25:09.432088
+# 
 
 # In[ ]:
 

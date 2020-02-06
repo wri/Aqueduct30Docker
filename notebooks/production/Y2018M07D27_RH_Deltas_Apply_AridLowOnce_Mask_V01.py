@@ -6,6 +6,8 @@
 """ Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once) for deltas.
 -------------------------------------------------------------------------------
 
+Y2020M02D06 update output version 2-3 update input left 2-3, right 2-3
+
 Join the results of the arid and lowwater use mask based on annual values (ols)
 (ols_ols10_**) and the master table. 
 
@@ -35,13 +37,13 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D27_RH_Deltas_Apply_AridLowOnce_Mask_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_arid_lowwateruse_full_ols_v01_v02"
-INPUT_TABLE_NAME_LEFT = 'y2018m07d26_rh_deltas_ws_full_range_ols_v01_v02'
+INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_arid_lowwateruse_full_ols_v01_v03"
+INPUT_TABLE_NAME_LEFT = 'y2018m07d26_rh_deltas_ws_full_range_ols_v01_v03'
 
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
@@ -146,7 +148,9 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:01.925743
+# 0:00:01.925743  
+# 0:00:02.474701
+# 
 # 
 
 # In[ ]:

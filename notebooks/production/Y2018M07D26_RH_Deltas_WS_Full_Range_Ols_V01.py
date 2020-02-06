@@ -6,6 +6,8 @@
 """ Fit linear trend and average on 1969-2014 timeseries of linear trends for deltas.
 -------------------------------------------------------------------------------
 
+Y2020M02D06 increase output version 2-3
+
 Fit a linear trend and average on the water stress values calculated with a 10
 year moving window ordinary linear regression. 
 
@@ -33,11 +35,11 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D26_RH_Deltas_WS_Full_Range_Ols_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m07d26_rh_deltas_water_stress_v01_v02'
+INPUT_TABLE_NAME = 'y2018m07d26_rh_deltas_water_stress_v01_v03'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -83,7 +85,7 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-temporal_reducers = ["","ma10_","ols10_"]
+temporal_reducers = ["","ma10_","ols10_","capped_ols10_"]
 if TESTING:
     temporal_reducers = [""]
 
@@ -120,9 +122,9 @@ for temporal_reducer in temporal_reducers:
         sql += " MAX({}) OVER(PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) AS max_{},".format(indicator,indicator)
         sql += " regr_slope({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS slope_{},".format(indicator,indicator)
         sql += " regr_intercept({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) AS intercept_{},".format(indicator,indicator)
-        sql += (" regr_slope({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) * year "
-                     "+ regr_intercept({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) AS ols_{},".format(indicator,indicator,indicator))
 
+        sql += ("GREATEST(0,LEAST(1,regr_slope({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) * year "
+                "+ regr_intercept({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW))) AS ols_{},".format(indicator,indicator,indicator))
 sql = sql[:-1]
 sql = sql + " FROM {}".format(INPUT_TABLE_NAME)
 if TESTING:
@@ -198,7 +200,9 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:03.559076
+# 0:00:03.559076  
+# 0:00:04.214019
+# 
 
 # In[ ]:
 

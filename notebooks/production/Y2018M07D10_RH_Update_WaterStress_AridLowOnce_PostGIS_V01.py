@@ -202,37 +202,37 @@ result = engine.execute(sql)
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[ ]:
+# In[9]:
 
 result = engine.execute(sql_index)
 
 
-# In[ ]:
+# In[10]:
 
 sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
-# In[ ]:
+# In[11]:
 
 result = engine.execute(sql_index2)
 
 
-# In[ ]:
+# In[12]:
 
 sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
 
 
-# In[ ]:
+# In[13]:
 
 result = engine.execute(sql_index3)
 
 
-# In[ ]:
+# In[14]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[15]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -246,7 +246,8 @@ print(elapsed)
 # 0:19:47.178844  
 # 0:19:43.276432  
 # 0:19:55.676521  
-# 0:24:25.935893
+# 0:24:25.935893  
+# 0:24:51.997542
 
 # In[ ]:
 

@@ -6,6 +6,8 @@
 """ Merge and simplify master table and annual scores based on months for deltas.
 -------------------------------------------------------------------------------
 
+Y2020M02D06 Update output 2-3 input left 2-3 input right 2-3
+
 Author: Rutger Hofste
 Date: 20180727
 Kernel: python35
@@ -29,13 +31,13 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D27_RH_Deltas_Merge_Simplify_Tables_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_LEFT = "y2018m07d27_rh_deltas_apply_aridlowonce_mask_v01_v02"
-INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_annual_scores_from_months_v01_v02"
+INPUT_TABLE_NAME_LEFT = "y2018m07d27_rh_deltas_apply_aridlowonce_mask_v01_v03"
+INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_annual_scores_from_months_v01_v03"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table Left: " , INPUT_TABLE_NAME_LEFT, 
@@ -151,7 +153,7 @@ tier2_decadal_indicators = ["ptotww",
                             "riverdischarge"]
 
 tier2_decadal_statistics_0 = ["ols_","avg_","min_","max_","slope_","intercept_"]
-tier2_decadal_statistics_1 = ["ma10_","ols10_"]
+tier2_decadal_statistics_1 = ["ma10_","ols10_","capped_ols10_"]
 
 for tier2_decadal_indicator in tier2_decadal_indicators:
     for tier2_decadal_statistic_0 in tier2_decadal_statistics_0:
@@ -235,7 +237,8 @@ waterstress_decadal_indicators = ["waterstress","waterdepletion"]
 
 waterstress_decadal_statistics = ["",
                                   "ma10_",
-                                  "ols10_"]
+                                  "ols10_",
+                                  "capped_ols10_"]
 
 for waterstress_decadal_indicator in waterstress_decadal_indicators:
     for waterstress_decadal_statistic in waterstress_decadal_statistics:
@@ -252,7 +255,7 @@ for waterstress_decadal_indicator in waterstress_decadal_indicators:
 waterstress_tier2_decadal_indicators = ["waterstress","waterdepletion"]
 
 waterstress_tier2_decadal_statistics_0 = ["avg_","min_","max_","slope_","intercept_","ols_"]
-waterstress_tier2_decadal_statistics_1 = ["ols10_","ma10_"]
+waterstress_tier2_decadal_statistics_1 = ["ols10_","ma10_","capped_ols10_"]
 
 
 for waterstress_tier2_decadal_indicator in waterstress_tier2_decadal_indicators:
@@ -336,10 +339,10 @@ missing_columns = set(all_columns) - set(columns_to_keep_left)
 
 # In[29]:
 
-columns_to_keep_right = ["avg1y_ols_ols10_waterstress_dimensionless_30spfaf06",
-                         "avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06",
-                         "avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06",
-                         "avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06"]
+columns_to_keep_right = ["avg1y_ols_capped_ols10_waterstress_dimensionless_30spfaf06",
+                         "avg1y_ols_capped_ols10_weighted_waterstress_dimensionless_30spfaf06",
+                         "avg1y_ols_capped_ols10_waterdepletion_dimensionless_30spfaf06",
+                         "avg1y_ols_capped_ols10_weighted_waterdepletion_dimensionless_30spfaf06"]
 
 
 # In[30]:
@@ -410,4 +413,7 @@ print(elapsed)
 
 # Previous runs:  
 # 0:00:02.447159  
-# 0:00:02.080728
+# 0:00:02.080728  
+# 0:00:02.926066  
+# 0:00:02.884164
+# 

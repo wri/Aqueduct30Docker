@@ -6,6 +6,9 @@
 """ Calculate water stress with raw, ma10 and ols10 at subbasin level.
 -------------------------------------------------------------------------------
 
+Update Y2020M02D06 limit to [0-1], output version increase 2-3 
+
+
 The tresholds per month will be used to set waterstress to 1 before doing a
 regression. In order to determine if a subbasin is arid and lowwater use, 
 a full range regression ols1960-2014 for riverdischarge and ptotww and ptotwn
@@ -34,7 +37,7 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D26_RH_Deltas_Water_Stress_V01'
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
@@ -84,7 +87,7 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-temporal_reducers = ["","ma10_","ols10_"]
+temporal_reducers = ["","ma10_","ols10_","capped_ols10_"]
 if TESTING:
     temporal_reducers = [""]
 
@@ -107,17 +110,17 @@ Exceptions:
 sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql +=  " SELECT *,"
 for temporal_reducer in temporal_reducers:   
-    sql += " CASE "
-    sql += " WHEN {}aridandlowwateruse_boolean_30spfaf06 = 1 THEN 1 ".format(temporal_reducer)
-    sql += " ELSE {}ptotww_m_30spfaf06 / ({}riverdischarge_m_30spfaf06 + {}ptotwn_m_30spfaf06) ".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " CASE when {}ptotww_m_30spfaf06 IS NULL OR {}riverdischarge_m_30spfaf06 <= 0".format(temporal_reducer,temporal_reducer)
+    sql += " THEN NULL else"
+    sql += " GREATEST(0,LEAST(1,{}ptotww_m_30spfaf06 / {}riverdischarge_m_30spfaf06))".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " END"
     sql += " AS {}waterstress_dimensionless_30spfaf06 ,".format(temporal_reducer)
     
-    sql += " CASE "
-    sql += " WHEN {}aridandlowwateruse_boolean_30spfaf06 = 1 THEN 1 ".format(temporal_reducer)
-    sql += " ELSE {}ptotwn_m_30spfaf06 / ({}riverdischarge_m_30spfaf06 + {}ptotwn_m_30spfaf06) ".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " CASE when {}ptotww_m_30spfaf06 IS NULL OR {}riverdischarge_m_30spfaf06 <=0".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " THEN NULL else"
+    sql += " GREATEST(0,LEAST(1,{}ptotwn_m_30spfaf06 / {}riverdischarge_m_30spfaf06))".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " END"
-    sql += " AS {}waterdepletion_dimensionless_30spfaf06 ,".format(temporal_reducer)
+    sql += " AS {}waterdepletion_dimensionless_30spfaf06,".format(temporal_reducer)
 
 sql = sql[:-1]
 sql += " FROM {}".format(INPUT_TABLE_NAME)
@@ -165,7 +168,8 @@ print(elapsed)
 
 
 # Previous runs:  
-# 0:00:02.265367
+# 0:00:02.265367  
+# 0:00:02.258329
 
 # In[ ]:
 

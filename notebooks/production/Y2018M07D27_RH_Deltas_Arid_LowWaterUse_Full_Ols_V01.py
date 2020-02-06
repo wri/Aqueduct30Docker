@@ -6,6 +6,9 @@
 """ Using the full range ols_ols10, apply the arid and lowwateruse thresholds for deltas.
 -------------------------------------------------------------------------------
 
+Y2020M02D06 Update output version 2-3, input 2-3
+
+
 Author: Rutger Hofste
 Date: 20180727
 Kernel: python35
@@ -34,7 +37,7 @@ OUTPUT_VERSION = 2
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = 'y2018m07d26_rh_deltas_ws_full_range_ols_v01_v02'
+INPUT_TABLE_NAME = 'y2018m07d26_rh_deltas_ws_full_range_ols_v01_v03'
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 THRESHOLD_ARID_YEAR = 0.03 #units are m/year, threshold defined by Aqueduct 2.1
@@ -83,7 +86,7 @@ if OVERWRITE_OUTPUT:
 
 # In[5]:
 
-temporal_reducers = ["ols_ols10_"]
+temporal_reducers = ["ols_capped_ols10_"]
 
 
 # In[6]:
