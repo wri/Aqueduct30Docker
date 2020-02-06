@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[17]:
+# In[1]:
 
 """ Test the water stress calculation for Aqueduct 3.1
 -------------------------------------------------------------------------------
@@ -31,8 +31,8 @@ OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2020M02D05_RH_Aqueduct31_WS_test_V01'
 OUTPUT_VERSION = 1
 
-BASIN = 216041 # Normal basin (Ebro)
-# BASIN = 742826 # Basin with negative final water stress values in February
+# BASIN = 216041 # Normal basin (Ebro)
+BASIN = 742826 # Basin with negative final water stress values in February
 # BASIN = 635303 # Basin with negative water stress in february 1962
 # BASIN = 291707 # Basin with water stress exceedign 1 in february
 
@@ -40,14 +40,14 @@ BASIN = 216041 # Normal basin (Ebro)
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v05"
+INPUT_TABLE_NAME = "y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v06"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
       "\nOutput Table: " , OUTPUT_TABLE_NAME)
 
 
-# In[18]:
+# In[2]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -57,7 +57,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[19]:
+# In[3]:
 
 # imports
 import re
@@ -71,7 +71,7 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.max_rows', 500)
 
 
-# In[20]:
+# In[4]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -93,43 +93,45 @@ if OVERWRITE_OUTPUT:
 # sql += " AND temporal_resolution = 'month'"
 # sql += " AND month = 2"
 
-# In[24]:
+# In[5]:
 
 sql = "SELECT"
 sql += " *"
 sql += " FROM {}".format(INPUT_TABLE_NAME)
 sql += " WHERE pfafid_30spfaf06 = {}".format(BASIN)
-sql += " AND year = 2014"
+sql += " AND temporal_resolution = 'month'"
+sql += " AND month = 2"
 
 
-# In[25]:
+# In[6]:
 
 sql
 
 
-# In[26]:
+# In[7]:
 
 df_raw = pd.read_sql(sql=sql,con=engine)
 
 
-# In[27]:
+# In[8]:
 
 df_raw.dtypes
 
 
-# In[28]:
+# In[9]:
 
 ptotww = df_raw[["year",
                  "ols10_ptotww_m_30spfaf06",
                  "capped_ols10_ptotww_m_30spfaf06",
                  "ols10_riverdischarge_m_30spfaf06",
                  "capped_ols10_riverdischarge_m_30spfaf06",
-                 "ols10_waterstress_dimensionless_30spfaf06",
-                 "capped_ols10_waterstress_dimensionless_30spfaf06",
-                 "ols_capped_ols10_waterstress_dimensionless_30spfaf06"]]
+                 "ols10_waterdepletion_dimensionless_30spfaf06",
+                 "capped_ols10_waterdepletion_dimensionless_30spfaf06",
+                 "ols_capped_ols10_waterdepletion_dimensionless_30spfaf06"
+                 ]]
 
 
-# In[30]:
+# In[10]:
 
 ptotww
 

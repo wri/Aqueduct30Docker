@@ -155,7 +155,7 @@ tier2_decadal_indicators = ["ptotww",
                             "riverdischarge"]
 
 tier2_decadal_statistics_0 = ["ols_","avg_","min_","max_","slope_","intercept_"]
-tier2_decadal_statistics_1 = ["ma10_","ols10_"]
+tier2_decadal_statistics_1 = ["ma10_","ols10_","capped_ols10_"]
 
 for tier2_decadal_indicator in tier2_decadal_indicators:
     for tier2_decadal_statistic_0 in tier2_decadal_statistics_0:
@@ -241,7 +241,8 @@ waterstress_decadal_indicators = ["waterstress","waterdepletion"]
 
 waterstress_decadal_statistics = ["",
                                   "ma10_",
-                                  "ols10_"]
+                                  "ols10_",
+                                  "capped_ols10_"]
 
 for waterstress_decadal_indicator in waterstress_decadal_indicators:
     for waterstress_decadal_statistic in waterstress_decadal_statistics:
@@ -257,7 +258,7 @@ for waterstress_decadal_indicator in waterstress_decadal_indicators:
 waterstress_tier2_decadal_indicators = ["waterstress","waterdepletion"]
 
 waterstress_tier2_decadal_statistics_0 = ["avg_","min_","max_","slope_","intercept_","ols_"]
-waterstress_tier2_decadal_statistics_1 = ["ols10_","ma10_"]
+waterstress_tier2_decadal_statistics_1 = ["ols10_","ma10_","capped_ols10_"]
 
 
 for waterstress_tier2_decadal_indicator in waterstress_tier2_decadal_indicators:
@@ -342,10 +343,12 @@ missing_columns = set(all_columns) - set(columns_to_keep_left)
 
 # In[29]:
 
-columns_to_keep_right = ["avg1y_ols_ols10_waterstress_dimensionless_30spfaf06",
+columns_to_keep_right = ["avg1y_ols_capped_ols10_waterstress_dimensionless_30spfaf06",
                          "avg1y_ols_capped_ols10_weighted_waterstress_dimensionless_30spfaf06",
-                         "avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06",
+                         "avg1y_ols_capped_ols10_waterdepletion_dimensionless_30spfaf06",
                          "avg1y_ols_capped_ols10_weighted_waterdepletion_dimensionless_30spfaf06"]
+
+
 
 
 # In[30]:
@@ -417,7 +420,8 @@ print(elapsed)
 
 # Previous runs:  
 # 0:21:34.564407  
-# 0:23:37.884430
+# 0:23:37.884430  
+# 0:26:40.223209
 
 # In[ ]:
 

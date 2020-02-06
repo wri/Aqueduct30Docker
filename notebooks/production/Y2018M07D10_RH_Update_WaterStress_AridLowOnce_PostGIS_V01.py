@@ -118,7 +118,7 @@ sql +=     " WHEN temporal_resolution = 'month'"
 sql +=     " THEN ("
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql +=             " THEN ols_ols10_waterstress_dimensionless_30spfaf06"        
+sql +=             " THEN ols_capped_ols10_waterstress_dimensionless_30spfaf06"        
 sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " WHEN temporal_resolution = 'year'"
@@ -138,7 +138,7 @@ sql +=     " WHEN temporal_resolution = 'month'"
 sql +=     " THEN ("
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql +=             " THEN ols_ols10_waterdepletion_dimensionless_30spfaf06"        
+sql +=             " THEN ols_capped_ols10_waterdepletion_dimensionless_30spfaf06"        
 sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " WHEN temporal_resolution = 'year'"
@@ -202,37 +202,37 @@ result = engine.execute(sql)
 sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
 
 
-# In[9]:
+# In[ ]:
 
 result = engine.execute(sql_index)
 
 
-# In[10]:
+# In[ ]:
 
 sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
-# In[11]:
+# In[ ]:
 
 result = engine.execute(sql_index2)
 
 
-# In[12]:
+# In[ ]:
 
 sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
 
 
-# In[13]:
+# In[ ]:
 
 result = engine.execute(sql_index3)
 
 
-# In[14]:
+# In[ ]:
 
 engine.dispose()
 
 
-# In[15]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
