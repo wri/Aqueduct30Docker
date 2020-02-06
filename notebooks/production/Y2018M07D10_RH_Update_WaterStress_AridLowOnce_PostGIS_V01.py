@@ -6,6 +6,10 @@
 """ Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 -------------------------------------------------------------------------------
 
+Update 2020/02/05 Output_version increase from 9 to 10
+input table version 6 to 7
+
+
 Join the results of the arid and lowwater use mask based on annual values (ols)
 (ols_ols10_**) and the master table. 
 
@@ -51,12 +55,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D10_RH_Update_WaterStress_AridLowOnce_PostGIS_V01'
-OUTPUT_VERSION = 9
+OUTPUT_VERSION = 10
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d12_rh_merge_simplify_tables_postgis_v01_v06"
+INPUT_TABLE_NAME = "y2018m07d12_rh_merge_simplify_tables_postgis_v01_v07"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -121,7 +125,7 @@ sql +=    " WHEN temporal_resolution = 'year'"
 sql +=    " THEN ( "
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql +=             " THEN avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06"        
+sql +=             " THEN avg1y_ols_capped_ols10_weighted_waterstress_dimensionless_30spfaf06"        
 sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " ELSE -9999"
@@ -141,7 +145,7 @@ sql +=    " WHEN temporal_resolution = 'year'"
 sql +=    " THEN ( "
 sql +=         " CASE"
 sql +=         " WHEN ols_ols10_aridandlowwateruse_boolean_30spfaf06 = 0"
-sql +=             " THEN avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06"        
+sql +=             " THEN avg1y_ols_capped_ols10_weighted_waterdepletion_dimensionless_30spfaf06"        
 sql +=         " ELSE 1"
 sql +=         " END )"
 sql +=    " ELSE -9999"

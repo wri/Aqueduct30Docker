@@ -6,6 +6,10 @@
 """ Merge and simplify master table and annual scores based on months.
 -------------------------------------------------------------------------------
 
+Update 2020 02 05, changed version from 6 to 7
+input version left 02 to 05
+input version right 05 to 06
+
 Author: Rutger Hofste
 Date: 20180712
 Kernel: python35
@@ -29,13 +33,13 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D12_RH_Merge_Simplify_Tables_PostGIS_V01'
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 7
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_LEFT = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v02"
-INPUT_TABLE_NAME_RIGHT = "y2018m07d12_rh_annual_scores_from_months_postgis_v01_v05"
+INPUT_TABLE_NAME_LEFT = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v05"
+INPUT_TABLE_NAME_RIGHT = "y2018m07d12_rh_annual_scores_from_months_postgis_v01_v06"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table Left: " , INPUT_TABLE_NAME_LEFT, 
@@ -339,9 +343,9 @@ missing_columns = set(all_columns) - set(columns_to_keep_left)
 # In[29]:
 
 columns_to_keep_right = ["avg1y_ols_ols10_waterstress_dimensionless_30spfaf06",
-                         "avg1y_ols_ols10_weighted_waterstress_dimensionless_30spfaf06",
+                         "avg1y_ols_capped_ols10_weighted_waterstress_dimensionless_30spfaf06",
                          "avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06",
-                         "avg1y_ols_ols10_weighted_waterdepletion_dimensionless_30spfaf06"]
+                         "avg1y_ols_capped_ols10_weighted_waterdepletion_dimensionless_30spfaf06"]
 
 
 # In[30]:

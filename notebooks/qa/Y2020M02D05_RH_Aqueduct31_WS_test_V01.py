@@ -1,21 +1,13 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[17]:
 
-""" Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
+""" Test the water stress calculation for Aqueduct 3.1
 -------------------------------------------------------------------------------
-Update 2020/02/03 version update to 5. 
-
-
-Join the results of the arid and lowwater use mask based on annual values (ols)
-(ols_ols10_**) and the master table. 
-
-The script uses the 2014 value for the right table. 
-
 
 Author: Rutger Hofste
-Date: 20180628
+Date: 20200205
 Kernel: python35
 Docker: rutgerhofste/gisdocker:ubuntu16.04
 
@@ -36,23 +28,26 @@ Args:
 
 TESTING = 0
 OVERWRITE_OUTPUT = 1
-SCRIPT_NAME = 'Y2018M07D09_RH_Apply_AridLowOnce_Mask_PostGIS_V01'
-OUTPUT_VERSION = 5
+SCRIPT_NAME = 'Y2020M02D05_RH_Aqueduct31_WS_test_V01'
+OUTPUT_VERSION = 1
+
+BASIN = 216041 # Normal basin (Ebro)
+# BASIN = 742826 # Basin with negative final water stress values in February
+# BASIN = 635303 # Basin with negative water stress in february 1962
+# BASIN = 291707 # Basin with water stress exceedign 1 in february
+
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_RIGHT = "y2018m07d09_rh_arid_lowwateruse_full_ols_postgis_v01_v05"
-INPUT_TABLE_NAME_LEFT = 'y2018m06d28_rh_ws_full_range_ols_postgis_30spfaf06_v02_v06'
-
+INPUT_TABLE_NAME = "y2018m07d09_rh_apply_aridlowonce_mask_postgis_v01_v05"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
-print("Input Table Left: " , INPUT_TABLE_NAME_LEFT, 
-      "Input Table Right: " , INPUT_TABLE_NAME_RIGHT, 
+print("Input Table: " , INPUT_TABLE_NAME, 
       "\nOutput Table: " , OUTPUT_TABLE_NAME)
 
 
-# In[2]:
+# In[18]:
 
 import time, datetime, sys
 dateString = time.strftime("Y%YM%mD%d")
@@ -62,7 +57,7 @@ print(dateString,timeString)
 sys.version
 
 
-# In[3]:
+# In[19]:
 
 # imports
 import re
@@ -73,9 +68,10 @@ import aqueduct3
 from datetime import timedelta
 from sqlalchemy import *
 pd.set_option('display.max_columns', 500)
+pd.set_option('display.max_rows', 500)
 
 
-# In[4]:
+# In[20]:
 
 F = open("/.password","r")
 password = F.read().splitlines()[0]
@@ -90,64 +86,60 @@ if OVERWRITE_OUTPUT:
     result = engine.execute(sql)
 
 
-# In[5]:
+# sql = "SELECT"
+# sql += " *"
+# sql += " FROM {}".format(INPUT_TABLE_NAME)
+# sql += " WHERE pfafid_30spfaf06 = {}".format(BASIN)
+# sql += " AND temporal_resolution = 'month'"
+# sql += " AND month = 2"
 
-columns_to_keep = ["ols_ols10_arid_boolean_30spfaf06",
-                   "ols_ols10_lowwateruse_boolean_30spfaf06",
-                   "ols_ols10_aridandlowwateruse_boolean_30spfaf06"]
+# In[24]:
 
-
-# In[6]:
-
-sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
-sql += " SELECT l.*,"
-for column_to_keep in columns_to_keep:
-    sql += " r.{},".format(column_to_keep)
-sql = sql[:-1]
-sql += " FROM {} l".format(INPUT_TABLE_NAME_LEFT)
-sql += " INNER JOIN {} r ON".format(INPUT_TABLE_NAME_RIGHT)
-sql += " l.pfafid_30spfaf06 = r.pfafid_30spfaf06"
-sql += " WHERE r.year = 2014"
+sql = "SELECT"
+sql += " *"
+sql += " FROM {}".format(INPUT_TABLE_NAME)
+sql += " WHERE pfafid_30spfaf06 = {}".format(BASIN)
+sql += " AND year = 2014"
 
 
-# In[7]:
+# In[25]:
 
-print(sql)
-
-
-# In[8]:
-
-result = engine.execute(sql)
+sql
 
 
-# In[9]:
+# In[26]:
 
-sql_index = "CREATE INDEX {}pfafid_30spfaf06 ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"pfafid_30spfaf06")
-
-
-# In[10]:
-
-sql_index
+df_raw = pd.read_sql(sql=sql,con=engine)
 
 
-# In[11]:
+# In[27]:
 
-result = engine.execute(sql_index)
-
-
-# In[12]:
-
-engine.dispose()
+df_raw.dtypes
 
 
-# In[13]:
+# In[28]:
 
-end = datetime.datetime.now()
-elapsed = end - start
-print(elapsed)
+ptotww = df_raw[["year",
+                 "ols10_ptotww_m_30spfaf06",
+                 "capped_ols10_ptotww_m_30spfaf06",
+                 "ols10_riverdischarge_m_30spfaf06",
+                 "capped_ols10_riverdischarge_m_30spfaf06",
+                 "ols10_waterstress_dimensionless_30spfaf06",
+                 "capped_ols10_waterstress_dimensionless_30spfaf06",
+                 "ols_capped_ols10_waterstress_dimensionless_30spfaf06"]]
 
 
-# Previous runs:  
-# 0:19:28.891726  
-# 0:15:14.704501  
-# 0:15:44.810711
+# In[30]:
+
+ptotww
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+

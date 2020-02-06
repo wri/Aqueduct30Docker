@@ -8,6 +8,10 @@
 
 2020/02/03 starting from version 5
 
+please note that capped ols_capped_ols10 series are used but the column name
+for arid and lowater is just ols_ols10_aridandlowwateruse_boolean_30spfaf06
+so no _capped_
+
 
 Author: Rutger Hofste
 Date: 20180709
@@ -96,21 +100,21 @@ sql = sql + "SELECT pfafid_30spfaf06, ols_ols10_riverdischarge_m_30spfaf06, ols_
 
 # arid
 sql = sql + " CASE"
-sql = sql + " WHEN (ols_ols10_riverdischarge_m_30spfaf06) < {} THEN 1".format(THRESHOLD_ARID_YEAR)
+sql = sql + " WHEN (ols_capped_ols10_riverdischarge_m_30spfaf06) < {} THEN 1".format(THRESHOLD_ARID_YEAR)
 sql = sql + " ELSE 0 "
 sql = sql + " END"
 sql = sql + " AS ols_ols10_arid_boolean_30spfaf06,"
 
 #lowwateruse
 sql = sql + " CASE"
-sql = sql + " WHEN ols_ols10_ptotww_m_30spfaf06 < {} THEN 1".format(THRESHOLD_LOW_WATER_USE_YEAR)
+sql = sql + " WHEN ols_capped_ols10_ptotww_m_30spfaf06 < {} THEN 1".format(THRESHOLD_LOW_WATER_USE_YEAR)
 sql = sql + " ELSE 0 "
 sql = sql + " END"
 sql = sql + " AS ols_ols10_lowwateruse_boolean_30spfaf06,"
 
 # Arid AND Lowwateruse  
 sql = sql + " CASE"
-sql = sql + " WHEN ols_ols10_ptotww_m_30spfaf06 < {} AND (ols_ols10_riverdischarge_m_30spfaf06)  < {} THEN 1".format(THRESHOLD_LOW_WATER_USE_YEAR, THRESHOLD_ARID_YEAR)
+sql = sql + " WHEN ols_capped_ols10_ptotww_m_30spfaf06 < {} AND (ols_capped_ols10_riverdischarge_m_30spfaf06)  < {} THEN 1".format(THRESHOLD_LOW_WATER_USE_YEAR, THRESHOLD_ARID_YEAR)
 sql = sql + " ELSE 0 "
 sql = sql + " END"
 sql = sql + " AS ols_ols10_aridandlowwateruse_boolean_30spfaf06 ,"
@@ -141,8 +145,9 @@ print(elapsed)
 # 0:02:12.255110  
 # 0:01:56.781839  
 # 0:03:23.336755  
-# 0:02:31.679844
-# 
+# 0:02:31.679844  
+# 0:02:29.528062
+#  
 
 # In[ ]:
 

@@ -100,14 +100,14 @@ sql =  "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql += " SELECT "
 for selection_column in selection_columns:
     sql += " {},".format(selection_column)
-sql +=     " AVG(ols_capped_ols10_waterstress_dimensionless_30spfaf06) AS avg1y_ols_ols10_waterstress_dimensionless_30spfaf06,"
+sql +=     " AVG(ols_capped_ols10_waterstress_dimensionless_30spfaf06) AS avg1y_ols_capped_ols10_waterstress_dimensionless_30spfaf06,"
 sql +=     " CASE WHEN SUM (ols_capped_ols10_ptotww_m_30spfaf06) >0 "
 sql +=         " THEN SUM(ols_capped_ols10_waterstress_dimensionless_30spfaf06 * ols_capped_ols10_ptotww_m_30spfaf06) / SUM (ols_capped_ols10_ptotww_m_30spfaf06) "
 sql +=     " ELSE AVG(ols_capped_ols10_waterstress_dimensionless_30spfaf06)"
 sql +=     " END"
 sql +=     " AS avg1y_ols_capped_ols10_weighted_waterstress_dimensionless_30spfaf06,"
 
-sql +=     " AVG(ols_capped_ols10_waterdepletion_dimensionless_30spfaf06) AS avg1y_ols_ols10_waterdepletion_dimensionless_30spfaf06,"
+sql +=     " AVG(ols_capped_ols10_waterdepletion_dimensionless_30spfaf06) AS avg1y_ols_capped_ols10_waterdepletion_dimensionless_30spfaf06,"
 sql +=     " CASE WHEN SUM (ols_capped_ols10_ptotww_m_30spfaf06) >0 "
 sql +=         " THEN SUM(ols_capped_ols10_waterdepletion_dimensionless_30spfaf06 * ols_capped_ols10_ptotww_m_30spfaf06) / SUM (ols_capped_ols10_ptotww_m_30spfaf06) "
 sql +=     " ELSE AVG(ols_capped_ols10_waterdepletion_dimensionless_30spfaf06)"
@@ -166,7 +166,9 @@ print(elapsed)
 # 0:02:33.060358  
 # 0:02:33.656827  
 # 0:02:08.691658  
-# 0:02:46.805150
+# 0:02:46.805150  
+# 0:02:43.173112
+# 
 # 
 
 # In[ ]:

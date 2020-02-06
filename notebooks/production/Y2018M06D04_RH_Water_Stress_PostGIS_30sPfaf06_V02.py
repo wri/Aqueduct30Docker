@@ -127,11 +127,17 @@ Exceptions:
 
 sql = "CREATE TABLE {} AS".format(OUTPUT_TABLE_NAME)
 sql +=  " SELECT *,"
-for temporal_reducer in temporal_reducers:   
-    sql += " GREATEST(0,LEAST(1,{}ptotww_m_30spfaf06 / NULLIF({}riverdischarge_m_30spfaf06,0)))".format(temporal_reducer,temporal_reducer,temporal_reducer)
+for temporal_reducer in temporal_reducers:  
+    sql += " CASE when {}ptotww_m_30spfaf06 IS NULL OR {}riverdischarge_m_30spfaf06 <= 0".format(temporal_reducer,temporal_reducer)
+    sql += " THEN NULL else"
+    sql += " GREATEST(0,LEAST(1,{}ptotww_m_30spfaf06 / {}riverdischarge_m_30spfaf06))".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " END"
     sql += " AS {}waterstress_dimensionless_30spfaf06 ,".format(temporal_reducer)
-
-    sql += " GREATEST(0,LEAST(1,{}ptotwn_m_30spfaf06 / NULLIF({}riverdischarge_m_30spfaf06,0)))".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    
+    sql += " CASE when {}ptotww_m_30spfaf06 IS NULL OR {}riverdischarge_m_30spfaf06 <=0".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " THEN NULL else"
+    sql += " GREATEST(0,LEAST(1,{}ptotwn_m_30spfaf06 / {}riverdischarge_m_30spfaf06))".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " END"
     sql += " AS {}waterdepletion_dimensionless_30spfaf06,".format(temporal_reducer)
 
 sql = sql[:-1]
