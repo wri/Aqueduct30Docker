@@ -95,28 +95,28 @@ sql += " WHERE delta_id IS NULL"
 sql
 
 
-# In[ ]:
+# In[7]:
 
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[8]:
 
 sql = "ALTER TABLE {} ALTER COLUMN delta_id SET DATA TYPE INT;".format(INPUT_TABLE_NAME)
 
 
-# In[ ]:
+# In[9]:
 
 # will take 20 min to run.
 result = engine.execute(sql)
 
 
-# In[ ]:
+# In[10]:
 
 engine.dispose()
 
 
-# In[ ]:
+# In[11]:
 
 end = datetime.datetime.now()
 elapsed = end - start
@@ -128,7 +128,8 @@ print(elapsed)
 # 0:42:08.612665  
 # 0:42:04.108612  
 # 0:52:44.430636  
-# 0:50:01.565077
+# 0:50:01.565077  
+# 1:00:36.063626
 
 # In[ ]:
 

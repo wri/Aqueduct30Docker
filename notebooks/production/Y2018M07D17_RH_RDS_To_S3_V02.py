@@ -6,6 +6,7 @@
 """ Convert RDS table to csv files on S3 and GCS
 -------------------------------------------------------------------------------
 
+update 2020/02/10 update output 11-12 input 8-9
 
 Author: Rutger Hofste
 Date: 20180712
@@ -25,14 +26,14 @@ pd.set_option('display.max_columns', 500)
 import multiprocessing
 
 SCRIPT_NAME = 'Y2018M07D17_RH_RDS_To_S3_V02'
-OUTPUT_VERSION = 11
+OUTPUT_VERSION = 12
 
 TESTING = 0
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v08"
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v09"
 
 ec2_output_path = "/volumes/data/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
 s3_output_path = "s3://wri-projects/Aqueduct30/processData/{}/output_V{:02.0f}/".format(SCRIPT_NAME,OUTPUT_VERSION)
@@ -132,18 +133,18 @@ p.close()
 p.join()
 
 
-# In[14]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet')
 
 
-# In[15]:
+# In[ ]:
 
 # cleared output to save space
 get_ipython().system('gsutil -m cp {ec2_output_path}/*.csv {gcs_output_path}')
 
 
-# In[16]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start
