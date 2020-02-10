@@ -6,6 +6,8 @@
 """ Use first valid of delta or subbasin column. 
 -------------------------------------------------------------------------------
 
+Update 2020/02/19 output version 8-9, input version 4-5
+
 Author: Rutger Hofste
 Date: 20180730
 Kernel: python35
@@ -28,12 +30,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Coalesce_Columns_V01'
-OUTPUT_VERSION = 8
+OUTPUT_VERSION = 9
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_merge_subbasins_deltas_v01_v04"
+INPUT_TABLE_NAME = "y2018m07d30_rh_merge_subbasins_deltas_v01_v05"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME,
@@ -153,7 +155,9 @@ print(elapsed)
 # 0:13:57.855760  
 # 0:14:04.354594   
 # 0:18:01.821296  
-# 0:16:25.157783
+# 0:16:25.157783  
+# 0:19:50.574704
+# 
 # 
 
 # In[ ]:

@@ -6,6 +6,9 @@
 """ Replace Null values with numbers to prepare for bigquery. 
 -------------------------------------------------------------------------------
 
+Update 2020/02/10 output 3-4, input 8-9
+
+
 Author: Rutger Hofste
 Date: 20180730
 Kernel: python35
@@ -28,12 +31,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Replace_Null_Deltas_V01'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v08"
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v09"
 
 
 print("Input Table: " , INPUT_TABLE_NAME)
@@ -92,28 +95,28 @@ sql += " WHERE delta_id IS NULL"
 sql
 
 
-# In[7]:
+# In[ ]:
 
 result = engine.execute(sql)
 
 
-# In[8]:
+# In[ ]:
 
 sql = "ALTER TABLE {} ALTER COLUMN delta_id SET DATA TYPE INT;".format(INPUT_TABLE_NAME)
 
 
-# In[9]:
+# In[ ]:
 
 # will take 20 min to run.
 result = engine.execute(sql)
 
 
-# In[10]:
+# In[ ]:
 
 engine.dispose()
 
 
-# In[11]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start

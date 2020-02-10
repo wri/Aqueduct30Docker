@@ -5,6 +5,7 @@
 
 """ Add delta id column to subbasin results. 
 -------------------------------------------------------------------------------
+Y2020M02D06 Update output version 2-3, input left 6-7 input right 1-1
 
 Author: Rutger Hofste
 Date: 20180730
@@ -28,12 +29,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = "Y2018M07D30_RH_Add_DeltaID_Subbasins_V01"
-OUTPUT_VERSION = 2
+OUTPUT_VERSION = 3
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_LEFT = "y2018m07d12_rh_ws_categorization_label_postgis_v01_v06"
+INPUT_TABLE_NAME_LEFT = "y2018m07d12_rh_ws_categorization_label_postgis_v01_v07"
 INPUT_TABLE_NAME_RIGHT = "y2018m07d25_rh_delta_lookup_table_postgis_v01_v01"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
@@ -134,7 +135,8 @@ print(elapsed)
 # Previous runs:  
 # 0:13:15.582667  
 # 0:17:09.497583  
-# 0:15:13.606974
+# 0:15:13.606974  
+# 0:16:41.309713
 # 
 
 # In[ ]:

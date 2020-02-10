@@ -5,7 +5,7 @@
 
 """ Add category and label for water stress for deltas. 
 -------------------------------------------------------------------------------
-
+Y2020M02D06 Update output 3-4 input 2-3
 
 Author: Rutger Hofste
 Date: 20180727
@@ -29,12 +29,12 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D27_RH_Deltas_WS_Categorization_Label_V01'
-OUTPUT_VERSION = 3
+OUTPUT_VERSION = 4
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME = "y2018m07d27_rh_deltas_update_waterstress_aridlowonce_v01_v02"
+INPUT_TABLE_NAME = "y2018m07d27_rh_deltas_update_waterstress_aridlowonce_v01_v03"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table: " , INPUT_TABLE_NAME, 
@@ -198,47 +198,47 @@ sql +=     " END AS waterdepletion_label_dimensionless_30spfaf06"
 sql += " FROM cte;"
 
 
-# In[8]:
+# In[7]:
 
 result = engine.execute(text(sql))
 
 
-# In[9]:
+# In[8]:
 
 sql_index = "CREATE INDEX {}delta_id ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"delta_id")
 
 
-# In[10]:
+# In[9]:
 
 result = engine.execute(sql_index)
 
 
-# In[11]:
+# In[10]:
 
 sql_index2 = "CREATE INDEX {}year ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"year")
 
 
-# In[12]:
+# In[11]:
 
 result = engine.execute(sql_index2)
 
 
-# In[13]:
+# In[12]:
 
 sql_index3 = "CREATE INDEX {}month ON {} ({})".format(OUTPUT_TABLE_NAME,OUTPUT_TABLE_NAME,"month")
 
 
-# In[14]:
+# In[13]:
 
 result = engine.execute(sql_index3)
 
 
-# In[15]:
+# In[14]:
 
 engine.dispose()
 
 
-# In[16]:
+# In[15]:
 
 end = datetime.datetime.now()
 elapsed = end - start

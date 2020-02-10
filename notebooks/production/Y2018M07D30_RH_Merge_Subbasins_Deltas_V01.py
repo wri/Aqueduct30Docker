@@ -6,6 +6,7 @@
 """ Merge subbasin results and delta results.
 -------------------------------------------------------------------------------
 
+Update 2020/02/10 Output version 4-5, input version right 3-4, left 2-3
 
 Author: Rutger Hofste
 Date: 20180730
@@ -29,13 +30,13 @@ Args:
 TESTING = 0
 OVERWRITE_OUTPUT = 1
 SCRIPT_NAME = 'Y2018M07D30_RH_Merge_Subbasins_Deltas_V01'
-OUTPUT_VERSION = 4
+OUTPUT_VERSION = 5
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
 
-INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_ws_categorization_label_v01_v03"
-INPUT_TABLE_NAME_LEFT = "y2018m07d30_rh_add_deltaid_subbasins_v01_v02"
+INPUT_TABLE_NAME_RIGHT = "y2018m07d27_rh_deltas_ws_categorization_label_v01_v04"
+INPUT_TABLE_NAME_LEFT = "y2018m07d30_rh_add_deltaid_subbasins_v01_v03"
 OUTPUT_TABLE_NAME = SCRIPT_NAME.lower() + "_v{:02.0f}".format(OUTPUT_VERSION)
 
 print("Input Table Right: " , INPUT_TABLE_NAME_RIGHT,
@@ -167,7 +168,9 @@ print(elapsed)
 
 # Previous runs:   
 # 0:36:29.186526  
-# 0:44:46.288626
+# 0:44:46.288626  
+# 0:47:40.417561
+# 
 
 # In[ ]:
 
