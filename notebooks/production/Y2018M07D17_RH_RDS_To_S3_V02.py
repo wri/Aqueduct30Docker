@@ -133,18 +133,18 @@ p.close()
 p.join()
 
 
-# In[ ]:
+# In[14]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet')
 
 
-# In[ ]:
+# In[15]:
 
 # cleared output to save space
 get_ipython().system('gsutil -m cp {ec2_output_path}/*.csv {gcs_output_path}')
 
 
-# In[ ]:
+# In[16]:
 
 end = datetime.datetime.now()
 elapsed = end - start

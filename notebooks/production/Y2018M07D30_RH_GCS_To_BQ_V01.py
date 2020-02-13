@@ -7,6 +7,8 @@
 """ Store Cloudstorage CSV files into bigquery table.
 -------------------------------------------------------------------------------
 
+Update 2020 02 13 output 6-7, input 10-12, input coalesce 8-9
+
 Author: Rutger Hofste
 Date: 20180712
 Kernel: python35
@@ -14,15 +16,15 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M07D30_RH_GCS_To_BQ_V01'
-OUTPUT_VERSION = 6
+OUTPUT_VERSION = 7
 OVERWRITE_OUTPUT = 1 
 
 
-GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M07D17_RH_RDS_To_S3_V02/output_V10/"
+GCS_INPUT_PATH = "gs://aqueduct30_v01/Y2018M07D17_RH_RDS_To_S3_V02/output_V12/"
 
 DATABASE_ENDPOINT = "aqueduct30v05.cgpnumwmfcqc.eu-central-1.rds.amazonaws.com"
 DATABASE_NAME = "database01"
-INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v08" #For header
+INPUT_TABLE_NAME = "y2018m07d30_rh_coalesce_columns_v01_v09" #For header
 
 
 OUTPUT_DATASET_NAME = "aqueduct30v01"
