@@ -5,7 +5,7 @@
 
 """ Apply the mask for arid and lowwater use subbasins based on ols_ols10 (once).
 -------------------------------------------------------------------------------
-Update 2020/02/03 version update to 5. 
+Update 2020/02/03 version update 4- 5. 
 
 
 Join the results of the arid and lowwater use mask based on annual values (ols)
@@ -151,4 +151,6 @@ print(elapsed)
 # 0:19:28.891726  
 # 0:15:14.704501  
 # 0:15:44.810711  
-# 0:16:01.493294
+# 0:16:01.493294  
+# 0:15:49.172032
+# 

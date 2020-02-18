@@ -6,6 +6,10 @@
 """ Merge raw data into master table. 
 -------------------------------------------------------------------------------
 
+Update 2020 02 14 output version 9-10 
+bws, bwd 06 -07
+
+
 version 1 of this script concatenated the results horizontally whereas 
 a vertical approach was more useful when applying the weights. 
 
@@ -20,7 +24,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 
 TESTING = 0
 SCRIPT_NAME = 'Y2018M12D04_RH_Master_Merge_Rawdata_GPD_V02'
-OUTPUT_VERSION = 9
+OUTPUT_VERSION = 10
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_DATASET_NAME = "aqueduct30v01"
@@ -56,10 +60,10 @@ IDENTIFIERS = {"AqID_spatial_unit":"aqid",
 # Physical Risk Quantity | QAN   -------------
 
 # Baseline Water Stress | BWS
-BQ_IN["bws"] = "y2018m07d30_rh_gcs_to_bq_v01_v06"
+BQ_IN["bws"] = "y2018m07d30_rh_gcs_to_bq_v01_v07"
 
 # Baseline Water Depletion | BWD
-BQ_IN["bwd"] = "y2018m07d30_rh_gcs_to_bq_v01_v06"
+BQ_IN["bwd"] = "y2018m07d30_rh_gcs_to_bq_v01_v07"
 
 # Interannual Variability | IAV
 BQ_IN["iav"] = "y2018m07d31_rh_inter_av_cat_label_v01_v03"

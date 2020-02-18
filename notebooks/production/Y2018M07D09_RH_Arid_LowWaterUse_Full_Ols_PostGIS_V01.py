@@ -6,7 +6,7 @@
 """ Using the full range ols_ols10, apply the arid and lowwateruse thresholds.
 -------------------------------------------------------------------------------
 
-2020/02/03 starting from version 5
+2020/02/03 Update output version 4-5
 
 please note that capped ols_capped_ols10 series are used but the column name
 for arid and lowater is just ols_ols10_aridandlowwateruse_boolean_30spfaf06
@@ -146,7 +146,9 @@ print(elapsed)
 # 0:01:56.781839  
 # 0:03:23.336755  
 # 0:02:31.679844  
-# 0:02:29.528062
+# 0:02:29.528062  
+# 0:02:33.077817
+# 
 #  
 
 # In[ ]:

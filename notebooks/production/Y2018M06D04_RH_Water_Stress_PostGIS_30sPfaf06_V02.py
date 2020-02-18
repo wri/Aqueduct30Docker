@@ -11,8 +11,7 @@ it's better to use the capped regression results. If not, you see negative
 supply or demand numbers. Version 8 and upward use the capped values. In 
 addition, to avoid division by 0, we set the result to null if /0
 
-
-The tresholds per month will be used to set waterstress to 1 before doing a
+The tresholds per month will be used to set waterstress to 2 before doing a
 regression. In order to determine if a subbasin is arid and lowwater use, 
 a full range regression ols1960-2014 for riverdischarge and ptotww and ptotwn
 will be used. 
@@ -130,13 +129,13 @@ sql +=  " SELECT *,"
 for temporal_reducer in temporal_reducers:  
     sql += " CASE when {}ptotww_m_30spfaf06 IS NULL OR {}riverdischarge_m_30spfaf06 <= 0".format(temporal_reducer,temporal_reducer)
     sql += " THEN NULL else"
-    sql += " GREATEST(0,LEAST(1,{}ptotww_m_30spfaf06 / {}riverdischarge_m_30spfaf06))".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " GREATEST(0,LEAST(2,{}ptotww_m_30spfaf06 / {}riverdischarge_m_30spfaf06))".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " END"
     sql += " AS {}waterstress_dimensionless_30spfaf06 ,".format(temporal_reducer)
     
     sql += " CASE when {}ptotww_m_30spfaf06 IS NULL OR {}riverdischarge_m_30spfaf06 <=0".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " THEN NULL else"
-    sql += " GREATEST(0,LEAST(1,{}ptotwn_m_30spfaf06 / {}riverdischarge_m_30spfaf06))".format(temporal_reducer,temporal_reducer,temporal_reducer)
+    sql += " GREATEST(0,LEAST(2,{}ptotwn_m_30spfaf06 / {}riverdischarge_m_30spfaf06))".format(temporal_reducer,temporal_reducer,temporal_reducer)
     sql += " END"
     sql += " AS {}waterdepletion_dimensionless_30spfaf06,".format(temporal_reducer)
 
@@ -189,7 +188,8 @@ print(elapsed)
 # 0:02:51.356640  
 # 0:03:09.128359  
 # 0:08:57.643207  
-# 0:08:51.883693
+# 0:08:51.883693  
+# 0:07:30.550856
 # 
 # 
 

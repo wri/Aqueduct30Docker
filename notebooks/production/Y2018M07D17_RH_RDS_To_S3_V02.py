@@ -26,7 +26,7 @@ pd.set_option('display.max_columns', 500)
 import multiprocessing
 
 SCRIPT_NAME = 'Y2018M07D17_RH_RDS_To_S3_V02'
-OUTPUT_VERSION = 12
+OUTPUT_VERSION = 13
 
 TESTING = 0
 
@@ -155,7 +155,8 @@ print(elapsed)
 # 0:42:01.416597  
 # 0:42:14.565295  
 # 0:31:40.728932  
-# 0:23:35.132388
+# 0:23:35.132388  
+# 0:30:37.392875
 # 
 # 
 
