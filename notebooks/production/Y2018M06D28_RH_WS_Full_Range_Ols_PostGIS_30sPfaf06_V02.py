@@ -131,7 +131,7 @@ for temporal_reducer in temporal_reducers:
         sql += (" regr_slope({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) * year "
                      "+ regr_intercept({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) AS ols_{},".format(indicator,indicator,indicator))
         """
-        sql += ("GREATEST(0,LEAST(1,regr_slope({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) * year "
+        sql += ("GREATEST(0,LEAST(2,regr_slope({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) * year "
                     "+ regr_intercept({},year) OVER (PARTITION BY pfafid_30spfaf06, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW))) AS ols_{},".format(indicator,indicator,indicator))
         
         
@@ -218,7 +218,9 @@ print(elapsed)
 # 0:26:08.090470  
 # 0:31:46.727090  
 # 0:31:19.766478  
-# 0:31:49.661707
+# 0:31:49.661707  
+# 0:32:12.900428
+# 
 # 
 # 
 

@@ -26,7 +26,7 @@ pd.set_option('display.max_columns', 500)
 import multiprocessing
 
 SCRIPT_NAME = 'Y2018M07D17_RH_RDS_To_S3_V02'
-OUTPUT_VERSION = 13
+OUTPUT_VERSION = 14
 
 TESTING = 0
 
@@ -86,28 +86,28 @@ sql = "SELECT DISTINCT pfafid_30spfaf06 FROM {} ORDER BY pfafid_30spfaf06".forma
 df = pd.read_sql(sql,engine)
 
 
-# In[8]:
+# In[ ]:
 
 df.shape
 
 
-# In[9]:
+# In[ ]:
 
 df.head()
 
 
-# In[10]:
+# In[ ]:
 
 if TESTING:
     df = df[0:10]
 
 
-# In[11]:
+# In[ ]:
 
 df_split = np.array_split(df, cpu_count*100)
 
 
-# In[12]:
+# In[ ]:
 
 def basin_to_csv(df):
     for index, row in df.iterrows():
@@ -124,7 +124,7 @@ def basin_to_csv(df):
         print(output_file_path)
 
 
-# In[13]:
+# In[ ]:
 
 # cleared output to save space
 p= multiprocessing.Pool()
@@ -133,18 +133,18 @@ p.close()
 p.join()
 
 
-# In[14]:
+# In[ ]:
 
 get_ipython().system('aws s3 cp {ec2_output_path} {s3_output_path} --recursive --quiet')
 
 
-# In[15]:
+# In[ ]:
 
 # cleared output to save space
 get_ipython().system('gsutil -m cp {ec2_output_path}/*.csv {gcs_output_path}')
 
 
-# In[16]:
+# In[ ]:
 
 end = datetime.datetime.now()
 elapsed = end - start

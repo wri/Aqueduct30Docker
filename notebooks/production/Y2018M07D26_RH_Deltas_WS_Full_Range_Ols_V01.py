@@ -123,7 +123,7 @@ for temporal_reducer in temporal_reducers:
         sql += " regr_slope({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS slope_{},".format(indicator,indicator)
         sql += " regr_intercept({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) AS intercept_{},".format(indicator,indicator)
 
-        sql += ("GREATEST(0,LEAST(1,regr_slope({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) * year "
+        sql += ("GREATEST(0,LEAST(2,regr_slope({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW) * year "
                 "+ regr_intercept({},year) OVER (PARTITION BY delta_id, month, temporal_resolution ORDER BY year ROWS BETWEEN 55 PRECEDING AND CURRENT ROW))) AS ols_{},".format(indicator,indicator,indicator))
 sql = sql[:-1]
 sql = sql + " FROM {}".format(INPUT_TABLE_NAME)
