@@ -21,11 +21,11 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M12D11_RH_Master_Weights_GPD_V02'
-OUTPUT_VERSION = 10
+OUTPUT_VERSION = 11
 
 BQ_IN = {}
 # Master Table
-BQ_IN["MASTER"] = "y2018m12d04_rh_master_merge_rawdata_gpd_v02_v09"
+BQ_IN["MASTER"] = "y2018m12d04_rh_master_merge_rawdata_gpd_v02_v11"
 
 # Weights
 BQ_IN["WEIGHTS"] ="y2018m12d06_rh_process_weights_bq_v01_v01"

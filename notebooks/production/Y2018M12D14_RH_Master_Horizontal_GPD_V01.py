@@ -6,6 +6,11 @@
 """ Create horizontal table for readability. 
 -------------------------------------------------------------------------------
 
+Update 2020 02 21. output 10-11. Version 11 corresponds to Aqueduct 3.1 
+with water stress and depletion limited to [0-2] and capped regression
+of the time-series.
+
+
 Data is strored vertically in bigquery which means each indicator has its 
 own row. This script puts the verious indicators as columns in a new,
 horizontal table. Additional useful attributes are added. 
@@ -22,7 +27,7 @@ Docker: rutgerhofste/gisdocker:ubuntu16.04
 """
 
 SCRIPT_NAME = 'Y2018M12D14_RH_Master_Horizontal_GPD_V01'
-OUTPUT_VERSION = 10
+OUTPUT_VERSION = 11
 
 
 # AWS RDS PostGIS
@@ -39,8 +44,8 @@ BQ_IN["GADM36L01"] = "y2018m11d12_rh_gadm36_level1_rds_to_bq_v01_v01"
 BQ_IN["area"] = 'y2018m12d07_rh_process_area_bq_v01_v01'
 
 # too slow, using s3 instead
-BQ_IN["indicators"] = 'y2018m12d11_rh_master_weights_gpd_v02_v09'
-S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02/output_V10"
+BQ_IN["indicators"] = 'y2018m12d11_rh_master_weights_gpd_v02_v11'
+S3_INPUT_PATH = "s3://wri-projects/Aqueduct30/processData/Y2018M12D11_RH_Master_Weights_GPD_V02/output_V11"
 
 BQ_PROJECT_ID = "aqueduct30"
 BQ_OUTPUT_DATASET_NAME = "aqueduct30v01"
@@ -430,5 +435,7 @@ print(elapsed)
 # 0:47:11.853503  
 # 0:48:37.800392  
 # 0:49:17.171412  
-# 0:51:51.547798
+# 0:51:51.547798  
+# 0:50:23.947967
+# 
 # 
