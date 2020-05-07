@@ -1,5 +1,3 @@
-Intro 
-
 In august 2019, we updated the Aqueduct Water Risk Atlas and Country Rankings tools. Part of the update involved improving our underlying hydrological models. In the August 2019 update, we ONLY updated the Baseline data and NOT the future projections data. The result is that the baseline and future projections data are inconsistent. This document provides guidance on how to use baseline and future projections data until we update the future projections data.  
 
 The update of the future projections is a bigger undertaking and is not expected anytime soon. If you like to know more about the status of the update or support us, please contact us directly (Aqueduct@wri.org).  
@@ -43,8 +41,6 @@ Multiply the baseline water stress (bws_raw) or seasonal variability (sev_raw) w
 Step 8: 
 
 If you prefer a score rather than a raw value. Use the equations from the [technical note](https://wriorg.s3.amazonaws.com/s3fs-public/aqueduct-30-updated-decision-relevant-global-water-risk-indicators_1.pdf) to convert from raw value to score. 
-
- 
 
 
 Limitations:  
