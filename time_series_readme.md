@@ -1,3 +1,8 @@
+ma = moving average  
+ols = ordinary least squares   
+ols10 = ordinary least squares over 10 years  
+
+
 | Field name                                                      | Type    | Mode     | Description                                                                                                                                                 |
 |-----------------------------------------------------------------|---------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | int64_field_0                                                   | INTEGER | NULLABLE | Unique identifier                                                                                                                                           |
